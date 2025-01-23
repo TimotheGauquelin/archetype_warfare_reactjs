@@ -1,0 +1,28 @@
+@mixin no-margin {
+  margin: 0;
+  padding: 0;
+}
+
+@mixin button($background-color) {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 30px;
+  gap: 10px;
+  color: white;
+
+  width: 139px;
+  height: 61px;
+
+  /* Black */
+
+  background-color: $background-color;
+  border-radius: 10px;
+
+  /* Inside auto layout */
+
+  flex: none;
+  order: 1;
+  flex-grow: 0;
+}
