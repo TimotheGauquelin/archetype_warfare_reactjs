@@ -5,130 +5,24 @@ import Header from "../components/generic/header/Header";
 import SubtitleDivider from "../components/generic/SubtitleDivider";
 import MainInformationsBlock from "../components/pages/archetype/MainInformationsBlock";
 import Jumbotron from "../components/pages/archetype/Jumbotron";
-import { performancesLabel, extraDeckLabels } from "../constant/genericData";
-
-import { closestIndexTo } from "date-fns";
-
-import api_aw from "../api/api_aw";
+import { performancesLabel } from "../constant/genericData";
 import "../styles/Archetype.scss";
 import PageContentBlock from "../components/generic/PageContentBlock";
 import ErrorText from "../components/generic/ErrorText";
-import {
-  URL_BACK_GET_ARCHETYPE,
-  URL_BACK_GET_BANLISTS,
-  URL_BACK_GET_CARD_TYPES,
-} from "../constant/urlsBack";
-import { URL_FRONT_ARCHETYPES } from "../constant/urlsFront";
-import LazyArchetype from "../components/pages/archetype/LazyArchetype";
-import axios from "axios";
+import { getArchetypeById } from "../services/archetype";
+import Card from "../components/generic/Card";
+import { getCardTypes } from "../services/cardtype";
 
 const Archetype = () => {
-  const [banlistCards, setBanlistCards] = useState([]);
-  const [banlists, setBanlists] = useState([]);
-  const [activeBanlistId, setActiveBanlistId] = useState();
-  const [cardTypes, setCardTypes] = useState([]);
   const [archetype, setArchetype] = useState({});
-  const [archetypeCards, setArchetypeCards] = useState([]);
-  const [refresh, setRefresh] = useState(false);
+  const [cardTypes, setCardTypes] = useState([]);
   const { id } = useParams();
-  const navigate = useNavigate();
-
-  const checkIfIdFromPathnameIsANumber = Number.isFinite(Number(id));
-
-  const getAllData = () => {
-    axios
-      .all([
-        api_aw.get(URL_BACK_GET_ARCHETYPE(id)),
-        api_aw.get(URL_BACK_GET_BANLISTS),
-        api_aw.get(URL_BACK_GET_CARD_TYPES),
-      ])
-      .then((respArr) => {
-        if (respArr[0].status === 200) {
-          setArchetype(respArr[0].data);
-
-          const archetypeCards = respArr[0]?.data?.cards;
-
-          const emptyFullDeckSchema = [
-            {
-              label: "Main Deck",
-              colorItem: "rgba(254, 183, 77, 0.15)",
-              colorText: "#E89E2E",
-              cards: [],
-            },
-            {
-              label: "Extra Deck",
-              colorItem: "rgba(219, 115, 255, 0.15)",
-              colorText: "#DB73FF",
-              cards: [],
-            },
-          ];
-
-          archetypeCards.sort(function (a, b) {
-            return (
-              cardTypes.indexOf(a?.cardType?.label) -
-              cardTypes.indexOf(b?.cardType?.label)
-            );
-          });
-
-          archetypeCards.forEach((element) => {
-            if (
-              extraDeckLabels.some((el) =>
-                element?.cardType?.label.includes(el)
-              )
-            ) {
-              emptyFullDeckSchema[1].cards.push(element);
-            } else {
-              emptyFullDeckSchema[0].cards.push(element);
-            }
-          });
-
-          setArchetypeCards(emptyFullDeckSchema);
-        }
-        if (respArr[1].status === 200) {
-          setBanlists(respArr[1].data);
-          var today = new Date();
-          var dateArray = respArr[1].data.map((date) => {
-            return new Date(date.releaseDate);
-          });
-
-          const closestBanlistIndex = closestIndexTo(today, dateArray);
-          const closestBanlistId = respArr[1].data[closestBanlistIndex].id;
-          activeBanlistId === undefined && setActiveBanlistId(closestBanlistId);
-
-          var banlistCardsOfArchetype = [];
-
-          respArr[1].data.forEach((banlist) => {
-            if (banlist.id === activeBanlistId) {
-              banlist?.cards.forEach((card) => {
-                if (Number(card?.archetype?.id) === Number(id)) {
-                  banlistCardsOfArchetype.push(card);
-                }
-              });
-            }
-          });
-          setBanlistCards(banlistCardsOfArchetype);
-        }
-        if (respArr[2].status === 200) {
-          var cardTypesOrdered = [];
-
-          respArr[2].data.forEach((cardType) => {
-            cardTypesOrdered.push(cardType.label);
-          });
-
-          setCardTypes(cardTypesOrdered);
-        }
-        setRefresh(true);
-      });
-  };
 
   useEffect(() => {
-    if (checkIfIdFromPathnameIsANumber) {
-      getAllData();
-    } else {
-      navigate(URL_FRONT_ARCHETYPES);
-    }
+    getArchetypeById(id, setArchetype);
+    getCardTypes(setCardTypes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, activeBanlistId, refresh]);
+  }, []);
 
   return (
     <div>
@@ -136,7 +30,7 @@ const Archetype = () => {
         <Header />
         <Jumbotron
           itemMainTitle={archetype.name}
-          itemSubTitle={archetype.sliderInfo}
+          itemSubTitle={archetype.slider_info}
           itemImg={archetype.jumbotronImg}
         />
         <div className="relative px-3 pb-3 sscreen:p-0 lscreen:max-w-containerSize m-auto">
@@ -156,28 +50,65 @@ const Archetype = () => {
               </div>
             )}
 
-            <div className="flex justify-between py-5">
-              <SubtitleDivider label="Toutes les cartes jouables" />
+            <div className="py-5">
+              <SubtitleDivider label="Toutes les cartes" displayDivider />
             </div>
+            {archetype?.decks?.map((deck, index) => {
+              return (
+                <div key={index}>
+                  <p
+                    className="inline-block p-2 font-bold"
+                    style={{
+                      borderRadius: "5px 5px 0px 0px",
+                      backgroundColor:
+                        deck.label === "Main Deck" ? "#fbf0e4" : "#f5e6fe",
+                      color: deck.label === "Main Deck" ? "#E89E2E" : "#DB73FF",
+                    }}
+                  >
+                    {deck.label}
+                  </p>
+                  <div
+                    className="bg-gray-100 p-4 grid grid-cols-12 gap-4 mb-4"
+                    style={{ border: "1px solid #EDEDFE" }}
+                  >
+                    {deck?.cards?.length > 0 ? (
+                      deck?.cards
+                        ?.sort((a, b) => {
+                          const cardTypeA = cardTypes?.find(
+                            (type) => type.label === a.card.card_type
+                          );
+                          const cardTypeB = cardTypes?.find(
+                            (type) => type.label === b.card.card_type
+                          );
 
-            {archetype?.cards?.length > 0 ? (
-              <div>
-                {archetypeCards.map((arch, index) => {
-                  return (
-                    arch.cards.length > 0 && (
-                      <LazyArchetype
-                        key={index}
-                        arch={arch}
-                        banlistCards={banlistCards}
-                        cardTypes={cardTypes}
-                      />
-                    )
-                  );
-                })}
-              </div>
-            ) : (
-              <ErrorText errorText="Il n'y a pas de carte dans cette archétype." />
-            )}
+                          if (cardTypeA && cardTypeB) {
+                            const numOrderComparison =
+                              cardTypeA.num_order - cardTypeB.num_order;
+                            if (numOrderComparison !== 0) {
+                              return numOrderComparison;
+                            }
+
+                            const atkA = a.card.atk;
+                            const atkB = b.card.atk;
+                            if (atkA !== atkB) {
+                              return atkB - atkA;
+                            }
+
+                            const levelA = a.card.level || 0;
+                            const levelB = b.card.level || 0;
+                            return levelB - levelA;
+                          }
+                        })
+                        ?.map((card, index) => {
+                          return <Card key={index} card={card} />;
+                        })
+                    ) : (
+                      <ErrorText errorText="Il n'y a pas de carte dans cette archétype." />
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </PageContentBlock>
       </div>

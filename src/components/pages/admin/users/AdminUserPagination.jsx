@@ -1,9 +1,17 @@
 import React from "react";
 import PaginationTableHead from "../../../generic/pagination/PaginationTableHead";
-import AdminBanlistPaginationTableBody from "../AdminBanlistPaginationTableBody";
 import AdminUserPaginationTableBody from "./AdminUserPaginationTableBody";
+import PaginationFooter from "../../../generic/pagination/PaginationFooter";
 
-const AdminUserPagination = ({ users, setRefresh }) => {
+const AdminUserPagination = ({
+  setRefresh,
+  users,
+  currentPage,
+  setPagination,
+  usersTotalCount,
+  totalPages,
+  pageSize,
+}) => {
   const tableHeadItemArray = [
     {
       colspan: "col-span-1",
@@ -13,10 +21,22 @@ const AdminUserPagination = ({ users, setRefresh }) => {
       colspan: "col-span-2",
       label: "Pseudo",
     },
-    // {
-    //   colspan: "col-span-2",
-    //   label: "Date d'application",
-    // },
+    {
+      colspan: "col-span-2",
+      label: "Email",
+    },
+    {
+      colspan: "col-span-1",
+      label: "Is Active",
+    },
+    {
+      colspan: "col-span-1",
+      label: "Is Forbidden",
+    },
+    {
+      colspan: "col-span-5",
+      label: "Actions",
+    },
   ];
 
   return (
@@ -25,18 +45,18 @@ const AdminUserPagination = ({ users, setRefresh }) => {
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <PaginationTableHead tableHeadItem={tableHeadItemArray} />
         <AdminUserPaginationTableBody
-          arrayItems={users}
-          //   numberOfCardsFromArchetypePerStatus={
-          //     numberOfCardsFromArchetypePerStatus
-          //   }
+          arrayItems={users.users}
           setRefresh={setRefresh}
         />
       </div>
-      {/* <PaginationFooter
-              pagination={pagination}
-              setPagination={setPagination}
-              itemArraySize={archetypesTotalCount}
-            /> */}
+      <PaginationFooter
+        setRefresh={setRefresh}
+        currentPage={currentPage}
+        setPagination={setPagination}
+        itemsTotalCount={usersTotalCount}
+        totalPages={totalPages}
+        pageSize={pageSize}
+      />
     </div>
   );
 };

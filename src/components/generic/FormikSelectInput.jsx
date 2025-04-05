@@ -25,14 +25,12 @@ export const FormikSelectInput = ({
           selectImg
             ? (setFieldValue(name, e.target.value), otherAction(e.target.value))
             : (deckData && otherAction(e.target.value),
-              deckData
-                ? setFieldValue(name, { id: e.target.value })
-                : setFieldValue(name, { label: e.target.value }));
+              setFieldValue(name, { id: e.target.value }));
         }}
       >
         {option &&
           option.map((op, index) => (
-            <option key={index} value={op.value}>
+            <option key={index} value={op.id}>
               {op.label}
             </option>
           ))}

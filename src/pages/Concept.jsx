@@ -49,9 +49,9 @@ const Concept = () => {
               puissance faisant d'eux des decks indestructible.
             </p>
             <div className="grid grid-cols-12 gap-4 mt-5 bg-gray-100 p-4 rounded-lg">
-              {archetypeSample.map((sample) => {
+              {archetypeSample.map((sample, index) => {
                 return (
-                  <div className="col-span-4">
+                  <div key={index} className="col-span-4">
                     <div>
                       <img
                         src={`${process.env.PUBLIC_URL}/assets/archetypeSample/${sample.imgUrl}.jpg`}

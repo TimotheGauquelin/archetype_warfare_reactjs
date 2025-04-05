@@ -1,19 +1,22 @@
 import React from "react";
 import AdminArchetypePaginationTableBody from "./AdminArchetypePaginationTableBody";
-import { toast } from "react-toastify";
 import PaginationTableHead from "../../../generic/pagination/PaginationTableHead";
 import PaginationFooter from "../../../generic/pagination/PaginationFooter";
-import api_aw from "../../../../api/api_aw";
+import {
+  deleteArchetype,
+  switchIsActive,
+  switchIsHighlighted,
+} from "../../../../services/archetype";
 
 const AdminArchetypePagination = ({
   setRefresh,
   archetypes,
-  pagination,
+  currentPage,
   setPagination,
   archetypesTotalCount,
-  displayingNumberSize,
+  totalPages,
+  pageSize,
 }) => {
-  //Items des differentes lignes du tableau
 
   const tableHeadItemArray = [
     {
@@ -58,63 +61,25 @@ const AdminArchetypePagination = ({
     },
   ];
 
-  //Rend vrai ou faux la mise en lumière d'un archétype
-
-  const toggleHighlighted = (archetypeId) => {
-    api_aw
-      .put(`/public/archetypes/${archetypeId}/switchHighlighted`)
-      .then((response) => {
-        if (response.status === 202) {
-          setRefresh(true);
-        }
-      })
-      .catch((error) => console.log(error));
-  };
-
-  //Rend vrai ou faux l'activation d'un archétype
-
-  const toggleIsActive = (archetypeId) => {
-    api_aw
-      .put(`/public/archetypes/${archetypeId}/switchIsActive`)
-      .then((response) => {
-        if (response.status === 202) {
-          setRefresh(true);
-        }
-      })
-      .catch((error) => console.log(error));
-  };
-
-  //Supprime un archetype
-
-  const deleteArchetype = (archetypeId, archetypeName) => {
-    api_aw
-      .delete(`/public/archetypes/${archetypeId}`)
-      .then((response) => {
-        if (response.status === 202) {
-          setRefresh(true);
-          toast.success(`Vous avez supprimé l'archetype ${archetypeName}`);
-        }
-      })
-      .catch((error) => console.log(error));
-  };
-
   return (
     <div className="">
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <PaginationTableHead tableHeadItem={tableHeadItemArray} />
         <AdminArchetypePaginationTableBody
-          arrayItems={archetypes}
-          toggleHighlighted={toggleHighlighted}
-          toggleIsActive={toggleIsActive}
+          arrayItems={archetypes?.archetypes}
+          switchIsHighlighted={switchIsHighlighted}
+          switchIsActive={switchIsActive}
           deleteArchetype={deleteArchetype}
+          setRefresh={setRefresh}
         />
       </div>
       <PaginationFooter
-        pagination={pagination}
-        setPagination={setPagination}
         setRefresh={setRefresh}
-        itemArraySize={archetypesTotalCount}
-        displayingNumberSize={displayingNumberSize}
+        currentPage={currentPage}
+        setPagination={setPagination}
+        itemsTotalCount={archetypesTotalCount}
+        totalPages={totalPages}
+        pageSize={pageSize}
       />
     </div>
   );

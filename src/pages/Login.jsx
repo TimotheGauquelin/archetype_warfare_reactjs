@@ -1,106 +1,89 @@
 /* eslint-disable no-unused-vars */
 
-import React from "react";
-import { Field, Form, Formik } from "formik";
+import React, { useContext } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { URL_FRONT_PASSWORD_LOST } from "../constant/urlsFront";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Loader from "../components/generic/Loader";
-import { login, register } from "../redux/apiCall/user";
-import { useDispatch, useSelector } from "react-redux";
-import { FormikPasswordInput } from "../components/formik/FormikPasswordInput";
-import { FormikStringInput } from "../components/formik/FormikStringInput";
-import FormikBlockWithLabel from "../components/formik/FormikBlockWithLabel";
-import { loginOrRegisterAnAccount } from "../constant/formikInitialValues";
+import { InputPassword } from "../components/generic/form/InputPassword.jsx";
 import Button from "../components/generic/Button";
-import authYupSchema from "../yup/auth.js";
+import { Input } from "../components/generic/form/Input.jsx";
+import { logIn } from "../services/auth.js";
+import AuthContext from "../context/AuthContext.js";
+import ErrorText from "../components/generic/ErrorText.jsx";
+import api_aw from "../api/api_aw.jsx";
+import { SiDiscord } from "react-icons/si";
+import ButtonWithIcon from "../components/generic/ButtonWithIcon.jsx";
+import SubtitleDivider from "../components/generic/SubtitleDivider.jsx";
 
 const Login = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [isLoginPage, setIsLoginPage] = useState(true);
-  const [onLoading, setOnLoading] = useState(false);
+  const [log, setLog] = useState({
+    email: "",
+    password: "",
+  });
 
-  const { isFetching, error } = useSelector((state) => state.user);
+  const [error, setError] = useState("");
 
-  let registerAccountSchema = authYupSchema.registerAccountSchema;
-  let loginAccountSchema = authYupSchema.loginAccountSchema;
-
-  const onSubmit = (values) => {
-    const registerAccountSchema = {
-      username: values.username,
-      password: values.password,
-      email: values.email,
-    };
-
-    isLoginPage
-      ? login(dispatch, registerAccountSchema, navigate)
-      : register(setOnLoading, setIsLoginPage, registerAccountSchema);
-  };
+  const { setAuthUser } = useContext(AuthContext);
 
   return (
     <div className="bg-graybackground w-screen h-screen fixed left-0 top-0 flex justify-center items-center">
       <div
-        className={`bg-white w-[300px] max-w-[300px] cardShadow rounded-xl flex flex-col p-6`}
+        className={`bg-white w-[400px] max-w-[400px] cardShadow rounded-xl flex flex-col p-6`}
       >
-        <Formik
-          initialValues={loginOrRegisterAnAccount}
-          validationSchema={
-            isLoginPage ? loginAccountSchema : registerAccountSchema
-          }
-          onSubmit={(values) => onSubmit(values)}
+        <div>
+          <h3 className="text-2xl text-center mb-4">Connectez-vous</h3>
+
+          <Input
+            label="Email"
+            required
+            inputType="text"
+            inputName="email"
+            colSpanWidth="12"
+            attribute="email"
+            setAction={setLog}
+          />
+
+          <InputPassword
+            label="Password"
+            required
+            colSpanWidth="12"
+            attribute="password"
+            setAction={setLog}
+          />
+        </div>
+        {/* {isFetching || onLoading ? (
+          <Loader />
+        ) : ( */}
+        {error && <ErrorText errorText={error} />}
+
+        <Button
+          buttonText="Se connecter"
+          className="bg-black text-white w-full p-2 mb-2 rounded-md"
+          // disabled={isFetching || onLoading}
+          action={() => {
+            logIn(log, setAuthUser, navigate, setError);
+          }}
+        />
+        <div className="flex-grow h-[1px] bg-gray-300"> </div>
+        <ButtonWithIcon
+          className="flex justify-center items-center my-2 text-white bg-[#7984F5] hover:bg-[#5B66C3] border border-gray-300 rounded-md shadow-md px-6 py-2 text-sm font-medium"
+          action={() => {
+            api_aw
+              .get("/authenticate/discord/redirect")
+              .then((response) => {
+                window.location.href = response.data.url;
+                // window.location.href = `https://discord.com/oauth2/authorize?client_id=1285141964190384128&scope=bot&permissions=8&guild_id=921848766913450004`;
+              })
+              .catch((error) => setError(error.response.data.message));
+          }}
         >
-          {() => (
-            <Form>
-              <div>
-                <h3 className="text-2xl text-center mb-4">
-                  {isLoginPage ? "Connectez-vous" : "Inscrivez-vous"}
-                </h3>
-
-                {!isLoginPage && (
-                  <FormikBlockWithLabel label="Email" requiredInput>
-                    <Field
-                      name="email"
-                      component={FormikStringInput}
-                      type="email"
-                    />
-                  </FormikBlockWithLabel>
-                )}
-
-                <FormikBlockWithLabel label="Pseudo" requiredInput>
-                  <Field name="username" component={FormikStringInput} />
-                </FormikBlockWithLabel>
-                <FormikBlockWithLabel label="Mot de Passe" requiredInput>
-                  <Field name="password" component={FormikPasswordInput} />
-                </FormikBlockWithLabel>
-                {!isLoginPage && (
-                  <FormikBlockWithLabel
-                    label="Confirmation de Mot de Passe"
-                    requiredInput
-                  >
-                    <Field
-                      name="passwordConfirmation"
-                      component={FormikPasswordInput}
-                    />
-                  </FormikBlockWithLabel>
-                )}
-              </div>
-              {isFetching || onLoading ? (
-                <Loader />
-              ) : (
-                <Button
-                  buttonText={isLoginPage ? "Se connecter" : "S'inscrire"}
-                  className="bg-black text-white w-full p-2 mb-2 rounded"
-                  disabled={isFetching || onLoading}
-                  submit
-                />
-              )}
-            </Form>
-          )}
-        </Formik>
+          <SiDiscord />
+          <span className="ml-2">Continuer avec Discord</span>
+        </ButtonWithIcon>
 
         <div className="text-center ">
           <Button
@@ -108,15 +91,9 @@ const Login = () => {
             className="text-sm text-blue-900 cursor-pointer hover:underline"
             action={() => navigate(URL_FRONT_PASSWORD_LOST)}
           />
-          <p className="font-bold">Vous n'êtes pas inscrit ?</p>
-          <Button
-            buttonText={isLoginPage ? "Inscrivez-vous" : "Connectez-vous"}
-            className="text-sm text-blue-900 cursor-pointer hover:underline"
-            action={() => setIsLoginPage(!isLoginPage)}
-          />
         </div>
+        <ToastContainer />
       </div>
-      <ToastContainer />
     </div>
   );
 };

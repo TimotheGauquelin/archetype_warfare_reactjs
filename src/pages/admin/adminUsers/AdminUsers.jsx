@@ -1,38 +1,42 @@
 import React, { useEffect, useState } from "react";
-import api_aw from "../../../api/api_aw";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../../../components/pages/admin/AdminStructure";
 import AdminUserPagination from "../../../components/pages/admin/users/AdminUserPagination";
-import { URL_BACK_GET_ALL_USERS } from "../../../constant/urlsBack";
+import { searchUsers } from "../../../services/user";
+import { URL_FRONT_ADMIN_USER_ADD } from "../../../constant/urlsFront";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [refresh, setRefresh] = useState(false);
-
-  const getUsers = () => {
-    api_aw.get(URL_BACK_GET_ALL_USERS).then((response) => {
-      if (response.status === 200) {
-        setUsers(response.data);
-      }
-    });
-  };
+  const [pagination, setPagination] = useState(1);
+  const [pageSize] = useState(10);
+  const [criteria, setCriteria] = useState({
+    username: "",
+  });
 
   useEffect(() => {
-    getUsers();
+    searchUsers(pageSize, pagination, criteria, setUsers);
     setRefresh(false);
-  }, [refresh]);
-
-  console.log(users);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refresh, criteria]);
 
   return (
     <AdminStructure>
       <AdminBodyHeader
         label="Utilisateurs"
         catchphrase="Interagissez avec vos invités"
-        buttonUrl="/admin/users/form"
+        buttonUrl={URL_FRONT_ADMIN_USER_ADD}
         buttonLabel="Ajouter une utilisateur"
       />
-      <AdminUserPagination users={users} setRefresh={setRefresh} />
+      <AdminUserPagination
+        setRefresh={setRefresh}
+        currentPage={users.currentPage}
+        users={users}
+        setPagination={setPagination}
+        usersTotalCount={users?.totalItems}
+        totalPages={users?.totalPages}
+        pageSize={users.pageSize}
+      />
     </AdminStructure>
   );
 };

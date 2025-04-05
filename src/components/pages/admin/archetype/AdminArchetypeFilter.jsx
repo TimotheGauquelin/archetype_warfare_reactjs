@@ -1,20 +1,18 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-toastify";
-import api_aw from "../../../../api/api_aw";
+import { getEras } from "../../../../services/era";
+import { getSummonMechanics } from "../../../../services/summonmechanic";
+import { getTypes } from "../../../../services/type";
+import { getAttributes } from "../../../../services/attribute";
+import {
+  resetPositionOfAllArchetypes,
+  switchAllArchetypesToIsUnactive,
+  switchHighlightedOfAllArchetypesToFalse,
+} from "../../../../services/archetype";
 
 const AdminArchetypeFilter = ({
   resetAllFilters,
-  criteriaName,
-  setCriteriaName,
-  criteriaEra,
-  setCriteriaEra,
-  criteriaAttribute,
-  setCriteriaAttribute,
-  criteriaType,
-  setCriteriaType,
-  criteriaSummonMechanic,
-  setCriteriaSummonMechanic,
+  criteria,
+  setCriteria,
   setRefresh,
 }) => {
   const [eras, setEras] = useState([]);
@@ -23,72 +21,11 @@ const AdminArchetypeFilter = ({
   const [summonMechanics, setSummonMechanics] = useState([]);
   const [displayGeneralActions, setDisplayGeneralActions] = useState(false);
 
-  const getAllGenericData = () => {
-    axios
-      .all([
-        api_aw.get(`/public/eras`),
-        api_aw.get(`/public/attributes`),
-        api_aw.get(`/public/types`),
-        api_aw.get(`/public/summonMechanics`),
-      ])
-      .then((respArr) => {
-        if (respArr[0].status === 200) {
-          setEras(respArr[0].data);
-        }
-        if (respArr[1].status === 200) {
-          setAttributes(respArr[1].data);
-        }
-        if (respArr[2].status === 200) {
-          setTypes(respArr[2].data);
-        }
-        if (respArr[3].status === 200) {
-          setSummonMechanics(respArr[3].data);
-        }
-      });
-  };
-
-  const switchHighlightedOfAllArchetypesToFalse = () => {
-    api_aw
-      .put(`/public/archetypes/switchHighlightedOfAllArchetypesToFalse`)
-      .then((response) => {
-        if (response.status === 202) {
-          setRefresh(true);
-          toast.success(
-            `Vous avez mis tous les archétypes en mode non-affiché dans le slider.`
-          );
-        }
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const switchAllArchetypesToIsUnactive = () => {
-    api_aw
-      .put(`/public/archetypes/switchAllArchetypesToIsUnactive`)
-      .then((response) => {
-        if (response.status === 202) {
-          setRefresh(true);
-          toast.success(`Vous avez mis tous les archétypes en mode inactif.`);
-        }
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const resetPositionOfAllArchetypes = () => {
-    api_aw
-      .put(`/public/archetypes/resetPopularityOfAllArchetypes`)
-      .then((response) => {
-        if (response.status === 202) {
-          setRefresh(true);
-          toast.success(
-            `Vous avez mis à zéro la popularité de tous les archetypes.`
-          );
-        }
-      })
-      .catch((error) => console.log(error));
-  };
-
   useEffect(() => {
-    getAllGenericData();
+    getEras(setEras);
+    getSummonMechanics(setSummonMechanics);
+    getTypes(setTypes);
+    getAttributes(setAttributes);
   }, []);
 
   return (
@@ -110,70 +47,93 @@ const AdminArchetypeFilter = ({
             className="col-span-2 p-2 rounded"
             placeholder="Quel archetype recherchez-vous ?"
             type="text"
-            value={criteriaName}
+            value={criteria.name}
             onChange={(e) => {
-              setCriteriaName(e.target.value);
+              setCriteria((prevState) => ({
+                ...prevState,
+                name: e.target.value,
+              }));
             }}
           />
           <select
-            value={criteriaEra}
+            value={criteria.era}
             className="col-span-2 p-2 rounded"
-            onChange={(e) => setCriteriaEra(e.target.value)}
+            onChange={(e) =>
+              setCriteria((prevState) => ({
+                ...prevState,
+                era: e.target.value,
+              }))
+            }
           >
             <option value="" defaultChecked>
               -- Aucune Ere --
             </option>
             {eras.map((era, index) => {
               return (
-                <option key={index} value={era.label}>
+                <option key={index} value={era.id}>
                   {era.label}
                 </option>
               );
             })}
           </select>
           <select
-            value={criteriaAttribute}
+            value={criteria.attribute}
             className="col-span-2 p-2 rounded"
-            onChange={(e) => setCriteriaAttribute(e.target.value)}
+            onChange={(e) =>
+              setCriteria((prevState) => ({
+                ...prevState,
+                attribute: e.target.value,
+              }))
+            }
           >
             <option value="" defaultChecked>
               -- Aucun Attribut --
             </option>
             {attributes.map((attribute, index) => {
               return (
-                <option key={index} value={attribute.label}>
+                <option key={index} value={attribute.id}>
                   {attribute.label}
                 </option>
               );
             })}
           </select>
           <select
-            value={criteriaType}
+            value={criteria.type}
             className="col-span-2 p-2 rounded"
-            onChange={(e) => setCriteriaType(e.target.value)}
+            onChange={(e) =>
+              setCriteria((prevState) => ({
+                ...prevState,
+                type: e.target.value,
+              }))
+            }
           >
             <option value="" defaultChecked>
               -- Aucun Type --
             </option>
             {types.map((type, index) => {
               return (
-                <option key={index} value={type.label}>
+                <option key={index} value={type.id}>
                   {type.label}
                 </option>
               );
             })}
           </select>
           <select
-            value={criteriaSummonMechanic}
+            value={criteria.summonmechanic}
             className="col-span-2 p-2 rounded"
-            onChange={(e) => setCriteriaSummonMechanic(e.target.value)}
+            onChange={(e) =>
+              setCriteria((prevState) => ({
+                ...prevState,
+                summonmechanic: e.target.value,
+              }))
+            }
           >
             <option value="" defaultChecked>
               -- Aucune Méthode d'invocation --
             </option>
             {summonMechanics.map((sm, index) => {
               return (
-                <option key={index} value={sm.label}>
+                <option key={index} value={sm.id}>
                   {sm.label}
                 </option>
               );
@@ -199,7 +159,7 @@ const AdminArchetypeFilter = ({
               <button
                 className="bg-red-200 p-1 ml-2 rounded text-white hover:bg-red-300"
                 onClick={() => {
-                  switchHighlightedOfAllArchetypesToFalse();
+                  switchHighlightedOfAllArchetypesToFalse(setRefresh);
                 }}
               >
                 Activer !
@@ -212,7 +172,7 @@ const AdminArchetypeFilter = ({
               <button
                 className="bg-red-200 p-1 ml-2 rounded text-white hover:bg-red-300"
                 onClick={() => {
-                  switchAllArchetypesToIsUnactive();
+                  switchAllArchetypesToIsUnactive(setRefresh);
                 }}
               >
                 Activer !
@@ -225,7 +185,7 @@ const AdminArchetypeFilter = ({
               <button
                 className="bg-red-200 p-1 ml-2 rounded text-white hover:bg-red-300"
                 onClick={() => {
-                  resetPositionOfAllArchetypes();
+                  resetPositionOfAllArchetypes(setRefresh);
                 }}
               >
                 Activer !

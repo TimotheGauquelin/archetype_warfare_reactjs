@@ -3,27 +3,28 @@ import "../../../styles/components/page/admin/AdminSideBar.scss";
 import React from "react";
 import { FaHome } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
+import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ADMIN_BANLISTS, URL_FRONT_ADMIN_CARDS, URL_FRONT_ADMIN_HOME } from "../../../constant/urlsFront";
 
 const sideBarCategories = [
   {
     title: "Accueil",
     icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-    url: "/admin/home",
+    url: URL_FRONT_ADMIN_HOME,
   },
   {
     title: "Cartes",
     icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-    url: "/admin/cards",
+    url: URL_FRONT_ADMIN_CARDS,
   },
   {
     title: "Archetypes",
     icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-    url: "/admin/archetypes",
+    url: URL_FRONT_ADMIN_ARCHETYPES,
   },
   {
     title: "Banlists",
     icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-    url: "/admin/banlists",
+    url: URL_FRONT_ADMIN_BANLISTS,
   },
   {
     title: "Utilisateurs",
@@ -52,7 +53,7 @@ const AdminSideBar = ({ displayedNavbar }) => {
         <nav className="flex flex-col mx-4 my-6 space-y-4">
           {sideBarCategories.map((category, index) => {
             return (
-              <div>
+              <div key={index}>
                 <Link
                   key={category.title + index}
                   to={category.url}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Header from "../../components/generic/header/Header";
 import Navbar from "../../components/pages/userProfil/Navbar";
 import ProfilTemplate from "../../components/pages/userProfil/ProfilTemplate";
@@ -9,26 +9,16 @@ import api_aw from "../../api/api_aw";
 import { useSelector } from "react-redux";
 import { URL_BACK_GET_USER } from "../../constant/urlsBack";
 import { URL_FRONT_HOME } from "../../constant/urlsFront";
+import AuthContext from "../../context/AuthContext";
+import { deleteUser } from "../../services/user";
 
 const MyProfil = () => {
-  const { token } = useSelector((state) => state.user);
-  var decoded = jwt_decode(token);
-  const history = useNavigate();
-
   const [displayDeletePopUp, setDisplayDeletePopUp] = useState(false);
+  const navigate = useNavigate()
 
-  const deleteMyAccount = () => {
-    api_aw
-      .delete(URL_BACK_GET_USER(decoded.idUser))
-      .then((response) => {
-        if (response.status === 200) {
-          setDisplayDeletePopUp(false);
-          window.localStorage.removeItem("token");
-          history(URL_FRONT_HOME);
-        }
-      })
-      .then((error) => console.log(error));
-  };
+  const { authUser } = useContext(AuthContext)
+
+  console.log(authUser.roles);
 
   return (
     <div>
@@ -38,10 +28,10 @@ const MyProfil = () => {
         <div className="flex items-center">
           <h2>Role: </h2>
           <div className="flex flex-row flex-wrap">
-            {decoded?.authorities.map((authority, index) => {
+            {authUser?.roles?.map((role, index) => {
               return (
                 <div key={index} className="p-1 m-1 bg-green-100 rounded-md">
-                  {authority}
+                  {role}
                 </div>
               );
             })}
@@ -56,7 +46,7 @@ const MyProfil = () => {
             action={() => setDisplayDeletePopUp(true)}
           />
         </div>
-        {displayDeletePopUp === true && (
+         {displayDeletePopUp === true && (
           <div
             style={{ top: "70px", left: "40%" }}
             className="absolute shadow-lg bg-blue-200 p-5 rounded-lg"
@@ -66,7 +56,7 @@ const MyProfil = () => {
               <Button
                 className="col-span-6 bg-green-400 hover:bg-green-500 p-2 rounded text-white font-bold cursor-pointer"
                 buttonText="Oui"
-                action={() => deleteMyAccount()}
+                action={() => deleteUser(authUser.id, setDisplayDeletePopUp, navigate)}
               />
               <Button
                 className="col-span-6 bg-red-400 hover:bg-red-500 p-2 rounded text-white font-bold cursor-pointer"

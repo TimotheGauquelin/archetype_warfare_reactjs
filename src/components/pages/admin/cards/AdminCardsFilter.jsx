@@ -1,25 +1,11 @@
 import React from "react";
 
 const AdminCardsFilter = ({
-  pagination,
   setPagination,
-  criteriaName,
-  setCriteriaName,
-  criteriaAtk,
-  setCriteriaAtk,
-  criteriaDef,
-  setCriteriaDef,
-  criteriaLevel,
-  setCriteriaLevel,
   cardTypes,
-  criteriaCardTypes,
-  setCriteriaCardTypes,
-  criteriaMonsterType,
-  setCriteriaMonsterType,
-  criteriaMonsterAttribute,
-  setCriteriaMonsterAttribute,
-  monsterAttributes,
-  monsterTypes,
+  attributes,
+  criteria,
+  setCriteria,
   resetAllFilters,
 }) => {
   return (
@@ -35,22 +21,106 @@ const AdminCardsFilter = ({
           Reset les filtres
         </p>{" "}
       </div>
-      <div className="flex justify-between items-center">
+      <div className="grid grid-cols-12 gap-2">
         <input
-          className="w-1/3 p-2 rounded"
+          className="col-span-2 p-2 rounded"
           placeholder="Quelle carte recherchez-vous ?"
           type="text"
-          value={criteriaName}
-          onChange={(e) => {
-            setCriteriaName(e.target.value);
-          }}
+          value={criteria.name}
+            onChange={(e) => {
+              setCriteria((prevState) => ({
+                ...prevState,
+                name: e.target.value,
+              }));
+              setPagination(1)
+            }}
+        />
+        <input
+          className="col-span-1 p-2 rounded"
+          placeholder="Level"
+          type="number"
+          value={criteria.level}
+            onChange={(e) => {
+              setCriteria((prevState) => ({
+                ...prevState,
+                level: e.target.value,
+              }));
+              setPagination(1)
+            }}
+        />
+        <input
+          className="col-span-1 p-2 rounded"
+          placeholder="Atk <"
+          type="number"
+          step="50"
+          min="0"
+          max={5000}
+          value={criteria.min_atk}
+            onChange={(e) => {
+              setCriteria((prevState) => ({
+                ...prevState,
+                min_atk: e.target.value,
+              }));
+              setPagination(1)
+            }}
+        />
+        <input
+          className="col-span-1 p-2 rounded"
+          placeholder="Atk >"
+          type="number"
+          step="50"
+          min="0"
+          max="5000"
+          value={criteria.max_atk}
+            onChange={(e) => {
+              setCriteria((prevState) => ({
+                ...prevState,
+                max_atk: e.target.value,
+              }));
+              setPagination(1)
+            }}
+        />
+        <input
+          className="col-span-1 p-2 rounded"
+          placeholder="Def <"
+          type="number"
+          step="50"
+          min="0"
+          max={5000}
+          value={criteria.min_def}
+            onChange={(e) => {
+              setCriteria((prevState) => ({
+                ...prevState,
+                min_def: e.target.value,
+              }));
+              setPagination(1)
+            }}
+        />
+        <input
+          className="col-span-1 p-2 rounded"
+          placeholder="Def >"
+          type="number"
+          step="50"
+          min="0"
+          max="5000"
+          value={criteria.max_def}
+            onChange={(e) => {
+              setCriteria((prevState) => ({
+                ...prevState,
+                max_def: e.target.value,
+              }));
+              setPagination(1)
+            }}
         />
         <select
-          value={criteriaCardTypes}
-          className="w-1/3 p-2 rounded"
+          value={criteria.card_type}
+          className="col-span-2 p-2 rounded"
           onChange={(e) => {
-            setCriteriaCardTypes(e.target.value);
-            setPagination(0);
+            setCriteria((prevState) => ({
+              ...prevState,
+              card_type: e.target.value,
+            }));
+            setPagination(1)
           }}
         >
           <option value="" defaultChecked>
@@ -64,87 +134,29 @@ const AdminCardsFilter = ({
             );
           })}
         </select>
+        <select
+          value={criteria.attribute}
+          className="col-span-2 p-2 rounded"
+          onChange={(e) => {
+            setCriteria((prevState) => ({
+              ...prevState,
+              attribute: e.target.value,
+            }));
+            setPagination(1)
+          }}
+        >
+          <option value="" defaultChecked>
+            -- Aucun Attribut --
+          </option>
+          {attributes.map((attribute, index) => {
+            return (
+              <option key={index} value={attribute.label}>
+                {attribute.label}
+              </option>
+            );
+          })}
+        </select>
       </div>
-      {criteriaCardTypes.includes("Monster") && (
-        <div className="grid grid-cols-12 gap-2 pt-2">
-          <input
-            className="col-span-2 p-2 rounded"
-            placeholder="Quelle ATK ?"
-            type="number"
-            min="0"
-            value={criteriaAtk}
-            onChange={(e) => {
-              setCriteriaAtk(e.target.value);
-              setPagination(0);
-            }}
-          />
-          <input
-            className="col-span-2 p-2 rounded"
-            placeholder="Quelle DEF ?"
-            type="number"
-            min="0"
-            value={criteriaDef}
-            onChange={(e) => {
-              setCriteriaDef(e.target.value);
-              setPagination(0);
-            }}
-          />
-          <input
-            className="col-span-2 p-2 rounded"
-            placeholder="Quel niveau ?"
-            type="number"
-            min="0"
-            max="12"
-            value={criteriaLevel}
-            onChange={(e) => {
-              setCriteriaLevel(e.target.value);
-              setPagination(0);
-            }}
-          />
-          <select
-            value={criteriaMonsterType}
-            className="col-span-2 p-2 rounded"
-            onChange={(e) => {
-              setCriteriaMonsterType(e.target.value);
-              setPagination(0);
-            }}
-          >
-            <option value="" defaultChecked>
-              -- Aucun Type --
-            </option>
-            {monsterTypes
-              ?.sort((a, b) => a.label.localeCompare(b.label))
-              .map((monsterType, index) => {
-                return (
-                  <option key={index} value={monsterType.label}>
-                    {monsterType.label}
-                  </option>
-                );
-              })}
-          </select>
-          <select
-            value={criteriaMonsterAttribute}
-            className="col-span-2 p-2 rounded"
-            onChange={(e) => {
-              setCriteriaMonsterAttribute(e.target.value);
-              setPagination(0);
-            }}
-          >
-            <option value="" defaultChecked>
-              -- Aucun Attribut --
-            </option>
-            {monsterAttributes
-              ?.sort((a, b) => a.label.localeCompare(b.label))
-              .map((monsterAttribute, index) => {
-                return (
-                  <option key={index} value={monsterAttribute.label}>
-                    {monsterAttribute.label}
-                  </option>
-                );
-              })}
-          </select>
-        </div>
-      )}
     </div>
   );
 };

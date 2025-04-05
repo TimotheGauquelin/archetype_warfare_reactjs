@@ -1,36 +1,35 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 import NavSideItem from "./NavSideItem";
-import jwt_decode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../../redux/apiCall/user";
 import {
+  URL_FRONT_ADMIN_HOME,
   URL_FRONT_MY_PROFIL,
   URL_FRONT_MY_TOURNAMENTS,
 } from "../../../constant/urlsFront";
+import AuthContext from "../../../context/AuthContext";
+import { ROLE_ADMIN } from "../../../utils/const/rolesConst";
 
 const ProfilTemplate = ({ children }) => {
   const [displayedNavBar, setDisplayedNavBar] = useState(true);
-  const { token } = useSelector((state) => state.user);
-  var decoded = jwt_decode(token);
+  const { authUser } = useContext(AuthContext);
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const unlog = () => {
-    logout(dispatch, navigate);
-  };
+  // const unlog = () => {
+  //   logout(dispatch, navigate);
+  // };
 
   const navSideItems = [
     {
       url: URL_FRONT_MY_PROFIL,
       label: "Mon Profil",
     },
-    {
-      url: URL_FRONT_MY_TOURNAMENTS,
-      label: "Mes Tournois",
-    },
+    // {
+    //   url: URL_FRONT_MY_TOURNAMENTS,
+    //   label: "Mes Tournois",
+    // },
     // {
     //   url: "/my-decks",
     //   label: "Mes Decks",
@@ -68,15 +67,15 @@ const ProfilTemplate = ({ children }) => {
               );
             })}
           </ul>
-          {decoded?.authorities?.includes("ROLE_ADMIN") && (
+          {authUser?.roles.includes(ROLE_ADMIN) && (
             <ul>
-              <NavSideItem url="/admin/home" label="Panneau Admin" />
+              <NavSideItem url={URL_FRONT_ADMIN_HOME} label="Panneau Admin" />
             </ul>
           )}
           <ul
-            onClick={() => {
-              unlog();
-            }}
+          // onClick={() => {
+          //   unlog();
+          // }}
           >
             <NavSideItem url="/deconnexion" label="Deconnexion" />
           </ul>

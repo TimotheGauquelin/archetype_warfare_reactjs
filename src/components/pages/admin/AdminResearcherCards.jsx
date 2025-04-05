@@ -1,124 +1,126 @@
 import React from "react";
-
-import { toast } from "react-toastify";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
 const AdminResearcherCards = ({
   researchedCards,
-  pagination,
-  setPagination,
-  researcherLabel,
-  setResearchedCardsLabel,
-  name,
-  banlist,
-  setFieldValue,
-  archetypeCards,
-  setArchetypeCards,
+  setPage,
+  researchName,
+  setResearchName,
   increasePage,
   decreasePage,
-  researchedCardsLength,
-  setCardsRefresh,
+  currentPage,
+  totalPages,
+  newArchetype,
+  setNewArchetype,
 }) => {
   return (
     <div className="bg-gray-400 col-span-12 ml-1 p-3 rounded">
       <div className="grid grid-cols-12 gap-2">
         <input
-          className={`w-full p-1 ${banlist ? `col-span-12` : `col-span-8`}`}
+          className={`w-full p-1 col-span-8`}
+          value={researchName}
+          // className={`w-full p-1 ${banlist ? `col-span-12` : `col-span-8`}`}
           type="text"
           placeholder="Quelle carte recherchez-vous ?"
           onChange={(e) => {
-            setResearchedCardsLabel(e.target.value);
-            setPagination(0);
+            setResearchName(e.target.value);
+            setPage(1);
           }}
         />
-        {!banlist && (
-          <div
-            className="bg-yellow-300 hover:bg-yellow-400 col-span-4 rounded text-white font-bold text-center cursor-pointer"
-            onClick={() => {
-              var allCards = [];
-              researchedCards?.forEach((card, index) => {
-                const findex = archetypeCards?.find(
-                  (archetypeCard) => archetypeCard?.id === card.id
-                );
-                if (!findex) {
-                  allCards.push(card);
-                }
-              });
+        <div
+          className="bg-yellow-300 hover:bg-yellow-400 shadow-md col-span-4 rounded text-white font-bold text-center cursor-pointer"
+          onClick={() => {
+            var allCards = [];
+            researchedCards.cards.forEach((card, index) => {
+              card = {
+                card: card,
+                explanation_text: "",
+                card_status: { id: 4 },
+                banlist_id: 1,
+              };
 
-              setArchetypeCards([...archetypeCards, ...allCards]);
-              setFieldValue(name, [...archetypeCards, ...allCards]);
-              toast.success(
-                "Vous avez ajouté toutes les cartes de la selection !"
+              const isInsideArchetype = newArchetype.cards.some(
+                (naCard) => card.card.id === naCard.card.id
               );
-            }}
-          >
-            Ajouter tout
-          </div>
-        )}
+              // card = {
+              //   ...card,
+              //   explanation_text: "",
+              //   card_status_id: 4,
+              //   banlist_id: 1,
+              // };
+
+              // const isInsideArchetype = newArchetype.cards.some(
+              //   (naCard) => card.id === naCard.id
+              // );
+
+              if (!isInsideArchetype) {
+                allCards.push(card);
+              }
+            });
+
+            setNewArchetype((prevState) => ({
+              ...prevState,
+              cards: [...prevState.cards, ...allCards],
+            }));
+            // toast.success(
+            //   "Vous avez ajouté toutes les cartes de la selection !"
+            // );
+          }}
+        >
+          Ajouter tout
+        </div>
       </div>
       <div
         className="overflow-y-auto bg-white grid grid-cols-12 mt-2"
         style={{ height: "400px" }}
       >
-        {researchedCards?.map((card, index) => {
-          const findex = banlist
-            ? archetypeCards?.cards?.find(
-                (banlistCard) => banlistCard?.card?.id === card.id
-              )
-            : archetypeCards?.find(
-                (archetypeCard) => archetypeCard?.id === card.id
-              );
+        {researchedCards?.cards?.map((card, index) => {
+          /*  card = {
+            ...card,
+            explanation_text: "",
+            card_status_id: 4,
+            banlist_id: 1,
+          };
 
-          const insideArchetype = banlist
-            ? ""
-            : archetypeCards?.cards?.find(
-                (ac) => ac?.card?.id === card.id && ac.archetype !== null
-              );
+          const isInsideArchetype = newArchetype.cards.some(
+            (naCard) => card.id === naCard.id
+          ); */
+
+          card = {
+            card: card,
+            explanation_text: "",
+            card_status: { id: 4 },
+            banlist_id: 1,
+          };
+
+          const isInsideArchetype = newArchetype.cards.some(
+            (naCard) => card.card.id === naCard.card.id
+          );
 
           return (
-            <div className="col-span-4 p-1 relative" key={index}>
+            <div className="col-span-3 p-1 relative" key={index}>
               <img
                 className={` hover:saturate-150  ${
-                  findex ? "grayscale" : "cursor-pointer"
-                } ${insideArchetype && "sepia"}`}
-                src={`${card?.imageUrl}`}
+                  isInsideArchetype ? "grayscale" : "cursor-pointer"
+                }`}
+                src={`${card?.card.img_url}`}
                 alt=""
-                onClick={() => {
-                  if (insideArchetype) {
-                    toast.error(
-                      `Deja dans l'archetype ${insideArchetype?.archetype?.name}`
-                    );
-                  }
-                  if (!findex && !insideArchetype) {
-                    console.log(card);
-                    // eslint-disable-next-line no-unused-expressions
-                    banlist
-                      ? (archetypeCards?.cards.push({
-                          archetype: null,
-                          card: card,
-                          cardStatus: { label: "Interdit" },
-                          explanationText: "Aucune explication",
-                        }),
-                        console.log(archetypeCards),
-                        setArchetypeCards(archetypeCards),
-                        setCardsRefresh(true))
-                      : (setArchetypeCards([...archetypeCards, card]),
-                        setFieldValue(name, [...archetypeCards, card]));
-                  } else if (findex && !insideArchetype) {
-                    toast.error(
-                      `Déjà dans ${banlist ? "la banlist" : "l'archétype"}`
-                    );
-                  }
-                }}
+                onClick={() =>
+                  !isInsideArchetype &&
+                  setNewArchetype((prevState) => ({
+                    ...prevState,
+                    cards: [...prevState.cards, card],
+                  }))
+                }
               />
-              {insideArchetype && (
+              {/* {insideArchetype && (
                 <p
                   style={{ fontSize: "8px", padding: "2px" }}
                   className="absolute top-20 left-0 text-center w-full text-sm bg-yellow-500 text-white rounded"
                 >
                   {insideArchetype?.archetype?.name}
                 </p>
-              )}
+              )} */}
             </div>
           );
         })}
@@ -126,14 +128,13 @@ const AdminResearcherCards = ({
 
       <div className="flex justify-around items-center">
         <FaAngleLeft
-          className={`h-8 cursor-pointer ${pagination < 1 && "invisible"}`}
+          className={`h-8 cursor-pointer ${currentPage <= 1 && "invisible"}`}
           onClick={() => decreasePage()}
         />
-        <p>{pagination + 1}</p>
-
+        <p>{currentPage}</p>
         <FaAngleRight
           className={`h-8 cursor-pointer ${
-            pagination >= researchedCardsLength / 20 - 1 && "invisible"
+            currentPage >= totalPages && "invisible"
           }`}
           onClick={() => {
             increasePage();

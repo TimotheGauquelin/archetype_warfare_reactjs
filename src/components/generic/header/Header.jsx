@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { memo, useContext, useState } from "react";
 import { BsPerson } from "react-icons/bs";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -7,12 +7,12 @@ import {
   URL_FRONT_MY_PROFIL,
 } from "../../../constant/urlsFront";
 import { FaTimes, FaBars } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import AuthContext from "../../../context/AuthContext";
 
-const Header = () => {
+const HeaderMemo = memo(function Header() {
   const [displayNav, setDisplayNav] = useState(false);
   const location = useLocation();
-  const { token } = useSelector((state) => state.user);
+  const { authUser } = useContext(AuthContext);
 
   const navBarComponent = [
     {
@@ -27,10 +27,10 @@ const Header = () => {
       title: "Banlist",
       url: "/banlist",
     },
-    {
-      title: "Tournois",
-      url: "/tournaments",
-    },
+    // {
+    //   title: "Tournois",
+    //   url: "/tournaments",
+    // },
   ];
 
   const url = location.pathname;
@@ -68,11 +68,15 @@ const Header = () => {
           </ul>
         </div>
         <div className="hidden lscreen:flex lscreen:justify-end">
-          <Link to={token ? URL_FRONT_MY_PROFIL : URL_FRONT_LOGIN}>
+          <Link
+            to={
+              authUser.isAuthenticated ? URL_FRONT_MY_PROFIL : URL_FRONT_LOGIN
+            }
+          >
             <button className="flex justify-center items-center lscreen:shadow p-2 lscreen:p-3 lscreen:rounded-lg lscreen:bg-white font-medium">
               <BsPerson className="h-4 w-auto flex-shrink-0 text-red-400" />
               <p className="lscreen:pl-2">
-                {token === null ? "Connexion" : "Profil"}
+                {authUser.isAuthenticated ? "Profil" : "Connexion"}
               </p>
             </button>
           </Link>
@@ -109,6 +113,6 @@ const Header = () => {
       )}
     </div>
   );
-};
+});
 
-export default Header;
+export default HeaderMemo;

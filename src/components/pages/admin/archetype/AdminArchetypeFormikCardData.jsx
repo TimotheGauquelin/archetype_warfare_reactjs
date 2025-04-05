@@ -1,76 +1,123 @@
-import { Field } from "formik";
 import React, { useEffect, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
-import { toast } from "react-toastify";
-import FormikAddCard from "../../../generic/FormikAddCard";
+import AddCard from "../../../generic/AddCard";
+import { getCardTypes } from "../../../../services/cardtype";
+import SelectInput from "../../../generic/form/SelectInput";
+import { getCardStatus } from "../../../../services/cardStatus";
 
-const AdminArchetypeFormikCardData = ({
-  archetypeCards,
-  setArchetypeCards,
-  orderedCardTypes,
-  archetype,
-  cardTypes,
-}) => {
+const AdminArchetypeFormikCardData = ({ newArchetype, setNewArchetype }) => {
   const [cardsRefresh, setCardsRefresh] = useState(false);
+  const [cardTypes, setCardTypes] = useState([]);
+  const [cardStatus, setCardStatus] = useState([]);
 
-  const deleteCard = (cardId, cardName) => {
-    var archetypeCardsCopy = archetypeCards;
-    const findex = archetypeCardsCopy.findIndex(
-      (archetypeCard) => archetypeCard.id === cardId
+  const deleteCard = (cardId) => {
+    const updatedCards = newArchetype.cards.filter(
+      (card) => card.card.id !== cardId
     );
 
-    archetypeCardsCopy.splice(findex, 1);
-    setArchetypeCards(archetypeCardsCopy);
-    setCardsRefresh(true);
-    toast.success(`${cardName} a été supprimé de l'archétype`);
+    setNewArchetype((prevState) => ({
+      ...prevState,
+      cards: updatedCards,
+    }));
   };
 
   useEffect(() => {
     setCardsRefresh(false);
-  }, [cardsRefresh]);
+    getCardTypes(setCardTypes);
+    getCardStatus(setCardStatus);
+  }, [cardsRefresh, newArchetype]);
 
   return (
     <div className="bg-gray-300 mt-4 rounded p-2">
       <h2 className="font-bold text-xl">Cartes de l'archetypes :</h2>
       {/* Afficher les cartes déjà dans l'archetype */}
       <div className="bg-gray-300 grid grid-cols-12 gap-2">
-        <div className="bg-gray-400 col-span-9 mt-2 p-3 rounded">
+        <div className="bg-gray-400 col-span-8 mt-2 p-3 rounded">
           <div
-            className={`overflow-y-auto col-span-8 grid bg-white p-2 rounded ${
-              archetypeCards.length > 0 && "grid-cols-12"
-            } gap-4 ${archetypeCards.length === 0 && "text-red-500 my-2"}`}
-            style={{ height: "400px" }}
+            className={`overflow-y-auto h-full grid gap-2 ${
+              newArchetype.cards.length > 0 && "grid-cols-12"
+            } bg-white p-2 rounded`}
           >
-            {archetypeCards.length > 0
-              ? archetypeCards
+            {newArchetype.cards.length > 0
+              ? newArchetype.cards
                   .sort(function (a, b) {
-                    return (
-                      orderedCardTypes.indexOf(a.cardType?.label) -
-                        orderedCardTypes.indexOf(b.cardType?.label) ||
-                      a.level - b.level
+                    const cardTypeOrder = new Map(
+                      cardTypes.map((type, index) => [type.label, index])
                     );
+                    const orderA = cardTypeOrder.get(a.card.card_type);
+                    const orderB = cardTypeOrder.get(b.card.card_type);
+                    return orderA - orderB || a.card.level - b.card.level;
                   })
                   .map((card, index) => {
+                    const cardIndex = newArchetype.cards.findIndex(
+                      (archCard) => archCard.card.id === card.card.id
+                    );
+
                     return (
                       <div
                         key={index}
-                        className="lscreen:col-span-2 sscreen:col-span-3 col-span-4"
+                        className="lscreen:col-span-3 sscreen:col-span-3 col-span-4"
                       >
                         <div className="relative">
                           <img
-                            className="hover:saturate-150"
-                            src={`${card?.imageUrl}`}
+                            className="hover:saturate-150 pointer-cursor"
+                            src={`${card?.card.img_url}`}
                             alt=""
                           />
                           <div
                             style={{ width: `30px`, height: "30px" }}
-                            className="absolute top-0 shadow-md shadow-gray-800 right-0 bg-red-500 cursor-pointer border border-red-800 border-2 flex justify-center items-center rounded-full text-white p-2"
+                            className="absolute top-0 shadow-md shadow-gray-800 left-0 bg-red-500 cursor-pointer border border-red-800 border-2 flex justify-center items-center rounded-full text-white p-2"
                             onClick={() => {
-                              deleteCard(card.id, card.name);
+                              console.log(card.card.id);
+                              deleteCard(card.card.id);
                             }}
                           >
                             <FaTrashAlt />
                           </div>
+                        </div>
+                        <input
+                          type="text"
+                          value={card.explanation_text}
+                          onChange={(e) => {
+                            setNewArchetype((prevState) => {
+                              const updatedCards = [...prevState.cards];
+                              updatedCards[cardIndex] = {
+                                ...updatedCards[cardIndex],
+                                explanation_text: e.target.value,
+                              };
+                              return { ...prevState, cards: updatedCards };
+                            });
+                          }}
+                        />
+                        <div>
+                          <select
+                            defaultValue={""}
+                            className="w-full mt-2 p-1"
+                            value={card.card_status.id}
+                            onChange={(e) => {
+                              setNewArchetype((prevState) => {
+                                const updatedCards = [...prevState.cards];
+                                updatedCards[cardIndex] = {
+                                  ...updatedCards[cardIndex],
+                                  card_status: {
+                                    id: Number(e.target.value),
+                                  },
+                                };
+                                return { ...prevState, cards: updatedCards };
+                              });
+                            }}
+                          >
+                            <option value="" disabled>
+                              ------
+                            </option>
+                            {cardStatus?.map((option, index) => {
+                              return (
+                                <option key={index} value={option.id}>
+                                  {option.label}
+                                </option>
+                              );
+                            })}
+                          </select>
                         </div>
                       </div>
                     );
@@ -78,17 +125,9 @@ const AdminArchetypeFormikCardData = ({
               : "Cet archétype ne possède aucune carte"}
           </div>
         </div>
-
-        <Field
-          type="number"
-          name="cards"
-          researcherLabel="Archetype"
-          cardTypes={cardTypes}
-          cardTypesOrdered={orderedCardTypes}
-          cards={archetype?.cards}
-          archetypeCards={archetypeCards}
-          setArchetypeCards={setArchetypeCards}
-          component={FormikAddCard}
+        <AddCard
+          newArchetype={newArchetype}
+          setNewArchetype={setNewArchetype}
         />
       </div>
     </div>

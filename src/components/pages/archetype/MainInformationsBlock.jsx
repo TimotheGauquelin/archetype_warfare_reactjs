@@ -2,6 +2,7 @@ import React from "react";
 import Progress from "./Progress";
 
 const MainInformationsBlock = ({ archetype, performancesLabel }) => {
+
   return (
     <div
       className="bg-white flex flex-col lscreen:flex-row w-full mx-auto shadow-lg rounded-xl inset-x-0 lscreen:absolute p-5 lscreen:max-w-containerSize m-auto"
@@ -15,16 +16,14 @@ const MainInformationsBlock = ({ archetype, performancesLabel }) => {
         </h3>
         <div
           className="h-full lscreen:w-80 lscreen:mt-5 grid grid-cols-10 lscreen:grid-cols-10 gap-4"
-          // ref={blockRefHeight}
         >
           {archetype?.types
             ?.sort((a, b) => a.label.localeCompare(b.label))
-            ?.slice(0, 10)
+            ?.slice(0, 4)
             ?.map((type, index) => (
               <div
                 key={index}
                 className="col-span-2 text-center"
-                // style={{ height: height / 2 }}
               >
                 <div>
                   <img
@@ -46,16 +45,14 @@ const MainInformationsBlock = ({ archetype, performancesLabel }) => {
         </h3>
         <div
           className="h-full lscreen:w-80 lscreen:mt-5 grid grid-cols-10 lscreen:grid-cols-10 gap-4"
-          // ref={blockRefHeight}
         >
           {archetype?.attributes
             ?.sort((a, b) => a.label.localeCompare(b.label))
-            ?.slice(0, 10)
+            ?.slice(0, 4)
             ?.map((attribute, index) => (
               <div
                 key={index}
                 className="col-span-2 text-center"
-                // style={{ height: height / 2 }}
               >
                 <div>
                   <img

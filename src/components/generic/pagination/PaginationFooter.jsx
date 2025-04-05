@@ -1,27 +1,27 @@
 import React from "react";
 
 const Pagination = ({
-  pagination,
+  currentPage,
   setPagination,
-  itemArraySize,
   setRefresh,
-  displayingNumberSize,
+  itemsTotalCount,
+  totalPages,
+  pageSize
 }) => {
-  const nbMaxPage = Math.ceil(itemArraySize / displayingNumberSize);
 
   return (
     <div className="bg-white px-4 py-3 flex items-center justify-between border-t rounded-b-lg border-gray-200 tablet:px-6">
       <div className="hidden tablet:flex-1 tablet:flex tablet:items-center tablet:justify-between">
         <div>
           <p className="text-sm text-gray-700 font-bold">
-            {itemArraySize > 0
-              ? `Affichage du ${pagination === 0 ? "" : pagination}1${
-                  pagination === 0 ? "er" : "ème"
+            {itemsTotalCount > 0
+              ? `Affichage du ${((currentPage - 1) * pageSize) + 1 }${
+                  currentPage === 1 ? "er" : "ème"
                 } au ${
-                  pagination === nbMaxPage - 1
-                    ? itemArraySize
-                    : (pagination + 1) * displayingNumberSize
-                }ème sur ${itemArraySize} résultats`
+                  currentPage === totalPages
+                    ? itemsTotalCount
+                    : (currentPage) * pageSize
+                }ème sur ${itemsTotalCount} résultats`
               : "Aucun résultat trouvé"}
           </p>
         </div>
@@ -30,15 +30,14 @@ const Pagination = ({
             className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
             aria-label="Pagination"
           >
-            {pagination > 0 && (
+            {currentPage > 1 && (
               <div
                 href="#"
                 className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                 onClick={() => {
-                  setPagination(pagination > 0 && pagination - 1);
+                  setPagination(currentPage > 1 && currentPage - 1);
                   setRefresh();
                 }}
-                s
               >
                 <svg
                   className="h-5 w-5"
@@ -56,13 +55,13 @@ const Pagination = ({
               </div>
             )}
             <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-              {pagination + 1}
+              {currentPage}
             </span>
-            {pagination < nbMaxPage - 1 && (
+            {currentPage < totalPages && (
               <div
                 className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
                 onClick={() => {
-                  setPagination(pagination < nbMaxPage - 1 && pagination + 1);
+                  setPagination(currentPage < totalPages && Number(currentPage) + 1);
                   setRefresh();
                 }}
               >

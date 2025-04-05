@@ -1,93 +1,72 @@
 import React, { useEffect, useState } from "react";
-import api_aw from "../../../api/api_aw";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../../../components/pages/admin/AdminStructure";
 import AdminArchetypeFilter from "../../../components/pages/admin/archetype/AdminArchetypeFilter";
 import AdminArchetypePagination from "../../../components/pages/admin/archetype/AdminArchetypePagination";
 import { toast, ToastContainer } from "react-toastify";
+import { getArchetypesWithCriteria } from "../../../services/archetype";
+import { URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM } from "../../../constant/urlsFront";
 
 const AdminArchetype = () => {
-  const [archetypes, setArchetypes] = useState();
-  const [archetypesTotalCount, setArchetypesTotalCount] = useState();
-  const [pagination, setPagination] = useState(0);
-  const [displayingNumberSize, setDisplayingNumberSize] = useState(10);
-  const [criteriaName, setCriteriaName] = useState("");
-  const [criteriaEra, setCriteriaEra] = useState("");
-  const [criteriaType, setCriteriaType] = useState("");
-  const [criteriaAttribute, setCriteriaAttribute] = useState("");
-  const [criteriaSummonMechanic, setCriteriaSummonMechanic] = useState("");
+  const [archetypes, setArchetypes] = useState([]);
+  const [pagination, setPagination] = useState(1);
+  const [pageSize] = useState(10);
+  const [criteria, setCriteria] = useState({
+    name: "",
+    era: "",
+    type: "",
+    attribute: "",
+    summonmechanic: "",
+  });
   const [refresh, setRefresh] = useState(false);
 
-  const getArchetypes = () => {
-    api_aw
-      .get(
-        `/public/archetypesWithCriteria?size=${displayingNumberSize}&page=${pagination}&name=${criteriaName}&era=${criteriaEra}&attributes=${criteriaAttribute}&types=${criteriaType}&summonMechanics=${criteriaSummonMechanic}`
-      )
-      .then((response) => {
-        if (response.status === 200) {
-          setArchetypes(
-            response?.data.sort(function (a, b) {
-              return (a?.name).localeCompare(b?.name);
-            })
-          );
-          setArchetypesTotalCount(response.headers["x-total-count"]);
-        }
-      });
-  };
-
   const resetAllFilters = () => {
-    setCriteriaEra("");
-    setCriteriaName("");
-    setCriteriaType("");
-    setCriteriaAttribute("");
-    setCriteriaSummonMechanic("");
+    setCriteria({
+      name: "",
+      era: "",
+      type: "",
+      attribute: "",
+      summonmechanic: "",
+    });
     toast.success("Vous avez mis les filtres à leur état d'origine.");
   };
 
+  console.log(archetypes);
+
   useEffect(() => {
-    getArchetypes();
+    getArchetypesWithCriteria(
+      pageSize,
+      pagination,
+      criteria,
+      setArchetypes
+    );
     setRefresh(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    refresh,
-    criteriaName,
-    criteriaEra,
-    criteriaAttribute,
-    criteriaType,
-    criteriaSummonMechanic,
-  ]);
+  }, [refresh, criteria]);
 
   return (
     <AdminStructure>
       <AdminBodyHeader
         label="Archetype"
         catchphrase="Vous avez des archétypes de toute sorte"
-        buttonUrl="/admin/archetypes/form"
+        buttonUrl={URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM}
         buttonLabel="Ajouter un archetype"
       />
-
       <AdminArchetypeFilter
         resetAllFilters={() => resetAllFilters()}
-        criteriaName={criteriaName}
-        setCriteriaName={setCriteriaName}
-        criteriaEra={criteriaEra}
-        setCriteriaEra={setCriteriaEra}
-        criteriaAttribute={criteriaAttribute}
-        setCriteriaAttribute={setCriteriaAttribute}
-        criteriaType={criteriaType}
-        setCriteriaType={setCriteriaType}
-        criteriaSummonMechanic={criteriaSummonMechanic}
-        setCriteriaSummonMechanic={setCriteriaSummonMechanic}
+        criteria={criteria}
+        setCriteria={setCriteria}
+        refresh={refresh}
         setRefresh={setRefresh}
       />
-
       <AdminArchetypePagination
         setRefresh={setRefresh}
+        currentPage={archetypes.currentPage}
         archetypes={archetypes}
-        pagination={pagination}
         setPagination={setPagination}
-        archetypesTotalCount={archetypesTotalCount}
-        displayingNumberSize={displayingNumberSize}
+        archetypesTotalCount={archetypes?.totalItems}
+        totalPages={archetypes?.totalPages}
+        pageSize={archetypes.pageSize}
       />
       <ToastContainer />
     </AdminStructure>

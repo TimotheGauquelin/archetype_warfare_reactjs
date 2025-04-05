@@ -1,58 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import api_aw from "../../../api/api_aw";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../../../components/pages/admin/AdminStructure";
 import AdminBanlistFormik from "../../../components/pages/admin/banlist/AdminBanlistFormik";
-import {
-  URL_BACK_GET_BANLIST,
-  URL_BACK_GET_CARD_TYPES,
-} from "../../../constant/urlsBack";
+import { addBanlist } from "../../../services/banlist";
 
 const AdminBanlistForm = () => {
   const location = useLocation();
   const requestPut = location?.state?.request === "put";
 
-  const [banlist, setBanlist] = useState({});
+  const [newBanlist, setNewBanlist] = useState({
+    label: '',
+    is_active: false,
+    release_date: '1970-01-01',
+    description: ''
+  });
   const [banlistCards, setBanlistCards] = useState([]);
   const [dataIsLoaded, setDataIsLoaded] = useState(false);
   const [orderedCardTypes, setOrderedCardTypes] = useState([]);
 
-  const getBanlist = () => {
-    api_aw.get(URL_BACK_GET_BANLIST(1)).then((response) => {
-      if (response.status === 200) {
-        const banlist = response.data;
-        banlist?.cards?.sort(function (a, b) {
-          return (
-            orderedCardTypes.indexOf(a?.card?.cardType?.label) -
-              orderedCardTypes.indexOf(b?.card?.cardType?.label) ||
-            a.level - b.level
-          );
-        });
-        setBanlist(response.data);
-      }
-      setDataIsLoaded(true);
-    });
-  };
+  const navigate = useNavigate()
 
-  const getCardTypes = () => {
-    api_aw.get(URL_BACK_GET_CARD_TYPES).then((response) => {
-      if (response.status === 200) {
-        var cardTypesOrdered = [];
+  // const getBanlist = () => {
+  //   api_aw.get(URL_BACK_GET_BANLIST(1)).then((response) => {
+  //     if (response.status === 200) {
+  //       const banlist = response.data;
+  //       banlist?.cards?.sort(function (a, b) {
+  //         return (
+  //           orderedCardTypes.indexOf(a?.card?.cardType?.label) -
+  //             orderedCardTypes.indexOf(b?.card?.cardType?.label) ||
+  //           a.level - b.level
+  //         );
+  //       });
+  //       setBanlist(response.data);
+  //     }
+  //     setDataIsLoaded(true);
+  //   });
+  // };
 
-        response.data.forEach((cardType) => {
-          cardTypesOrdered.push(cardType.label);
-        });
+  // const getCardTypes = () => {
+  //   api_aw.get(URL_BACK_GET_CARD_TYPES).then((response) => {
+  //     if (response.status === 200) {
+  //       var cardTypesOrdered = [];
 
-        setOrderedCardTypes(cardTypesOrdered);
-      }
-    });
-  };
+  //       response.data.forEach((cardType) => {
+  //         cardTypesOrdered.push(cardType.label);
+  //       });
+
+  //       setOrderedCardTypes(cardTypesOrdered);
+  //     }
+  //   });
+  // };
 
   useEffect(() => {
-    requestPut && getBanlist();
-    getCardTypes();
+    // requestPut && getBanlist();
+    // getCardTypes();
   }, []);
 
   return (
@@ -62,14 +65,14 @@ const AdminBanlistForm = () => {
         catchphrase=""
       />
       <AdminBanlistFormik
-        cardTypes={orderedCardTypes}
-        banlist={banlist}
-        setBanlist={setBanlist}
-        banlistCards={banlistCards}
-        setBanlistCards={setBanlistCards}
-        dataIsLoaded={dataIsLoaded}
-        setDataIsLoaded={setDataIsLoaded}
+        // banlist={banlist}
+        // setBanlist={setBanlist}
+        banlistCardsLength={banlistCards.banlist_cards_length}
+        newBanlist={newBanlist}
+        setNewBanlist={setNewBanlist}
+        addBanlist={() => {addBanlist(newBanlist, navigate)}}
         orderedCardTypes={orderedCardTypes}
+        setDataIsLoaded={setDataIsLoaded}
         location={location}
         requestPut={requestPut}
       />

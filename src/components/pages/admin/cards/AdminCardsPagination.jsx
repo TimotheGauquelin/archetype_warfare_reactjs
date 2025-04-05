@@ -2,21 +2,23 @@ import React from "react";
 import PaginationFooter from "../../../generic/pagination/PaginationFooter";
 
 const AdminCardsPagination = ({
-  setRefresh,
-  pagination,
+  currentPage,
   setPagination,
-  cardsTotalCount,
-  displayingNumberSize,
+  setRefresh,
+  itemsTotalCount,
+  totalPages,
+  pageSize,
 }) => {
   return (
     <div className="">
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <PaginationFooter
-          pagination={pagination}
+          currentPage={currentPage}
           setPagination={setPagination}
           setRefresh={setRefresh}
-          itemArraySize={cardsTotalCount}
-          displayingNumberSize={displayingNumberSize}
+          itemsTotalCount={itemsTotalCount}
+          totalPages={totalPages}
+          pageSize={pageSize}
         />
       </div>
     </div>

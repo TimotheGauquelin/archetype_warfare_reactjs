@@ -19,7 +19,7 @@ const Slide = ({ archetype }) => {
             {archetype.name}
           </h2>
           <p className="whiteVeilText font-bold text-lg tablet:text-2xl mb-5">
-            {archetype.sliderInfo}
+            {archetype.slider_info}
           </p>
           <Link
             className="sliderButton"

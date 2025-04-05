@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaAngleLeft } from "react-icons/fa";
+import { URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM } from "../../../constant/urlsFront";
 
 const AdminBodyHeader = ({
   label,
@@ -21,7 +22,7 @@ const AdminBodyHeader = ({
         <h2 className="text-gray-600 ml-0.5">{catchphrase}</h2>
       </div>
       {buttonUrl && (
-        <Link to={`/admin/${label.toLowerCase()}s/form`}>
+        <Link to={buttonUrl}>
           <button className="block text-white p-2 bg-blue-200 rounded hover:bg-blue-300 curosr-pointer">
             {buttonLabel}
           </button>

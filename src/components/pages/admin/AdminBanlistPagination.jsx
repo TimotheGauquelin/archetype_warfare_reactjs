@@ -4,7 +4,6 @@ import AdminBanlistPaginationTableBody from "./AdminBanlistPaginationTableBody";
 
 const AdminBanlistPagination = ({
   banlists,
-  numberOfCardsFromArchetypePerStatus,
   setRefresh,
 }) => {
   const tableHeadItemArray = [
@@ -17,23 +16,23 @@ const AdminBanlistPagination = ({
       label: "Date d'application",
     },
     {
-      colspan: "col-span-1",
+      colspan: "col-span-2",
       label: "Nb total de cartes",
     },
     {
-      colspan: "col-span-1",
+      colspan: "col-span-2",
       label: "Nb cartes interdites",
     },
     {
-      colspan: "col-span-1",
+      colspan: "col-span-2",
       label: "Nb. cartes limitées",
     },
     {
-      colspan: "col-span-1",
+      colspan: "col-span-2",
       label: "Nb. cartes semi-limités",
     },
     {
-      colspan: "col-span-4",
+      colspan: "col-span-2",
       label: "Actions",
     },
   ];
@@ -45,17 +44,9 @@ const AdminBanlistPagination = ({
         <PaginationTableHead tableHeadItem={tableHeadItemArray} />
         <AdminBanlistPaginationTableBody
           arrayItems={banlists}
-          numberOfCardsFromArchetypePerStatus={
-            numberOfCardsFromArchetypePerStatus
-          }
           setRefresh={setRefresh}
         />
       </div>
-      {/* <PaginationFooter
-          pagination={pagination}
-          setPagination={setPagination}
-          itemArraySize={archetypesTotalCount}
-        /> */}
     </div>
   );
 };

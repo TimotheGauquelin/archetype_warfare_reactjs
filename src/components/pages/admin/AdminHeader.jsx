@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { URL_FRONT_HOME } from "../../../constant/urlsFront";
+import { URL_FRONT_HOME, URL_FRONT_MY_PROFIL } from "../../../constant/urlsFront";
+import AuthContext from "../../../context/AuthContext";
 
 const AdminHeader = ({ displayedNavbar, setDisplayedNavbar, adminName }) => {
+
+  const {authUser} = useContext(AuthContext)
+
   return (
     <div className="flex items-center h-20 px-6 tablet:px-10 bg-white">
       <div
@@ -27,14 +31,13 @@ const AdminHeader = ({ displayedNavbar, setDisplayedNavbar, adminName }) => {
       <div className="flex flex-shrink-0 items-center ml-auto">
         <button className="relative inline-flex items-center p-2 hover:bg-gray-100 focus:bg-gray-100 rounded-lg">
           <div className="hidden sscreen:flex sscreen:flex-col sscreen:items-end sscreen:leading-tight">
-            <span className="font-semibold">{adminName}</span>
+            <span className="font-semibold">{authUser.username}</span>
             <span className="text-sm text-gray-600">Administrateur</span>
           </div>
         </button>
         <div className="border-l pl-3 ml-3 space-x-1">
-          <Link to={URL_FRONT_HOME}>
+          <Link to={URL_FRONT_MY_PROFIL}>
             <button className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full">
-              <span className="sr-only">Log out</span>
               <svg
                 aria-hidden="true"
                 fill="none"
