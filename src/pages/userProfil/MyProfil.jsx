@@ -3,7 +3,6 @@ import Header from "../../components/generic/header/Header";
 import Navbar from "../../components/pages/userProfil/Navbar";
 import ProfilTemplate from "../../components/pages/userProfil/ProfilTemplate";
 import Button from "../../components/generic/Button";
-import { useNavigate } from "react-router-dom";
 
 const MyProfil = () => {
   const [displayDeletePopUp, setDisplayDeletePopUp] = useState(false);

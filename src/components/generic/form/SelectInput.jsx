@@ -8,12 +8,12 @@ const SelectInput = ({ card, label, options, inputName, required, colSpanWidth, 
       </label>}
       <select className="h-full mt-2 p-2" name={inputName} value={condition && data[attribute] ? data[attribute].id : ""} onChange={(e) => {
         const selectedOption = options.find(option => option.id === Number(e.target.value));
-        setAction((prevState) => (
-          console.log("test", prevState),
-          {
+        setAction((prevState) => {
+          return {
             ...prevState,
             [attribute]: selectedOption ? { id: selectedOption.id, label: selectedOption.label } : null
-          }))
+          };
+        });
       }}>
         <option value="" disabled>------</option>
         {options?.map((option, index) => {

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import AddCardModule from "../../../generic/AddCardModule";
-import { getCardTypes } from "../../../../services/cardtype";
 import { getCardStatus } from "../../../../services/cardStatus";
 
 const AdminArchetypeUpdateFormikCardData = ({
@@ -9,7 +8,6 @@ const AdminArchetypeUpdateFormikCardData = ({
   setNewArchetype,
 }) => {
   const [cardsRefresh, setCardsRefresh] = useState(false);
-  const [cardTypes, setCardTypes] = useState([]);
   const [cardStatus, setCardStatus] = useState([]);
 
   const deleteCard = (cardId) => {
@@ -25,7 +23,6 @@ const AdminArchetypeUpdateFormikCardData = ({
 
   useEffect(() => {
     setCardsRefresh(false);
-    getCardTypes(setCardTypes);
     getCardStatus(setCardStatus);
   }, [cardsRefresh, newArchetype]);
 

@@ -32,7 +32,7 @@ const Archetypes = () => {
     page: 0
   });
 
-  console.log(archetypes)
+  console.log(pagination)
 
   const navigate = useNavigate();
 

@@ -1,0 +1,21 @@
+name: archetype-warfare
+services:
+  react:
+    container_name: front-aw
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    environment:
+      - NODE_ENV=development
+      - BACKEND_URL=http://localhost:8889
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    ports:
+      - '8888:3000'
+    networks:
+      - network-project-aw
+
+networks:
+  network-project-aw:
+    external: true

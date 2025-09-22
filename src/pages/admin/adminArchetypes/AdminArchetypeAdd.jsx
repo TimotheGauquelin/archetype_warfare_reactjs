@@ -1,14 +1,12 @@
 import React, { useState, useCallback } from 'react'
 import AdminStructure from '../../../components/pages/admin/AdminStructure';
 import { ToastContainer } from 'react-toastify';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { addArchetype } from '../../../services/archetype';
 import AdminBodyHeader from '../../../components/pages/admin/AdminBodyHeader';
-import AdminArchetypeSwitchButtons from "../../../components/pages/admin/archetype/AdminArchetypePaginationTableBody"
 import AdminArchetypeForm from "../../../components/pages/admin/archetype/AdminArchetypeForm"
 
 const AdminArchetypeAdd = () => {
-  const location = useLocation();
   const navigate = useNavigate();
 
   const [newArchetype, setNewArchetype] = useState({
@@ -40,9 +38,6 @@ const AdminArchetypeAdd = () => {
         catchphrase=""
         returnButton
       />
-      {/* <AdminArchetypeSwitchButtons
-        location={location}
-      /> */}
       <AdminArchetypeForm
         newArchetype={newArchetype}
         setNewArchetype={setNewArchetype}

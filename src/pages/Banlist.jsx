@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { FaAngleDown } from "react-icons/fa";
 import api_aw from "../api/api_aw";
 import AbsoluteInput from "../components/generic/AbsoluteInput";
@@ -50,7 +50,7 @@ const Banlist = () => {
       });
   };
 
-  const getBanlist = () => {
+  const getBanlist = useCallback(() => {
     api_aw
       .get(
         banlistSearchInput === ""
@@ -113,7 +113,7 @@ const Banlist = () => {
           setDataIsLoaded(true);
         }
       });
-  };
+  }, [banlistSearchInput, activeBanlistId]);
 
   const statusLabelBlockDisplaying = (index, fIndex) => {
     let addArray = [...statusLabelBlock];
@@ -126,7 +126,7 @@ const Banlist = () => {
   useEffect(() => {
     getAllGenericData();
     refresh && getBanlist();
-  }, [refresh, activeBanlistId, banlistSearchInput]);
+  }, [refresh, activeBanlistId, banlistSearchInput, getBanlist]);
 
   return (
     <div className="flex flex-col">

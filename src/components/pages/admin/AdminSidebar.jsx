@@ -79,7 +79,7 @@ const AdminSideBar = ({ displayedNavbar }) => {
           })}
         </nav>
         <div className="flex justify-end">
-          <a className="inline-flex p-3 hover:text-gray-400 justify-center border-gray-700 h-15 w-full border-t hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 px-2">
+          <button className="inline-flex p-3 hover:text-gray-400 justify-center border-gray-700 h-15 w-full border-t hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 px-2">
             <svg
               aria-hidden="true"
               fill="none"
@@ -103,7 +103,7 @@ const AdminSideBar = ({ displayedNavbar }) => {
             <span className="ml-2" x-show="menu">
               Options
             </span>
-          </a>
+          </button>
         </div>
       </div>
     </aside>

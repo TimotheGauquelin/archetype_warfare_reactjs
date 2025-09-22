@@ -21,7 +21,7 @@ const Archetype = () => {
   useEffect(() => {
     getArchetypeById(id, setArchetype);
     getCardTypes(setCardTypes);
-  }, []);
+  }, [id]);
 
   return (
     <div>
@@ -83,6 +83,7 @@ const Archetype = () => {
                       const levelB = b.card.level || 0;
                       return levelB - levelA;
                     }
+                    return 0;
                   })
                   ?.map((card, index) => {
                     return <Card key={index} card={card} />;

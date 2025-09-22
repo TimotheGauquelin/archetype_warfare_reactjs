@@ -27,10 +27,6 @@ const ProfilTemplate = ({ children }) => {
       label: "Mon Profil",
     },
     // {
-    //   url: URL_FRONT_MY_TOURNAMENTS,
-    //   label: "Mes Tournois",
-    // },
-    // {
     //   url: "/my-decks",
     //   label: "Mes Decks",
     // },

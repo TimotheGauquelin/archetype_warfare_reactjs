@@ -8,13 +8,10 @@ export const URL_FRONT_PASSWORD_LOST = "/password-lost";
 export const URL_FRONT_PASSWORD_RESET = "/password-reset/:resetToken";
 export const URL_FRONT_ARCHETYPES = "/archetypes";
 export const URL_FRONT_ARCHETYPE = (id) => `/archetype/${id}`;
-export const URL_FRONT_TOURNAMENTS = "/tournaments";
 export const URL_FRONT_BANLIST = "/banlist";
 
 //Profil
 export const URL_FRONT_MY_PROFIL = "/my-profil";
-export const URL_FRONT_MY_TOURNAMENTS = "/my-tournaments";
-// export const URL_FRONT_ON_GOING_TOURNAMENT = "/my-tournements/on-going/:id";
 export const URL_FRONT_MY_DECKS = "/my-decks";
 
 //Admin

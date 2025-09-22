@@ -10,8 +10,6 @@ import AdminHome from "./pages/admin/AdminHome";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Concept from "./pages/Concept";
 import Banlist from "./pages/Banlist";
-import Tournaments from "./pages/main/Tournaments";
-import Tournament from "./pages/main/Tournament";
 import AdminArchetype from "./pages/admin/adminArchetypes/AdminArchetype";
 import AdminBanlist from "./pages/admin/adminBanlists/AdminBanlist";
 import AdminBanlistForm from "./pages/admin/adminBanlists/AdminBanlistForm";
@@ -42,12 +40,9 @@ import {
   URL_FRONT_REGISTER,
   URL_FRONT_TERMS_AND_CONDITIONS,
   URL_FRONT_MY_PROFIL,
-  URL_FRONT_MY_TOURNAMENTS,
   URL_FRONT_PASSWORD_LOST,
   URL_FRONT_PASSWORD_RESET,
-  URL_FRONT_TOURNAMENTS,
 } from "./constant/urlsFront";
-import MyTournaments from "./pages/userProfil/myTournament/MyTournaments";
 import Loader from "./components/generic/Loader";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
 import AdminArchetypeAdd from "./pages/admin/adminArchetypes/AdminArchetypeAdd";
@@ -98,8 +93,6 @@ const Root = () => {
               }
             />
             <Route path={URL_FRONT_ABOUT} element={<Concept />} />
-            <Route path={URL_FRONT_TOURNAMENTS} element={<Tournaments />} />
-            <Route path={"/tournament/:id"} element={<Tournament />} />
             <Route path={URL_FRONT_BANLIST} element={<Banlist />} />
             <Route path={URL_FRONT_PASSWORD_LOST} element={<PasswordLost />} />
             <Route
@@ -114,18 +107,6 @@ const Root = () => {
 
             {/* User Profil*/}
             <Route exact path={URL_FRONT_MY_PROFIL} element={<MyProfil />} />
-            <Route
-              exact
-              path={URL_FRONT_MY_TOURNAMENTS}
-              element={<MyTournaments />}
-            />
-            {/* <Route
-            path="/my-tournaments/on-going/:id"
-            element={<OngoingTournament />}
-          /> */}
-            {/* <Route exact path={URL_FRONT_MY_DECKS} element={<MyDecks />} />
-          <Route exact path="/my-decks/:deckId" element={<MyDeckAdd />} />
-          <Route exact path="/my-decks/add" element={<MyDeckAdd />} /> */}
 
             {/* Admin */}
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>

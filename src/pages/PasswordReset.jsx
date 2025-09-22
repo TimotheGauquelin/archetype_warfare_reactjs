@@ -31,7 +31,7 @@ const PasswordReset = () => {
 
   useEffect(() => {
     getUserByResetPasswordToken(setUser, resetToken, navigate);
-  }, []);
+  }, [resetToken, navigate]);
 
   return user ? (
     <div className="bg-graybackground w-screen h-screen fixed left-0 top-0 flex justify-center items-center">

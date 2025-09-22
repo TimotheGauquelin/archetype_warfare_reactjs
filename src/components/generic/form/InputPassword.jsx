@@ -1,4 +1,3 @@
-import { ErrorMessage } from "formik";
 import { useState } from "react";
 import { FaEye } from "react-icons/fa";
 
@@ -37,13 +36,10 @@ export const InputPassword = ({
               setDisplayPassword(!displayPassword);
             }}
           >
-            <FaEye className="text-white" />,
+            <FaEye className="text-white" />
           </div>
         </div>
       </div>
-      {/* <div className="text-red-500">
-        <ErrorMessage name={name} />
-      </div> */}
     </>
   );
 };

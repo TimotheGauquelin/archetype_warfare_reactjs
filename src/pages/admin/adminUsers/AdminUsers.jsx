@@ -10,9 +10,9 @@ const AdminUsers = () => {
   const [refresh, setRefresh] = useState(false);
   const [pagination, setPagination] = useState(1);
   const [pageSize] = useState(10);
-  const [criteria, setCriteria] = useState({
+  const criteria = {
     username: "",
-  });
+  };
 
   useEffect(() => {
     searchUsers(pageSize, pagination, criteria, setUsers);

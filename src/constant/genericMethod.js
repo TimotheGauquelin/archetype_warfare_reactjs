@@ -114,22 +114,6 @@ const switchEngToFrenchAttribute = (attribute) => {
   return newAttribute;
 };
 
-const switchEnumSystemTournament = (system) => {
-  var newSystem;
-  switch (system) {
-    case "SWISS_SYSTEM_TOURNAMENT":
-      newSystem = "Système Suisse";
-      break;
-    case "SINGLE_ELIMINATION_TOURNAMENT":
-      newSystem = "Elimination Directe";
-      break;
-    default:
-      newSystem = null;
-  }
-
-  return newSystem;
-};
-
 const sortingCardsFromCardTypeLabelAndLevelAndName = (cardTypes, a, b) => {
   return (
     cardTypes.indexOf(a.cardType.label) - cardTypes.indexOf(b.cardType.label) ||
@@ -151,5 +135,4 @@ export {
   switchEngToFrenchAttribute,
   sortingCardsFromCardTypeLabelAndLevelAndName,
   convertJavaDateIntoJS,
-  switchEnumSystemTournament,
 };

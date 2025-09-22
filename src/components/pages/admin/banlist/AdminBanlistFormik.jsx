@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import AdminBanlistFormikData from "./AdminBanlistFormikData";
 
 const AdminBanlistFormik = ({
@@ -30,10 +29,11 @@ const AdminBanlistFormik = ({
   };
 
   useEffect(() => {
-    location?.state?.request !== "put" && setDataIsLoaded(true);
-    // getCardStatus();
+    if (location?.state?.request !== "put") {
+      setDataIsLoaded(true);
+    }
     setCardsRefresh(false);
-  }, [cardsRefresh]);
+  }, [cardsRefresh, location?.state?.request, setDataIsLoaded]);
 
   return (
     <>
@@ -127,18 +127,6 @@ const AdminBanlistFormik = ({
                 : "Cet archétype ne possède aucune carte"}
             </div>
           </div>
-          {/* <Field
-            type="number"
-            name="cards"
-            cardTypes={cardTypes}
-            cardTypesOrdered={orderedCardTypes}
-            cards={banlist?.cards}
-            archetypeCards={banlist}
-            setArchetypeCards={setBanlist}
-            banlist
-            component={FormikAddCard}
-            setCardsRefresh={setCardsRefresh}
-          /> */}
         </div>
       </div>
       <button
