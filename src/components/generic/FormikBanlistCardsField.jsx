@@ -7,7 +7,6 @@ const FormikBanlistCardsField = ({
 }) => {
   cards?.map((card) => {
     if (card.archetype === null) {
-      console.log(card);
     }
   });
 

@@ -1,16 +1,16 @@
 import React from "react";
 
-const ArchetypeCard = ({ item, index, haveAMedal }) => {
+const ArchetypeCard = ({ archetype, index, haveAMedal }) => {
   return (
     <div>
       <div className="aspect-square bg-red-200 bg-cover bg-center rounded-lg">
         <img
           className="bg-cover bg-center h-full w-full"
           src={
-            item?.headerImg?.includes(".jpg") ||
-            item?.headerImg?.includes(".png") ||
-            item?.headerImg?.includes(".jpeg")
-              ? item.headerImg
+            archetype?.headerImg?.includes(".jpg") ||
+              archetype?.headerImg?.includes(".png") ||
+              archetype?.headerImg?.includes(".jpeg")
+              ? archetype.headerImg
               : process.env.PUBLIC_URL + "/assets/waiting_archetype_image.jpg"
           }
           alt=""
@@ -22,10 +22,9 @@ const ArchetypeCard = ({ item, index, haveAMedal }) => {
             <img
               src={
                 process.env.PUBLIC_URL +
-                `/assets/medalIcon/${
-                  index === 0
-                    ? "gold"
-                    : index === 1
+                `/assets/medalIcon/${index === 0
+                  ? "gold"
+                  : index === 1
                     ? "silver"
                     : index === 2 && "bronze"
                 }_medal.png`
@@ -34,9 +33,9 @@ const ArchetypeCard = ({ item, index, haveAMedal }) => {
             />
           </div>
         )}
-        <p className={`${index < 3 && "pl-2"}`}>{item.name}</p>
+        <p className={`${index < 3 && "pl-2"}`}>{archetype?.name}</p>
       </div>
-      {/* <div className="font-bold pt-3 text-center ellipsisText">{item.name}</div> */}
+      {/* <div className="font-bold pt-3 text-center ellipsisText">{archetype.name}</div> */}
     </div>
   );
 };

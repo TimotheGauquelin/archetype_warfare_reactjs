@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import Header from "../components/generic/header/Header";
 import SubtitleDivider from "../components/generic/SubtitleDivider";
@@ -21,7 +21,6 @@ const Archetype = () => {
   useEffect(() => {
     getArchetypeById(id, setArchetype);
     getCardTypes(setCardTypes);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -53,62 +52,45 @@ const Archetype = () => {
             <div className="py-5">
               <SubtitleDivider label="Toutes les cartes" displayDivider />
             </div>
-            {archetype?.decks?.map((deck, index) => {
-              return (
-                <div key={index}>
-                  <p
-                    className="inline-block p-2 font-bold"
-                    style={{
-                      borderRadius: "5px 5px 0px 0px",
-                      backgroundColor:
-                        deck.label === "Main Deck" ? "#fbf0e4" : "#f5e6fe",
-                      color: deck.label === "Main Deck" ? "#E89E2E" : "#DB73FF",
-                    }}
-                  >
-                    {deck.label}
-                  </p>
-                  <div
-                    className="bg-gray-100 p-4 grid grid-cols-12 gap-4 mb-4"
-                    style={{ border: "1px solid #EDEDFE" }}
-                  >
-                    {deck?.cards?.length > 0 ? (
-                      deck?.cards
-                        ?.sort((a, b) => {
-                          const cardTypeA = cardTypes?.find(
-                            (type) => type.label === a.card.card_type
-                          );
-                          const cardTypeB = cardTypes?.find(
-                            (type) => type.label === b.card.card_type
-                          );
+            <div
+              className="bg-gray-100 p-4 grid grid-cols-12 gap-4 mb-4"
+              style={{ border: "1px solid #EDEDFE" }}
+            >
+              {archetype?.cards?.length > 0 ? (
+                archetype?.cards
+                  ?.sort((a, b) => {
+                    const cardTypeA = cardTypes?.find(
+                      (type) => type.label === a.card.card_type
+                    );
+                    const cardTypeB = cardTypes?.find(
+                      (type) => type.label === b.card.card_type
+                    );
 
-                          if (cardTypeA && cardTypeB) {
-                            const numOrderComparison =
-                              cardTypeA.num_order - cardTypeB.num_order;
-                            if (numOrderComparison !== 0) {
-                              return numOrderComparison;
-                            }
+                    if (cardTypeA && cardTypeB) {
+                      const numOrderComparison =
+                        cardTypeA.num_order - cardTypeB.num_order;
+                      if (numOrderComparison !== 0) {
+                        return numOrderComparison;
+                      }
 
-                            const atkA = a.card.atk;
-                            const atkB = b.card.atk;
-                            if (atkA !== atkB) {
-                              return atkB - atkA;
-                            }
+                      const atkA = a.card.atk;
+                      const atkB = b.card.atk;
+                      if (atkA !== atkB) {
+                        return atkB - atkA;
+                      }
 
-                            const levelA = a.card.level || 0;
-                            const levelB = b.card.level || 0;
-                            return levelB - levelA;
-                          }
-                        })
-                        ?.map((card, index) => {
-                          return <Card key={index} card={card} />;
-                        })
-                    ) : (
-                      <ErrorText errorText="Il n'y a pas de carte dans cette archétype." />
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                      const levelA = a.card.level || 0;
+                      const levelB = b.card.level || 0;
+                      return levelB - levelA;
+                    }
+                  })
+                  ?.map((card, index) => {
+                    return <Card key={index} card={card} />;
+                  })
+              ) : (
+                <ErrorText errorText="Il n'y a pas de carte dans cette archétype." />
+              )}
+            </div>
           </div>
         </PageContentBlock>
       </div>

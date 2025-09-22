@@ -1,0 +1,25 @@
+# On utilise la même version de Node.js
+FROM node:20-alpine
+
+# On définit le dossier de travail
+WORKDIR /app
+
+# On copie les fichiers de dépendances
+# Pareil que pour le backend, juste la liste des ingrédients
+COPY package*.json ./
+
+# On installe les dépendances
+RUN npm install
+
+# On expose le port 3000
+EXPOSE 3000
+
+# On configure l'environnement pour le hot reload
+ENV CHOKIDAR_USEPOLLING=true
+ENV WATCHPACK_POLLING=true
+
+# On n'a pas besoin de copier le code car on va le monter en volume
+# React a déjà un système de hot reload intégré qui va surveiller les changements
+
+# On démarre l'application React en mode développement
+CMD ["npm", "start"] 

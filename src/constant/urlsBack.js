@@ -1,13 +1,10 @@
-export const URL_BACK_AUTHENTICATE = "/authenticate";
-export const URL_BACK_REGISTER = "/register";
-
 //ARCHETYPE
 
 export const URL_BACK_GET_ARCHETYPES = `/public/archetypes`;
 export const URL_BACK_GET_ARCHETYPE = (id) => `/public/archetypes/${id}`;
 export const URL_BACK_GET_FOUR_MOST_FAMOUS_ARCHETYPES = `/public/archetypes/fourMostFamousArchetypes`;
-export const URL_BACK_GET_RANDOM_ARCHETYPE = `/public/archetypes/randomArchetype`;
 export const URL_BACK_GET_COUNT_NUMBER_OF_ARCHETYPE_ACTIVE = `/public/archetypes/count`;
+export const URL_BACK_GET_RANDOM_ARCHETYPE = `archetypes/random`;
 
 //BANLIST
 
@@ -37,10 +34,12 @@ export const URL_BACK_CONFIRMATION_TOKEN = (token) =>
 
 //AUTHENTICATE
 export const URL_BACK_LOGIN = "/authenticate/login"
+export const URL_BACK_REGISTER = "/authenticate/register";
+
 
 //ARCHETYPE
 
-export const URL_BACK_SEARCH_ARCHETYPES = (size, pagination, name, era) => `/archetypes/search?size=${size}&page=${pagination}${name && `&name=${name}`}${era && `&era=${era}`}`
+export const URL_BACK_SEARCH_ARCHETYPES = (size, page, name, era, type, attribute, summonmecanic) => `/archetypes/search?${size && `size=${size}`}${page && `&page=${page}`}${name && `&name=${name}`}${era && `&era=${era}`}${type && `&type=${type}`}${attribute && `&attribute=${attribute}`}${summonmecanic && `&summonmechanic=${summonmecanic}`}`
 export const URL_BACK_GET_ARCHETYPE_BY_ID = (archetypeId) => `/archetypes/${archetypeId}`
 export const URL_BACK_GET_FIVE_MOST_FAMOUS_ARCHETYPES = `/archetypes/getFiveMostFamousArchetypes`
 export const URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES = `/archetypes/getFiveRandomHighlightedArchetypes`
@@ -70,7 +69,7 @@ export const URL_BACK_GET_ALL_ERAS = `/eras`
 
 // SUMMON MECHANIC
 
-export const URL_BACK_GET_ALL_SUMMON_MECHANICS = `/summonmechanics`
+export const URL_BACK_GET_ALL_SUMMON_MECHANICS = `/summon-mechanics`
 
 // TYPE
 
@@ -78,11 +77,11 @@ export const URL_BACK_GET_ALL_TYPES = `/types`
 
 // CARD TYPES
 
-export const URL_BACK_GET_ALL_CARD_TYPES = '/cardTypes'
+export const URL_BACK_GET_ALL_CARD_TYPES = '/card-types'
 
 // CARD STATUS
 
-export const URL_BACK_GET_ALL_CARD_STATUS = '/cardStatus'
+export const URL_BACK_GET_ALL_CARD_STATUS = '/card-statuses'
 
 // USER
 

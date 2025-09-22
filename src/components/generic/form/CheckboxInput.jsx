@@ -15,10 +15,8 @@ export const CheckboxInput = ({
       </label>
       <div className="flex grid grid-cols-12">
         {options.map((op, index) => {
-          const findIndex = data[attribute]?.findIndex(
-            (element) => {
-              return element.id === op.id
-            }
+          const isChecked = data[attribute]?.some(
+            (element) => element.id === op.id
           );
 
           return (
@@ -28,29 +26,32 @@ export const CheckboxInput = ({
             >
               <input
                 type="checkbox"
-                defaultChecked={condition && data[attribute][findIndex]?.label}
+                checked={isChecked}
                 value={op.id}
                 name={op.label}
-                onClick={(e) => {
-                  const value = e.target.value;
+                onChange={(e) => {
+                  const value = Number(e.target.value);
                   const isChecked = e.target.checked;
-                  console.log(isChecked);
+                  
                   setAction((prevState) => {
-                    const updateElement = [...prevState[attribute]];
+                    const updateElement = [...(prevState[attribute] || [])];
+                    
                     if (isChecked) {
+                      // Ajouter l'objet complet à la liste si pas déjà présent
                       if (!updateElement.some((item) => item.id === value)) {
-                        updateElement.push({ id: Number(value) });
+                        updateElement.push({ 
+                          id: value,
+                          label: op.label 
+                        });
                       }
                     } else {
-                      if (findIndex !== -1) {
-                        updateElement.splice(findIndex, 1);
+                      // Retirer l'objet de la liste
+                      const indexToRemove = updateElement.findIndex(
+                        (item) => item.id === value
+                      );
+                      if (indexToRemove !== -1) {
+                        updateElement.splice(indexToRemove, 1);
                       }
-                      // const index = updateElement.findIndex(
-                      //   (item) => item.id === value
-                      // );
-                      // if (index !== -1) {
-                      //   updateElement.splice(index, 1);
-                      // }
                     }
 
                     return {

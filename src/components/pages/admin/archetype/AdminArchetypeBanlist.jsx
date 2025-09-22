@@ -26,8 +26,7 @@ const AdminArchetypeBanlist = ({
   const updateBanlistCard = () => {
     currentBanlistCards.forEach((element) => {
       element["banlist"] = { id: activeBanlistId };
-      console.log(element);
-      api_aw.put(`/public/banlistCards`, element).then((response) => {});
+      api_aw.put(`/public/banlistCards`, element).then((response) => { });
     });
     history(-1);
   };
@@ -63,10 +62,9 @@ const AdminArchetypeBanlist = ({
         <div className="bg-white grid grid-cols-12 p-2 gap-2 rounded">
           {currentBanlistCards
             .sort(function (a, b) {
-              console.log(a);
               return (
                 orderedCardTypes.indexOf(a?.card?.cardType?.label) -
-                  orderedCardTypes.indexOf(b?.card?.cardType?.label) ||
+                orderedCardTypes.indexOf(b?.card?.cardType?.label) ||
                 a?.card?.level - b?.card?.level
               );
             })

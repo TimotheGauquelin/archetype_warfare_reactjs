@@ -1,7 +1,5 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import CheckboxSlider from "../../../generic/CheckboxSlider";
-import { URL_FRONT_ADMIN_ARCHETYPE_UPDATE_FORM } from "../../../../constant/urlsFront";
 
 const AdminArchetypePaginationTableBody = ({
   arrayItems,
@@ -34,7 +32,7 @@ const AdminArchetypePaginationTableBody = ({
                 .slice(0, 2)}
             </div>
             <div className={`col-span-1 px-3 py-4`}>
-              {item?.summonmechanics
+              {item?.summon_mechanics
                 ?.map((summonMechanic, index) => {
                   return (
                     <div key={index}>
@@ -88,7 +86,7 @@ const AdminArchetypePaginationTableBody = ({
               </p>
               <Link
                 to={`/admin/archetypes/update/${item.id}`}
-                // state={{ request: "put", id: item.id }}
+              // state={{ request: "put", id: item.id }}
               >
                 Modifier
               </Link>

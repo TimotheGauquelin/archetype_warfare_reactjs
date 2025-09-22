@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import AdminArchetypeFormikData from "./AdminArchetypeFormikData";
+import AdminArchetypeData from "./AdminArchetypeData";
 import { getAttributes } from "../../../../services/attribute";
 import { getTypes } from "../../../../services/type";
 import { getEras } from "../../../../services/era";
 import { getSummonMechanics } from "../../../../services/summonmechanic";
-import AdminArchetypeFormikCardData from "./AdminArchetypeFormikCardData";
+import AdminArchetypeCards from "./AdminArchetypeCards";
 
-const AdminArchetypeFormik = ({
+const AdminArchetypeForm = ({
   newArchetype,
   setNewArchetype,
   addArchetype,
@@ -26,7 +26,7 @@ const AdminArchetypeFormik = ({
 
   return (
     <div id="form" className="">
-      <AdminArchetypeFormikData
+      <AdminArchetypeData
         eras={eras}
         attributes={attributes}
         types={types}
@@ -35,7 +35,7 @@ const AdminArchetypeFormik = ({
         setNewArchetype={setNewArchetype}
       />
 
-      <AdminArchetypeFormikCardData
+      <AdminArchetypeCards
         newArchetype={newArchetype}
         setNewArchetype={setNewArchetype}
       />
@@ -44,6 +44,7 @@ const AdminArchetypeFormik = ({
         id="form"
         className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded"
         onClick={() => {
+          // console.log(newArchetype)
           addArchetype();
         }}
       >
@@ -53,4 +54,4 @@ const AdminArchetypeFormik = ({
   );
 };
 
-export default AdminArchetypeFormik;
+export default AdminArchetypeForm;

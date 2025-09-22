@@ -27,6 +27,8 @@ const AdminArchetypeUpdatePage = () => {
     cards: [],
   });
 
+  console.log(archetype)
+
   useEffect(() => {
     getArchetypeById(archetypeId, setArchetype);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,7 +47,7 @@ const AdminArchetypeUpdatePage = () => {
       <AdminArchetypeUpdateFormik
         archetype={archetype}
         setArchetype={setArchetype}
-        updateArchetype={() => {updateArchetype(archetypeId, archetype, navigate)}}
+        updateArchetype={() => { updateArchetype(archetypeId, archetype, navigate) }}
       />
       <ToastContainer />
     </AdminStructure>

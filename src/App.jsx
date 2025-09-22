@@ -3,6 +3,8 @@ import React, { Suspense, lazy } from "react";
 import Home from "./pages/Home";
 import MyProfil from "./pages/userProfil/MyProfil";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import TermsAndConditions from "./pages/TermsAndConditions";
 import AdminHome from "./pages/admin/AdminHome";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -37,6 +39,8 @@ import {
   URL_FRONT_DISCORD_CALLBACK,
   URL_FRONT_HOME,
   URL_FRONT_LOGIN,
+  URL_FRONT_REGISTER,
+  URL_FRONT_TERMS_AND_CONDITIONS,
   URL_FRONT_MY_PROFIL,
   URL_FRONT_MY_TOURNAMENTS,
   URL_FRONT_PASSWORD_LOST,
@@ -44,14 +48,12 @@ import {
   URL_FRONT_TOURNAMENTS,
 } from "./constant/urlsFront";
 import MyTournaments from "./pages/userProfil/myTournament/MyTournaments";
-import OngoingTournament from "./pages/userProfil/myTournament/OngoingTournament";
 import Loader from "./components/generic/Loader";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
 import AdminArchetypeAdd from "./pages/admin/adminArchetypes/AdminArchetypeAdd";
 import AdminUserAdd from "./pages/admin/adminUsers/AdminUserAdd";
 import PasswordReset from "./pages/PasswordReset";
 import PrivateRoute from "./components/generic/PrivateRoute";
-import AuthProvider from "./context/AuthProvider";
 import { ROLE_ADMIN } from "./utils/const/rolesConst";
 import DiscordLoginSuccesful from "./pages/DiscordLoginSuccesful";
 
@@ -60,7 +62,6 @@ const Archetypes = lazy(() => import("./pages/Archetypes"));
 
 const Root = () => {
   return (
-    <AuthProvider>
       <div className="relative">
         <BrowserRouter>
           <Routes>
@@ -73,6 +74,8 @@ const Root = () => {
               }
             />
             <Route exact path={URL_FRONT_LOGIN} element={<Login />} />
+            <Route exact path={URL_FRONT_REGISTER} element={<Register />} />
+            <Route exact path={URL_FRONT_TERMS_AND_CONDITIONS} element={<TermsAndConditions />} />
             <Route
               exact
               path={URL_FRONT_DISCORD_CALLBACK}
@@ -177,7 +180,6 @@ const Root = () => {
         </BrowserRouter>
         <PopUp />
       </div>
-    </AuthProvider>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../../../components/pages/admin/AdminStructure";
 import AdminArchetypeFilter from "../../../components/pages/admin/archetype/AdminArchetypeFilter";
@@ -8,20 +8,46 @@ import { getArchetypesWithCriteria } from "../../../services/archetype";
 import { URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM } from "../../../constant/urlsFront";
 
 const AdminArchetype = () => {
-  const [archetypes, setArchetypes] = useState([]);
-  const [pagination, setPagination] = useState(1);
-  const [pageSize] = useState(10);
-  const [criteria, setCriteria] = useState({
+  const [archetypes, setArchetypes] = useState([
+    {
+      attributes: [],
+      comment: "",
+      created_at: null,
+      era: {},
+      era_id: "",
+      id: "",
+      in_aw_date: "",
+      in_tcg_date: "",
+      is_active: true,
+      is_highlighted: true,
+      main_info: "",
+      name: "",
+      popularity_poll: "",
+      slider_info: "",
+      summon_mechanics: [],
+      types: [],
+      updated_at: null
+    }
+  ]);
+  const [pagination, setPagination] = useState({
+    total: 0,
+    totalPages: 0,
+    currentPage: 1,
+    pageSize: 30,
+  });
+  const [filters, setFilters] = useState({
     name: "",
     era: "",
     type: "",
     attribute: "",
     summonmechanic: "",
+    page: 1,
+    size: 30,
   });
   const [refresh, setRefresh] = useState(false);
 
   const resetAllFilters = () => {
-    setCriteria({
+    setFilters({
       name: "",
       era: "",
       type: "",
@@ -31,18 +57,11 @@ const AdminArchetype = () => {
     toast.success("Vous avez mis les filtres à leur état d'origine.");
   };
 
-  console.log(archetypes);
-
   useEffect(() => {
-    getArchetypesWithCriteria(
-      pageSize,
-      pagination,
-      criteria,
-      setArchetypes
-    );
+    getArchetypesWithCriteria(filters, setArchetypes, setPagination);
     setRefresh(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refresh, criteria]);
+  }, [refresh, filters]);
 
   return (
     <AdminStructure>
@@ -54,19 +73,19 @@ const AdminArchetype = () => {
       />
       <AdminArchetypeFilter
         resetAllFilters={() => resetAllFilters()}
-        criteria={criteria}
-        setCriteria={setCriteria}
+        criteria={filters}
+        setCriteria={setFilters}
         refresh={refresh}
         setRefresh={setRefresh}
       />
       <AdminArchetypePagination
         setRefresh={setRefresh}
-        currentPage={archetypes.currentPage}
+        currentPage={pagination?.currentPage}
         archetypes={archetypes}
         setPagination={setPagination}
-        archetypesTotalCount={archetypes?.totalItems}
-        totalPages={archetypes?.totalPages}
-        pageSize={archetypes.pageSize}
+        archetypesTotalCount={pagination?.total}
+        totalPages={pagination?.totalPages}
+        pageSize={pagination?.pageSize}
       />
       <ToastContainer />
     </AdminStructure>

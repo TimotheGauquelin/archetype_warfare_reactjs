@@ -3,7 +3,7 @@ import "../../../styles/components/page/admin/AdminSideBar.scss";
 import React from "react";
 import { FaHome } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
-import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ADMIN_BANLISTS, URL_FRONT_ADMIN_CARDS, URL_FRONT_ADMIN_HOME } from "../../../constant/urlsFront";
+import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ADMIN_CARDS, URL_FRONT_ADMIN_HOME } from "../../../constant/urlsFront";
 
 const sideBarCategories = [
   {
@@ -21,21 +21,21 @@ const sideBarCategories = [
     icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_ARCHETYPES,
   },
-  {
-    title: "Banlists",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-    url: URL_FRONT_ADMIN_BANLISTS,
-  },
-  {
-    title: "Utilisateurs",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-    url: "/admin/users",
-  },
-  {
-    title: "Fichiers",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-    url: "/admin/files",
-  },
+  // {
+  //   title: "Banlists",
+  //   icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+  //   url: URL_FRONT_ADMIN_BANLISTS,
+  // },
+  // {
+  //   title: "Utilisateurs",
+  //   icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+  //   url: "/admin/users",
+  // },
+  // {
+  //   title: "Fichiers",
+  //   icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+  //   url: "/admin/files",
+  // },
 ];
 
 const AdminSideBar = ({ displayedNavbar }) => {

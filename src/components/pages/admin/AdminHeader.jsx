@@ -1,11 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { URL_FRONT_HOME, URL_FRONT_MY_PROFIL } from "../../../constant/urlsFront";
-import AuthContext from "../../../context/AuthContext";
+import { URL_FRONT_MY_PROFIL } from "../../../constant/urlsFront";
+import { useSelector } from "react-redux";
 
 const AdminHeader = ({ displayedNavbar, setDisplayedNavbar, adminName }) => {
 
-  const {authUser} = useContext(AuthContext)
+  const authUser = useSelector((state) => state.user);
 
   return (
     <div className="flex items-center h-20 px-6 tablet:px-10 bg-white">

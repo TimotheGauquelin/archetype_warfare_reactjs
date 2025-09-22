@@ -45,7 +45,7 @@ const AdminUserPagination = ({
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <PaginationTableHead tableHeadItem={tableHeadItemArray} />
         <AdminUserPaginationTableBody
-          arrayItems={users.users}
+          arrayItems={users.data}
           setRefresh={setRefresh}
         />
       </div>

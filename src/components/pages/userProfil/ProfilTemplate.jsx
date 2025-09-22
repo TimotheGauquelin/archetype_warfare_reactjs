@@ -1,25 +1,25 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { FaEllipsisH } from "react-icons/fa";
 import NavSideItem from "./NavSideItem";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../../redux/apiCall/user";
 import {
   URL_FRONT_ADMIN_HOME,
   URL_FRONT_MY_PROFIL,
-  URL_FRONT_MY_TOURNAMENTS,
 } from "../../../constant/urlsFront";
-import AuthContext from "../../../context/AuthContext";
 import { ROLE_ADMIN } from "../../../utils/const/rolesConst";
+import { logOut } from "../../../services/auth";
+import { useDispatch, useSelector } from "react-redux";
 
 const ProfilTemplate = ({ children }) => {
   const [displayedNavBar, setDisplayedNavBar] = useState(true);
-  const { authUser } = useContext(AuthContext);
+  const authUser = useSelector((state) => state.user);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // const unlog = () => {
-  //   logout(dispatch, navigate);
-  // };
+  const handleLogout = () => {
+    logOut(dispatch, navigate);
+  };
 
   const navSideItems = [
     {
@@ -72,12 +72,13 @@ const ProfilTemplate = ({ children }) => {
               <NavSideItem url={URL_FRONT_ADMIN_HOME} label="Panneau Admin" />
             </ul>
           )}
-          <ul
-          // onClick={() => {
-          //   unlog();
-          // }}
-          >
-            <NavSideItem url="/deconnexion" label="Deconnexion" />
+          <ul>
+            <li
+              className="block p-2 hover:bg-blue-200 cursor-pointer"
+              onClick={handleLogout}
+            >
+              Déconnexion
+            </li>
           </ul>
         </div>
         <div className="col-span-10 bg-gray-100 p-2">{children}</div>

@@ -2,11 +2,9 @@ import { format } from "date-fns";
 import { enGB } from "date-fns/locale";
 import React from "react";
 import { Link } from "react-router-dom";
-import api_aw from "../../../api/api_aw";
 
 const AdminBanlistPaginationTableBody = ({
   arrayItems,
-  setRefresh,
 }) => {
   // const deleteBanlist = (id) => {
   //   api_aw.delete(`/public/banlists/${id}`).then((response) => {

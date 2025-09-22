@@ -17,7 +17,7 @@ const AdminUsers = () => {
   useEffect(() => {
     searchUsers(pageSize, pagination, criteria, setUsers);
     setRefresh(false);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh, criteria]);
 
   return (
@@ -30,12 +30,12 @@ const AdminUsers = () => {
       />
       <AdminUserPagination
         setRefresh={setRefresh}
-        currentPage={users.currentPage}
+        currentPage={users?.pagination?.currentPage}
         users={users}
         setPagination={setPagination}
-        usersTotalCount={users?.totalItems}
-        totalPages={users?.totalPages}
-        pageSize={users.pageSize}
+        usersTotalCount={users?.pagination?.totalItems}
+        totalPages={users?.pagination?.totalPages}
+        pageSize={users.pagination?.pageSize}
       />
     </AdminStructure>
   );

@@ -66,7 +66,7 @@ const AdminArchetypePagination = ({
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <PaginationTableHead tableHeadItem={tableHeadItemArray} />
         <AdminArchetypePaginationTableBody
-          arrayItems={archetypes?.archetypes}
+          arrayItems={archetypes}
           switchIsHighlighted={switchIsHighlighted}
           switchIsActive={switchIsActive}
           deleteArchetype={deleteArchetype}

@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/generic/header/Header";
 import Slider from "../components/generic/Slider";
 
 import "../styles/Home.scss";
-import Loader from "../components/generic/Loader";
 import PageContentBlock from "../components/generic/PageContentBlock";
 import { SwiperSlide } from "swiper/react";
 import Slide from "../components/pages/home/Slide";
@@ -13,7 +12,6 @@ import {
   getFiveMostFamousArchetypes,
   getFiveRandomHighlightedArchetypes,
 } from "../services/archetype";
-import AuthContext from "../context/AuthContext";
 
 const Home = () => {
   const [fiveMostFamousArchetypes, setFiveMostFamousArchetypes] = useState([]);
@@ -27,8 +25,6 @@ const Home = () => {
     name: "Magicien Sombre",
     sliderInfo: "Maitrisez la magie des cartes de Yugi",
   };
-
-  const { authUser } = useContext(AuthContext)
 
   useEffect(() => {
     getFiveMostFamousArchetypes(setFiveMostFamousArchetypes);

@@ -27,7 +27,7 @@ const AdminUserFormik = () => {
             attribute="username"
             data={user}
             setAction={setUser}
-            // condition="put"
+          // condition="put"
           />
           <Input
             label="Email"
@@ -38,7 +38,7 @@ const AdminUserFormik = () => {
             attribute="email"
             data={user}
             setAction={setUser}
-            // condition="put"
+          // condition="put"
           />
         </div>
       </div>
@@ -47,7 +47,6 @@ const AdminUserFormik = () => {
         id="form"
         className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded"
         onClick={() => {
-          console.log(user);
           addUser(user, navigate);
         }}
       >

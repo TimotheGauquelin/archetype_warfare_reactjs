@@ -23,16 +23,22 @@ const AdminCards = () => {
     max_def: "",
     attribute: "",
   });
+
+  const [pagination, setPagination] = useState({
+    total: 0,
+    totalPages: 0,
+    currentPage: 1,
+    pageSize: 30,
+  });
   const [size] = useState(30);
   const [page, setPage] = useState(1);
 
   const [apiCards, setApiCards] = useState([]);
   const [cardTypes, setCardTypes] = useState([]);
-  const [attributes, setAttributes] = useState([])
+  const [attributes, setAttributes] = useState([]);
   const [databaseUpdateLoader, setDatabaseUpdateLoader] = useState(false);
   const [refresh, setRefresh] = useState(false);
 
-  
   const getApiCards = () => {
     axios
       .get(`https://db.ygoprodeck.com/api/v7/cardinfo.php`)
@@ -59,13 +65,13 @@ const AdminCards = () => {
           // type: card.type.includes("Monster")
           //   ? card.race
           //   : null,
-          // effect: card.desc ? card.desc : null,
+          description: card.desc ? card.desc : null,
           img_url: card?.card_images[0]?.image_url,
           card_type: card.type.includes("Monster")
             ? card.type
             : card.type.includes("Spell") || card.type.includes("Trap")
-            ? `${card.race} ${card.type.replace(" Card", "")}`
-            : null,
+              ? `${card.race} ${card.type.replace(" Card", "")}`
+              : null,
         };
         cardsSchema.push(selectedCard);
       }
@@ -103,7 +109,20 @@ const AdminCards = () => {
   };
 
   useEffect(() => {
-    searchCards(setCards, size, page, criteria.name, criteria.card_type, criteria.level, criteria.min_atk, criteria.max_atk, criteria.min_def, criteria.max_def, criteria.attribute);
+    searchCards(
+      setCards,
+      setPagination,
+      size,
+      page,
+      criteria.name,
+      criteria.card_type,
+      criteria.level,
+      criteria.min_atk,
+      criteria.max_atk,
+      criteria.min_def,
+      criteria.max_def,
+      criteria.attribute
+    );
     getCardTypes(setCardTypes);
     getAttributes(setAttributes);
     getApiCards();
@@ -119,9 +138,8 @@ const AdminCards = () => {
         actionButton={() => {
           updateDatabase();
         }}
-        actionButtonColor={`${
-          databaseUpdateLoader ? "bg-gray-200" : "bg-green-500"
-        } p-2 rounded text-white font-bold`}
+        actionButtonColor={`${databaseUpdateLoader ? "bg-gray-200" : "bg-green-500"
+          } p-2 rounded text-white font-bold`}
         actionButtonText="Mettre à jour la BDD"
         actionButtonDisabled={databaseUpdateLoader}
       />
@@ -137,10 +155,10 @@ const AdminCards = () => {
             attributes={attributes}
           />
 
-          {cards?.cards?.length > 0 && (
+          {cards?.length > 0 && (
             <div className="bg-slate-200 rounded p-2 ">
               <div className="grid grid-cols-12 gap-2">
-                {cards.cards.map((card) => {
+                {cards?.map((card) => {
                   return (
                     <div key={card.id} className="col-span-2 ">
                       <img
@@ -155,13 +173,14 @@ const AdminCards = () => {
               </div>
             </div>
           )}
+
           <AdminCardsPagination
-            currentPage={cards.currentPage}
+            currentPage={pagination.currentPage}
             setPagination={setPage}
             setRefresh={setRefresh}
-            itemsTotalCount={cards.totalItems}
-            totalPages={cards.totalPages}
-            pageSize={cards.pageSize}
+            itemsTotalCount={pagination.total}
+            totalPages={pagination.totalPages}
+            pageSize={pagination.pageSize}
           />
         </div>
       ) : (

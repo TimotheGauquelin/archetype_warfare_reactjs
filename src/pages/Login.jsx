@@ -1,21 +1,20 @@
 /* eslint-disable no-unused-vars */
 
-import React, { useContext } from "react";
+import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { URL_FRONT_PASSWORD_LOST } from "../constant/urlsFront";
+import { useDispatch } from "react-redux";
+import {
+  URL_FRONT_PASSWORD_LOST,
+  URL_FRONT_REGISTER,
+} from "../constant/urlsFront";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { InputPassword } from "../components/generic/form/InputPassword.jsx";
 import Button from "../components/generic/Button";
 import { Input } from "../components/generic/form/Input.jsx";
 import { logIn } from "../services/auth.js";
-import AuthContext from "../context/AuthContext.js";
 import ErrorText from "../components/generic/ErrorText.jsx";
-import api_aw from "../api/api_aw.jsx";
-import { SiDiscord } from "react-icons/si";
-import ButtonWithIcon from "../components/generic/ButtonWithIcon.jsx";
-import SubtitleDivider from "../components/generic/SubtitleDivider.jsx";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,8 +25,7 @@ const Login = () => {
   });
 
   const [error, setError] = useState("");
-
-  const { setAuthUser } = useContext(AuthContext);
+  const dispatch = useDispatch();
 
   return (
     <div className="bg-graybackground w-screen h-screen fixed left-0 top-0 flex justify-center items-center">
@@ -65,32 +63,27 @@ const Login = () => {
           className="bg-black text-white w-full p-2 mb-2 rounded-md"
           // disabled={isFetching || onLoading}
           action={() => {
-            logIn(log, setAuthUser, navigate, setError);
+            logIn(log, dispatch, navigate, setError);
           }}
         />
-        <div className="flex-grow h-[1px] bg-gray-300"> </div>
-        <ButtonWithIcon
-          className="flex justify-center items-center my-2 text-white bg-[#7984F5] hover:bg-[#5B66C3] border border-gray-300 rounded-md shadow-md px-6 py-2 text-sm font-medium"
-          action={() => {
-            api_aw
-              .get("/authenticate/discord/redirect")
-              .then((response) => {
-                window.location.href = response.data.url;
-                // window.location.href = `https://discord.com/oauth2/authorize?client_id=1285141964190384128&scope=bot&permissions=8&guild_id=921848766913450004`;
-              })
-              .catch((error) => setError(error.response.data.message));
-          }}
-        >
-          <SiDiscord />
-          <span className="ml-2">Continuer avec Discord</span>
-        </ButtonWithIcon>
+        <div className="flex-grow h-[1px] m-2 bg-gray-300"> </div>
 
-        <div className="text-center ">
+        <div className="text-center space-y-2">
           <Button
             buttonText="Mot de passe oublié ?"
             className="text-sm text-blue-900 cursor-pointer hover:underline"
             action={() => navigate(URL_FRONT_PASSWORD_LOST)}
           />
+          <div>
+            <span className="text-sm text-gray-600">
+              Pas encore de compte ?{" "}
+            </span>
+            <Button
+              buttonText="S'inscrire"
+              className="text-sm text-blue-900 cursor-pointer hover:underline"
+              action={() => navigate(URL_FRONT_REGISTER)}
+            />
+          </div>
         </div>
         <ToastContainer />
       </div>

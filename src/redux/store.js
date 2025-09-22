@@ -11,8 +11,6 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import eraSlice from "./slice/eraSlice";
-import summonMechanicSlice from "./slice/summonMechanicSlice";
 import userSlice from "./slice/userSlice";
 
 const persistConfig = {
@@ -23,8 +21,6 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   user: userSlice,
-  eras: eraSlice,
-  summonMechanics: summonMechanicSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

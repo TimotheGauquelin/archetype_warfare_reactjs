@@ -1,8 +1,8 @@
 import React from "react";
 import { SwitchInput } from "../../../generic/form/SwitchInput";
 import { Input } from "../../../generic/form/Input";
-import SelectInput from "../../../generic/form/SelectInput";
 import { CheckboxInput } from "../../../generic/form/CheckboxInput";
+import { DateInput } from "../../../generic/form/DateInput";
 
 const AdminArchetypeUpdateFormikData = ({
   eras,
@@ -46,17 +46,20 @@ const AdminArchetypeUpdateFormikData = ({
           setAction={setArchetype}
           condition="put"
         />
-        <SelectInput
-          label="Epoque d'apparition"
-          options={eras}
-          inputName="era"
-          required
-          colSpanWidth="3"
-          attribute="era_id"
-          data={archetype}
-          setAction={setArchetype}
-          condition="put"
-        />
+        <div className={`flex flex-col col-span-3`}>
+          <label className="mt-2 font-medium">
+            <span>Ere:</span>
+            <span className="text-red-500 font-bold">*</span>
+          </label>
+          <select className="h-full p-2 rounded-md" value={archetype?.era?.id} onChange={(e) => {
+            setArchetype((prevState) => ({ ...prevState, era_id: Number(e.target.value) }))
+          }}>
+            <option value="" disabled>------</option>
+            {eras?.map((option, index) => {
+              return <option key={index} value={option.id}>{option.label}</option>;
+            })}
+          </select>
+        </div>
         <Input
           label="Point de popularité"
           required
@@ -70,7 +73,7 @@ const AdminArchetypeUpdateFormikData = ({
         />
       </div>
       <div className="tablet:grid tablet:grid-cols-12 tablet:gap-4">
-        <Input
+        <DateInput
           label="Date d'apparition en TCG"
           required
           inputType="date"
@@ -81,7 +84,7 @@ const AdminArchetypeUpdateFormikData = ({
           setAction={setArchetype}
           condition="put"
         />
-        <Input
+        <DateInput
           label="Date d'apparition AW"
           required
           inputType="date"
@@ -138,7 +141,7 @@ const AdminArchetypeUpdateFormikData = ({
         required
         options={summonMechanics}
         colSpanWidth
-        attribute="summonmechanics"
+        attribute="summon_mechanics"
         data={archetype}
         setAction={setArchetype}
         condition="put"

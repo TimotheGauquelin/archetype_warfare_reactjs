@@ -1,10 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import AuthContext from "../../context/AuthContext";
 import { URL_FRONT_HOME } from "../../constant/urlsFront";
+import { useSelector } from "react-redux";
 
 const PrivateRoute = ({allowedRoles}) => {
-  const { authUser } = useContext(AuthContext)
+  const authUser = useSelector((state) => state.user);
+
   const hasRoles = authUser?.roles?.some((role) => allowedRoles.includes(role));
 
   return hasRoles ? <Outlet /> : <Navigate to={URL_FRONT_HOME} />;

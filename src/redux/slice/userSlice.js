@@ -1,55 +1,42 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  isAuthenticated: false,
+  id: null,
+  username: null,
+  email: null,
+  roles: [],
+  token: null
+};
+
 const userSlice = createSlice({
   name: "user",
-  initialState: {
-    currentUser: null,
-    token: null,
-    isFetching: false,
-    error: false,
-    isResetingPassword: false,
-  },
+  initialState,
   reducers: {
-    loginStart: (state) => {
-      state.isFetching = true;
+    setUser: (state, action) => {
+      state.isAuthenticated = action.payload.isAuthenticated;
+      state.id = action.payload.id;
+      state.username = action.payload.username;
+      state.email = action.payload.email;
+      state.roles = action.payload.roles;
+      state.token = action.payload.token;
     },
-    loginSuccess: (state, action) => {
-      state.isFetching = false;
-      state.isResetingPassword = false;
-      state.token = action.payload;
-      state.currentUser = action.payload;
-    },
-    loginFailure: (state) => {
-      state.isFetching = false;
-      state.error = true;
-    },
-    logOut: (state) => {
-      state.currentUser = null;
+    clearUser: (state) => {
+      state.isAuthenticated = false;
+      state.id = null;
+      state.username = null;
+      state.email = null;
+      state.roles = [];
       state.token = null;
     },
-    resetPasswordStart: (state) => {
-      state.isFetching = true;
-      state.isResetingPassword = true;
-    },
-    resetPasswordSent: (state, action) => {
-      state.isFetching = false;
-    },
-
-    resetPasswordFailure: (state) => {
-      state.isFetching = false;
-      state.isResetingPassword = false;
-      state.error = true;
-    },
-  },
+    updateUser: (state, action) => {
+      state.username = action.payload.username;
+      state.email = action.payload.email;
+      state.roles = action.payload.roles;
+    }
+  }
 });
 
-export const {
-  loginStart,
-  loginSuccess,
-  loginFailure,
-  logOut,
-  resetPasswordStart,
-  resetPasswordSent,
-  resetPasswordFailure,
-} = userSlice.actions;
+export const { setUser, clearUser, updateUser } = userSlice.actions;
+
 export default userSlice.reducer;

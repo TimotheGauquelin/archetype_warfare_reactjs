@@ -1,15 +1,16 @@
 import api_aw from "../api/api_aw";
-import { URL_BACK_ADD_ARCHETYPE, URL_BACK_DELETE_ARCHETYPE, URL_BACK_GET_ARCHETYPE_BY_ID, URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES, URL_BACK_GET_FIVE_MOST_FAMOUS_ARCHETYPES, URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES, URL_BACK_RESET_POPULARITY, URL_BACK_SEARCH_ARCHETYPES, URL_BACK_SWITCH_ALL_TO_IS_NOT_HIGHLIGHTED, URL_BACK_SWITCH_ALL_TO_IS_UNACTIVE, URL_BACK_SWITCH_IS_ACTIVE, URL_BACK_SWITCH_IS_HIGHLIGHTED, URL_BACK_UPDATE_ARCHETYPE } from "../constant/urlsBack";
-import { URL_FRONT_ADMIN_ARCHETYPES } from "../constant/urlsFront";
+import { URL_BACK_ADD_ARCHETYPE, URL_BACK_DELETE_ARCHETYPE, URL_BACK_GET_ARCHETYPE_BY_ID, URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES, URL_BACK_GET_FIVE_MOST_FAMOUS_ARCHETYPES, URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES, URL_BACK_GET_RANDOM_ARCHETYPE, URL_BACK_RESET_POPULARITY, URL_BACK_SEARCH_ARCHETYPES, URL_BACK_SWITCH_ALL_TO_IS_NOT_HIGHLIGHTED, URL_BACK_SWITCH_ALL_TO_IS_UNACTIVE, URL_BACK_SWITCH_IS_ACTIVE, URL_BACK_SWITCH_IS_HIGHLIGHTED, URL_BACK_UPDATE_ARCHETYPE } from "../constant/urlsBack";
+import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ARCHETYPE } from "../constant/urlsFront";
 
-export const getArchetypesWithCriteria = (size, pagination, criteria, setArchetypes) => {
+export const getArchetypesWithCriteria = (criteria, setArchetypes, setPagination) => {
     api_aw
         .get(
-            URL_BACK_SEARCH_ARCHETYPES(size, pagination, criteria.name, criteria.era)
+            URL_BACK_SEARCH_ARCHETYPES(criteria.size, criteria.page, criteria.name, criteria.era, criteria.type, criteria.attribute, criteria.summonmechanic)
         )
         .then((response) => {
             if (response.status === 200) {
-                setArchetypes(response.data)
+                setArchetypes(response.data.data)
+                setPagination(response.data.pagination);
             }
         });
 };
@@ -54,12 +55,22 @@ export const getEightMostRecentArchetypes = (setMostRecentArchetypes) => {
     }
 };
 
+export const getRandomArchetype = (navigate) => {
+    try {
+        api_aw.get(URL_BACK_GET_RANDOM_ARCHETYPE).then((response) => {
+            navigate(URL_FRONT_ARCHETYPE(response.data.id));
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 // ADD
 
 export const addArchetype = (newArchetype, navigate) => {
+    console.log("icii", newArchetype);
     try {
         api_aw.post(URL_BACK_ADD_ARCHETYPE, newArchetype).then((response) => {
-            console.log(response);
             if (response.status === 201) {
                 navigate(URL_FRONT_ADMIN_ARCHETYPES);
             }

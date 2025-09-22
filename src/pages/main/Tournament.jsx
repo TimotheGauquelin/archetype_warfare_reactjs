@@ -21,25 +21,7 @@ const Tournament = () => {
   var userStatusInsideTournament = tournament?.players?.find(
     (player) => player.id === decoded.idUser
   );
-
-  // function seeding(numPlayers) {
-  //   var rounds = Math.log(numPlayers) / Math.log(2) - 1;
-  //   var pls = [1, 2];
-  //   for (var i = 0; i < rounds; i++) {
-  //     pls = nextLayer(pls);
-  //   }
-  //   return pls;
-  //   function nextLayer(pls) {
-  //     var out = [];
-  //     var length = pls.length * 2 + 1;
-  //     pls.forEach(function (d) {
-  //       out.push(d);
-  //       out.push(length - d);
-  //     });
-  //     return out;
-  //   }
-  // }
-
+  
   const getTournament = () => {
     api_aw.get(`/public/tournaments/${id}`).then((response) => {
       if (response.status === 200) {

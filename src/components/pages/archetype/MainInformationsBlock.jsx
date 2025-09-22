@@ -2,7 +2,6 @@ import React from "react";
 import Progress from "./Progress";
 
 const MainInformationsBlock = ({ archetype, performancesLabel }) => {
-
   return (
     <div
       className="bg-white flex flex-col lscreen:flex-row w-full mx-auto shadow-lg rounded-xl inset-x-0 lscreen:absolute p-5 lscreen:max-w-containerSize m-auto"

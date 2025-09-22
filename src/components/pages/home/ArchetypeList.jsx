@@ -28,14 +28,14 @@ const ArchetypeList = ({
           dataArray?.map((archetype, index) => {
             return (
               <Link
-                to={`/archetype/${archetype.id}`}
-                state={{ id: archetype.id }}
+                to={`/archetype/${archetype?.id}`}
+                state={{ id: archetype?.id }}
                 key={index}
                 className={`col-span-6 sscreen:col-span-4 lscreen:col-span-3 bg-white p-3 rounded-lg aspect-square cardShadow`}
-                onClick={() => increasePopularityPoll(archetype.id)}
+                onClick={() => increasePopularityPoll(archetype?.id)}
               >
                 <ArchetypeCard
-                  item={archetype}
+                  archetype={archetype}
                   index={index}
                   haveAMedal={haveMedal}
                 />

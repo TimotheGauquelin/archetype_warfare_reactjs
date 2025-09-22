@@ -91,7 +91,7 @@ const AdminArchetypeFilter = ({
             </option>
             {attributes.map((attribute, index) => {
               return (
-                <option key={index} value={attribute.id}>
+                <option key={index} value={attribute.label}>
                   {attribute.label}
                 </option>
               );
@@ -112,7 +112,7 @@ const AdminArchetypeFilter = ({
             </option>
             {types.map((type, index) => {
               return (
-                <option key={index} value={type.id}>
+                <option key={index} value={type.label}>
                   {type.label}
                 </option>
               );
@@ -121,11 +121,12 @@ const AdminArchetypeFilter = ({
           <select
             value={criteria.summonmechanic}
             className="col-span-2 p-2 rounded"
-            onChange={(e) =>
+            onChange={(e) => {
               setCriteria((prevState) => ({
                 ...prevState,
                 summonmechanic: e.target.value,
               }))
+            }
             }
           >
             <option value="" defaultChecked>
@@ -133,7 +134,7 @@ const AdminArchetypeFilter = ({
             </option>
             {summonMechanics.map((sm, index) => {
               return (
-                <option key={index} value={sm.id}>
+                <option key={index} value={sm.label}>
                   {sm.label}
                 </option>
               );

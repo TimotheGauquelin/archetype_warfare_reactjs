@@ -1,10 +1,13 @@
 export const URL_FRONT_HOME = "/";
 export const URL_FRONT_LOGIN = "/login";
+export const URL_FRONT_REGISTER = "/register";
+export const URL_FRONT_TERMS_AND_CONDITIONS = "/terms-and-conditions";
 export const URL_FRONT_DISCORD_CALLBACK = "/login/discord/callback";
 export const URL_FRONT_ABOUT = "/about";
 export const URL_FRONT_PASSWORD_LOST = "/password-lost";
 export const URL_FRONT_PASSWORD_RESET = "/password-reset/:resetToken";
 export const URL_FRONT_ARCHETYPES = "/archetypes";
+export const URL_FRONT_ARCHETYPE = (id) => `/archetype/${id}`;
 export const URL_FRONT_TOURNAMENTS = "/tournaments";
 export const URL_FRONT_BANLIST = "/banlist";
 

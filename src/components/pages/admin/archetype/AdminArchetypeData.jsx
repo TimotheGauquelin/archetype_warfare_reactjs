@@ -1,10 +1,9 @@
 import React from "react";
 import { SwitchInput } from "../../../generic/form/SwitchInput";
 import { Input } from "../../../generic/form/Input";
-import SelectInput from "../../../generic/form/SelectInput";
 import { CheckboxInput } from "../../../generic/form/CheckboxInput";
 
-const AdminArchetypeFormikData = ({
+const AdminArchetypeData = ({
   eras,
   attributes,
   types,
@@ -42,15 +41,32 @@ const AdminArchetypeFormikData = ({
           attribute="name"
           setAction={setNewArchetype}
         />
-        <SelectInput
+        <select 
+          name="era" 
+          value={newArchetype.era?.id || ""} 
+          onChange={(e) => {
+            const selectedOption = eras.find(option => option.id === Number(e.target.value));
+            setNewArchetype((prevState) => ({
+              ...prevState, 
+              era: selectedOption ? { id: selectedOption.id, label: selectedOption.label } : null
+            }));
+          }}
+        >
+          <option value="" disabled>------</option>
+          {eras.map((option, index) => {
+            return <option key={index} value={option.id}>{option.label}</option>;
+          })}
+        </select>
+        {/* <SelectInput
           label="Epoque d'apparition"
           options={eras}
           inputName="era"
           required
           colSpanWidth="3"
-          attribute="era_id"
+          attribute="era"
+          data={newArchetype}
           setAction={setNewArchetype}
-        />
+        /> */}
         <Input
           label="Point de popularité"
           required
@@ -64,7 +80,7 @@ const AdminArchetypeFormikData = ({
       </div>
       <div className="tablet:grid tablet:grid-cols-12 tablet:gap-4">
         <Input
-          label="Date d'apparition en TCG"
+          label="Date d'apparition TCG"
           required
           inputType="date"
           inputName="inTCGDate"
@@ -92,6 +108,7 @@ const AdminArchetypeFormikData = ({
           inputName="mainInfo"
           colSpanWidth="12"
           attribute="main_info"
+          data={newArchetype}
           setAction={setNewArchetype}
         />
       </div>
@@ -103,6 +120,7 @@ const AdminArchetypeFormikData = ({
           inputName="sliderInfo"
           colSpanWidth="12"
           attribute="slider_info"
+          data={newArchetype}
           setAction={setNewArchetype}
         />
       </div>
@@ -113,6 +131,7 @@ const AdminArchetypeFormikData = ({
           inputName="comment"
           colSpanWidth="12"
           attribute="comment"
+          data={newArchetype}
           setAction={setNewArchetype}
         />
       </div>
@@ -123,7 +142,7 @@ const AdminArchetypeFormikData = ({
         required
         options={summonMechanics}
         colSpanWidth
-        attribute="summonmechanics"
+        attribute="summon_mechanics"
         data
         setAction={setNewArchetype}
       />
@@ -162,4 +181,4 @@ const AdminArchetypeFormikData = ({
   );
 };
 
-export default AdminArchetypeFormikData;
+export default AdminArchetypeData;

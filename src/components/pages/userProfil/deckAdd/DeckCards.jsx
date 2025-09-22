@@ -5,7 +5,6 @@ const DeckCards = ({ deckCards, setDeckCards, cardTypes, extraDeck }) => {
     let total = 0;
 
     deckCards[deckInstance]?.cards?.forEach((card) => {
-      console.log(card);
       switch (cardsOfDeck) {
         case "total":
           return (total = total + card.quantity);

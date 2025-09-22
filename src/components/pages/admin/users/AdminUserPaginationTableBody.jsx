@@ -1,7 +1,4 @@
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import React from "react";
-import { Link } from "react-router-dom";
 import CheckboxSlider from "../../../generic/CheckboxSlider";
 import { switchIsActive, switchIsForbidden } from "../../../../services/user";
 

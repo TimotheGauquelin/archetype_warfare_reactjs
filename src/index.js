@@ -10,9 +10,9 @@ const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
 
 root.render(
-  // <Provider store={store}>
-    // <PersistGate loading={null} persistor={persistor}>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
       <App />
-    // </PersistGate>
-  // </Provider>
+    </PersistGate>
+  </Provider>
 );
