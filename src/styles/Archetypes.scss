@@ -1,7 +1,21 @@
 .imageBackground {
   background-image: url("../../public/assets/archetypes_bg.svg");
   background-size: cover;
-  object-fit: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  position: relative;
+  
+  @media (max-width: 768px) {
+    background-attachment: scroll;
+    background-size: cover;
+    min-height: 80vh;
+  }
+  
+  @media (max-width: 480px) {
+    min-height: 70vh;
+  }
 }
 
 .inputBlock {

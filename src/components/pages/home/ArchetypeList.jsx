@@ -12,16 +12,14 @@ const ArchetypeList = ({
   subTitleDividerText,
   haveMedal,
 }) => {
-  const increasePopularityPoll = (archetypeId) => {
-    api_aw.put(`/public/archetypes/${archetypeId}/increaseArchetypePopularity`);
-  };
+  // const increasePopularityPoll = (archetypeId) => {
+  //   api_aw.put(`/archetypes/${archetypeId}/increaseArchetypePopularity`);
+  // };
 
   return (
     <div className="w-full m-auto mb-5">
       {subTitleDividerText && (
-        <div className="pb-5 mb-2">
           <SubtitleDivider displayDivider label={subTitleDividerText} />
-        </div>
       )}
       <div className="grid pb-5 grid-cols-12 gap-4 ">
         {dataArray?.length > 0 ? (
@@ -32,7 +30,7 @@ const ArchetypeList = ({
                 state={{ id: archetype?.id }}
                 key={index}
                 className={`col-span-6 sscreen:col-span-4 lscreen:col-span-3 bg-white p-3 rounded-lg aspect-square cardShadow`}
-                onClick={() => increasePopularityPoll(archetype?.id)}
+                // onClick={() => increasePopularityPoll(archetype?.id)}
               >
                 <ArchetypeCard
                   archetype={archetype}

@@ -1,5 +1,5 @@
 import api_aw from "../api/api_aw";
-import { URL_BACK_ADD_USER, URL_BACK_DELETE_USER, URL_BACK_GET_ALL_USERS, URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN, URL_BACK_SEARCH_USERS, URL_BACK_SWITCH_USER_IS_ACTIVE, URL_BACK_SWITCH_USER_IS_FORBIDDEN, URL_BACK_UPDATE_PASSWORD } from "../constant/urlsBack";
+import { URL_BACK_ADD_USER, URL_BACK_CREATE_USER_BY_ADMIN, URL_BACK_DELETE_USER, URL_BACK_GET_ALL_USERS, URL_BACK_GET_USER_BY_ID, URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN, URL_BACK_SEARCH_USERS, URL_BACK_SWITCH_USER_IS_ACTIVE, URL_BACK_SWITCH_USER_IS_BANNED, URL_BACK_UPDATE_PASSWORD, URL_BACK_UPDATE_USER_BY_ADMIN } from "../constant/urlsBack";
 import { URL_FRONT_ADMIN_USERS, URL_FRONT_HOME, URL_FRONT_LOGIN } from "../constant/urlsFront";
 
 /**
@@ -35,6 +35,13 @@ export const searchUsers = (size, pagination, criteria, setUsers) => {
     });
 };
 
+/**
+ * Get user by reset password token.
+ * @param {function} setUser - Hook to set the user.
+ * @param {string} resetPasswordToken - Reset password token.
+ * @param {function} navigate - Hook to navigate.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
 export const getUserByResetPasswordToken = (setUser, resetPasswordToken, navigate) => {
   api_aw
     .get(
@@ -50,6 +57,28 @@ export const getUserByResetPasswordToken = (setUser, resetPasswordToken, navigat
     })
 };
 
+/**
+ * Get user by id.
+ * @param {string | number} userId - User id.
+ * @param {function} setUser - Hook to set user.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
+export const getUserById = (userId, setUser) => {
+  api_aw
+    .get(URL_BACK_GET_USER_BY_ID(userId))
+    .then((response) => {
+      if (response.status === 200) {
+        setUser(response.data)
+      }
+    }).catch((error) => console.log(error));
+}
+
+/**
+ * Add a user.
+ * @param {object} newUser - New user object.
+ * @param {function} navigate - Hook to navigate.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
 export const addUser = (newUser, navigate) => {
   api_aw
     .post(URL_BACK_ADD_USER, newUser)
@@ -62,6 +91,24 @@ export const addUser = (newUser, navigate) => {
     .catch((error) => console.log(error));
 };
 
+export const createUserByAdmin = (newUser, navigate) => {
+  api_aw
+    .post(URL_BACK_CREATE_USER_BY_ADMIN, newUser)
+    .then((response) => {
+      console.log("là");
+      if (response.status === 201) {
+        navigate(URL_FRONT_ADMIN_USERS);
+      }
+    })
+    .catch((error) => console.log(error));
+};
+
+/**
+ * Switch user 'is active' attribute.
+ * @param {string} userId - User id.
+ * @param {function} setRefresh - Hook to set refresh.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
 export const switchIsActive = (userId, setRefresh) => {
   api_aw
     .put(URL_BACK_SWITCH_USER_IS_ACTIVE(userId))
@@ -73,9 +120,15 @@ export const switchIsActive = (userId, setRefresh) => {
     .catch((error) => console.log(error));
 };
 
-export const switchIsForbidden = (userId, setRefresh) => {
+/**
+ * Switch user 'is banned' attribute.
+ * @param {string} userId - User id.
+ * @param {function} setRefresh - Hook to set refresh.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
+export const switchIsBanned = (userId, setRefresh) => {
   api_aw
-    .put(URL_BACK_SWITCH_USER_IS_FORBIDDEN(userId))
+    .put(URL_BACK_SWITCH_USER_IS_BANNED(userId))
     .then((response) => {
       if (response.status === 200) {
         setRefresh(true);
@@ -84,6 +137,14 @@ export const switchIsForbidden = (userId, setRefresh) => {
     .catch((error) => console.log(error));
 };
 
+/**
+ * Update user password.
+ * @param {string} userId - User id.
+ * @param {object} form - Form object.
+ * @param {function} navigate - Hook to navigate.
+ * @param {function} setError - Hook to set error.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
 export const updatePassword = (userId, form, navigate, setError) => {
   api_aw
     .put(URL_BACK_UPDATE_PASSWORD(userId), form)
@@ -97,6 +158,22 @@ export const updatePassword = (userId, form, navigate, setError) => {
       setError(error.response.data.errors)
     });
 };
+
+export const updateUserByAdmin = (userId, form, navigate, toast) => {
+  console.log("FORM====", form);
+  api_aw
+    .put(URL_BACK_UPDATE_USER_BY_ADMIN(userId), form)
+    .then((response) => {
+      if (response.status === 200) {
+        navigate(URL_FRONT_ADMIN_USERS);
+        toast.success("Utilisateur modifié avec succès");
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      toast.error(error.response.data.message);
+    });
+}
 
 /*
 * Retrieve all users.
@@ -116,4 +193,15 @@ export const deleteUser = (userId, setDisplayDeletePopUp, setAuthUser, navigate)
       }
     })
     .then((error) => console.log(error));
+}
+
+export const deleteUserByAdmin = (userId, setRefresh) => {
+  api_aw
+    .delete(URL_BACK_DELETE_USER(userId))
+    .then((response) => {
+      if (response.status === 200) {
+        setRefresh(true);
+      }
+    })
+    .catch((error) => console.log(error));
 }

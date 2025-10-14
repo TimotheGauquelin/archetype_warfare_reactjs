@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "../../../generic/form/Input";
-import { createUserByAdmin } from "../../../../services/user";
-import { useNavigate } from "react-router-dom";
+import { getUserById, updateUserByAdmin } from "../../../../services/user";
+import { useNavigate, useParams } from "react-router-dom";
 import MultiSelectInput from "../../../generic/form/MultiSelectInput";
+import { toast } from "react-toastify";
 
-const AdminUserFormik = () => {
+const AdminUserUpdateForm = () => {
   const [user, setUser] = useState({
     username: "",
     email: "",
     roles: [],
   });
+
+  const { userId } = useParams();
 
   const navigate = useNavigate()
 
@@ -17,6 +20,10 @@ const AdminUserFormik = () => {
     "Admin",
     "User"
   ];
+
+  useEffect(() => {
+    getUserById(Number(userId), setUser);
+  }, [userId]);
 
   return (
     <div id="form" className="">
@@ -34,7 +41,6 @@ const AdminUserFormik = () => {
             attribute="username"
             data={user}
             setAction={setUser}
-          // condition="put"
           />
           <Input
             label="Email"
@@ -45,7 +51,6 @@ const AdminUserFormik = () => {
             attribute="email"
             data={user}
             setAction={setUser}
-          // condition="put"
           />
           <MultiSelectInput colSpanWidth="6" label="Roles" required array={roles} data={user} setAction={setUser} />
         </div>
@@ -55,13 +60,14 @@ const AdminUserFormik = () => {
         id="form"
         className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded"
         onClick={() => {
-          createUserByAdmin(user, navigate);
+            console.log("USER====", user);
+          updateUserByAdmin(Number(userId), user, navigate, toast);
         }}
       >
-        Créer un utilisateur
+        Modifier l'utilisateur
       </button>
     </div>
   );
 };
 
-export default AdminUserFormik;
+export default AdminUserUpdateForm;

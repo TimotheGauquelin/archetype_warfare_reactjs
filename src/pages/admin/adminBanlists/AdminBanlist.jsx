@@ -27,7 +27,7 @@ const AdminBanlist = () => {
         buttonLabel="Ajouter une banlist"
       />
       <p>Banlist en cours :</p>
-      <CurrentBanlistAlert currentBanlist={currentBanlist}/>
+     {currentBanlist ? <CurrentBanlistAlert currentBanlist={currentBanlist}/> : <p className="bg-red-100 text-red-500 p-2 rounded-md">Aucune banlist en cours</p>}
       <AdminBanlistPagination
         banlists={banlists}
         setRefresh={setRefresh}

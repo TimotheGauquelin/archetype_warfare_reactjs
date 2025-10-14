@@ -11,6 +11,9 @@ COPY postcss.config.js .
 # Installation des dépendances
 RUN npm ci
 
+# Mise à jour de browserslist
+RUN npx browserslist@latest --update-db
+
 # Copie du code source
 COPY ./src ./src
 COPY ./public ./public

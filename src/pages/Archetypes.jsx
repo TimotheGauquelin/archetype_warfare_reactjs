@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/generic/header/Header";
 import "../styles/Archetypes.scss";
@@ -24,7 +24,6 @@ const Archetypes = () => {
     totalPages: 0,
   });
   const [eras, setEras] = useState([]);
-
   const [filters, setFilters] = useState({
     name: "",
     era: "",
@@ -32,14 +31,18 @@ const Archetypes = () => {
     page: 0
   });
 
-  console.log(pagination)
-
   const navigate = useNavigate();
+
+  const handleRandomArchetype = useCallback(() => {
+    getRandomArchetype(navigate);
+  }, [navigate]);
 
   useEffect(() => {
     getArchetypesWithCriteria(filters, setArchetypes, setPagination);
     getEras(setEras);
   }, [filters]);
+
+  const eraOptions = useMemo(() => eras, [eras]);
 
   return (
     <div className="flex flex-col">
@@ -58,22 +61,22 @@ const Archetypes = () => {
               attribute="name"
               data={filters.name}
               setAction={setFilters}
+              placeholder="Quel archetype recherchez-vous ?"
             />
             <SelectInput
-              className="m-2 p-2"
-              options={eras}
+              className="p-2"
+              options={eraOptions}
               inputName="era"
               colSpanWidth="5"
               attribute="era"
               data={filters.era}
+              defaultOptionLabel="De quelle ère est votre archetype ?"
               setAction={setFilters}
             />
             <button
               style={{ backgroundColor: "#F95757" }}
-              className="col-span-1 p-2 rounded-lg  flex justify-center items-center text-white"
-              onClick={() => {
-                getRandomArchetype(navigate);
-              }}
+              className="col-span-2 p-2 rounded-md  flex justify-center items-center text-white"
+              onClick={handleRandomArchetype}
             >
               <FaRandom />
             </button>

@@ -8,11 +8,11 @@ export const URL_BACK_GET_RANDOM_ARCHETYPE = `archetypes/random`;
 
 //BANLIST
 
-export const URL_BACK_GET_BANLIST = (id) => `/public/banlists/${id}`;
+export const URL_BACK_GET_BANLIST = (id) => `/banlists/${id}`;
 
 //CARD TYPES
 
-export const URL_BACK_GET_CARD_TYPES = `/public/cardTypes`;
+export const URL_BACK_GET_CARD_TYPES = `/card-types`;
 
 //CARD MONSTER TYPES
 
@@ -39,7 +39,20 @@ export const URL_BACK_REGISTER = "/authenticate/register";
 
 //ARCHETYPE
 
-export const URL_BACK_SEARCH_ARCHETYPES = (size, page, name, era, type, attribute, summonmecanic) => `/archetypes/search?${size && `size=${size}`}${page && `&page=${page}`}${name && `&name=${name}`}${era && `&era=${era}`}${type && `&type=${type}`}${attribute && `&attribute=${attribute}`}${summonmecanic && `&summonmechanic=${summonmecanic}`}`
+export const URL_BACK_SEARCH_ARCHETYPES = (size, page, name, era, type, attribute, summonmecanic) => {
+  const params = new URLSearchParams();
+
+  if (size) params.append('size', size);
+  if (page) params.append('page', page);
+  if (name) params.append('name', name);
+  if (era) params.append('era', era);
+  if (type) params.append('type', type);
+  if (attribute) params.append('attribute', attribute);
+  if (summonmecanic) params.append('summonmechanic', summonmecanic);
+
+  return `/archetypes/search?${params.toString()}`;
+};
+
 export const URL_BACK_GET_ARCHETYPE_BY_ID = (archetypeId) => `/archetypes/${archetypeId}`
 export const URL_BACK_GET_FIVE_MOST_FAMOUS_ARCHETYPES = `/archetypes/getFiveMostFamousArchetypes`
 export const URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES = `/archetypes/getFiveRandomHighlightedArchetypes`
@@ -62,6 +75,7 @@ export const URL_BACK_GET_ALL_ATTRIBUTES = `/attributes`;
 export const URL_BACK_GET_CURRENT_BANLIST = `/banlists/current`;
 export const URL_BACK_GET_BANLISTS = `/banlists`;
 export const URL_BACK_ADD_BANLIST = `/banlists`;
+export const URL_BACK_UPDATE_BANLIST = (banlistId) => `/banlists/${banlistId}`;
 
 // ERA
 
@@ -88,9 +102,12 @@ export const URL_BACK_GET_ALL_CARD_STATUS = '/card-statuses'
 export const URL_BACK_SEARCH_USERS = (size, pagination, username) => `/users/search?size=${size}&page=${pagination}&username=${username}`
 export const URL_BACK_GET_ALL_USERS = '/users'
 export const URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN = (resetToken) => `/users/getUserByResetPassword/${resetToken}`
+export const URL_BACK_GET_USER_BY_ID = (userId) => `/users/${userId}`
 export const URL_BACK_ADD_USER = '/users'
+export const URL_BACK_CREATE_USER_BY_ADMIN = '/users/admin/create'
 export const URL_BACK_SWITCH_USER_IS_ACTIVE = (userId) => `/users/${userId}/switchIsActive`
-export const URL_BACK_SWITCH_USER_IS_FORBIDDEN = (userId) => `/users/${userId}/switchIsForbidden`
+export const URL_BACK_SWITCH_USER_IS_BANNED = (userId) => `/users/${userId}/switchIsBanned`
+export const URL_BACK_UPDATE_USER_BY_ADMIN = (userId) => `/users/${userId}/updateUserByAdmin`
 export const URL_BACK_DELETE_USER = (userId) => `/users/${userId}`
 
 ///// PASSWORD

@@ -24,7 +24,6 @@ const Slide = ({ archetype }) => {
           <Link
             className="sliderButton"
             to={`/archetypes/${archetype.id}`}
-            state={{ id: archetype.id }}
           >
             Découvrir
           </Link>

@@ -44,7 +44,6 @@ const AdminArchetypeForm = ({
         id="form"
         className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded"
         onClick={() => {
-          // console.log(newArchetype)
           addArchetype();
         }}
       >

@@ -18,8 +18,6 @@ const AdminArchetypeCards = ({ newArchetype, setNewArchetype }) => {
     }));
   };
 
-  console.log("icccci", newArchetype)
-
   useEffect(() => {
     setCardsRefresh(false);
     getCardStatus(setCardStatus);

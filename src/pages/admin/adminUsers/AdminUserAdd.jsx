@@ -12,13 +12,7 @@ const AdminUserAdd = () => {
         catchphrase=""
         returnButton
       />
-      <AdminUserFormik
-        // newArchetype={newArchetype}
-        // setNewArchetype={setNewArchetype}
-        // addArchetype={() => {
-        //   addArchetype(newArchetype, navigate);
-        // }}
-      />
+      <AdminUserFormik />
       <ToastContainer />
     </AdminStructure>
   );

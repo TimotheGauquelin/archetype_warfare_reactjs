@@ -25,33 +25,48 @@ export const getArchetypeById = (archetypeId, setArchetype) => {
     }
 };
 
-export const getFiveMostFamousArchetypes = (setMostFamousArchetypes) => {
+export const getFiveMostFamousArchetypes = (setMostFamousArchetypes, setErrorMessage) => {
     try {
-        api_aw.get(URL_BACK_GET_FIVE_MOST_FAMOUS_ARCHETYPES).then((response) => {
+        api_aw.get(URL_BACK_GET_FIVE_MOST_FAMOUS_ARCHETYPES)
+        .then((response) => {
             setMostFamousArchetypes(response.data);
+        })
+        .catch((error) => {
+            console.log("===========!", error);
+            setErrorMessage(() => "Erreur lors du chargement des données");
         });
     } catch (error) {
-        console.log(error);
+        throw error;
     }
 };
 
-export const getFiveRandomHighlightedArchetypes = (setRandomHighlightedArchetypes) => {
+export const getFiveRandomHighlightedArchetypes = (setRandomHighlightedArchetypes, setErrorMessage) => {
     try {
         api_aw.get(URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES).then((response) => {
             setRandomHighlightedArchetypes(response.data);
+        })
+        .catch((error) => {
+            console.log("===========!", error);
+            setErrorMessage("Erreur lors du chargement des données");
         });
     } catch (error) {
-        console.log(error);
+        throw error;
     }
 };
 
-export const getEightMostRecentArchetypes = (setMostRecentArchetypes) => {
+export const getEightMostRecentArchetypes = (setMostRecentArchetypes, setErrorMessage) => {
     try {
-        api_aw.get(URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES).then((response) => {
+        api_aw.get(URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES)
+        .then((response) => {
             setMostRecentArchetypes(response.data);
+        })
+        .catch((error) => {
+            console.log("===========!", error);
+            setErrorMessage("Erreur lors du chargement des données");
         });
     } catch (error) {
-        console.log(error);
+        console.log("===========!!", error);
+        throw error;
     }
 };
 

@@ -6,13 +6,10 @@ import { Link } from "react-router-dom";
 const AdminBanlistPaginationTableBody = ({
   arrayItems,
 }) => {
-  // const deleteBanlist = (id) => {
-  //   api_aw.delete(`/public/banlists/${id}`).then((response) => {
-  //     if (response.status === 202) {
-  //       setRefresh(true);
-  //     }
-  //   });
-  // };
+
+  const numberOfCardsFromArchetypePerStatus = (item, status) => {
+    return item.banlist_archetype_cards.filter((card) => card.archetype_id === null && card.card_status.label === status).length;
+  };
 
   return (
     <div className="grid grid-cols-12">
@@ -24,23 +21,25 @@ const AdminBanlistPaginationTableBody = ({
           >
             <div className={`col-span-2 px-3 py-4`}>
               <p>{item?.label}</p>
+            </div>
+            <div className={`col-span-2 px-3 py-4`}>
               <p>Active {format(new Date(item?.release_date), "PPP", {
                 locale: enGB,
               })}</p>
             </div>
-            <div className={`col-span-2 px-3 py-4`}>
-              {item.banlist_cards_length > 1 ? `${item.banlist_cards_length} cards` : `${item.banlist_cards_length} card`} 
+            <div className={`col-span-1 px-3 py-4`}>
+              {item.banlist_archetype_cards.length > 1 ? `${item.banlist_archetype_cards.length} cards` : `${item.banlist_archetype_cards.length} card`}
             </div>
-            <div className={`col-span-2 px-3 py-4`}>
-              {/* {numberOfCardsFromArchetypePerStatus("Interdit", item.id)} */}
+            <div className={`col-span-1 px-3 py-4`}>
+              {numberOfCardsFromArchetypePerStatus(item, "Forbidden")}
             </div>
-            <div className={`col-span-2 px-3 py-4`}>
-              {/* {numberOfCardsFromArchetypePerStatus("Limité", item.id)} */}
+            <div className={`col-span-1 px-3 py-4`}>
+              {numberOfCardsFromArchetypePerStatus(item, "Limited")}
             </div>
-            <div className={`col-span-2 px-3 py-4`}>
-              {/* {numberOfCardsFromArchetypePerStatus("Semi-Limité", item.id)} */}
+            <div className={`col-span-1 px-3 py-4`}>
+              {numberOfCardsFromArchetypePerStatus(item, "Semi-Limited")}
             </div>
-            <div className="col-span-2 px-6 py-4 text-right">
+            <div className="col-span-4px-6 py-4 text-right">
               <p
                 className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
                 onClick={() => {
@@ -50,8 +49,7 @@ const AdminBanlistPaginationTableBody = ({
                 Supprimer
               </p>
               <Link
-                to="/admin/banlists/form"
-                state={{ request: "put", id: item.id }}
+                to={`/admin/banlists/update/${item.id}`}
               >
                 Modifier
               </Link>

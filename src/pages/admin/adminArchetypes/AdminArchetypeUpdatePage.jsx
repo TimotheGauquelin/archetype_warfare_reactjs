@@ -27,7 +27,6 @@ const AdminArchetypeUpdatePage = () => {
     cards: [],
   });
 
-  console.log(archetype)
 
   useEffect(() => {
     getArchetypeById(archetypeId, setArchetype);
