@@ -10,6 +10,7 @@ import AdminCardsPagination from "../../../components/pages/admin/cards/AdminCar
 import { getCardTypes } from "../../../services/cardtype";
 import { getAttributes } from "../../../services/attribute";
 import { searchCards } from "../../../services/card";
+import { convertBase64 } from "../../../utils/img/convertBase";
 
 const AdminCards = () => {
   const [cards, setCards] = useState([]);

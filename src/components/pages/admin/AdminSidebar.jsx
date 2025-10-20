@@ -31,11 +31,11 @@ const sideBarCategories = [
     icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
     url: "/admin/users",
   },
-  // {
-  //   title: "Fichiers",
-  //   icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-  //   url: "/admin/files",
-  // },
+  {
+    title: "Fichiers",
+    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    url: "/admin/files",
+  },
 ];
 
 const AdminSideBar = ({ displayedNavbar }) => {

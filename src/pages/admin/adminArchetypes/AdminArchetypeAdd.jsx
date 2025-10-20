@@ -14,6 +14,8 @@ const AdminArchetypeAdd = () => {
     main_info: "",
     slider_info: "",
     comment: "",
+    slider_img_url: "",
+    card_img_url: "",
     is_highlighted: false,
     is_active: false,
     era: null,

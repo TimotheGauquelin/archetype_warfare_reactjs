@@ -57,7 +57,7 @@ const Archetypes = () => {
             <Input
               inputType="text"
               inputName="name"
-              colSpanWidth="5"
+              colSpanWidth="6"
               attribute="name"
               data={filters.name}
               setAction={setFilters}
@@ -67,7 +67,7 @@ const Archetypes = () => {
               className="p-2"
               options={eraOptions}
               inputName="era"
-              colSpanWidth="5"
+              colSpanWidth="4"
               attribute="era"
               data={filters.era}
               defaultOptionLabel="De quelle ère est votre archetype ?"

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import AddCardModule from "../../../generic/AddCardModule";
 import { getCardStatus } from "../../../../services/cardStatus";
+import { getCardTypes } from "../../../../services/cardtype";
 
 const AdminArchetypeUpdateFormikCardData = ({
   newArchetype,
@@ -9,6 +10,7 @@ const AdminArchetypeUpdateFormikCardData = ({
 }) => {
   const [cardsRefresh, setCardsRefresh] = useState(false);
   const [cardStatus, setCardStatus] = useState([]);
+  const [cardTypes, setCardTypes] = useState([]);
 
   const deleteCard = (cardId) => {
     const updatedCards = newArchetype?.cards?.filter(
@@ -21,9 +23,38 @@ const AdminArchetypeUpdateFormikCardData = ({
     }));
   };
 
+  const sortedCards = useMemo(() => {
+    if (!newArchetype?.cards || !cardTypes.length) return [];
+
+    return [...newArchetype.cards].sort((a, b) => {
+      const cardTypeA = cardTypes.find(
+        (type) => type.label === a.card.card_type
+      );
+      const cardTypeB = cardTypes.find(
+        (type) => type.label === b.card.card_type
+      );
+
+      if (cardTypeA && cardTypeB) {
+        // Tri par type de carte
+        const typeComparison = cardTypeA.num_order - cardTypeB.num_order;
+        if (typeComparison !== 0) return typeComparison;
+
+        // Tri par ATK (décroissant)
+        const atkComparison = (b.card.atk || 0) - (a.card.atk || 0);
+        if (atkComparison !== 0) return atkComparison;
+
+        // Tri par niveau (décroissant)
+        return (b.card.level || 0) - (a.card.level || 0);
+      }
+      
+      return 0;
+    });
+  }, [newArchetype?.cards, cardTypes]);
+
   useEffect(() => {
     setCardsRefresh(false);
     getCardStatus(setCardStatus);
+    getCardTypes(setCardTypes);
   }, [cardsRefresh, newArchetype]);
 
   return (
@@ -33,11 +64,11 @@ const AdminArchetypeUpdateFormikCardData = ({
       <div className="bg-gray-300 grid grid-cols-12 gap-2">
         <div className="bg-gray-400 col-span-8 mt-2 p-3 rounded">
           <div
-            className={`overflow-y-auto h-full grid gap-2 ${newArchetype?.cards?.length > 0 && "grid-cols-12"
+            className={`overflow-y-auto h-full grid gap-2 ${sortedCards.length > 0 && "grid-cols-12"
               } bg-white p-2 rounded`}
           >
-            {newArchetype?.cards?.length > 0
-              ? newArchetype?.cards?.map((card, index) => {
+            {sortedCards.length > 0
+              ? sortedCards.map((card, index) => {
                 const cardIndex = newArchetype?.cards?.findIndex(
                   (archCard) => archCard.card.id === card.card.id
                 );

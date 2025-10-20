@@ -51,7 +51,7 @@ const HeaderMemo = memo(function Header() {
                   key={index}
                   className={`${
                     url.includes(component.url)
-                      ? "text-red-200"
+                      ? "text-red-400"
                       : "text-gray-600"
                   }`}
                   style={{ paddingRight: "2rem" }}
@@ -94,7 +94,7 @@ const HeaderMemo = memo(function Header() {
                 <Link
                   className={`${
                     url.includes(component.url)
-                      ? "text-red-200"
+                      ? "text-red-400"
                       : "text-gray-600"
                   } my-2 px-2`}
                   style={{ paddingRight: "2rem" }}

@@ -4,18 +4,16 @@ const ArchetypeCard = ({ archetype, index, haveAMedal }) => {
 
   const imageUrl = useMemo(() => {
     if (
-      archetype?.headerImg?.includes(".jpg") ||
-      archetype?.headerImg?.includes(".png") ||
-      archetype?.headerImg?.includes(".jpeg")
+      archetype?.card_img_url
     ) {
-      return archetype.headerImg;
+      return archetype.card_img_url;
     }
     return process.env.PUBLIC_URL + "/assets/waiting_archetype_image.jpg";
   }, [archetype?.headerImg]);
 
   const medalPath = useMemo(() => {
     if (!haveAMedal || index >= 3) return null;
-    
+
     const medalType = index === 0 ? "gold" : index === 1 ? "silver" : "bronze";
     return process.env.PUBLIC_URL + `/assets/medalIcon/${medalType}_medal.png`;
   }, [haveAMedal, index]);
@@ -24,7 +22,7 @@ const ArchetypeCard = ({ archetype, index, haveAMedal }) => {
     <div>
       <div className="aspect-square bg-red-200 bg-cover bg-center rounded-lg">
         <img
-          className="bg-cover bg-center h-full w-full"
+          className="bg-cover bg-center h-full w-full rounded-lg"
           src={imageUrl}
           alt=""
         />

@@ -166,19 +166,24 @@ const AdminArchetypeUpdateFormikData = ({
         setAction={setArchetype}
         condition="put"
       />
-      {/* <div className="block">
-        <label className="mt-2 font-medium">
-          Performances: <span className="text-red-500 font-bold">*</span>
-        </label>
-
-        <Field
-          type="number"
-          name="performances"
-          arrayLabel={performancesLabel}
-          component={PerformancesInput}
-          put={requestPut}
-        />
-      </div> */}
+      <div className="tablet:grid tablet:grid-cols-12 tablet:gap-4 mt-2 ">
+        <div className={`flex flex-col col-span-12 tablet:col-span-6`}>
+          <label className="font-medium">
+            <span className="font-bold">Image du jumbotron de l'archetype:</span>
+          </label>
+          <div className="p-2 bg-gray-100 rounded-md mt-2">
+            <img className="bg-gray-200 rounded-md border border-black" src={archetype.slider_img_url} alt="Image du jumbotron" />
+          </div>
+        </div>
+        <div className={`flex flex-col col-span-12 tablet:col-span-6`}>
+          <label className="font-medium">
+            <span className="font-bold">Image de la carte de l'archetype:</span>
+          </label>
+          <div className="w-[150px] h-[150px] p-2 bg-gray-100 rounded-md mt-2">
+            <img className="" src={archetype.card_img_url} alt="Image du jumbotron" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React from "react";
 import { SwitchInput } from "../../../generic/form/SwitchInput";
 import { Input } from "../../../generic/form/Input";
 import { CheckboxInput } from "../../../generic/form/CheckboxInput";
+import { convertBase64 } from "../../../../utils/img/convertBase";
 
 const AdminArchetypeData = ({
   eras,
@@ -41,32 +42,29 @@ const AdminArchetypeData = ({
           attribute="name"
           setAction={setNewArchetype}
         />
-        <select 
-          name="era" 
-          value={newArchetype.era?.id || ""} 
-          onChange={(e) => {
-            const selectedOption = eras.find(option => option.id === Number(e.target.value));
-            setNewArchetype((prevState) => ({
-              ...prevState, 
-              era: selectedOption ? { id: selectedOption.id, label: selectedOption.label } : null
-            }));
-          }}
-        >
-          <option value="" disabled>------</option>
-          {eras.map((option, index) => {
-            return <option key={index} value={option.id}>{option.label}</option>;
-          })}
-        </select>
-        {/* <SelectInput
-          label="Epoque d'apparition"
-          options={eras}
-          inputName="era"
-          required
-          colSpanWidth="3"
-          attribute="era"
-          data={newArchetype}
-          setAction={setNewArchetype}
-        /> */}
+        <div className={`flex flex-col col-span-3`}>
+          <label className="mt-2 font-medium">
+            <span>Ere:</span>
+            <span className="text-red-500 font-bold">*</span>
+          </label>
+          <select
+            className="h-full rounded-md"
+            name="era"
+            value={newArchetype.era?.id || ""}
+            onChange={(e) => {
+              const selectedOption = eras.find(option => option.id === Number(e.target.value));
+              setNewArchetype((prevState) => ({
+                ...prevState,
+                era: selectedOption ? { id: selectedOption.id, label: selectedOption.label } : null
+              }));
+            }}
+          >
+            <option value="" disabled>------</option>
+            {eras.map((option, index) => {
+              return <option key={index} value={option.id}>{option.label}</option>;
+            })}
+          </select>
+        </div>
         <Input
           label="Point de popularité"
           required
@@ -164,19 +162,67 @@ const AdminArchetypeData = ({
         data
         setAction={setNewArchetype}
       />
-      {/* <div className="block">
-        <label className="mt-2 font-medium">
-          Performances: <span className="text-red-500 font-bold">*</span>
-        </label>
-
-        <Field
-          type="number"
-          name="performances"
-          arrayLabel={performancesLabel}
-          component={PerformancesInput}
-          put={requestPut}
-        />
-      </div> */}
+      <div className="tablet:grid tablet:grid-cols-12 tablet:gap-4">
+        <div className={`flex flex-col col-span-12 tablet:col-span-6`}>
+          <label className="mt-2 font-medium">
+            <span className="font-bold">Image du jumbotron de l'archetype:</span>
+          </label>
+          <div className="p-2 bg-gray-100 rounded-md mt-2">
+            {newArchetype.slider_img_url && (
+              <div className="">
+                <p className="text-sm text-gray-600 mb-1">Prévisualisation :</p>
+                <img
+                  src={newArchetype.slider_img_url}
+                  alt="Prévisualisation jumbotron"
+                  className="max-w-full h-auto max-h-48 rounded border border-gray-300"
+                />
+              </div>
+            )}
+            <input
+              className="mt-2"
+              type='file'
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                const base64Img = await convertBase64(file);
+                setNewArchetype((prevState) => ({
+                  ...prevState,
+                  slider_img_url: base64Img,
+                }));
+              }}
+            />
+          </div>
+        </div>
+        <div className={`flex flex-col col-span-12 tablet:col-span-6`}>
+          <label className="mt-2 font-medium">
+            <span className="font-bold">Image de la carte de l'archetype:</span>
+          </label>
+          <div className="p-2 bg-gray-100 rounded-md">
+            {newArchetype.card_img_url && (
+              <div className="mt-2">
+                <p className="text-sm text-gray-600 mb-1">Prévisualisation :</p>
+                <img
+                  src={newArchetype.card_img_url}
+                  alt="Prévisualisation carte"
+                  className="max-w-full h-auto max-h-48 rounded border border-gray-300"
+                />
+              </div>
+            )}
+            <input
+              className="mt-2"
+              type='file'
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                console.log("===========file", file);
+                const base64Img = await convertBase64(file);
+                setNewArchetype((prevState) => ({
+                  ...prevState,
+                  card_img_url: base64Img,
+                }));
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -102,8 +102,8 @@ const Archetype = () => {
         <Header />
         <Jumbotron
           itemMainTitle={archetype.name}
-          itemSubTitle={archetype.slider_info}
-          itemImg={archetype.jumbotronImg}
+          itemSubTitle={archetype.main_info}
+          itemImg={archetype.slider_img_url}
         />
         <div className="relative px-3 pb-3 sscreen:p-0 lscreen:max-w-containerSize m-auto">
           <MainInformationsBlock

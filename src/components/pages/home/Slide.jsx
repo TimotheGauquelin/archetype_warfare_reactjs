@@ -7,8 +7,8 @@ const Slide = ({ archetype }) => {
       className="p-5 bg-cover sscreen:bg-contain bg-no-repeat bg-center sscreen:bg-right-bottom h-[430px] tablet:h-[520px]"
       style={{
         backgroundImage: `url(${
-          archetype.jumbotronImg
-            ? archetype.jumbotronImg
+          archetype.slider_img_url
+            ? archetype.slider_img_url
             : process.env.PUBLIC_URL + "/assets/yugi.png"
         })`,
       }}
@@ -23,7 +23,7 @@ const Slide = ({ archetype }) => {
           </p>
           <Link
             className="sliderButton"
-            to={`/archetypes/${archetype.id}`}
+            to={`/archetype/${archetype.id}`}
           >
             Découvrir
           </Link>
