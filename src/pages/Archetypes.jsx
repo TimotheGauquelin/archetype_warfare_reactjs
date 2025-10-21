@@ -18,16 +18,18 @@ import { Input } from "../components/generic/form/Input";
 const Archetypes = () => {
   const [archetypes, setArchetypes] = useState([]);
   const [pagination, setPagination] = useState({
-    size: 10,
+    size: 12,
     page: 0,
     totalElements: 0,
     totalPages: 0,
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [eras, setEras] = useState([]);
   const [filters, setFilters] = useState({
     name: "",
     era: "",
-    size: 10,
+    size: 12,
     page: 0
   });
 
@@ -37,13 +39,28 @@ const Archetypes = () => {
     getRandomArchetype(navigate);
   }, [navigate]);
 
-  useEffect(() => {
-    getArchetypesWithCriteria(filters, setArchetypes, setPagination);
-    getEras(setEras);
+  const loadData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      await Promise.all([
+        getArchetypesWithCriteria(filters, setArchetypes, setPagination),
+        getEras(setEras)
+      ]);
+    } catch (err) {
+      setError("Erreur lors du chargement des archétypes");
+    } finally {
+      setIsLoading(false);
+    }
   }, [filters]);
 
-  const eraOptions = useMemo(() => eras, [eras]);
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
+  const eraOptions = useMemo(() => eras, [eras]);
+  
   return (
     <div className="flex flex-col">
       <div id="headBlock" className="imageBackground">
@@ -83,19 +100,15 @@ const Archetypes = () => {
           </AbsoluteInput>
         </div>
       </div>
-      {/* {dataIsLoaded ? ( */}
       <PageContentBlock>
         <div className="flex flex-col justify-center w-full">
           <ArchetypeList
             dataArray={archetypes}
-            errorText="Il n'y a pas d'archetype dans cette selection."
-            errorTextCenter
+            isLoading={isLoading}
+            skeletonItemCount={8}
           />
         </div>
       </PageContentBlock>
-      {/* ) : (
-        <Loader />
-      )} */}
     </div>
   );
 };

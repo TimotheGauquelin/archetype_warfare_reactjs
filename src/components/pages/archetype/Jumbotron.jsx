@@ -11,7 +11,7 @@ const Jumbotron = ({ itemMainTitle, itemSubTitle, itemImg }) => {
       }}
     >
       <div className="flex flex-row h-full max-w-containerSize m-auto">
-        <div className="flex flex-col items-start justify-end sscreen:justify-center h-full w-full md:w-1/2">
+        <div className="flex flex-col items-start justify-end sscreen:justify-center h-full w-1/2">
           <h2 className="whiteVeilText font-bold text-5xl tablet:text-7xl mb-5">
             {itemMainTitle}
           </h2>
@@ -19,7 +19,7 @@ const Jumbotron = ({ itemMainTitle, itemSubTitle, itemImg }) => {
             {itemSubTitle}
           </p>
         </div>
-        <div className="hidden md:flex flex-col h-full w-1/2"></div>
+        <div className="hidden md:flex flex-col h-full md:w-1/2"></div>
       </div>
     </div>
   );

@@ -54,7 +54,7 @@ export const URL_BACK_SEARCH_ARCHETYPES = (size, page, name, era, type, attribut
 };
 
 export const URL_BACK_GET_ARCHETYPE_BY_ID = (archetypeId) => `/archetypes/${archetypeId}`
-export const URL_BACK_GET_FIVE_MOST_FAMOUS_ARCHETYPES = `/archetypes/getFiveMostFamousArchetypes`
+export const URL_BACK_GET_EIGHT_MOST_FAMOUS_ARCHETYPES = `/archetypes/getEightMostFamousArchetypes`
 export const URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES = `/archetypes/getFiveRandomHighlightedArchetypes`
 export const URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES = `/archetypes/getEightMostRecentArchetypes`
 export const URL_BACK_ADD_ARCHETYPE = `/archetypes`

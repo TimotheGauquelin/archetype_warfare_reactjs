@@ -115,15 +115,12 @@ const Archetype = () => {
       
       <PageContentBlock>
         <div className="flex flex-col w-full justify-center max-w-containerSize m-auto">
-          {/* Message d'information du staff */}
           {archetype.comment && (
             <div className="bg-blue-100 flex-col text-blue-500 p-3 font-medium rounded-lg flex mb-4">
               <span>{`Information : ${archetype.comment}`}</span>
               <p className="text-right text-sm">Le Staff AW</p>
             </div>
           )}
-
-          {/* Section des cartes */}
           <div className="py-5">
             <SubtitleDivider 
               label={`Toutes les cartes (${sortedCards.length})`} 

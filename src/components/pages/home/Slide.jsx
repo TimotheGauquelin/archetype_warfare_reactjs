@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Slide = ({ archetype }) => {
+
   return (
     <div
       className="p-5 bg-cover sscreen:bg-contain bg-no-repeat bg-center sscreen:bg-right-bottom h-[430px] tablet:h-[520px]"
       style={{
-        backgroundImage: `url(${
-          archetype.slider_img_url
+        backgroundImage: `url(${archetype.slider_img_url
             ? archetype.slider_img_url
             : process.env.PUBLIC_URL + "/assets/yugi.png"
-        })`,
+          })`,
       }}
     >
       <div className="flex flex-row h-full max-w-containerSize m-auto">
@@ -22,14 +22,19 @@ const Slide = ({ archetype }) => {
             {archetype.slider_info}
           </p>
           <Link
-            className="sliderButton"
+            className={`group sliderButton inline-flex items-center gap-2 px-6 py-3 rounded-md font-semibold text-white transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-0.5`}
+            style={{ animation: "awGlow 2.4s ease-in-out infinite" }}
             to={`/archetype/${archetype.id}`}
           >
-            Découvrir
+            <span className="relative z-10">Découvrir</span>
+            <span className="relative z-10 inline-block transition-transform duration-300 group-hover:translate-x-1">
+              ➜
+            </span>
           </Link>
         </div>
         <div className="hidden md:flex flex-col h-full w-1/2"></div>
       </div>
+
     </div>
   );
 };

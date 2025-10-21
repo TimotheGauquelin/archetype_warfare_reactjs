@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, Suspense } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Header from "../components/generic/header/Header";
 import Slider from "../components/generic/Slider";
 
@@ -7,10 +7,9 @@ import PageContentBlock from "../components/generic/PageContentBlock";
 import { SwiperSlide } from "swiper/react";
 import Slide from "../components/pages/home/Slide";
 import ArchetypeList from "../components/pages/home/ArchetypeList";
-import HomePageSkeleton from "../components/skeletons/HomePageSkeleton";
 import {
   getEightMostRecentArchetypes,
-  getFiveMostFamousArchetypes,
+  getEightMostFamousArchetypes,
   getFiveRandomHighlightedArchetypes,
 } from "../services/archetype";
 
@@ -34,7 +33,7 @@ const Home = () => {
       setHasError(false);
       
       await Promise.all([
-        getFiveMostFamousArchetypes(setFiveMostFamousArchetypes, setErrorMessages),
+        getEightMostFamousArchetypes(setFiveMostFamousArchetypes, setErrorMessages),
         getEightMostRecentArchetypes(setEightMostRecentArchetypes, setErrorMessages),
         getFiveRandomHighlightedArchetypes(setArchetypesForSlider, setErrorMessages)
       ]).catch((error) => {
@@ -51,38 +50,21 @@ const Home = () => {
     loadData();
   }, [loadData]);
 
-  console.log("errorMESSAGE", errorMessages);
-
   const HomePageContent = () => {
-    if (isLoading) {
-      throw new Promise(resolve => {
-        const checkLoading = () => {
-          if (!isLoading) {
-            resolve();
-          } else {
-            setTimeout(checkLoading, 100);
-          }
-        };
-        checkLoading();
-      });
-    }
-
-    if (hasError) {
-      throw new Error("Erreur lors du chargement des données");
-    }
-    
     return (
       <>
         <ArchetypeList
           dataArray={fiveMostFamousArchetypes}
           subTitleDividerText="Archétypes Populaires"
-          errorText="Il n'y a pas d'archetype dans cette selection."
           haveMedal
+          isLoading={isLoading}
+          skeletonItemCount={8}
         />
         <ArchetypeList
           dataArray={eightMostRecentArchetypes}
           subTitleDividerText="Nouveaux Archétypes"
-          errorText="Il n'y a pas d'archetype dans cette selection."
+          isLoading={isLoading}
+          skeletonItemCount={8}
         />
       </>
     );
@@ -109,9 +91,7 @@ const Home = () => {
         )}
       </div>
       <PageContentBlock>
-        <Suspense fallback={<HomePageSkeleton />}>
-          <HomePageContent />
-        </Suspense>
+        <HomePageContent />
       </PageContentBlock>
     </div>
   );

@@ -22,6 +22,7 @@ export const URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM = "/admin/archetypes/add";
 export const URL_FRONT_ADMIN_ARCHETYPE_UPDATE_FORM = "/admin/archetypes/update/:archetypeId";
 export const URL_FRONT_ADMIN_BANLISTS = "/admin/banlists";
 export const URL_FRONT_ADMIN_BANLIST_UPDATE = "/admin/banlists/update/:banlistId";
+export const URL_FRONT_ADMIN_BANLIST_FORM = "/admin/banlists/form";
 export const URL_FRONT_ADMIN_USERS = "/admin/users";
 export const URL_FRONT_ADMIN_USER_ADD = "/admin/users/add";
 export const URL_FRONT_ADMIN_USER_UPDATE = "/admin/users/update/:userId";

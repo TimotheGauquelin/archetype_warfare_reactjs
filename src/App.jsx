@@ -17,6 +17,7 @@ import AccountConfirmation from "./pages/AccountConfirmation";
 import AdminUsers from "./pages/admin/adminUsers/AdminUsers";
 import AdminCards from "./pages/admin/adminCards/AdminCards";
 import PopUp from "./components/generic/PopUp";
+import { PopUpProvider, usePopup } from "./hooks/usePopup";
 import AdminFiles from "./pages/admin/adminFiles/AdminFiles";
 import AdminFilesJumbotron from "./pages/admin/adminFiles/AdminFilesJumbotron";
 import {
@@ -57,7 +58,9 @@ import AdminUpdateBanlist from "./pages/admin/adminBanlists/AdminUpdateBanlist";
 const Archetype = lazy(() => import("./pages/Archetype"));
 const Archetypes = lazy(() => import("./pages/Archetypes"));
 
-const Root = () => {
+const AppContent = () => {
+  const { popup } = usePopup();
+  
   return (
     <div className="relative">
       <BrowserRouter
@@ -169,8 +172,16 @@ const Root = () => {
           </Route>
         </Routes>
       </BrowserRouter>
-      <PopUp />
+      <PopUp {...popup} />
     </div>
+  );
+};
+
+const Root = () => {
+  return (
+    <PopUpProvider>
+      <AppContent />
+    </PopUpProvider>
   );
 };
 
