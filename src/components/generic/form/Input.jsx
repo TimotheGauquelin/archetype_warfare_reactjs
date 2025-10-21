@@ -10,6 +10,8 @@ export const Input = ({
   data,
   setAction,
   placeholder,
+  min,
+  max,
 }) => {
   const handleChange = useCallback((e) => {
     setAction((prevState) => ({
@@ -30,6 +32,8 @@ export const Input = ({
         required={required}
         placeholder={placeholder}
         className="p-2 bg-gray-100 rounded-md"
+        min={min}
+        max={max}
         type={inputType}
         name={inputName}
         value={data && data[attribute]}

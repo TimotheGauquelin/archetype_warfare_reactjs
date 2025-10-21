@@ -16,6 +16,7 @@ const AdminArchetypePagination = ({
   archetypesTotalCount,
   totalPages,
   pageSize,
+  showConfirmPopupDialog,
 }) => {
 
   const tableHeadItemArray = [
@@ -61,6 +62,17 @@ const AdminArchetypePagination = ({
     },
   ];
 
+  const handleDeleteArchetypeButton = (archetypeId) => {
+    console.log("HELLO");
+    showConfirmPopupDialog({
+      title: "Suppresion de l'archetype",
+      message: "Êtes vous sûr de vouloir supprimer cet archetype ? Cette action est irréversible.",
+      onConfirm: () => {
+        deleteArchetype(archetypeId, setRefresh);
+      }
+    });
+  };
+
   return (
     <div className="">
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -69,7 +81,7 @@ const AdminArchetypePagination = ({
           arrayItems={archetypes}
           switchIsHighlighted={switchIsHighlighted}
           switchIsActive={switchIsActive}
-          deleteArchetype={deleteArchetype}
+          deleteArchetype={handleDeleteArchetypeButton}
           setRefresh={setRefresh}
         />
       </div>

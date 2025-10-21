@@ -13,6 +13,8 @@ const AdminArchetypeUpdateFormikData = ({
   setArchetype,
 }) => {
 
+  const today = new Date().toISOString().split('T')[0];
+
   return (
     <div className="bg-gray-300 rounded p-2">
       <div className="flex flex-row justify-between items-center">
@@ -81,6 +83,8 @@ const AdminArchetypeUpdateFormikData = ({
           colSpanWidth="6"
           attribute="in_tcg_date"
           data={archetype}
+          min="2002-01-01"
+          max={today}
           setAction={setArchetype}
           condition="put"
         />
@@ -92,6 +96,8 @@ const AdminArchetypeUpdateFormikData = ({
           colSpanWidth="6"
           attribute="in_aw_date"
           data={archetype}
+          min="2025-01-01"
+          max={today}
           setAction={setArchetype}
           condition="put"
         />
@@ -172,7 +178,7 @@ const AdminArchetypeUpdateFormikData = ({
             <span className="font-bold">Image du jumbotron de l'archetype:</span>
           </label>
           <div className="p-2 bg-gray-100 rounded-md mt-2">
-            <img className="bg-gray-200 rounded-md border border-black" src={archetype.slider_img_url} alt="Image du jumbotron" />
+            <img className="bg-gray-200 rounded-md border border-black" src={archetype.slider_img_url} alt="Jumbotron de l'archetype" />
           </div>
         </div>
         <div className={`flex flex-col col-span-12 tablet:col-span-6`}>
@@ -180,7 +186,7 @@ const AdminArchetypeUpdateFormikData = ({
             <span className="font-bold">Image de la carte de l'archetype:</span>
           </label>
           <div className="w-[150px] h-[150px] p-2 bg-gray-100 rounded-md mt-2">
-            <img className="" src={archetype.card_img_url} alt="Image du jumbotron" />
+            <img className="" src={archetype.card_img_url} alt="Présentation de l'archetype" />
           </div>
         </div>
       </div>

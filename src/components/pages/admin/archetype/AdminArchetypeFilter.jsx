@@ -8,6 +8,8 @@ import {
   switchAllArchetypesToIsUnactive,
   switchHighlightedOfAllArchetypesToFalse,
 } from "../../../../services/archetype";
+import usePopup from "../../../../hooks/usePopup";
+import PopUp from "../../../generic/PopUp";
 
 const AdminArchetypeFilter = ({
   resetAllFilters,
@@ -21,6 +23,8 @@ const AdminArchetypeFilter = ({
   const [summonMechanics, setSummonMechanics] = useState([]);
   const [displayGeneralActions, setDisplayGeneralActions] = useState(false);
 
+  const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
+
   useEffect(() => {
     getEras(setEras);
     getSummonMechanics(setSummonMechanics);
@@ -28,19 +32,58 @@ const AdminArchetypeFilter = ({
     getAttributes(setAttributes);
   }, []);
 
+  const handleResetAllFiltersButton = () => {
+    showConfirmDialog({
+      title: 'Confirmer la réinitialisation des filtres',
+      message: 'Êtes-vous sûr de vouloir réinitialiser tous les filtres de recherche ?',
+      onConfirm: () => {
+        resetAllFilters();
+      },
+    });
+  };
+
+  const handleResetPopularityPointsToZeroButton = () => {
+    showConfirmDialog({
+      title: 'Confirmer la réinitialisation des points de popularité',
+      message: 'Êtes-vous sûr de vouloir réinitialiser les points de popularité de tous les archétypes ?',
+      onConfirm: () => {
+        resetPositionOfAllArchetypes(setRefresh);
+      },
+    });
+  };
+
+  const handleResetAllArchetypesToIsUnactiveButton = () => {
+    showConfirmDialog({
+      title: 'Confirmer la désactivation du statut "En Ligne"',
+      message: 'Êtes vous sûr de vouloir mettre tous les archétypes en "Hors-ligne" ?',
+      onConfirm: () => {
+        switchAllArchetypesToIsUnactive(setRefresh);
+      },
+    });
+  };
+
+  const handleResetAllArchetypesToIsNotHighlightedButton = () => {
+    showConfirmDialog({
+      title: 'Confirmer la désactivation du statut "Mis en Lumière"',
+      message: "Êtes vous sûr de ne plus vouloir afficher tous les archétypes 'Mis en Lumière' dans le slider de page d'accueil?",
+      onConfirm: () => {
+        switchHighlightedOfAllArchetypesToFalse(setRefresh);
+      },
+    });
+  };
+
   return (
     <div className="bg-slate-200 rounded p-2">
       <div className="flex justify-between">
         <h2>Filtres : </h2>
         <p
           className="hover:text-red-500 cursor-pointer"
-          onClick={() => {
-            resetAllFilters();
-          }}
+          onClick={() => handleResetAllFiltersButton()}
         >
           Reset les filtres
         </p>
       </div>
+
       <div className="flex justify-between items-center">
         <div className="grid grid-cols-12 col-span-12 pt-4 gap-4 flex justify-center items-center">
           <input
@@ -160,7 +203,7 @@ const AdminArchetypeFilter = ({
               <button
                 className="bg-red-200 p-1 ml-2 rounded text-white hover:bg-red-300"
                 onClick={() => {
-                  switchHighlightedOfAllArchetypesToFalse(setRefresh);
+                  handleResetAllArchetypesToIsNotHighlightedButton();
                 }}
               >
                 Activer !
@@ -173,7 +216,7 @@ const AdminArchetypeFilter = ({
               <button
                 className="bg-red-200 p-1 ml-2 rounded text-white hover:bg-red-300"
                 onClick={() => {
-                  switchAllArchetypesToIsUnactive(setRefresh);
+                  handleResetAllArchetypesToIsUnactiveButton();
                 }}
               >
                 Activer !
@@ -186,7 +229,7 @@ const AdminArchetypeFilter = ({
               <button
                 className="bg-red-200 p-1 ml-2 rounded text-white hover:bg-red-300"
                 onClick={() => {
-                  resetPositionOfAllArchetypes(setRefresh);
+                  handleResetPopularityPointsToZeroButton();
                 }}
               >
                 Activer !
@@ -195,6 +238,17 @@ const AdminArchetypeFilter = ({
           </div>
         </div>
       )}
+
+      <PopUp
+        isOpen={isOpen}
+        onClose={closePopup}
+        title={popupConfig.title}
+        className={popupConfig.className}
+        showCloseButton={popupConfig.showCloseButton}
+        closeOnBackdropClick={popupConfig.closeOnBackdropClick}
+      >
+        {popupConfig.content}
+      </PopUp>
     </div>
   );
 };

@@ -1,141 +1,109 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
 
-const PopUpContext = createContext();
-
-export const usePopup = () => {
-  const context = useContext(PopUpContext);
-  if (!context) {
-    throw new Error("usePopup must be used within a PopUpProvider");
-  }
-  return context;
-};
-
-export const PopUpProvider = ({ children }) => {
-  const [popup, setPopup] = useState({
-    isOpen: false,
-    type: "info",
-    title: "",
-    message: "",
-    confirmText: "Confirmer",
-    cancelText: "Annuler",
+const usePopup = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [popupConfig, setPopupConfig] = useState({
+    title: '',
+    content: null,
+    showCloseButton: true,
+    closeOnBackdropClick: true,
+    className: '',
     onConfirm: null,
-    showCancel: true,
-    autoClose: false,
-    autoCloseDelay: 3000
+    onCancel: null,
+    confirmText: 'Confirmer',
+    cancelText: 'Annuler'
   });
 
-  const showPopup = useCallback((options) => {
-    setPopup({
-      isOpen: true,
-      type: "info",
-      title: "",
-      message: "",
-      confirmText: "Confirmer",
-      cancelText: "Annuler",
-      onConfirm: null,
-      showCancel: true,
-      autoClose: false,
-      autoCloseDelay: 3000,
-      ...options
-    });
+  const openPopup = useCallback((config = {}) => {
+    setPopupConfig(prev => ({
+      ...prev,
+      ...config
+    }));
+    setIsOpen(true);
   }, []);
 
-  const hidePopup = useCallback(() => {
-    setPopup(prev => ({ ...prev, isOpen: false }));
+  const closePopup = useCallback(() => {
+    setIsOpen(false);
   }, []);
 
-  // Méthodes de convenance pour différents types de popups
-  const showSuccess = useCallback((message, title = "Succès", options = {}) => {
-    showPopup({
-      type: "success",
+  const showConfirmDialog = useCallback(({
+    title = 'Confirmation',
+    message = 'Êtes-vous sûr de vouloir continuer ?',
+    onConfirm,
+    onCancel,
+    confirmText = 'Confirmer',
+    cancelText = 'Annuler'
+  }) => {
+    openPopup({
       title,
-      message,
-      confirmText: "OK",
-      showCancel: false,
-      autoClose: true,
-      ...options
-    });
-  }, [showPopup]);
-
-  const showError = useCallback((message, title = "Erreur", options = {}) => {
-    showPopup({
-      type: "error",
-      title,
-      message,
-      confirmText: "OK",
-      showCancel: false,
-      autoClose: true,
-      ...options
-    });
-  }, [showPopup]);
-
-  const showWarning = useCallback((message, title = "Attention", options = {}) => {
-    showPopup({
-      type: "warning",
-      title,
-      message,
-      confirmText: "OK",
-      showCancel: false,
-      autoClose: true,
-      ...options
-    });
-  }, [showPopup]);
-
-  const showInfo = useCallback((message, title = "Information", options = {}) => {
-    showPopup({
-      type: "info",
-      title,
-      message,
-      confirmText: "OK",
-      showCancel: false,
-      autoClose: true,
-      ...options
-    });
-  }, [showPopup]);
-
-  const showConfirm = useCallback((message, title = "Confirmation", onConfirm, options = {}) => {
-    showPopup({
-      type: "warning",
-      title,
-      message,
-      confirmText: "Confirmer",
-      cancelText: "Annuler",
+      content: (
+        <div className="space-y-4">
+          <p className="text-gray-700">{message}</p>
+          <div className="flex justify-end space-x-2">
+            <button
+              onClick={() => {
+                if (onCancel) onCancel();
+                closePopup();
+              }}
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition-colors duration-200"
+            >
+              {cancelText}
+            </button>
+            <button
+              onClick={() => {
+                if (onConfirm) onConfirm();
+                closePopup();
+              }}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors duration-200"
+            >
+              {confirmText}
+            </button>
+          </div>
+        </div>
+      ),
       onConfirm,
-      showCancel: true,
-      autoClose: false,
-      ...options
+      onCancel,
+      confirmText,
+      cancelText
     });
-  }, [showPopup]);
+  }, [openPopup, closePopup]);
 
-  const showDeleteConfirm = useCallback((itemName, onConfirm, options = {}) => {
-    showPopup({
-      type: "error",
-      title: "Supprimer",
-      message: `Êtes-vous sûr de vouloir supprimer "${itemName}" ? Cette action est irréversible.`,
-      confirmText: "Supprimer",
-      cancelText: "Annuler",
-      onConfirm,
-      showCancel: true,
-      autoClose: false,
-      ...options
+  const showAlert = useCallback(({
+    title = 'Information',
+    message = '',
+    onClose,
+    buttonText = 'OK'
+  }) => {
+    openPopup({
+      title,
+      content: (
+        <div className="space-y-4">
+          <p className="text-gray-700">{message}</p>
+          <div className="flex justify-end">
+            <button
+              onClick={() => {
+                if (onClose) onClose();
+                closePopup();
+              }}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-200"
+            >
+              {buttonText}
+            </button>
+          </div>
+        </div>
+      ),
+      onClose
     });
-  }, [showPopup]);
+  }, [openPopup, closePopup]);
 
-  const value = {
-    popup,
-    showPopup,
-    hidePopup,
-    showSuccess,
-    showError,
-    showWarning,
-    showInfo,
-    showConfirm,
-    showDeleteConfirm
+  return {
+    isOpen,
+    popupConfig,
+    openPopup,
+    closePopup,
+    showConfirmDialog,
+    showAlert
   };
-
-  return (
-    <PopUpContext.Provider value={value}>
-      {children}
-    </PopUpContext.Provider>
-  );
 };
+
+export default usePopup;

@@ -20,8 +20,8 @@ const AdminArchetypeAdd = () => {
     is_active: false,
     era: null,
     popularity_poll: 0,
-    in_tcg_date: "1970-01-01",
-    in_aw_date: "1970-01-01",
+    in_tcg_date: "2002-01-01",
+    in_aw_date: new Date().toISOString().split('T')[0], // today
     attributes: [],
     types: [],
     summon_mechanics: [],

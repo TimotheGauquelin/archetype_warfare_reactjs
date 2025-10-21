@@ -6,6 +6,8 @@ import AdminArchetypePagination from "../../../components/pages/admin/archetype/
 import { toast, ToastContainer } from "react-toastify";
 import { getArchetypesWithCriteria } from "../../../services/archetype";
 import { URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM } from "../../../constant/urlsFront";
+import PopUp from "../../../components/generic/PopUp";
+import usePopup from "../../../hooks/usePopup";
 
 const AdminArchetype = () => {
   const [archetypes, setArchetypes] = useState([
@@ -57,6 +59,8 @@ const AdminArchetype = () => {
     toast.success("Vous avez mis les filtres à leur état d'origine.");
   };
 
+  const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
+
   useEffect(() => {
     getArchetypesWithCriteria(filters, setArchetypes, setPagination);
     setRefresh(false);
@@ -86,8 +90,19 @@ const AdminArchetype = () => {
         archetypesTotalCount={pagination?.total}
         totalPages={pagination?.totalPages}
         pageSize={pagination?.pageSize}
+        showConfirmPopupDialog={showConfirmDialog}
       />
       <ToastContainer />
+      <PopUp
+        isOpen={isOpen}
+        onClose={closePopup}
+        title={popupConfig.title}
+        className={popupConfig.className}
+        showCloseButton={popupConfig.showCloseButton}
+        closeOnBackdropClick={popupConfig.closeOnBackdropClick}
+      >
+        {popupConfig.content}
+      </PopUp>
     </AdminStructure>
   );
 };

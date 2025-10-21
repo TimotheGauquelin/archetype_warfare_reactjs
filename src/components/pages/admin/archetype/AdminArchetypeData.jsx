@@ -13,6 +13,8 @@ const AdminArchetypeData = ({
   setNewArchetype,
 }) => {
 
+  const today = new Date().toISOString().split('T')[0];
+
   return (
     <div className="bg-gray-300 rounded p-2">
       <div className="flex flex-row justify-between items-center">
@@ -84,6 +86,8 @@ const AdminArchetypeData = ({
           inputName="inTCGDate"
           colSpanWidth="6"
           attribute="in_tcg_date"
+          min="2002-01-01"
+          max={today}
           data={newArchetype}
           setAction={setNewArchetype}
         />
@@ -94,6 +98,8 @@ const AdminArchetypeData = ({
           inputName="inAWDate"
           colSpanWidth="6"
           attribute="in_aw_date"
+          min="2025-01-01"
+          max={today}
           data={newArchetype}
           setAction={setNewArchetype}
         />
@@ -169,7 +175,7 @@ const AdminArchetypeData = ({
           </label>
           <div className="p-2 bg-gray-100 rounded-md mt-2">
             {newArchetype.slider_img_url && (
-              <div className="">
+              <div className="my-2">
                 <p className="text-sm text-gray-600 mb-1">Prévisualisation :</p>
                 <img
                   src={newArchetype.slider_img_url}
@@ -179,7 +185,7 @@ const AdminArchetypeData = ({
               </div>
             )}
             <input
-              className="mt-2"
+              className=""
               type='file'
               onChange={async (e) => {
                 const file = e.target.files[0];
@@ -196,9 +202,9 @@ const AdminArchetypeData = ({
           <label className="mt-2 font-medium">
             <span className="font-bold">Image de la carte de l'archetype:</span>
           </label>
-          <div className="p-2 bg-gray-100 rounded-md">
+          <div className="p-2 mt-2 bg-gray-100 rounded-md">
             {newArchetype.card_img_url && (
-              <div className="mt-2">
+              <div className="my-2">
                 <p className="text-sm text-gray-600 mb-1">Prévisualisation :</p>
                 <img
                   src={newArchetype.card_img_url}
@@ -208,7 +214,7 @@ const AdminArchetypeData = ({
               </div>
             )}
             <input
-              className="mt-2"
+              className=""
               type='file'
               onChange={async (e) => {
                 const file = e.target.files[0];
