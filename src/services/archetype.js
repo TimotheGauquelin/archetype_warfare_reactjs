@@ -97,7 +97,7 @@ export const addArchetype = (newArchetype, navigate) => {
 
 // PUT
 
-export const updateArchetype = (archetypeId, archetype, navigate) => {
+export const updateArchetype = (archetypeId, archetype, navigate, toast) => {
     try {
         api_aw
             .put(URL_BACK_UPDATE_ARCHETYPE(archetypeId), archetype)
@@ -105,9 +105,18 @@ export const updateArchetype = (archetypeId, archetype, navigate) => {
                 if (response.status === 200) {
                     navigate(URL_FRONT_ADMIN_ARCHETYPES);
                 }
+            })
+            .catch((error) => {
+                if (error.response.status === 400) {
+                    toast.error(error.response.data.message);
+                } else {
+                    toast.error("Une erreur est survenue lors de la mise à jour de l'archetype");
+                }
+                toast.error(error.response.data.message);
             });
     } catch (error) {
         console.log(error);
+        toast.error(error.response.data.message);
     }
 };
 

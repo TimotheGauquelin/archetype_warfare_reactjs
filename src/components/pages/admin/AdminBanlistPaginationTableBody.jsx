@@ -39,9 +39,9 @@ const AdminBanlistPaginationTableBody = ({
             <div className={`col-span-1 px-3 py-4`}>
               {numberOfCardsFromArchetypePerStatus(item, "Semi-Limited")}
             </div>
-            <div className="col-span-4px-6 py-4 text-right">
+            <div className="col-span-4 bg-gray-100 p-4 text-right">
               <p
-                className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
+                className="font-medium text-blue-600 hover:text-red-600 hover:underline cursor-pointer"
                 onClick={() => {
                   // deleteBanlist(item.id);
                 }}
@@ -49,6 +49,7 @@ const AdminBanlistPaginationTableBody = ({
                 Supprimer
               </p>
               <Link
+                className="hover:text-yellow-600 hover:underline cursor-pointer"
                 to={`/admin/banlists/update/${item.id}`}
               >
                 Modifier

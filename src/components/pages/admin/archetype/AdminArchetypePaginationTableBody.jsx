@@ -74,10 +74,10 @@ const AdminArchetypePaginationTableBody = ({
             </div>
             <div className={`col-span-1 px-3 py-4`}>{item?.cards?.length}</div>
             <div className={`col-span-1 px-3 py-4`}>{item.popularity_poll}</div>
-            <div className={`col-span-2 px-3 py-4`}></div>
-            <div className="col-span-1 px-6 py-4 text-right">
+            <div className={`col-span-1 px-3 py-4`}></div>
+            <div className="col-span-2 bg-gray-100 p-4 text-right">
               <p
-                className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
+                className="font-medium text-blue-600 hover:text-red-600 hover:underline cursor-pointer"
                 onClick={() => {
                   deleteArchetype(item.id, setRefresh);
                 }}
@@ -85,6 +85,7 @@ const AdminArchetypePaginationTableBody = ({
                 Supprimer
               </p>
               <Link
+                className="hover:text-yellow-600 hover:underline cursor-pointer"
                 to={`/admin/archetypes/update/${item.id}`}
               // state={{ request: "put", id: item.id }}
               >

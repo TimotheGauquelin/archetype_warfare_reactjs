@@ -21,7 +21,18 @@ const AdminUserPaginationTableBody = ({ arrayItems, setRefresh }) => {
             key={index}
           >
             <div className={`col-span-1 px-3 py-4`}>{item?.id}</div>
-            <div className={`col-span-2 px-3 py-4`}>{item?.username}</div>
+            <div className={`col-span-2 px-3 py-4 flex flex-col`}>
+              <span className="text-md mb-1">{item?.username}</span>
+              <div className="flex flex-row gap-2">
+                {item?.roles?.length > 0
+                  ? item?.roles
+                    .sort((a, b) => a.label.localeCompare(b.label))
+                    .map((role) => {
+                      return <span key={role.label} className={`text-xs rounded-sm ${role.label === "Admin" ? "bg-red-200 text-red-700 p-1" : "bg-green-200 text-green-700 p-1"}`}>{role.label}</span>
+                    })
+                  : <span className="text-gray-500">Aucun rôle</span>}
+              </div>
+            </div>
             <div className={`col-span-2 px-3 py-4`}>{item?.email}</div>
             <div className={`col-span-1 px-3 py-4`}>
               <label className="inline-flex relative items-center mr-5 cursor-pointer">
@@ -36,13 +47,6 @@ const AdminUserPaginationTableBody = ({ arrayItems, setRefresh }) => {
                 <CheckboxSlider />
               </label>
             </div>
-            <div className={`col-span-1 px-3 py-4`}>
-              <div className="flex flex-col justify-center">
-               {item?.roles?.length > 0 ? item?.roles.map((role) => {
-                return <span key={role.label} className={`${role.label === "Admin" && "text-red-500 font-bold"}`}>{role.label}</span>
-               }) : <span className="text-gray-500">No role</span>}
-              </div>
-            </div>
             <div className={`col-span-1 px-2 py-4`}>
               <label className="inline-flex relative items-center mr-5 cursor-pointer">
                 <input
@@ -56,9 +60,9 @@ const AdminUserPaginationTableBody = ({ arrayItems, setRefresh }) => {
                 <CheckboxSlider />
               </label>
             </div>
-            <div className="col-span-4 px-6 py-4 text-right">
+            <div className="h-full col-span-5 p-4 bg-gray-100 text-right">
               <p
-                className="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer"
+                className="font-medium text-blue-600 hover:text-red-600 hover:underline cursor-pointer"
                 onClick={() => {
                   console.log(item.id);
                   deleteUserByAdmin(item.id, setRefresh);
@@ -67,6 +71,7 @@ const AdminUserPaginationTableBody = ({ arrayItems, setRefresh }) => {
                 Supprimer
               </p>
               <Link
+                className="hover:text-yellow-600 hover:underline cursor-pointer"
                 to={`/admin/users/update/${item.id}`}
               >
                 Modifier

@@ -3,9 +3,9 @@ import React from "react";
 const ErrorText = ({ errorText, errorTextCenter }) => {
   return (
     <div
-      className={`col-span-12 bg-red-100 p-4 rounded mb-1 ${
+      className={`col-span-12 mt-4 p-2 bg-red-100 text-red-500 rounded mb-1 ${
         errorTextCenter && "text-center"
-      } text-gray-800 border border-red-200 border-4`}
+      }`}
     >
       <p>{errorText}</p>
     </div>

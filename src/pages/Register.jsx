@@ -115,7 +115,7 @@ const Register = () => {
 
         <Button
           buttonText="Créer mon compte"
-          className="bg-black text-white w-full p-2 mb-2 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="bg-black text-white w-full p-2 mt-4 mb-2 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed"
           disabled={!isFormValid()}
           action={handleRegister}
         />

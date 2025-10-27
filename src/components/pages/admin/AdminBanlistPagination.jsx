@@ -17,19 +17,19 @@ const AdminBanlistPagination = ({
     },
     {
       colspan: "col-span-1",
-      label: "Nb total de cartes",
+      label: "Nb c. totales",
     },
     {
       colspan: "col-span-1",
-      label: "Nb cartes interdites",
+      label: "Nb. c. interdites",
     },
     {
       colspan: "col-span-1",
-      label: "Nb. cartes limitées",
+      label: "Nb. c. limitées",
     },
     {
       colspan: "col-span-1",
-      label: "Nb. cartes semi-limités",
+      label: "Nb. c. semi-limitées",
     },
     {
       colspan: "col-span-4",

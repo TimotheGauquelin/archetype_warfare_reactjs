@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
@@ -18,6 +17,7 @@ import ErrorText from "../components/generic/ErrorText.jsx";
 
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [log, setLog] = useState({
     email: "",
@@ -25,7 +25,25 @@ const Login = () => {
   });
 
   const [error, setError] = useState("");
-  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = () => {
+    setError("");
+    
+    // Validation des champs
+    if (!log.email || !log.email.includes("@")) {
+      setError("Veuillez saisir une adresse email valide");
+      return;
+    }
+    
+    if (!log.password) {
+      setError("Veuillez saisir votre mot de passe");
+      return;
+    }
+
+    setIsLoading(true);
+    logIn(log, dispatch, navigate, setError, setIsLoading);
+  };
 
   return (
     <div className="bg-graybackground w-screen h-screen fixed left-0 top-0 flex justify-center items-center">
@@ -33,59 +51,72 @@ const Login = () => {
         className={`bg-white w-[400px] max-w-[400px] cardShadow rounded-xl flex flex-col p-6`}
       >
         <div>
-          <h3 className="text-2xl text-center mb-4">Connectez-vous</h3>
+          <h3 className="text-2xl text-center mb-4 font-semibold">
+            Connectez-vous
+          </h3>
 
-          <Input
-            label="Email"
-            required
-            inputType="text"
-            inputName="email"
-            colSpanWidth="12"
-            attribute="email"
-            setAction={setLog}
-          />
+          <div className="mb-4">
+            <Input
+              label="Email"
+              required
+              inputType="email"
+              inputName="email"
+              colSpanWidth="12"
+              attribute="email"
+              setAction={setLog}
+              disabled={isLoading}
+            />
+          </div>
 
-          <InputPassword
-            label="Password"
-            required
-            colSpanWidth="12"
-            attribute="password"
-            setAction={setLog}
+          <div className="mb-4">
+            <InputPassword
+              label="Mot de passe"
+              required
+              colSpanWidth="12"
+              attribute="password"
+              setAction={setLog}
+              disabled={isLoading}
+            />
+          </div>
+
+          {error && <ErrorText errorText={error} />}
+
+          <Button
+            buttonText="Se connecter"
+            className="bg-black text-white w-full mt-2 p-3 rounded font-medium transition-all duration-200"
+            disabled={isLoading}
+            loadingText="Connexion en cours..."
+            action={handleLogin}
           />
         </div>
-        {/* {isFetching || onLoading ? (
-          <Loader />
-        ) : ( */}
-        {error && <ErrorText errorText={error} />}
 
-        <Button
-          buttonText="Se connecter"
-          className="bg-black text-white w-full p-2 mb-2 rounded-md"
-          // disabled={isFetching || onLoading}
-          action={() => {
-            logIn(log, dispatch, navigate, setError);
-          }}
-        />
-        <div className="flex-grow h-[1px] m-2 bg-gray-300"> </div>
+        <div className="flex-grow h-[1px] m-2 bg-gray-300"></div>
 
         <div className="text-center space-y-2">
           <Button
             buttonText="Mot de passe oublié ?"
-            className="text-sm text-blue-900 cursor-pointer hover:underline"
+            className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200"
             action={() => navigate(URL_FRONT_PASSWORD_LOST)}
           />
           <div>
-            <span className="text-sm text-gray-600">
-              Pas encore de compte ?{" "}
-            </span>
-            <Button
-              buttonText="S'inscrire"
-              className="text-sm text-blue-900 cursor-pointer hover:underline"
-              action={() => navigate(URL_FRONT_REGISTER)}
-            />
+            <p className="text-sm text-gray-600">
+              Les inscriptions sont fermées pour le moment.
+            </p>
           </div>
         </div>
-        <ToastContainer />
+
+        <ToastContainer 
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </div>
   );

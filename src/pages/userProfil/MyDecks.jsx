@@ -12,21 +12,21 @@ import { useSelector } from "react-redux";
 
 const MyDecks = () => {
   const [myDecks, setMyDecks] = useState([]);
-  const { token } = useSelector((state) => state.user);
-  var decoded = jwt_decode(token);
+  // const { token } = useSelector((state) => state.user);
+  // var decoded = jwt_decode(token);
 
-  const getMyDecks = () => {
-    api_aw.get(`/public/decks/user/${decoded.idUser}`).then((response) => {
-      if (response.status === 200) {
-        setMyDecks(response.data);
-      }
-    });
-  };
+  // const getMyDecks = () => {
+  //   api_aw.get(`/public/decks/user/${decoded.idUser}`).then((response) => {
+  //     if (response.status === 200) {
+  //       setMyDecks(response.data);
+  //     }
+  //   });
+  // };
 
-  useEffect(() => {
-    getMyDecks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   getMyDecks();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   return (
     <div>
@@ -43,7 +43,7 @@ const MyDecks = () => {
           </Link>
         </div>
         <div className="grid grid-cols-1 sscreen:grid-cols-2 lscreen:grid-cols-4 gap-4 relative">
-          {myDecks?.length > 0
+          {/* {myDecks?.length > 0
             ? myDecks?.map((deck, deckIndex) => {
                 return (
                   <Link
@@ -56,7 +56,7 @@ const MyDecks = () => {
                   </Link>
                 );
               })
-            : "Vous n'avez aucun deck pour le moment"}
+            : "Vous n'avez aucun deck pour le moment"} */}
         </div>
         <Link
           to="/"

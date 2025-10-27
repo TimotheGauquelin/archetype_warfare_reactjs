@@ -34,7 +34,7 @@ const AdminArchetypePagination = ({
     },
     {
       colspan: "col-span-1",
-      label: "Méthode d'invocation",
+      label: "Méthode d'invoc.",
     },
     {
       colspan: "col-span-1",
@@ -50,14 +50,14 @@ const AdminArchetypePagination = ({
     },
     {
       colspan: "col-span-1",
-      label: "Position",
+      label: "Pts Populaire",
     },
     {
       colspan: "col-span-1",
       label: "IDK",
     },
     {
-      colspan: "col-span-1",
+      colspan: "col-span-2",
       label: "Actions",
     },
   ];

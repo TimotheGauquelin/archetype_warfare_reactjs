@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../../../components/pages/admin/AdminStructure";
 import { useNavigate, useParams } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import { getArchetypeById, updateArchetype } from "../../../services/archetype";
 import AdminArchetypeUpdateFormik from "../../../components/pages/admin/archetype/AdminArchetypeUpdateFormik";
 
@@ -46,9 +46,15 @@ const AdminArchetypeUpdatePage = () => {
       <AdminArchetypeUpdateFormik
         archetype={archetype}
         setArchetype={setArchetype}
-        updateArchetype={() => { updateArchetype(archetypeId, archetype, navigate) }}
+        updateArchetype={() => { updateArchetype(archetypeId, archetype, navigate, toast) }}
       />
-      <ToastContainer />
+      <ToastContainer 
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+      />
     </AdminStructure>
   );
 };

@@ -22,7 +22,7 @@ const AdminBodyHeader = ({
       </div>
       {buttonUrl && (
         <Link to={buttonUrl}>
-          <button className="block text-white p-2 bg-blue-200 rounded hover:bg-blue-300 curosr-pointer">
+          <button className="block text-white p-2 bg-blue-400 rounded hover:bg-blue-500 cursor-pointer">
             {buttonLabel}
           </button>
         </Link>

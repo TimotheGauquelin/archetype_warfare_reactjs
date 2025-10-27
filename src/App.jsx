@@ -41,6 +41,7 @@ import {
   URL_FRONT_PASSWORD_RESET,
   URL_FRONT_ADMIN_USER_UPDATE,
   URL_FRONT_ADMIN_BANLIST_UPDATE,
+  URL_FRONT_MY_DECKS,
 } from "./constant/urlsFront";
 import Loader from "./components/generic/Loader";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
@@ -52,6 +53,8 @@ import { ROLE_ADMIN } from "./utils/const/rolesConst";
 import DiscordLoginSuccesful from "./pages/DiscordLoginSuccesful";
 import AdminUserUpdate from "./pages/admin/adminUsers/AdminUserUpdate";
 import AdminUpdateBanlist from "./pages/admin/adminBanlists/AdminUpdateBanlist";
+import MyDecks from "./pages/userProfil/MyDecks";
+import UpdateMyProfil from "./pages/userProfil/UpdateMyProfil";
 
 const Archetype = lazy(() => import("./pages/Archetype"));
 const Archetypes = lazy(() => import("./pages/Archetypes"));
@@ -113,6 +116,8 @@ const AppContent = () => {
 
           {/* User Profil*/}
           <Route exact path={URL_FRONT_MY_PROFIL} element={<MyProfil />} />
+          <Route path="/my-profil/edit" element={<UpdateMyProfil />} />
+          {/* <Route exact path={URL_FRONT_MY_DECKS} element={<MyDecks />} /> */}
 
           {/* Admin */}
           <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>

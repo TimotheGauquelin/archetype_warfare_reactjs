@@ -12,6 +12,7 @@ export const Input = ({
   placeholder,
   min,
   max,
+  disabled,
 }) => {
   const handleChange = useCallback((e) => {
     setAction((prevState) => ({
@@ -31,13 +32,14 @@ export const Input = ({
       <input
         required={required}
         placeholder={placeholder}
-        className="p-2 bg-gray-100 rounded-md"
+        className={`p-2 bg-gray-100 rounded-md ${disabled ? "opacity-50 hover:outline-none" : "hover:opacity-90 hover:outline hover:outline-2 hover:outline-black"}`}
         min={min}
         max={max}
         type={inputType}
         name={inputName}
         value={data && data[attribute]}
         onChange={handleChange}
+        disabled={disabled ? true : false}
       />
     </div>
   );

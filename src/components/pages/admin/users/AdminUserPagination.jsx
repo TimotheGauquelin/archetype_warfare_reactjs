@@ -18,9 +18,8 @@ const AdminUserPagination = ({
     { colspan: "col-span-2", label: "Pseudo" },
     { colspan: "col-span-2", label: "Email" },
     { colspan: "col-span-1", label: "Is Active" },
-    { colspan: "col-span-1", label: "All User Roles" },
     { colspan: "col-span-1", label: "Is Forbidden" },
-    { colspan: "col-span-4", label: "Actions" },
+    { colspan: "col-span-5", label: "Actions" },
   ];
 
   const items = users?.data ?? [];

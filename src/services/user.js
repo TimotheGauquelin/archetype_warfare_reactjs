@@ -42,19 +42,34 @@ export const searchUsers = (size, pagination, criteria, setUsers) => {
  * @param {function} navigate - Hook to navigate.
  * @returns {Promise<void>} - Promise indicating the completion of the operation.
  */
-export const getUserByResetPasswordToken = (setUser, resetPasswordToken, navigate) => {
-  api_aw
-    .get(
-      URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN(resetPasswordToken)
-    )
-    .then((response) => {
-      console.log(response);
-      if (response.status === 200) {
-        setUser(response.data)
-      }
-    }).catch((error) => {
-      // setTimeOutNavigator(navigate, URL_FRONT_HOME, 5000)
-    })
+export const getUserByResetPasswordToken = (resetPasswordToken, setUser, setError, navigate) => {
+  try {
+    api_aw
+      .get(
+        URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN(resetPasswordToken)
+      )
+      .then((response) => {
+        if (response.status === 200) {
+          setUser(response.data);
+        }
+      }).catch((error) => {
+        if (error.response.status === 400) {
+          console.log(error.response.data.message);
+          setError(error.response.data.message);
+          setTimeout(() => {
+            navigate(URL_FRONT_LOGIN);
+          }, 5000);
+        }
+        if (error.response.status === 404) {
+          setError("Le lien de réinitialisation de mot de passe est invalide");
+          setTimeout(() => {
+            navigate(URL_FRONT_HOME);
+          }, 5000);
+        }
+      })
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 /**
@@ -83,7 +98,6 @@ export const addUser = (newUser, navigate) => {
   api_aw
     .post(URL_BACK_ADD_USER, newUser)
     .then((response) => {
-      console.log("là");
       if (response.status === 201) {
         navigate(URL_FRONT_ADMIN_USERS);
       }
@@ -95,7 +109,6 @@ export const createUserByAdmin = (newUser, navigate) => {
   api_aw
     .post(URL_BACK_CREATE_USER_BY_ADMIN, newUser)
     .then((response) => {
-      console.log("là");
       if (response.status === 201) {
         navigate(URL_FRONT_ADMIN_USERS);
       }
@@ -142,25 +155,42 @@ export const switchIsBanned = (userId, setRefresh) => {
  * @param {string} userId - User id.
  * @param {object} form - Form object.
  * @param {function} navigate - Hook to navigate.
- * @param {function} setError - Hook to set error.
+ * @param {function} setMultipleErrors - Hook to set multiple errors.
+ * @param {function} setIsUpdating - Hook to set updating state.
+ * @param {function} toast - Toast notification function.
  * @returns {Promise<void>} - Promise indicating the completion of the operation.
  */
-export const updatePassword = (userId, form, navigate, setError) => {
+export const updatePassword = (userId, form, navigate, setMultipleErrors, setIsUpdating, toast) => {
   api_aw
     .put(URL_BACK_UPDATE_PASSWORD(userId), form)
     .then((response) => {
       if (response.status === 200) {
-        navigate(URL_FRONT_LOGIN);
+        // setIsUpdating(false);
+        toast.success("Mot de passe modifié avec succès !", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+        });
+        setTimeout(() => {
+          navigate(URL_FRONT_LOGIN);
+        }, 2000);
       }
     })
     .catch((error) => {
-      console.log(error)
-      setError(error.response.data.errors)
+      setIsUpdating(false);
+      if (error.response && error.response.data && error.response.data.message) {
+        setMultipleErrors(error.response.data.message);
+      } else {
+        setMultipleErrors("Une erreur est survenue lors de la modification du mot de passe. Veuillez réessayer.");
+      }
     });
 };
 
 export const updateUserByAdmin = (userId, form, navigate, toast) => {
-  console.log("FORM====", form);
   api_aw
     .put(URL_BACK_UPDATE_USER_BY_ADMIN(userId), form)
     .then((response) => {
@@ -182,13 +212,11 @@ export const updateUserByAdmin = (userId, form, navigate, toast) => {
 * @param {function} navigate - Hook to navigate among pages.
 * @returns {Promise<void>} - Promise indicating the completion of the operation.
 */
-export const deleteUser = (userId, setDisplayDeletePopUp, setAuthUser, navigate) => {
+export const deleteUser = (userId, navigate) => {
   api_aw
     .delete(URL_BACK_DELETE_USER(userId))
     .then((response) => {
       if (response.status === 200) {
-        setDisplayDeletePopUp(false);
-        setAuthUser({})
         navigate(URL_FRONT_HOME);
       }
     })
