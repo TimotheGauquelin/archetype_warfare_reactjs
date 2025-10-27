@@ -11,7 +11,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { updateUser } from "../../redux/slice/userSlice";
 import api_aw from "../../api/api_aw";
-import { InputPassword } from "../../components/generic/form/InputPassword";
 
 const UpdateMyProfil = () => {
     const navigate = useNavigate();

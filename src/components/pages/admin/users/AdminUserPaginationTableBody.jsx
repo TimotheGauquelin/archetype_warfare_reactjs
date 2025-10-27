@@ -1,6 +1,6 @@
 import React from "react";
 import CheckboxSlider from "../../../generic/CheckboxSlider";
-import { deleteUser, deleteUserByAdmin, switchIsActive, switchIsBanned } from "../../../../services/user";
+import { deleteUserByAdmin, switchIsActive, switchIsBanned } from "../../../../services/user";
 import { Link } from "react-router-dom";
 
 const AdminUserPaginationTableBody = ({ arrayItems, setRefresh }) => {

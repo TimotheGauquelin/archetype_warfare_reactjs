@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Header from "../../components/generic/header/Header";
 import Navbar from "../../components/pages/userProfil/Navbar";
 import ProfilTemplate from "../../components/pages/userProfil/ProfilTemplate";
@@ -8,13 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import usePopup from "../../hooks/usePopup";
 import { deleteUser } from "../../services/user";
-import api_aw from "../../api/api_aw";
-import { FaCrown, FaTrophy, FaChartLine, FaClock } from "react-icons/fa";
+import { FaCrown } from "react-icons/fa";
 
 const MyProfil = () => {
   const { isOpen, showConfirmDialog, closePopup, popupConfig } = usePopup();
   const navigate = useNavigate();
-  const { id, username, roles, email } = useSelector((state) => state.user);
+  const { id, username, roles } = useSelector((state) => state.user);
 
   const [userStats, setUserStats] = useState({
     totalDecks: 0,
@@ -24,24 +23,6 @@ const MyProfil = () => {
     winRate: 0,
     totalBattles: 0,
   });
-
-  const getUserStats = () => {
-    // Récupération des statistiques de l'utilisateur
-    api_aw.get(`/public/users/${id}/stats`)
-      .then((response) => {
-        if (response.status === 200) {
-          setUserStats(response.data);
-        }
-      })
-      .catch((error) => {
-        console.log("Erreur lors du chargement des stats:", error);
-      });
-  };
-
-  useEffect(() => {
-    getUserStats();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleDeleteUser = () => {
     showConfirmDialog({

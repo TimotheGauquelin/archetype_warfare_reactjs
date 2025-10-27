@@ -24,7 +24,6 @@ const Archetypes = () => {
     totalPages: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [eras, setEras] = useState([]);
   const [filters, setFilters] = useState({
     name: "",
@@ -42,14 +41,13 @@ const Archetypes = () => {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      setError(null);
       
       await Promise.all([
         getArchetypesWithCriteria(filters, setArchetypes, setPagination),
         getEras(setEras)
       ]);
     } catch (err) {
-      setError("Erreur lors du chargement des archétypes");
+      console.log("Erreur lors du chargement des archétypes");
     } finally {
       setIsLoading(false);
     }
