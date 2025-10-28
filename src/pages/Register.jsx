@@ -25,17 +25,6 @@ const Register = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState("");
 
-  const isFormValid = () => {
-    return (
-      registerData.username &&
-      registerData.email &&
-      registerData.password &&
-      registerData.passwordConfirmation &&
-      registerData.password === registerData.passwordConfirmation &&
-      acceptTerms
-    );
-  };
-
   const handleRegister = () => {
     if (registerData.password !== registerData.passwordConfirmation) {
       setError("Les mots de passe ne correspondent pas");
@@ -115,8 +104,7 @@ const Register = () => {
 
         <Button
           buttonText="Créer mon compte"
-          className="bg-black text-white w-full p-2 mt-4 mb-2 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed"
-          disabled={!isFormValid()}
+          className="bg-black text-white w-full p-2 mb-2 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed"
           action={handleRegister}
         />
 
