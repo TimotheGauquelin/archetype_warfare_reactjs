@@ -48,8 +48,6 @@ const MyDeckAdd = () => {
   };
 
   const addDeck = (values) => {
-    console.log(values);
-
     const newDate = new Date();
 
     const allDeckCards = [];
@@ -69,8 +67,6 @@ const MyDeckAdd = () => {
       isActive: values.isActive,
       cards: allDeckCards,
     };
-
-    console.log(deckSchema);
 
     api_aw
       .post(`/public/decks`, deckSchema, {

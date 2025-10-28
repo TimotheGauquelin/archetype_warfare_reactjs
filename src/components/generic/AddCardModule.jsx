@@ -139,7 +139,6 @@ const AddCardModule = ({ newArchetype, setNewArchetype }) => {
                     }`}
                   src={`${card?.img_url}`}
                   alt=""
-                  // onClick={() => console.log("===========card", isCardAlreadyInArchetype)}
                   onClick={() => !isCardAlreadyInArchetype && addCardToArchetype(card)}
                 />
                 {isCardAlreadyInArchetype && (

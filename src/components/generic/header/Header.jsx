@@ -38,7 +38,7 @@ const HeaderMemo = memo(function Header() {
           <Link className="block lscreen:pr-5" to={URL_FRONT_HOME}>
             <div>
               <img
-                src={`${process.env.PUBLIC_URL}/assets/archetype_battle.png`}
+                src={`${process.env.PUBLIC_URL || ''}/assets/archetype_battle.png`}
                 alt=""
                 className="w-1/2"
               />

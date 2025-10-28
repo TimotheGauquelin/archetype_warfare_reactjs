@@ -32,7 +32,6 @@ export const getEightMostFamousArchetypes = (setMostFamousArchetypes, setErrorMe
             setMostFamousArchetypes(response.data);
         })
         .catch((error) => {
-            console.log("===========!", error);
             setErrorMessage(() => "Erreur lors du chargement des données");
         });
     } catch (error) {
@@ -46,7 +45,6 @@ export const getFiveRandomHighlightedArchetypes = (setRandomHighlightedArchetype
             setRandomHighlightedArchetypes(response.data);
         })
         .catch((error) => {
-            console.log("===========!", error);
             setErrorMessage("Erreur lors du chargement des données");
         });
     } catch (error) {
@@ -61,11 +59,9 @@ export const getEightMostRecentArchetypes = (setMostRecentArchetypes, setErrorMe
             setMostRecentArchetypes(response.data);
         })
         .catch((error) => {
-            console.log("===========!", error);
             setErrorMessage("Erreur lors du chargement des données");
         });
     } catch (error) {
-        console.log("===========!!", error);
         throw error;
     }
 };
@@ -83,7 +79,6 @@ export const getRandomArchetype = (navigate) => {
 // ADD
 
 export const addArchetype = (newArchetype, navigate) => {
-    console.log("icii", newArchetype);
     try {
         api_aw.post(URL_BACK_ADD_ARCHETYPE, newArchetype).then((response) => {
             if (response.status === 201) {

@@ -63,7 +63,6 @@ const AdminArchetypePagination = ({
   ];
 
   const handleDeleteArchetypeButton = (archetypeId) => {
-    console.log("HELLO");
     showConfirmPopupDialog({
       title: "Suppresion de l'archetype",
       message: "Êtes vous sûr de vouloir supprimer cet archetype ? Cette action est irréversible.",

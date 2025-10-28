@@ -218,7 +218,6 @@ const AdminArchetypeData = ({
               type='file'
               onChange={async (e) => {
                 const file = e.target.files[0];
-                console.log("===========file", file);
                 const base64Img = await convertBase64(file);
                 setNewArchetype((prevState) => ({
                   ...prevState,

@@ -61,7 +61,7 @@ const Login = () => {
               required
               inputType="email"
               inputName="email"
-              colSpanWidth="12"
+              cmt-4 nWidth="12"
               attribute="email"
               setAction={setLog}
               disabled={isLoading}
@@ -99,9 +99,12 @@ const Login = () => {
             action={() => navigate(URL_FRONT_PASSWORD_LOST)}
           />
           <div>
-            <p className="text-sm text-gray-600">
+            {/* <p className="text-sm text-gray-600">
               Les inscriptions sont fermées pour le moment.
-            </p>
+            </p> */}
+            <Link to={URL_FRONT_REGISTER} className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200">
+              Créer un compte
+            </Link>
           </div>
         </div>
 

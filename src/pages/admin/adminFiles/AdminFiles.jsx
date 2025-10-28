@@ -27,7 +27,6 @@ const AdminFiles = () => {
 
   const getImagesFromCloudinaryFolder = async (folderName, setState) => {
     api_aw.get(`/images/${folderName}/all`).then((response) => {
-      console.log(response.data);
       if (response.status === 200) {
         setState(response.data.data);
       }

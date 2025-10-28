@@ -23,7 +23,6 @@ const AdminUserPagination = ({
   ];
 
   const items = users?.data ?? [];
-  console.log(users.pagination);
 
   return (
     <div className="">

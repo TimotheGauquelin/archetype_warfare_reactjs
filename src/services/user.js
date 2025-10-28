@@ -54,7 +54,6 @@ export const getUserByResetPasswordToken = (resetPasswordToken, setUser, setErro
         }
       }).catch((error) => {
         if (error.response.status === 400) {
-          console.log(error.response.data.message);
           setError(error.response.data.message);
           setTimeout(() => {
             navigate(URL_FRONT_LOGIN);

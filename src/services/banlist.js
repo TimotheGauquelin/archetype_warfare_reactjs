@@ -35,7 +35,6 @@ export const getBanlistById = (id, setBanlist) => {
 
 export const addBanlist = (newBanlist, navigate) => {
     try {
-        console.log(newBanlist);
         api_aw.post(URL_BACK_ADD_BANLIST, newBanlist).then((response) => {
             if (response.status === 201) {
                 navigate(URL_FRONT_ADMIN_BANLISTS);

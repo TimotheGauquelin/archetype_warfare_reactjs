@@ -17,7 +17,6 @@ const PasswordLost = () => {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    console.log("email", log.email);
     setError("");
     if (!log.email || !log.email.includes("@")) {
       setError("Veuillez saisir une adresse email valide");

@@ -61,16 +61,11 @@ const FormikAddBanlistCard = ({
         .then((response) => {
           if (response.status === 200) {
             if (response.data === true) {
-              //Si déjà en BDD, ne pas l'ajouter à l'archetype
-              console.log("La carte est déjà en BDD !");
-              //Pas besoin de créer la carte. Envoyer directement dans banlistCards
+    
               if (
                 typeof c?.cardData.card.id !== "undefined" &&
                 typeof c?.cardData.card.cardType !== "undefined"
               ) {
-                //Après avoir créer la carte, l'envoyer dans banlistCards
-                /*Mettre une condition si elle n'existe pas déjà dans la banlist */
-
                 const isInValue =
                   value.length !== 0 &&
                   value?.find(
@@ -86,11 +81,8 @@ const FormikAddBanlistCard = ({
                       Number(c.cardData.card.id) ===
                       Number(cFind.cardData.card.id)
                   );
-
                 if (isInValue || isInCards) {
-                  console.log("Existe déjà dans value");
                 } else {
-                  console.log("Ajouter dans value");
                   previewCards.push(c);
                   value.push(c);
                   setFieldValue(name, value);
@@ -100,17 +92,13 @@ const FormikAddBanlistCard = ({
                   });
                 }
               } else {
-                console.log("C'pas bon ! Il manque un truc");
               }
             } else {
-              //Sinon, l'ajouter
-              console.log("Ajout dans la BDD !");
               if (
                 typeof c?.cardData.card.id !== "undefined" ||
                 (null && typeof c?.cardData.card.cardType !== "undefined") ||
                 null
               ) {
-                console.log("C'est tout bon !");
                 const cardToSendInDB = {
                   id: c.cardData.card.id,
                   cardType: {
@@ -238,7 +226,6 @@ const FormikAddBanlistCard = ({
                           newPreviewCards[index].cardData.cardStatus.label =
                             e.target.value;
                           setPreviewCards(newPreviewCards);
-                          console.log(previewCards);
                         }}
                       >
                         <option className="w-full" value="">

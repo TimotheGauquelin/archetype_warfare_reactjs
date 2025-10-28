@@ -64,7 +64,6 @@ const AdminUserPaginationTableBody = ({ arrayItems, setRefresh }) => {
               <p
                 className="font-medium text-blue-600 hover:text-red-600 hover:underline cursor-pointer"
                 onClick={() => {
-                  console.log(item.id);
                   deleteUserByAdmin(item.id, setRefresh);
                 }}
               >

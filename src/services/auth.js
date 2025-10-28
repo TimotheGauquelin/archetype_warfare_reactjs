@@ -44,7 +44,6 @@ export const requestNewPassword = (email, setRequestIsDone, setError, setIsLoadi
       }
     })
     .catch((error) => {
-      console.log(error);
       setIsLoading(false);
       if (error.response && error.response.data) {
         setError(error.response.data.message);
@@ -64,7 +63,6 @@ export const register = (userData, navigate, setError) => {
       }
     })
     .catch((error) => {
-      console.log(error);
       setError(error.response?.data?.message || "Une erreur s'est produite lors de l'inscription");
     });
 };

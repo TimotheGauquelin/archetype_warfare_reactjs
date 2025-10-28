@@ -72,10 +72,6 @@ const AdminArchetypeUpdateFormikCardData = ({
                 const cardIndex = newArchetype?.cards?.findIndex(
                   (archCard) => archCard.card.id === card.card.id
                 );
-
-                console.log("===========", cardIndex)
-                // console.log("===========updatedCards", newArchetype.cards)
-
                 return (
                   <div
                     key={index}
