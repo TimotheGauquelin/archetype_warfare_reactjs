@@ -4,6 +4,16 @@ import { URL_BACK_LOGIN, URL_BACK_REGISTER, URL_BACK_REQUEST_NEW_PASSWORD } from
 import { URL_FRONT_HOME, URL_FRONT_LOGIN } from "../constant/urlsFront";
 import { setUser, clearUser } from "../redux/slice/userSlice";
 
+
+/**
+ * Log in a user.
+ * @param {object} user - User object.
+ * @param {function} dispatch - Dispatch function.
+ * @param {function} navigate - Navigation function.
+ * @param {function} setError - Function to set the error.
+ * @param {function} setIsLoading - Function to set the loading state.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
 export const logIn = (user, dispatch, navigate, setError, setIsLoading) => {
   api_aw
     .post(URL_BACK_LOGIN, user)
@@ -38,6 +48,14 @@ export const logIn = (user, dispatch, navigate, setError, setIsLoading) => {
     });
 };
 
+/**
+ * Request a new password.
+ * @param {object} email - Email object.
+ * @param {function} setRequestIsDone - Function to set the request is done state.
+ * @param {function} setError - Function to set the error.
+ * @param {function} setIsLoading - Function to set the loading state.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
 export const requestNewPassword = (email, setRequestIsDone, setError, setIsLoading) => {
   api_aw
     .post(URL_BACK_REQUEST_NEW_PASSWORD, email)
@@ -57,6 +75,15 @@ export const requestNewPassword = (email, setRequestIsDone, setError, setIsLoadi
     });
 };
 
+/**
+ * Register a new user.
+ * @param {object} userData - User data object.
+ * @param {function} navigate - Navigation function.
+ * @param {function} toast - Toast function.
+ * @param {function} setError - Function to set the error.
+ * @param {function} setIsLoading - Function to set the loading state.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
 export const register = (userData, navigate, toast, setError, setIsLoading) => {
   console.log(userData);
   api_aw
@@ -68,11 +95,16 @@ export const register = (userData, navigate, toast, setError, setIsLoading) => {
       }
     })
     .catch((error) => {
+      console.log(error);
       setIsLoading(false);
       if (error.response.data) {
-        setError(error.response.data);
+        if (error.response.status === 429) {
+          setError({message: error.response.data, multipleErrors: null});
+        } else {
+          setError({message: error.response.data.message, multipleErrors: null});
+        }
       } else {
-        setError("Une erreur s'est produite lors de l'inscription");
+        setError("Une erreur s'est produite lors de l'inscription. Veuillez réessayer.");
       }
     });
 };
