@@ -53,6 +53,8 @@ import DiscordLoginSuccesful from "./pages/DiscordLoginSuccesful";
 import AdminUserUpdate from "./pages/admin/adminUsers/AdminUserUpdate";
 import AdminUpdateBanlist from "./pages/admin/adminBanlists/AdminUpdateBanlist";
 import UpdateMyProfil from "./pages/userProfil/UpdateMyProfil";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Archetype = lazy(() => import("./pages/Archetype"));
 const Archetypes = lazy(() => import("./pages/Archetypes"));
@@ -170,6 +172,18 @@ const AppContent = () => {
             <Route path={URL_FRONT_ADMIN_CARDS} element={<AdminCards />} />
           </Route>
         </Routes>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+          limit={1}
+        />
       </BrowserRouter>
     </div>
   );

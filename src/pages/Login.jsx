@@ -7,8 +7,6 @@ import {
   URL_FRONT_PASSWORD_LOST,
   URL_FRONT_REGISTER,
 } from "../constant/urlsFront";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { InputPassword } from "../components/generic/form/InputPassword.jsx";
 import Button from "../components/generic/Button";
 import { Input } from "../components/generic/form/Input.jsx";
@@ -29,13 +27,12 @@ const Login = () => {
 
   const handleLogin = () => {
     setError("");
-    
-    // Validation des champs
+
     if (!log.email || !log.email.includes("@")) {
       setError("Veuillez saisir une adresse email valide");
       return;
     }
-    
+
     if (!log.password) {
       setError("Veuillez saisir votre mot de passe");
       return;
@@ -107,19 +104,6 @@ const Login = () => {
             </Link>
           </div>
         </div>
-
-        <ToastContainer 
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
       </div>
     </div>
   );

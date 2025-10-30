@@ -13,6 +13,7 @@ import Loader from "../components/generic/Loader";
 import { getArchetypeById } from "../services/archetype";
 import Card from "../components/generic/Card";
 import { getCardTypes } from "../services/cardtype";
+import SkeletonArchetypePage from "../components/skeletons/SkeletonArchetypePage";
 
 const Archetype = () => {
   const [archetype, setArchetype] = useState({});
@@ -72,27 +73,9 @@ const Archetype = () => {
     });
   }, [archetype?.cards, cardTypes]);
 
-  if (loading) {
+  if (loading || !archetype.id) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Loader />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <ErrorText errorText={error} />
-      </div>
-    );
-  }
-
-  if (!archetype.id) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <ErrorText errorText="Archétype non trouvé" />
-      </div>
+      <SkeletonArchetypePage />
     );
   }
 

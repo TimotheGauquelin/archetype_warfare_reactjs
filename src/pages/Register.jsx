@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { URL_FRONT_LOGIN } from "../constant/urlsFront";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { InputPassword } from "../components/generic/form/InputPassword.jsx";
 import Button from "../components/generic/Button";
@@ -11,6 +11,7 @@ import { Input } from "../components/generic/form/Input.jsx";
 import { register } from "../services/auth.js";
 import ErrorText from "../components/generic/ErrorText.jsx";
 import { URL_FRONT_TERMS_AND_CONDITIONS } from "../constant/urlsFront";
+import ErrorMultipleText from "../components/generic/ErrorMultipleText.jsx";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -20,18 +21,23 @@ const Register = () => {
     email: "",
     password: "",
     passwordConfirmation: "",
+    has_accepted_terms_and_conditions: false,
   });
 
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState({
+    message: null,
+    multipleErrors: null,
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = () => {
+    setIsLoading(true);
     if (registerData.password !== registerData.passwordConfirmation) {
-      setError("Les mots de passe ne correspondent pas");
+      setError({ message: "Les mots de passe ne correspondent pas", multipleErrors: null });
       return;
     }
 
-    register(registerData, navigate, setError);
+    register(registerData, navigate, toast, setError, setIsLoading);
   };
 
   return (
@@ -82,8 +88,8 @@ const Register = () => {
             <input
               type="checkbox"
               id="acceptTerms"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
+              checked={registerData.has_accepted_terms_and_conditions}
+              onChange={(e) => setRegisterData({ ...registerData, has_accepted_terms_and_conditions: e.target.checked })}
               className="mt-1 mr-2"
             />
             <label htmlFor="acceptTerms" className="text-sm">
@@ -100,12 +106,19 @@ const Register = () => {
           </div>
         </div>
 
-        {error && <ErrorText errorText={error} />}
+        {error.multipleErrors && error.message &&
+          <ErrorMultipleText multipleErrors={error.message} />
+        }
+        {!error.multipleErrors && error.message &&
+          <ErrorText errorText={error.message} />
+        }
 
         <Button
           buttonText="Créer mon compte"
           className="bg-black text-white w-full p-2 mb-2 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed"
           action={handleRegister}
+          disabled={isLoading}
+          loadingText="Inscription en cours..."
         />
 
         <div className="text-center">
@@ -116,7 +129,6 @@ const Register = () => {
             action={() => navigate(URL_FRONT_LOGIN)}
           />
         </div>
-        <ToastContainer />
       </div>
     </div>
   );

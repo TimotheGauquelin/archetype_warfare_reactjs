@@ -53,17 +53,23 @@ export const requestNewPassword = (email, setRequestIsDone, setError, setIsLoadi
     });
 };
 
-export const register = (userData, navigate, setError) => {
+export const register = (userData, navigate, toast, setError, setIsLoading) => {
+  console.log(userData);
   api_aw
     .post(URL_BACK_REGISTER, userData)
     .then((response) => {
       if (response.status === 201) {
         navigate(URL_FRONT_LOGIN);
-        // toast.success("Compte créé avec succès ! Veuillez vérifier votre email pour confirmer votre compte.");
+        toast.success("Inscription réussie ! Vous recevrez un email lorsque votre compte sera activé.");
       }
     })
     .catch((error) => {
-      setError(error.response?.data?.message || "Une erreur s'est produite lors de l'inscription");
+      setIsLoading(false);
+      if (error.response.data) {
+        setError(error.response.data);
+      } else {
+        setError("Une erreur s'est produite lors de l'inscription");
+      }
     });
 };
 
