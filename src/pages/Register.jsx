@@ -34,6 +34,7 @@ const Register = () => {
     setIsLoading(true);
     if (registerData.password !== registerData.passwordConfirmation) {
       setError({ message: "Les mots de passe ne correspondent pas", multipleErrors: null });
+      setIsLoading(false);
       return;
     }
 
