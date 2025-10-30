@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaTrashAlt } from "react-icons/fa";
 import AddCardModule from "../../../generic/AddCardModule";
 import { getCardStatus } from "../../../../services/cardStatus";
+import { cardStatusToFrench } from "../../../../utils/trad/cardStatus";
 
 const AdminArchetypeCards = ({ newArchetype, setNewArchetype }) => {
   const [cardsRefresh, setCardsRefresh] = useState(false);
@@ -95,7 +96,7 @@ const AdminArchetypeCards = ({ newArchetype, setNewArchetype }) => {
                           {cardStatus?.map((option, index) => {
                             return (
                               <option key={index} value={option.id}>
-                                {option.label}
+                                {cardStatusToFrench(option.label)}
                               </option>
                             );
                           })}

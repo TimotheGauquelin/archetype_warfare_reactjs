@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { cardStatusToFrench } from "../../utils/trad/cardStatus";
 
 const Card = ({ card, status }) => {
   const [cardPopUp, setCardPopUp] = useState(false);
@@ -37,7 +38,7 @@ const Card = ({ card, status }) => {
         )}
         {cardPopUp && card.card_status.label !== "Unlimited" && (
           <div className="-translate-y-1/2 absolute flex flex-col text-white p-4 top-1/2 transform ">
-            <p className="text-red-500 font-bold">Pourquoi {card.card_status.label}:</p>
+            <p className="text-red-500 font-bold">Pourquoi cette carte est {cardStatusToFrench(card.card_status.label)}:</p>
             <p>{card.explanation_text}</p>
           </div>
         )}

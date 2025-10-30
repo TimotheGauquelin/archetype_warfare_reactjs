@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
 import CheckboxSlider from "../../../generic/CheckboxSlider";
+import { attributeToFrench } from "../../../../utils/trad/attribute";
+import { monsterTypeToFrench } from "../../../../utils/trad/monsterType";
+import { summonMechanicsToFrench } from "../../../../utils/trad/summonMechanics";
 
 const AdminArchetypePaginationTableBody = ({
   arrayItems,
@@ -20,14 +23,14 @@ const AdminArchetypePaginationTableBody = ({
             <div className={`col-span-1 px-3 py-4`}>
               {item?.attributes
                 ?.map((attribute, index) => {
-                  return <div key={index}>{attribute?.label}</div>;
+                  return <div key={index}>{ attributeToFrench(attribute?.label)}</div>;
                 })
                 .slice(0, 2)}
             </div>
             <div className={`col-span-1 px-3 py-4`}>
               {item?.types
                 ?.map((type, index) => {
-                  return <div key={index}>{type?.label}</div>;
+                  return <div key={index}>{ monsterTypeToFrench(type?.label)}</div>;
                 })
                 .slice(0, 2)}
             </div>
@@ -36,7 +39,7 @@ const AdminArchetypePaginationTableBody = ({
                 ?.map((summonMechanic, index) => {
                   return (
                     <div key={index}>
-                      {summonMechanic.label.replace("Invocation", "Invoc.")}
+                      {summonMechanicsToFrench(summonMechanic.label).replace("Invocation", "Invoc.")}
                     </div>
                   );
                 })

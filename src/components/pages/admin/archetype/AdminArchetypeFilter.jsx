@@ -10,6 +10,9 @@ import {
 } from "../../../../services/archetype";
 import usePopup from "../../../../hooks/usePopup";
 import PopUp from "../../../generic/PopUp";
+import { attributeToFrench } from "../../../../utils/trad/attribute";
+import { monsterTypeToFrench } from "../../../../utils/trad/monsterType";
+import { summonMechanicsToFrench } from "../../../../utils/trad/summonMechanics";
 
 const AdminArchetypeFilter = ({
   resetAllFilters,
@@ -135,7 +138,7 @@ const AdminArchetypeFilter = ({
             {attributes.map((attribute, index) => {
               return (
                 <option key={index} value={attribute.label}>
-                  {attribute.label}
+                  {attributeToFrench(attribute.label)}
                 </option>
               );
             })}
@@ -156,7 +159,7 @@ const AdminArchetypeFilter = ({
             {types.map((type, index) => {
               return (
                 <option key={index} value={type.label}>
-                  {type.label}
+                  {monsterTypeToFrench(type.label)}
                 </option>
               );
             })}
@@ -178,7 +181,7 @@ const AdminArchetypeFilter = ({
             {summonMechanics.map((sm, index) => {
               return (
                 <option key={index} value={sm.label}>
-                  {sm.label}
+                  {summonMechanicsToFrench(sm.label)}
                 </option>
               );
             })}

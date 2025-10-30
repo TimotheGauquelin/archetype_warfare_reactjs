@@ -3,6 +3,9 @@ import { SwitchInput } from "../../../generic/form/SwitchInput";
 import { Input } from "../../../generic/form/Input";
 import { CheckboxInput } from "../../../generic/form/CheckboxInput";
 import { convertBase64 } from "../../../../utils/img/convertBase";
+import { summonMechanicsToFrench } from "../../../../utils/trad/summonMechanics";
+import { monsterTypeToFrench } from "../../../../utils/trad/monsterType";
+import { attributeToFrench } from "../../../../utils/trad/attribute";
 
 const AdminArchetypeData = ({
   eras,
@@ -149,6 +152,7 @@ const AdminArchetypeData = ({
         attribute="summon_mechanics"
         data
         setAction={setNewArchetype}
+        translateLabel={summonMechanicsToFrench}
       />
       <CheckboxInput
         label="Types"
@@ -158,6 +162,7 @@ const AdminArchetypeData = ({
         attribute="types"
         data
         setAction={setNewArchetype}
+        translateLabel={monsterTypeToFrench}
       />
       <CheckboxInput
         label="Attributs"
@@ -167,6 +172,7 @@ const AdminArchetypeData = ({
         attribute="attributes"
         data
         setAction={setNewArchetype}
+        translateLabel={attributeToFrench}
       />
       <div className="tablet:grid tablet:grid-cols-12 tablet:gap-4">
         <div className={`flex flex-col col-span-12 tablet:col-span-6`}>

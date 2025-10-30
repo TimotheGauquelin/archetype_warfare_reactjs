@@ -6,7 +6,7 @@ export const CheckboxInput = ({
   attribute,
   data,
   setAction,
-  condition
+  translateLabel
 }) => {
   return (
     <div className="flex flex-col">
@@ -61,7 +61,7 @@ export const CheckboxInput = ({
                   });
                 }}
               />
-              <label htmlFor={op.label}>{op.label}</label>
+              <label htmlFor={op.label}>{translateLabel ? translateLabel(op.label) : op.label}</label>
             </div>
           );
         })}
