@@ -27,7 +27,11 @@ export const logIn = (user, dispatch, navigate, setError, setIsLoading) => {
     .catch((error) => {
       setIsLoading(false);
       if (error.response && error.response.data) {
-        setError(error.response.data.message);
+        if (error.response.status === 429) {
+          setError(error.response.data);
+        } else {
+          setError(error.response.data.message);
+        }
       } else {
         setError("Une erreur est survenue lors de la connexion. Veuillez réessayer.");
       }
