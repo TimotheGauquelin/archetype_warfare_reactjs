@@ -15,9 +15,9 @@ const Concept = () => {
   ];
 
   const rules = [
-    { emoji: "🎴", title: "Un seul archétype", desc: "Affirmez votre identité de jeu et perfectionnez votre synergie" },
-    { emoji: "🚫", title: "Banlist dédiée", desc: "Conçue pour couper court aux abus et aux coûts astronomiques, la banlist Archetype Battle bannit les cartes trop puissantes ou trop chères" },
-    { emoji: "🔥", title: "Limites d’invocations", desc: "Un tempo repensé pour des interactions plus fluides et une lecture plus calme du jeu. Le premier tour est limité à 5 invocations, puis chaque tour suivant est incréménté de 1 invocation" },
+    { emoji: "🎴", title: "Règle N°1 : Jouez avec un seul archétype", desc: "Affirmez votre identité de jeu et perfectionnez votre style de combat. Archetype Battle vous impose de choisir un seul archétype par deck. Vous ne pouvez pas mélanger les cartes de plusieurs séries de monstres dans le même deck. Certaines cartes de l'archetype peuvent être interdites" },
+    { emoji: "🚫", title: "Règle N°2 : Jouez avec une banlist dédiée", desc: "Conçue pour couper court aux abus et aux coûts astronomiques de certaines cartes, la banlist Archetype Battle bannit les cartes trop puissantes ou trop chères" },
+    { emoji: "🔥", title: "Règle N°3 : Jouez avec un limite d’invocations", desc: "Un tempo repensé pour des interactions plus fluides et une lecture plus calme du jeu. Le premier tour est limité à 5 invocations puis chaque tour suivant est incréménté de 1 invocation" },
   ]
 
   return (
