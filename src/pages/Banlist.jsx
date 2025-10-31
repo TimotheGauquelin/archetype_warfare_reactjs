@@ -9,6 +9,7 @@ import SubtitleDivider from "../components/generic/SubtitleDivider";
 import Card from "../components/generic/Card";
 import { getCardTypes } from "../services/cardtype";
 import { getCurrentBanlist } from "../services/banlist";
+import Footer from "../components/generic/footer/Footer";
 
 const Banlist = () => {
   const [banlistSearchInput, setBanlistSearchInput] = useState("");
@@ -197,6 +198,7 @@ const Banlist = () => {
           )}
         </div>
       </PageContentBlock>
+      <Footer />
     </div>
   );
 };

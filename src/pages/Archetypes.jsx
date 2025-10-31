@@ -14,6 +14,7 @@ import {
 import { getEras } from "../services/era";
 import SelectInput from "../components/generic/form/SelectInput";
 import { Input } from "../components/generic/form/Input";
+import Footer from "../components/generic/footer/Footer";
 
 const Archetypes = () => {
   const [archetypes, setArchetypes] = useState([]);
@@ -107,6 +108,7 @@ const Archetypes = () => {
           />
         </div>
       </PageContentBlock>
+      <Footer />
     </div>
   );
 };

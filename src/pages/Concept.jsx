@@ -2,22 +2,23 @@ import React from "react";
 import PageContentBlock from "../components/generic/PageContentBlock";
 import Header from "../components/generic/header/Header";
 import Jumbotron from "../components/generic/Jumbotron";
+import { Link } from "react-router-dom";
+import { URL_FRONT_ARCHETYPES } from "../constant/urlsFront";
+import RevealOnScroll from "../components/generic/RevealOnScroll";
+import Footer from "../components/generic/footer/Footer";
 
 const Concept = () => {
   const archetypeSample = [
-    {
-      name: "Magicien Sombre",
-      imgUrl: "darkmagician_sample",
-    },
-    {
-      name: "Poussière d'Etoile",
-      imgUrl: "stardust_sample",
-    },
-    {
-      name: "Inzektor",
-      imgUrl: "inzektor_sample",
-    },
+    { name: "Magicien Sombre", imgUrl: "darkmagician_sample" },
+    { name: "Poussière d'Etoile", imgUrl: "stardust_sample" },
+    { name: "Inzektor", imgUrl: "inzektor_sample" },
   ];
+
+  const rules = [
+    { emoji: "🎴", title: "Un seul archétype", desc: "Affirmez votre identité de jeu et perfectionnez votre synergie" },
+    { emoji: "🚫", title: "Banlist dédiée", desc: "Conçue pour couper court aux abus et aux coûts astronomiques, la banlist Archetype Battle bannit les cartes trop puissantes ou trop chères" },
+    { emoji: "🔥", title: "Limites d’invocations", desc: "Un tempo repensé pour des interactions plus fluides et une lecture plus calme du jeu. Le premier tour est limité à 5 invocations, puis chaque tour suivant est incréménté de 1 invocation" },
+  ]
 
   return (
     <div className="flex flex-col">
@@ -25,125 +26,112 @@ const Concept = () => {
         <Header />
         <div className="relative p-3 lscreen:max-w-containerSize m-auto">
           <Jumbotron
-            mainTitle="Vous vous posez des questions sur ce format ?"
-            subTitle="Venez lire les origines d'Archetype Warfare !"
+            mainTitle="Rejoignez le champ de bataille des archétypes"
+            subTitle="Une expérience Yu-Gi-Oh! réinventée : plus d'équilibre, plus de stratégie, plus de fun."
           />
         </div>
       </div>
+
       <PageContentBlock>
-        <div>
-          <h2 className="text-center text-2xl font-bold underline">
-            Constat et problématique autour du jeu officiel :
-          </h2>
-          <div className="">
-            <p className="mt-5">
-              Le Jeu de Cartes Yu-Gi-Oh! a, aujourd'hui, plus de 25ans. Pendant
-              toutes ces années, le jeu n'a cessé d'évoluer et de gagner en
-              rapidité. Les joueurs peuvent jouer des decks avec des méchaniques
-              diverses et variées ce qui rend le jeu interessant et
-              divertissant. Ce genre de decks est appelé Archetype. De nos
-              jours, il existe plus de 100 archetypes. Mais chaque archetype ne
-              possède pas la même puissance. Certains sont avantagés plus que
-              d'autres car ils partagent des points communs, des similitudes
-              avec d'autres cartes, d'autres archétypes augmentant leur
-              puissance faisant d'eux des decks indestructible.
+        <div className="space-y-10">
+          <RevealOnScroll as="section" className="rounded-xl p-6 bg-blue-100 shadow-sm">
+            <h2 className="text-center text-2xl tablet:text-3xl font-extrabold text-indigo-700">
+              Un jeu légendaire devenu un phénomène mondial
+            </h2>
+            <p className="mt-4 text-gray-800 leading-relaxed text-justify">
+              Depuis plus de <span className="font-semibold text-indigo-600">25 ans</span>, Yu-Gi-Oh! fait vibrer les duellistes
+              du monde entier. Né d’un manga culte, le TCG s’est imposé comme un <span className="font-semibold">monument stratégique</span>,
+              où chaque duel raconte une histoire. Des mécaniques iconiques ont façonné son identité — <span className="font-semibold">Fusion</span>, <span className="font-semibold">Synchro</span>, <span className="font-semibold">Xyz</span>, <span className="font-semibold">Pendule</span>, <span className="font-semibold">Lien</span> —
+              enrichissant sans cesse le gameplay. Chaque deck incarne un <span className="font-semibold">archétype</span> : une famille de cartes, un style, une vision de la victoire.
             </p>
-            <div className="grid grid-cols-12 gap-4 mt-5 bg-gray-100 p-4 rounded-lg">
-              {archetypeSample.map((sample, index) => {
-                return (
-                  <div key={index} className="col-span-4">
-                    <div>
+
+            <div className="grid grid-cols-12 gap-4 mt-6">
+              {archetypeSample.map((sample, index) => (
+                <div key={index} className="col-span-12 sscreen:col-span-4">
+                  <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <div className="overflow-hidden">
                       <img
                         src={`${process.env.PUBLIC_URL}/assets/archetypeSample/${sample.imgUrl}.jpg`}
                         alt={sample.name}
+                        className="w-full transform hover:scale-105 transition-transform duration-300"
                       />
-                      <p className="text-center">
-                        Archetype <b> {sample.name}</b>
-                      </p>
                     </div>
+                    <p className="text-center font-semibold p-3 text-gray-800">
+                      Archétype <span className="text-indigo-600">{sample.name}</span>
+                    </p>
                   </div>
-                );
-              })}{" "}
+                </div>
+              ))}
             </div>
-            <div className="mt-5">
-              <p>
-                En plus de cela, le JdC compétitif de Yu-Gi-Oh! possède d'autres
-                problèmes majeurs que le format Archetype Warfare va tenter de
-                réguler :{" "}
-              </p>
-              <ol className="ml-5">
-                <li>
-                  - La{" "}
-                  <span className="font-bold">
-                    surpuissance de certaines cartes
-                  </span>{" "}
-                  qui a elle tout seule empêche de jouer ou de répliquer. Dans
-                  un jeu qui mise sur l'interaction, il est inconcevable d'avoir
-                  de telles cartes.
-                </li>
-                <li className="mt-2">
-                  - Le{" "}
-                  <span className="font-bold">
-                    prix des cartes qui atteignent des valeurs astronomiques
-                  </span>
-                  , empechant toute personne de les jouer. Ici, le but est de
-                  sanctionner les cartes polyvalentes trop cheres.
-                </li>
-              </ol>
-            </div>
-            <div className="font-bold text-md text-red-500 text-center mt-5">
-              En résumé, Yu-Gi-Oh! est un jeu injuste et qui coute cher
-            </div>
-          </div>
-          <div className="mt-5">
-            <h2 className="text-center text-2xl font-bold underline">
-              Qu'est-ce que le format Archetype Warfare ?
+          </RevealOnScroll>
+          <RevealOnScroll as="section" className="rounded-xl p-6 bg-red-100 shadow-sm">
+            <h2 className="text-center text-2xl tablet:text-3xl font-extrabold text-red-600">
+              Une meta devenue déséquilibrée
             </h2>
-            <div className="mt-5">
-              <p>
-                Archetype Warfare est un mode de jeu pour permettre au joueur
-                peu fortuné de pouvoir jouer au même niveau que d'autres sans
-                pour autant dépenser beaucoup d'argent. De plus, ce nouveau
-                système va supprimer les cartes trop fortes permettant de gagner
-                en un seul tour. Le but est de gagner grâce à ses connaissances,
-                son potentiel à économiser les ressources et gérer les
-                situations complexes.
-              </p>
-              <p className="mt-5 font-bold">
-                Que faut-il pour jouer à Archetype Warfare :
-              </p>
-              <ul className="mt-2 ml-5">
-                <li>
-                  - Un deck d'Archetype Battle requiert un et un seul archétype
-                  avec lequel jouer. Pour voir quel archetype existe dans ce
-                  format, dirigez-vous{" "}
-                  <a
-                    className="underline"
-                    href="http://localhost:3000/archetypes"
-                  >
-                    ici
-                  </a>{" "}
-                  . Mais il peut aussi jouer des cartes ne faisant parti d'aucun
-                  archetype, des cartes génériques. Mais attention : Un deck
-                  doit comporter une limite de 40 et 60 cartes.
-                </li>
-                <li className="mt-2">
-                  - Un deck d'Archetype Battle est soumis à une liste de cartes
-                  interdites. DeS cartes sont jouable en un seul exemplaire,
-                  certaines en deux et d'autres en trois. Pour voir quelles
-                  cartes sont interdites en ce moment, dirigez-vous{" "}
-                  <a
-                    className="underline"
-                    href="http://localhost:3000/banlists"
-                  >
-                    ici
-                  </a>{" "}
-                </li>
-              </ul>
+            <p className="mt-4 text-gray-800 leading-relaxed text-justify">
+              Au fil du temps, la meta compétitive s’est transformée en un terrain inégal. Des cartes trop puissantes écourtent les duels,
+              des combos étouffent l’interaction, et les decks “meta” se vendent à prix d’or. Résultat : un jeu parfois <span className="font-semibold">rapide</span>,
+              <span className="font-semibold">brutal</span> et <span className="font-semibold">coûteux</span>, loin de l’esprit d’origine.
+            </p>
+            <div className="mt-4 text-center">
+              <span className="inline-block px-4 py-2 rounded-full bg-red-200 shadow-sm text-red-700 font-bold">
+                Problème: Yu-Gi-Oh! est un jeu injuste et qui coute cher, où l’équité et le plaisir de jeu en souffrent
+              </span>
             </div>
-          </div>
+          </RevealOnScroll>
+          <RevealOnScroll as="section" className="rounded-xl p-6 bg-green-100 shadow-sm">
+            <h2 className="text-center text-2xl tablet:text-3xl font-extrabold text-emerald-700">
+              Archetype Battle : un format alternatif, une nouvelle vision
+            </h2>
+            <p className="mt-4 text-gray-800 leading-relaxed text-justify">
+              Archetype Battle remet la stratégie au centre. Plus besoin de dépenser des fortunes : seul compte le talent, la créativité et la maîtrise de votre archétype.
+              Le format ralentit le rythme, favorise les choix tactiques et redonne à chaque duel son intensité.
+            </p>
+
+            <div className="flex flex-col gap-4 mt-6">
+              {rules.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="col-span-12 sscreen:col-span-6 lscreen:col-span-4 cursor-pointer"
+                >
+                  <div className="h-full bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
+                    <div className="text-2xl">{item.emoji}</div>
+                    <p className="font-bold text-gray-900 mt-2">{item.title}</p>
+                    <p className="text-gray-700">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 text-center">
+            <span className="inline-block px-4 py-2 rounded-full bg-green-200 shadow-sm text-green-700 font-bold">
+                Timing, ressources, lecture : le cerveau avant le portefeuille
+              </span>
+            </div>
+          </RevealOnScroll>
+          <RevealOnScroll as="section" className="rounded-xl p-6 bg-blue-100 shadow-sm">
+            <div className="grid grid-cols-12 gap-6 items-center">
+              <div className="col-span-12 lscreen:col-span-8">
+                <h3 className="text-2xl font-bold text-gray-900">Prêts à rejoindre l’arène ?</h3>
+                <p className="text-gray-800 mt-2">
+                  Explorez les archétypes, choisissez votre camp et imposez votre style. Ici, la victoire se gagne
+                  par la maîtrise et la réflexion.
+                </p>
+              </div>
+              <div className="col-span-12 lscreen:col-span-4 flex lscreen:justify-end">
+                <Link
+                  to={URL_FRONT_ARCHETYPES}
+                  className="px-5 py-3 bg-black text-white rounded-md font-semibold hover:opacity-90 transition-opacity duration-150"
+                >
+                  Explorer les archétypes
+                </Link>
+              </div>
+            </div>
+          </RevealOnScroll>
+
         </div>
       </PageContentBlock>
+
+      <Footer />
     </div>
   );
 };

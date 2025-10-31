@@ -5,16 +5,20 @@ import { getTypes } from "../../../../services/type";
 import { getEras } from "../../../../services/era";
 import { getSummonMechanics } from "../../../../services/summonmechanic";
 import AdminArchetypeCards from "./AdminArchetypeCards";
+import Button from "../../../generic/Button";
 
 const AdminArchetypeForm = ({
   newArchetype,
   setNewArchetype,
   addArchetype,
+  isLoading,
 }) => {
   const [eras, setEras] = useState([]);
   const [types, setTypes] = useState([]);
   const [attributes, setAttributes] = useState([]);
   const [summonMechanics, setSummonMechanics] = useState([]);
+  const [activeTab, setActiveTab] = useState("informations");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getEras(setEras);
@@ -25,31 +29,51 @@ const AdminArchetypeForm = ({
   }, []);
 
   return (
-    <div id="form" className="">
-      <AdminArchetypeData
-        eras={eras}
-        attributes={attributes}
-        types={types}
-        summonMechanics={summonMechanics}
-        newArchetype={newArchetype}
-        setNewArchetype={setNewArchetype}
-      />
-
-      <AdminArchetypeCards
-        newArchetype={newArchetype}
-        setNewArchetype={setNewArchetype}
-      />
-
-      <button
-        id="form"
+    <>
+      <div className="flex">
+        <span
+          className={`py-2 px-4 rounded-t-md cursor-pointer ${activeTab === "informations" ? "text-blue-700 bg-blue-200 hover:bg-blue-300" : "text-gray-700 bg-gray-200 hover:bg-gray-300"}`}
+          onClick={() => setActiveTab("informations")}
+        >
+          Informations Principales
+        </span>
+        <span
+          className={`py-2 px-4 rounded-t-md cursor-pointer ${activeTab === "cards" ? "text-blue-700 bg-blue-200 hover:bg-blue-300" : "text-gray-700 bg-gray-200 hover:bg-gray-300"}`}
+          onClick={() => setActiveTab("cards")}
+        >
+          Cartes de l'archetype
+        </span>
+      </div>
+      <div className="">
+        <div className={activeTab === "informations" ? "" : "hidden"}>
+          <AdminArchetypeData
+            eras={eras}
+            attributes={attributes}
+            types={types}
+            summonMechanics={summonMechanics}
+            newArchetype={newArchetype}
+            setNewArchetype={setNewArchetype}
+          />
+        </div>
+        <div className={activeTab === "cards" ? "" : "hidden"}>
+          <AdminArchetypeCards
+            newArchetype={newArchetype}
+            setNewArchetype={setNewArchetype}
+          />
+        </div>
+      </div>
+      <Button
+        label="Créer l'archetype"
         className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded"
-        onClick={() => {
+        buttonText="Créer l'archetype"
+        disabled={isLoading}
+        loadingText="Création en cours..."
+        action={() => {
           addArchetype();
         }}
-      >
-        Créer l'archetype
-      </button>
-    </div>
+      />
+
+    </>
   );
 };
 

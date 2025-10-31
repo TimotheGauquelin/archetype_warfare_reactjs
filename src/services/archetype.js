@@ -78,12 +78,22 @@ export const getRandomArchetype = (navigate) => {
 
 // ADD
 
-export const addArchetype = (newArchetype, navigate) => {
+/**
+ * Add an archetype.
+ * @param {object} newArchetype - New archetype object.
+ * @param {function} navigate - Hook to navigate.
+ * @returns {Promise<void>} - Promise indicating the completion of the operation.
+ */
+export const addArchetype = (newArchetype, navigate, toast) => {
     try {
-        api_aw.post(URL_BACK_ADD_ARCHETYPE, newArchetype).then((response) => {
+        api_aw.post(URL_BACK_ADD_ARCHETYPE, newArchetype, toast)
+        .then((response) => {
             if (response.status === 201) {
                 navigate(URL_FRONT_ADMIN_ARCHETYPES);
             }
+        })
+        .catch((error) => {
+            toast.error(error.response.data.message);
         });
     } catch (error) {
         console.log(error);

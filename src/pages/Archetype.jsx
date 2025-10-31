@@ -14,6 +14,7 @@ import { getArchetypeById } from "../services/archetype";
 import Card from "../components/generic/Card";
 import { getCardTypes } from "../services/cardtype";
 import SkeletonArchetypePage from "../components/skeletons/SkeletonArchetypePage";
+import Footer from "../components/generic/footer/Footer";
 
 const Archetype = () => {
   const [archetype, setArchetype] = useState({});
@@ -124,6 +125,7 @@ const Archetype = () => {
           </div>
         </div>
       </PageContentBlock>
+      <Footer />
     </div>
   );
 };

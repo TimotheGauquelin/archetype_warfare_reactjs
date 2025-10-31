@@ -18,6 +18,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#form {
+  all: unset;
+}
+
 .title {
   font-size: 24px;
   font-weight: bold;

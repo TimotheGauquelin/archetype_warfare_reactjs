@@ -25,7 +25,7 @@ const AdminArchetypeCards = ({ newArchetype, setNewArchetype }) => {
   }, [cardsRefresh, newArchetype]);
 
   return (
-    <div className="bg-gray-300 mt-4 rounded p-2">
+    <div className="bg-gray-300 rounded p-2">
       <h2 className="font-bold text-xl">Cartes de l'archetypes :</h2>
       {/* Afficher les cartes déjà dans l'archetype */}
       <div className="bg-gray-300 grid grid-cols-12 gap-2">
@@ -44,7 +44,7 @@ const AdminArchetypeCards = ({ newArchetype, setNewArchetype }) => {
                   return (
                     <div
                       key={index}
-                      className="lscreen:col-span-3 sscreen:col-span-3 col-span-4"
+                      className="lscreen:col-span-4 sscreen:col-span-3 col-span-4"
                     >
                       <div className="relative">
                         <div className="bg-gray-200 p-2 rounded text-center">

@@ -12,6 +12,7 @@ import {
   getEightMostFamousArchetypes,
   getFiveRandomHighlightedArchetypes,
 } from "../services/archetype";
+import Footer from "../components/generic/footer/Footer";
 
 const Home = () => {
   const [fiveMostFamousArchetypes, setFiveMostFamousArchetypes] = useState([]);
@@ -93,6 +94,7 @@ const Home = () => {
       <PageContentBlock>
         <HomePageContent />
       </PageContentBlock>
+      <Footer />
     </div>
   );
 };

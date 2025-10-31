@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { addArchetype } from '../../../services/archetype';
 import AdminBodyHeader from '../../../components/pages/admin/AdminBodyHeader';
 import AdminArchetypeForm from "../../../components/pages/admin/archetype/AdminArchetypeForm"
+import { toast } from 'react-toastify';
+import { laborIllusion } from '../../../utils/functions/laborIllusion';
 
 const AdminArchetypeAdd = () => {
   const navigate = useNavigate();
@@ -27,11 +29,16 @@ const AdminArchetypeAdd = () => {
     summon_mechanics: [],
     cards: []
   });
+  
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Utiliser useCallback pour éviter la recréation de la fonction à chaque render
   const handleAddArchetype = useCallback(() => {
-    addArchetype(newArchetype, navigate);
-  }, [newArchetype, navigate]);
+    setIsLoading(true);
+    laborIllusion(() => {
+      addArchetype(newArchetype, navigate, toast);
+      setIsLoading(false);
+    }, 2);
+  }, [newArchetype, navigate, toast]);
 
   return (
     <AdminStructure>
@@ -44,8 +51,8 @@ const AdminArchetypeAdd = () => {
         newArchetype={newArchetype}
         setNewArchetype={setNewArchetype}
         addArchetype={handleAddArchetype}
+        isLoading={isLoading}
       />
-      <ToastContainer />
     </AdminStructure>
   );
 }
