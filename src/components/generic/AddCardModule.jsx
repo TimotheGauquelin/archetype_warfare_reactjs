@@ -124,7 +124,7 @@ const AddCardModule = ({ newArchetype, setNewArchetype }) => {
           </div>
         </div>
         <div
-          className="overflow-y-auto bg-white grid grid-cols-12 mt-2"
+          className="overflow-y-auto bg-white grid grid-cols-12"
           style={{ height: "400px" }}
         >
           {cards?.map((card, index) => {

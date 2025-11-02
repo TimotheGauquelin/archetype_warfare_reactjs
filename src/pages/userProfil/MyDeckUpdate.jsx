@@ -9,6 +9,7 @@ import Button from "../../components/generic/Button";
 import { getDeckById, updateDeck } from "../../services/deck";
 import { toast } from "react-toastify";
 import { getArchetypesNames } from "../../services/archetype";
+import DeckUpdatator from "../../components/pages/userProfil/deckUpdate/DeckUpdatator";
 
 const MyDeckUpdate = () => {
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ const MyDeckUpdate = () => {
         comment: "",
         archetype_id: "",
         user_id: "",
+        deck_cards: []
     });
 
     const [archetypes, setArchetypes] = useState([]);
@@ -72,6 +74,7 @@ const MyDeckUpdate = () => {
                     {!isFetching ? (
                         <>
                             <DeckData myDeck={myDeck} setMyDeck={setMyDeck} archetypes={archetypes} />
+                            <DeckUpdatator myDeck={myDeck} setMyDeck={setMyDeck} />
                             <Button
                                 className="bg-blue-500 mt-2 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
                                 buttonText="Modifier mon deck"

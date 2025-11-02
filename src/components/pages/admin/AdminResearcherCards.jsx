@@ -18,7 +18,7 @@ const AdminResearcherCards = ({
         onChange={(e) => setResearchedCardsLabel(e.target.value)}
       />
       <div
-        className="overflow-y-auto bg-white grid grid-cols-12 mt-2"
+        className="overflow-y-auto bg-white grid grid-cols-12"
         style={{ height: "400px" }}
       >
         {researchedCards?.slice(0, 20).map((card, index) => {

@@ -21,7 +21,7 @@ const MyDeckAdd = () => {
     comment: "",
     archetype_id: "",
     user_id: "",
-    cards: [], // {card: {id: }, img_url: , quantity: }
+    deck_cards: [], // {card: {id: }, img_url: , quantity: }
   });
 
   const [archetypes, setArchetypes] = useState([]);
