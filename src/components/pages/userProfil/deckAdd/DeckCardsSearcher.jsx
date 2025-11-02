@@ -311,7 +311,7 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
       </div>
       <div
         className="overflow-y-auto bg-white grid grid-cols-12"
-        style={{ height: "400px" }}
+        style={{ maxHeight: "400px" }}
       >
         {renderedCards}
       </div>

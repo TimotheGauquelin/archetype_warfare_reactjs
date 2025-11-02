@@ -19,7 +19,7 @@ const AdminResearcherCards = ({
       />
       <div
         className="overflow-y-auto bg-white grid grid-cols-12"
-        style={{ height: "400px" }}
+        style={{ maxHeight: "400px" }}
       >
         {researchedCards?.slice(0, 20).map((card, index) => {
           return (

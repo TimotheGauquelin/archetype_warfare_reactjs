@@ -125,7 +125,7 @@ const AddCardModule = ({ newArchetype, setNewArchetype }) => {
         </div>
         <div
           className="overflow-y-auto bg-white grid grid-cols-12"
-          style={{ height: "400px" }}
+          style={{ maxHeight: "400px" }}
         >
           {cards?.map((card, index) => {
             const isCardAlreadyInArchetype = newArchetype.cards.some(

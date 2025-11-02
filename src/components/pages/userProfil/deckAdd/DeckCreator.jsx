@@ -1,21 +1,35 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import DeckCardsSearcher from "./DeckCardsSearcher";
+import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
+import { getAttributes } from "../../../../services/attribute";
+import { getCardTypes } from "../../../../services/cardtype";
+import AdminCardsFilter from "../../admin/cards/AdminCardsFilter";
 
 const DeckCreator = ({
   myDeck,
   setMyDeck,
 }) => {
 
-  const extraDeckLabels = [
-    "Fusion Monster",
-    "Pendulum Effect Fusion Monster",
-    "Synchro Monster",
-    "Synchro Tuner Monster",
-    "Synchro Pendulum Effect Monster",
-    "XYZ Monster",
-    "XYZ Pendulum Effect Monster",
-    "Link Monster",
-  ];
+  const [pagination, setPagination] = useState({
+    total: 0,
+    totalPages: 0,
+    currentPage: 1,
+    pageSize: 30,
+  });
+  const [filters, setFilters] = useState({
+    name: "",
+    level: "",
+    min_atk: "",
+    max_atk: "",
+    min_def: "",
+    max_def: "",
+    attribute: "",
+    card_type: "",
+    page: 1,
+    size: 30,
+  });
+  const [attributes, setAttributes] = useState([]);
+  const [cardTypes, setCardTypes] = useState([]);
 
   const { mainDeckCards, extraDeckCards, mainDeckTotal, extraDeckTotal } = useMemo(() => {
     if (!myDeck?.deck_cards) {
@@ -27,7 +41,7 @@ const DeckCreator = ({
 
     myDeck.deck_cards.forEach((deckCard) => {
       const cardType = deckCard.card?.card_type || deckCard.card?.cardType?.label || "";
-      const isExtraDeck = extraDeckLabels.includes(cardType);
+      const isExtraDeck = EXTRA_DECK_LABELS.includes(cardType);
 
       if (isExtraDeck) {
         extra.push(deckCard);
@@ -40,7 +54,7 @@ const DeckCreator = ({
     const extraTotal = extra.reduce((acc, card) => acc + card.quantity, 0);
 
     return { mainDeckCards: main, extraDeckCards: extra, mainDeckTotal: mainTotal, extraDeckTotal: extraTotal };
-  }, [myDeck?.deck_cards, extraDeckLabels]);
+  }, [myDeck?.deck_cards, EXTRA_DECK_LABELS]);
 
   const removeCardFromDeck = useCallback((deckCard) => {
     if (!myDeck?.deck_cards) return;
@@ -73,6 +87,32 @@ const DeckCreator = ({
     }
   }, [myDeck, setMyDeck]);
 
+  const resetAllFilters = () => {
+    setFilters({
+      name: "",
+      level: "",
+      min_atk: "",
+      max_atk: "",
+      min_def: "",
+      max_def: "",
+      attribute: "",
+      card_type: "",
+      page: 1,
+      size: 30,
+    });
+    setPagination({
+      total: 0,
+      totalPages: 0,
+      currentPage: 1,
+      pageSize: 30,
+    });
+  };
+
+  useEffect(() => {
+    getAttributes(setAttributes);
+    getCardTypes(setCardTypes);
+  }, [setAttributes]);
+
   if (!myDeck.archetype_id) {
     return (
       <div className="mt-2 p-4 bg-gray-300 rounded-lg">
@@ -85,12 +125,22 @@ const DeckCreator = ({
     return (
       <div className="mt-2 p-4 bg-gray-300 rounded-lg">
         {mainDeckTotal < 40 && (
-          <div className="mt-2 p-2 bg-yellow-100 text-yellow-800 rounded-md">
+          <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 rounded-md">
             <p className="text-sm font-semibold">
               ⚠️ Attention : Le deck n'est pas jouable. Le MainDeck doit contenir au minimum 40 cartes.
             </p>
           </div>
         )}
+
+        <AdminCardsFilter
+          setPagination={setPagination}
+          cardTypes={cardTypes}
+          criteria={filters}
+          setCriteria={setFilters}
+          resetAllFilters={resetAllFilters}
+          attributes={attributes}
+        />
+
         <div className="grid grid-cols-12 gap-2 mt-2">
           <div className="col-span-9">
             <div className="p-2 bg-gray-200 rounded">
@@ -115,7 +165,7 @@ const DeckCreator = ({
                   </span>
                 </div>
               </div>
-              <div className="grid grid-cols-10 gap-2 py-2">
+              <div className="grid grid-cols-10 gap-1 p-1 mt-2 bg-white">
                 {mainDeckCards.map((deckCard, cardIndex) => {
 
                   const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
@@ -161,7 +211,7 @@ const DeckCreator = ({
                   <span>{extraDeckTotal}/15</span>
                 </span>
               </div>
-              <div className="grid grid-cols-10 gap-2 py-2">
+              <div className="grid grid-cols-10 gap-2 p-1 bg-white">
                 {extraDeckCards.map((deckCard, cardIndex) => {
                   // Créer un tableau avec autant d'éléments que la quantité de la carte
                   const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
@@ -202,7 +252,7 @@ const DeckCreator = ({
 
 
           </div>
-          <DeckCardsSearcher myDeck={myDeck} setMyDeck={setMyDeck} />
+          <DeckCardsSearcher myDeck={myDeck} setMyDeck={setMyDeck} filters={filters} setFilters={setFilters} pagination={pagination} setPagination={setPagination} attributes={attributes} cardTypes={cardTypes} />
         </div>
       </div>
     );

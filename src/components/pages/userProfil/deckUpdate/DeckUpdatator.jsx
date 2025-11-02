@@ -123,7 +123,7 @@ const DeckUpdatator = ({ myDeck, setMyDeck }) => {
     return (
         <div className="mt-2 p-4 bg-gray-300 rounded-lg">
             {mainDeckTotal < 40 && (
-                <div className="p-2 bg-yellow-100 text-yellow-800 rounded-md">
+                <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 rounded-md">
                     <p className="text-sm font-semibold">
                         ⚠️ Attention : Le deck n'est pas jouable. Le MainDeck doit contenir au minimum 40 cartes.
                     </p>
@@ -163,7 +163,7 @@ const DeckUpdatator = ({ myDeck, setMyDeck }) => {
                                 </span>
                             </div>
                         </div>
-                        <div className="grid grid-cols-10 gap-2 py-2">
+                        <div className="grid grid-cols-10 gap-1 p-1 mt-2 bg-white">
                             {mainDeckCards.map((deckCard, cardIndex) => {
                                 const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
                                     ...deckCard,
@@ -208,7 +208,7 @@ const DeckUpdatator = ({ myDeck, setMyDeck }) => {
                                 <span>{extraDeckTotal}/15</span>
                             </span>
                         </div>
-                        <div className="grid grid-cols-10 gap-2 py-2">
+                        <div className="grid grid-cols-10 gap-1 p-1 mt-2 bg-white">
                             {extraDeckCards.map((deckCard, cardIndex) => {
                                 const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
                                     ...deckCard,

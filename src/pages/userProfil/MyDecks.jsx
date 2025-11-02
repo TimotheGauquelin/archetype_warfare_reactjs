@@ -42,7 +42,7 @@ const MyDecks = () => {
                 return (
                   <Link
                     key={deckIndex}
-                    className="p-4 bg-gray-300 rounded-lg"
+                    className="p-4 bg-blue-200 rounded-lg"
                     to={`/my-decks/update/${deck.id}`}
                   >
                     <div>{deck.label}</div>

@@ -3,7 +3,6 @@ import { attributeToFrench } from "../../../../utils/trad/attribute";
 import { cardTypeToFrench } from "../../../../utils/trad/cardType";
 
 const AdminCardsFilter = ({
-  setPagination,
   cardTypes,
   attributes,
   criteria,
@@ -12,8 +11,8 @@ const AdminCardsFilter = ({
 }) => {
   return (
     <div className="bg-slate-200 rounded p-2 mb-2">
-      <div className="flex justify-between">
-        <h2>Filtres : </h2>
+      <div className="flex justify-between mb-2">
+        <h2 className="font-bold text-lg">Filtres : </h2>
         <p
           className="hover:text-red-500 cursor-pointer"
           onClick={() => {

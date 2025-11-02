@@ -103,7 +103,7 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
                 </div>
                 <div
                     className="overflow-y-auto bg-white grid grid-cols-12"
-                    style={{ height: "400px" }}
+                    style={{ maxHeight: "400px" }}
                 >
                     {cards?.map((card, index) => {
                         const isCardAlreadyInBanlist = banlist.banlist_archetype_cards.some(

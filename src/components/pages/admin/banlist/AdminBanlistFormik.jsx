@@ -46,7 +46,7 @@ const AdminBanlistFormik = ({
               // className={`overflow-y-auto col-span-8 grid bg-white p-2 rounded ${
               //   banlistCardsLength > 0 && "grid-cols-12"
               // } gap-4 ${banlistCardsLength === 0 && "text-red-500 my-2"}`}
-              style={{ height: "400px" }}
+              style={{ maxHeight: "400px" }}
             >
               {banlistCardsLength > 0
                 ? banlist?.cards

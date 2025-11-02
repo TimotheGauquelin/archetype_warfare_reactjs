@@ -14,7 +14,7 @@ const FormikBanlistCardsField = ({
     <div className="bg-gray-400 col-span-9 mt-2 p-3 rounded">
       <div
         className={`overflow-y-auto col-span-8 grid bg-white p-2 rounded grid-cols-12`}
-        style={{ height: "400px" }}
+        style={{ maxHeight: "400px" }}
       ></div>
     </div>
   );
