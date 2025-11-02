@@ -3,6 +3,7 @@ import { FaTrashAlt } from "react-icons/fa";
 import AddCardModule from "../../../generic/AddCardModule";
 import { getCardStatus } from "../../../../services/cardStatus";
 import { getCardTypes } from "../../../../services/cardtype";
+import { cardStatusToFrench } from "../../../../utils/trad/cardStatus";
 
 const AdminArchetypeUpdateFormikCardData = ({
   newArchetype,
@@ -130,7 +131,7 @@ const AdminArchetypeUpdateFormikCardData = ({
                         {cardStatus?.map((option, index) => {
                           return (
                             <option key={index} value={option.id}>
-                              {option.label}
+                              {cardStatusToFrench(option.label)}
                             </option>
                           );
                         })}
