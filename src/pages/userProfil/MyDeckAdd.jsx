@@ -1,154 +1,57 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import api_aw from "../../api/api_aw";
+import { useNavigate } from "react-router-dom";
 import Header from "../../components/generic/header/Header";
 import Navbar from "../../components/pages/userProfil/Navbar";
 import ProfilTemplate from "../../components/pages/userProfil/ProfilTemplate";
-import jwt_decode from "jwt-decode";
-import { useSelector } from "react-redux";
 import DeckCreator from "../../components/pages/userProfil/deckAdd/DeckCreator";
-import DeckSearcher from "../../components/pages/userProfil/deckAdd/DeckSearcher";
-import { Form, Formik } from "formik";
+import { useSelector } from "react-redux";
+import DeckData from "../../components/pages/userProfil/deckAdd/DeckData";
+import Button from "../../components/generic/Button";
+import { createDeck } from "../../services/deck";
+import { toast } from "react-toastify";
+import { getArchetypesNames } from "../../services/archetype";
 
 const MyDeckAdd = () => {
-  const { token } = useSelector((state) => state.user);
-  var decoded = jwt_decode(token);
-  const location = useLocation();
 
-  const history = useNavigate();
-  let { deckId } = useParams();
-  const requestPut = location?.state?.request === "put";
-  const [myDeck, setMyDeck] = useState({});
-  const [archetypeCards, setArchetypeCards] = useState([]);
-  const [deckCards, setDeckCards] = useState([
-    { label: "mainDeck", cards: [] },
-    { label: "extraDeck", cards: [] },
-  ]);
-  const [cardTypes, setCardTypes] = useState([]);
-  const [currentArchetypeId, setCurrentArchetypeId] = useState(1000);
-  const [currentBanlistId, setCurrentBanlistId] = useState(1);
-  const [researchedCardsLabel, setResearchedCardsLabel] = useState("");
-  const [researchedCardsLength, setResearchedCardsLength] = useState(0);
+  const navigate = useNavigate();
 
-  const [dataIsLoaded, setDataIsLoaded] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [myDeck, setMyDeck] = useState({
+    label: "",
+    comment: "",
+    archetype_id: "",
+    user_id: "",
+    cards: [], // {card: {id: }, img_url: , quantity: }
+  });
 
-  const getCardTypes = () => {
-    api_aw.get(`/public/cardTypes`).then((response) => {
-      if (response.status === 200) {
-        var cardTypesOrdered = [];
-
-        response.data.forEach((cardType) => {
-          cardTypesOrdered.push(cardType.label);
-        });
-
-        setCardTypes(cardTypesOrdered);
-        !requestPut && setDataIsLoaded(true);
-      }
-    });
-  };
-
-  const addDeck = (values) => {
-    const newDate = new Date();
-
-    const allDeckCards = [];
-
-    values.cards.map((deck) => {
-      deck.cards.map((card) => {
-        allDeckCards.push(card);
-      });
-    });
-
-    const deckSchema = {
-      label: values.label,
-      comment: values.comment,
-      createdAt: newDate.toISOString().split("T")[0] + "T22:00:00Z",
-      archetype: values.archetype,
-      userAccount: values.userAccount,
-      isActive: values.isActive,
-      cards: allDeckCards,
-    };
-
-    api_aw
-      .post(`/public/decks`, deckSchema, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((response) => {
-        if (response.status === 201) {
-          history(-1);
-        }
-      });
-  };
-
-  const getMyDeck = () => {
-    api_aw.get(`/public/decks/${deckId}`).then((response) => {
-      setMyDeck(response.data);
-      setDataIsLoaded(true);
-    });
-  };
+  const [archetypes, setArchetypes] = useState([]);
 
   useEffect(() => {
-    getCardTypes();
-    requestPut && getMyDeck();
+    getArchetypesNames(setArchetypes);
+  }, []);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentArchetypeId, currentBanlistId]);
+  const { id, token } = useSelector((state) => state.user);
 
   return (
     <div>
       <Header />
       <Navbar />
       <ProfilTemplate>
-        <div className="flex items-center justify-between py-2">
-          <p>Création d'un deck</p>
-          <p
-            className="cursor-pointer"
-            onClick={() => {
-              history(-1);
-            }}
-          >
-            Retour
-          </p>
-        </div>
-        <div className="bg-red-200 w-full">
-          {dataIsLoaded && (
-            <Formik
-              initialValues={{
-                id: requestPut ? myDeck.id : null,
-                isActive: requestPut ? myDeck.isActive : true,
-                archetype: requestPut ? myDeck.archetype : "",
-                banlist: requestPut ? myDeck.banlist : "",
-                cards: requestPut ? myDeck.cards : deckCards,
-                comment: requestPut ? myDeck.comment : "",
-                createdAt: requestPut ? myDeck.createdAt : new Date(),
-                label: requestPut ? myDeck.label : "",
-                userAccount: requestPut
-                  ? myDeck.userAccount
-                  : { id: decoded.idUser },
-              }}
-              onSubmit={(values) => addDeck(values)}
-            >
-              <Form id="form" className="">
-                <DeckSearcher
-                  deckCards={deckCards}
-                  setCurrentBanlistId={setCurrentBanlistId}
-                  setCurrentArchetypeId={setCurrentArchetypeId}
-                  myDeck
-                />
-                <DeckCreator
-                  deckCards={deckCards}
-                  setDeckCards={setDeckCards}
-                  cardTypes={cardTypes}
-                  archetypeCards={archetypeCards}
-                  currentArchetypeId={currentArchetypeId}
-                  currentBanlistId={currentBanlistId}
-                  researchedCardsLabel={researchedCardsLabel}
-                  setResearchedCardsLabel={setResearchedCardsLabel}
-                  researchedCardsLength={researchedCardsLength}
-                  setResearchedCardsLength={setResearchedCardsLength}
-                />
-              </Form>
-            </Formik>
-          )}
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+          <div className="flex flex-row justify-between items-center mb-4">
+
+            <h3 className="text-xl font-bold mb-4 text-black">Création d'un deck</h3>
+            <span className="cursor-pointer hover:text-green-400 transition-all duration-200" onClick={() => navigate(-1)}>Retour</span>
+          </div>
+          <DeckData myDeck={myDeck} setMyDeck={setMyDeck} archetypes={archetypes} />
+          <DeckCreator myDeck={myDeck} setMyDeck={setMyDeck} />
+          <Button
+            className="bg-blue-500 mt-2 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
+            buttonText="Créer le deck"
+            action={() => { createDeck(token, myDeck, toast, navigate, setIsLoading) }}
+            disabled={isLoading}
+            loadingText="Création en cours..."
+          />
         </div>
       </ProfilTemplate>
     </div>

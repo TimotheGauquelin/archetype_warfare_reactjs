@@ -4,6 +4,7 @@ import NavSideItem from "./NavSideItem";
 import { useNavigate } from "react-router-dom";
 import {
   URL_FRONT_ADMIN_HOME,
+  URL_FRONT_MY_DECKS,
   URL_FRONT_MY_PROFIL,
 } from "../../../constant/urlsFront";
 import { ROLE_ADMIN } from "../../../utils/const/rolesConst";
@@ -41,10 +42,10 @@ const ProfilTemplate = ({ children }) => {
       url: URL_FRONT_MY_PROFIL,
       label: "Mon Profil",
     },
-    // {
-    //   url: "/my-decks",
-    //   label: "Mes Decks",
-    // },
+    {
+      url: URL_FRONT_MY_DECKS,
+      label: "Mes Decks",
+    },
   ];
 
   return (

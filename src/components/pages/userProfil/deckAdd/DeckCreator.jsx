@@ -1,25 +1,15 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import api_aw from "../../../../api/api_aw";
+import React, { useState, useCallback, useMemo } from "react";
 import DeckCards from "./DeckCards";
 import DeckCardsSearcher from "./DeckCardsSearcher";
 
 const DeckCreator = ({
-  deckCards,
-  setDeckCards,
-  cardTypes,
-  archetypeCards,
-  currentArchetypeId,
-  currentBanlistId,
-  researchedCardsLabel,
-  setResearchedCardsLabel,
-  researchedCardsLength,
-  setResearchedCardsLength,
+  myDeck,
+  setMyDeck,
 }) => {
   const [researchedCards, setResearchedCards] = useState([]);
   const [pagination, setPagination] = useState(0);
 
-  const extraDeck = [
+  const extraDeckLabels = [
     "Fusion Monster",
     "Pendulum Effect Fusion Monster",
     "Synchro Monster",
@@ -30,57 +20,187 @@ const DeckCreator = ({
     "Link Monster",
   ];
 
-  const allCards = () => {
-    axios
-      .all([
-        api_aw.get(
-          `http://localhost:8080/api/public/cardsWithCriteria?size=20&page=${pagination}`
+  // Séparer les cartes entre MainDeck et ExtraDeck
+  const { mainDeckCards, extraDeckCards } = useMemo(() => {
+    if (!myDeck?.cards) {
+      return { mainDeckCards: [], extraDeckCards: [] };
+    }
+
+    const main = [];
+    const extra = [];
+
+    myDeck.cards.forEach((deckCard) => {
+      const cardType = deckCard.card?.card_type || deckCard.card?.cardType?.label || "";
+      const isExtraDeck = extraDeckLabels.includes(cardType);
+
+      if (isExtraDeck) {
+        extra.push(deckCard);
+      } else {
+        main.push(deckCard);
+      }
+    });
+
+    return { mainDeckCards: main, extraDeckCards: extra };
+  }, [myDeck?.cards, extraDeckLabels]);
+
+  const removeCardFromDeck = useCallback((deckCard) => {
+    if (!myDeck?.cards) return;
+
+    const cardIndex = myDeck.cards.findIndex(
+      (card) =>
+        card.card.id === deckCard.card.id && card.img_url === deckCard.img_url
+    );
+
+    if (cardIndex === -1) return;
+
+    const existingCard = myDeck.cards[cardIndex];
+
+    // Si la quantité est supérieure à 1, décrémenter
+    if (existingCard.quantity > 1) {
+      setMyDeck((prev) => ({
+        ...prev,
+        cards: prev.cards.map((card, index) =>
+          index === cardIndex
+            ? { ...card, quantity: card.quantity - 1 }
+            : card
         ),
-        api_aw.get(
-          `http://localhost:8080/api/public/banlistCards/banlist/${currentBanlistId}`
-        ),
-      ])
-      .then((respArr) => {
-        if (respArr[0].status === 200 || respArr[1].status === 200) {
-          var allTheCards = respArr[0]?.data;
+      }));
+    } else {
+      // Si la quantité est à 1, retirer la carte du tableau
+      setMyDeck((prev) => ({
+        ...prev,
+        cards: prev.cards.filter((_, index) => index !== cardIndex),
+      }));
+    }
+  }, [myDeck, setMyDeck]);
 
-          var banlistCards = respArr[1]?.data;
+  console.log("myDeck", myDeck);
 
-          setResearchedCards(allTheCards);
-        }
-      });
-  };
+  if (!myDeck.archetype_id) {
+    return (
+      <div className="mt-2 p-4 bg-gray-300 rounded-lg">
+        <p className="text-center py-4 text-gray-500">
+          Veuillez sélectionner un archetype pour ajouter des cartes au deck
+        </p>
+      </div>
+    )
+  } else {
+    return (
+      <div className="mt-2 p-4 bg-gray-300 rounded-lg grid grid-cols-12 gap-4">
+        <div className="col-span-9">
+          <div className="p-2 bg-gray-200">
+            <div className="flex flex-row justify-between">
+              <p className="font-bold">Cartes du MainDeck</p>
+              <div className="flex flex-row gap-1">
+                <span className="bg-orange-200 text-orange-700 p-1 rounded-md">
+                  <span className="font-bold">Monstre: </span>
+                  <span>{mainDeckCards.filter((card) => card.card?.card_type.includes("Monster")).reduce((acc, card) => acc + card.quantity, 0)}</span>
+                </span>
+                <span className="bg-green-200 text-green-700 p-1 rounded-md">
+                  <span className="font-bold">Magie: </span>
+                  <span>{mainDeckCards.filter((card) => card.card?.card_type.includes("Spell")).reduce((acc, card) => acc + card.quantity, 0)}</span>
+                </span>
+                <span className="bg-purple-200 text-purple-700 p-1 rounded-md">
+                  <span className="font-bold">Piège: </span>
+                  <span>{mainDeckCards.filter((card) => card.card?.card_type.includes("Trap")).reduce((acc, card) => acc + card.quantity, 0)}</span>
+                </span>
+                <span className="bg-red-200 text-red-700 p-1 rounded-md">
+                  <span className="font-bold">Total MainDeck: </span>
+                  <span>{mainDeckCards.reduce((acc, card) => acc + card.quantity, 0)}</span>
+                </span>
+              </div>
+            </div>
+            <div className="grid grid-cols-10 gap-2 py-2">
+              {mainDeckCards.map((deckCard, cardIndex) => {
+                // Créer un tableau avec autant d'éléments que la quantité de la carte
+                const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
+                  ...deckCard,
+                  uniqueKey: `${deckCard.card.id}-${cardIndex}-${index}`,
+                }));
 
-  useEffect(() => {
-    allCards();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [researchedCardsLabel, pagination, currentArchetypeId, currentBanlistId]);
+                return cardCopies.map((copy, copyIndex) => (
+                  <div
+                    key={copy.uniqueKey}
+                    className="col-span-1 relative cursor-pointer hover:opacity-80 transition-opacity group"
+                    onClick={() => removeCardFromDeck(deckCard)}
+                    title="Cliquez pour retirer un exemplaire"
+                  >
+                    <img
+                      src={copy.img_url || copy.card?.img_url}
+                      alt={copy.card?.name || "Carte"}
+                      className="w-full h-auto"
+                      loading="lazy"
+                    />
+                    {/* Badge de quantité */}
+                    {copy.quantity > 1 && copyIndex === copy.quantity - 1 && (
+                      <div className="absolute bottom-0 right-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
+                        x{copy.quantity}
+                      </div>
+                    )}
+                    {/* Indicateur visuel au survol */}
+                    <div className="absolute inset-0 bg-red-500 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                        -
+                      </span>
+                    </div>
+                  </div>
+                ));
+              })}
+            </div>
+          </div>
+          <div className="p-2 mt-2 bg-gray-200">
+            <div className="flex flex-row justify-between">
+              <p className="font-bold">Cartes de l'ExtraDeck</p>
+              <span className="bg-gray-300 text-gray-700 p-1 rounded-md">
+                <span className="font-bold">Total ExtraDeck: </span>
+                <span>{extraDeckCards.reduce((acc, card) => acc + card.quantity, 0)}</span>
+              </span>
+            </div>
+            <div className="grid grid-cols-10 gap-2 py-2">
+              {extraDeckCards.map((deckCard, cardIndex) => {
+                // Créer un tableau avec autant d'éléments que la quantité de la carte
+                const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
+                  ...deckCard,
+                  uniqueKey: `${deckCard.card.id}-${cardIndex}-${index}`,
+                }));
 
-  return (
-    <div className="bg-blue-200 w-full grid grid-cols-12 flex flex-row">
-      <DeckCards
-        deckCards={deckCards}
-        setDeckCards={setDeckCards}
-        cardTypes={cardTypes}
-        extraDeck={extraDeck}
-      />
-      {/* Cards Searcher */}
-      <DeckCardsSearcher
-        setResearchedCardsLabel={setResearchedCardsLabel}
-        researchedCardsLength={researchedCardsLength}
-        researchedCards={researchedCards}
-        archetypeCards={archetypeCards}
-        pagination={pagination}
-        setPagination={setPagination}
-        deckCards={deckCards}
-        setDeckCards={setDeckCards}
-        extraDeck={extraDeck}
-        researchedCardsLabel={researchedCardsLabel}
-        setResearchedCardsLength={setResearchedCardsLength}
-        currentArchetypeId={currentArchetypeId}
-      />
-    </div>
-  );
+                return cardCopies.map((copy, copyIndex) => (
+                  <div
+                    key={copy.uniqueKey}
+                    className="col-span-1 relative cursor-pointer hover:opacity-80 transition-opacity group"
+                    onClick={() => removeCardFromDeck(deckCard)}
+                    title="Cliquez pour retirer un exemplaire"
+                  >
+                    <img
+                      src={copy.img_url || copy.card?.img_url}
+                      alt={copy.card?.name || "Carte"}
+                      className="w-full h-auto"
+                      loading="lazy"
+                    />
+                    {/* Badge de quantité */}
+                    {copy.quantity > 1 && copyIndex === copy.quantity - 1 && (
+                      <div className="absolute bottom-0 right-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
+                        x{copy.quantity}
+                      </div>
+                    )}
+                    {/* Indicateur visuel au survol */}
+                    <div className="absolute inset-0 bg-red-500 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                        -
+                      </span>
+                    </div>
+                  </div>
+                ));
+              })}
+            </div>
+          </div>
+
+
+        </div>
+        <DeckCardsSearcher myDeck={myDeck} setMyDeck={setMyDeck} />
+      </div>
+    );
+  }
 };
 
 export default DeckCreator;

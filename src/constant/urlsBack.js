@@ -97,6 +97,13 @@ export const URL_BACK_GET_ALL_CARD_TYPES = '/card-types'
 
 export const URL_BACK_GET_ALL_CARD_STATUS = '/card-statuses'
 
+// DECKS
+
+export const URL_BACK_GET_ALL_MY_DECKS = (userId) => `/decks/all/user/${userId}`
+export const URL_BACK_GET_DECK_BY_ID = (deckId) => `/decks/${deckId}`
+export const URL_BACK_CREATE_DECK = `/decks/create`
+export const URL_BACK_UPDATE_DECK = (deckId) => `/decks/updateMyDeck/${deckId}`
+
 // USER
 
 export const URL_BACK_SEARCH_USERS = (size, pagination, username) => `/users/search?size=${size}&page=${pagination}&username=${username}`

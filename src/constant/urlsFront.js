@@ -12,7 +12,9 @@ export const URL_FRONT_BANLIST = "/banlist";
 
 //Profil
 export const URL_FRONT_MY_PROFIL = "/my-profil";
-// export const URL_FRONT_MY_DECKS = "/my-decks";
+export const URL_FRONT_MY_DECKS = "/my-decks";
+export const URL_FRONT_MY_DECK_ADD = "/my-decks/add";
+export const URL_FRONT_MY_DECK_UPDATE = "/my-decks/update/:deckId";
 
 //Admin
 

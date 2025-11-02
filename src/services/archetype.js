@@ -28,12 +28,12 @@ export const getArchetypeById = (archetypeId, setArchetype) => {
 export const getEightMostFamousArchetypes = (setMostFamousArchetypes, setErrorMessage) => {
     try {
         api_aw.get(URL_BACK_GET_EIGHT_MOST_FAMOUS_ARCHETYPES)
-        .then((response) => {
-            setMostFamousArchetypes(response.data);
-        })
-        .catch((error) => {
-            setErrorMessage(() => "Erreur lors du chargement des données");
-        });
+            .then((response) => {
+                setMostFamousArchetypes(response.data);
+            })
+            .catch((error) => {
+                setErrorMessage(() => "Erreur lors du chargement des données");
+            });
     } catch (error) {
         throw error;
     }
@@ -44,9 +44,9 @@ export const getFiveRandomHighlightedArchetypes = (setRandomHighlightedArchetype
         api_aw.get(URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES).then((response) => {
             setRandomHighlightedArchetypes(response.data);
         })
-        .catch((error) => {
-            setErrorMessage("Erreur lors du chargement des données");
-        });
+            .catch((error) => {
+                setErrorMessage("Erreur lors du chargement des données");
+            });
     } catch (error) {
         throw error;
     }
@@ -55,12 +55,12 @@ export const getFiveRandomHighlightedArchetypes = (setRandomHighlightedArchetype
 export const getEightMostRecentArchetypes = (setMostRecentArchetypes, setErrorMessage) => {
     try {
         api_aw.get(URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES)
-        .then((response) => {
-            setMostRecentArchetypes(response.data);
-        })
-        .catch((error) => {
-            setErrorMessage("Erreur lors du chargement des données");
-        });
+            .then((response) => {
+                setMostRecentArchetypes(response.data);
+            })
+            .catch((error) => {
+                setErrorMessage("Erreur lors du chargement des données");
+            });
     } catch (error) {
         throw error;
     }
@@ -76,6 +76,19 @@ export const getRandomArchetype = (navigate) => {
     }
 };
 
+export const getArchetypesNames = (setArchetypes) => {
+    try {
+        api_aw.get(`/archetypes/allNames`).then((response) => {
+            if (response.status === 200) {
+                setArchetypes(response.data);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+
 // ADD
 
 /**
@@ -87,14 +100,14 @@ export const getRandomArchetype = (navigate) => {
 export const addArchetype = (newArchetype, navigate, toast) => {
     try {
         api_aw.post(URL_BACK_ADD_ARCHETYPE, newArchetype, toast)
-        .then((response) => {
-            if (response.status === 201) {
-                navigate(URL_FRONT_ADMIN_ARCHETYPES);
-            }
-        })
-        .catch((error) => {
-            toast.error(error.response.data.message);
-        });
+            .then((response) => {
+                if (response.status === 201) {
+                    navigate(URL_FRONT_ADMIN_ARCHETYPES);
+                }
+            })
+            .catch((error) => {
+                toast.error(error.response.data.message);
+            });
     } catch (error) {
         console.log(error);
     }

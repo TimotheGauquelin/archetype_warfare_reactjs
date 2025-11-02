@@ -1,60 +1,60 @@
 import React from "react";
 
 const DeckCards = ({ deckCards, setDeckCards, cardTypes, extraDeck }) => {
-  const calcNumberCardsInsideDeck = (deckInstance, cardsOfDeck, type) => {
-    let total = 0;
+  // const calcNumberCardsInsideDeck = (deckInstance, cardsOfDeck, type) => {
+  //   let total = 0;
 
-    deckCards[deckInstance]?.cards?.forEach((card) => {
-      switch (cardsOfDeck) {
-        case "total":
-          return (total = total + card.quantity);
-        case "byCardType":
-          if (card?.cardType?.label.includes(type)) {
-            return (total = total + card.quantity);
-          }
-          break;
-        default:
-          return (total = total + card.quantity);
-      }
-    });
+  //   deckCards[deckInstance]?.cards?.forEach((card) => {
+  //     switch (cardsOfDeck) {
+  //       case "total":
+  //         return (total = total + card.quantity);
+  //       case "byCardType":
+  //         if (card?.cardType?.label.includes(type)) {
+  //           return (total = total + card.quantity);
+  //         }
+  //         break;
+  //       default:
+  //         return (total = total + card.quantity);
+  //     }
+  //   });
 
-    return total;
-  };
+  //   return total;
+  // };
 
-  const removeCardFromDeck = (deckIndex, card) => {
-    let deckCardsCopy = [...deckCards];
+  // const removeCardFromDeck = (deckIndex, card) => {
+  //   let deckCardsCopy = [...deckCards];
 
-    const findex = deckCardsCopy[deckIndex].cards.findIndex(
-      (c) => c.card.id === card.card.id
-    );
+  //   const findex = deckCardsCopy[deckIndex].cards.findIndex(
+  //     (c) => c.card.id === card.card.id
+  //   );
 
-    deckCardsCopy[deckIndex].cards[findex].quantity--;
+  //   deckCardsCopy[deckIndex].cards[findex].quantity--;
 
-    if (deckCardsCopy[deckIndex].cards[findex].quantity === 0) {
-      deckCardsCopy[deckIndex].cards.splice(findex, 1);
-    }
-    setDeckCards(deckCardsCopy);
-  };
+  //   if (deckCardsCopy[deckIndex].cards[findex].quantity === 0) {
+  //     deckCardsCopy[deckIndex].cards.splice(findex, 1);
+  //   }
+  //   setDeckCards(deckCardsCopy);
+  // };
 
   return (
     <div className="col-span-9 bg-green-200 mr-2">
       <div className="flex flex-row justify-between border border-black">
         <div className="flex flex-row">
           <p>Deck : </p>
-          <p>{calcNumberCardsInsideDeck(0, "total")}</p>
+          {/* <p>{calcNumberCardsInsideDeck(0, "total")}</p> */}
         </div>
         <div className="flex flex-row">
           <div className="flex flex-row">
             <p>Monstre : </p>
-            <p>{calcNumberCardsInsideDeck(0, "byCardType", "Monster")}</p>
+            {/* <p>{calcNumberCardsInsideDeck(0, "byCardType", "Monster")}</p> */}
           </div>
           <div className="flex flex-row">
             <p>Magie : </p>
-            <p>{calcNumberCardsInsideDeck(0, "byCardType", "Spell")}</p>
+            {/* <p>{calcNumberCardsInsideDeck(0, "byCardType", "Spell")}</p> */}
           </div>
           <div className="flex flex-row">
             <p>Piège : </p>
-            <p> {calcNumberCardsInsideDeck(0, "byCardType", "Trap")}</p>
+            {/* <p> {calcNumberCardsInsideDeck(0, "byCardType", "Trap")}</p> */}
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@ const DeckCards = ({ deckCards, setDeckCards, cardTypes, extraDeck }) => {
         id="mainDeckCards"
         className="border border-black grid grid-cols-10 p-1 gap-2"
       >
-        {deckCards[0]?.cards
+        {/* {deckCards[0]?.cards
           ?.sort(function (a, b) {
             return (
               cardTypes.indexOf(a?.card?.cardType?.label) -
@@ -96,29 +96,29 @@ const DeckCards = ({ deckCards, setDeckCards, cardTypes, extraDeck }) => {
                 </div>
               );
             });
-          })}
+          })} */}
       </div>
       <div className="flex flex-row justify-between border border-black">
         <div className="flex flex-row">
           <p>Extra Deck : </p>
-          <p>{calcNumberCardsInsideDeck(1, "total")} / 15</p>
+          {/* <p>{calcNumberCardsInsideDeck(1, "total")} / 15</p> */}
         </div>
         <div className="flex flex-row">
           <div className="flex flex-row">
             <p>Fusion : </p>
-            <p>{calcNumberCardsInsideDeck(1, "byCardType", "Fusion")}</p>
+            {/* <p>{calcNumberCardsInsideDeck(1, "byCardType", "Fusion")}</p> */}
           </div>
           <div className="flex flex-row">
             <p>Synchro : </p>
-            <p>{calcNumberCardsInsideDeck(1, "byCardType", "Synchro")}</p>
+            {/* <p>{calcNumberCardsInsideDeck(1, "byCardType", "Synchro")}</p> */}
           </div>
           <div className="flex flex-row">
             <p>XYZ : </p>
-            <p>{calcNumberCardsInsideDeck(1, "byCardType", "XYZ")}</p>
+            {/* <p>{calcNumberCardsInsideDeck(1, "byCardType", "XYZ")}</p> */}
           </div>
           <div className="flex flex-row">
             <p>Link : </p>
-            <p>{calcNumberCardsInsideDeck(1, "byCardType", "Link")}</p>
+            {/* <p>{calcNumberCardsInsideDeck(1, "byCardType", "Link")}</p> */}
           </div>
         </div>
       </div>
@@ -126,7 +126,7 @@ const DeckCards = ({ deckCards, setDeckCards, cardTypes, extraDeck }) => {
         id="extraDeckCards"
         className="border border-black grid grid-cols-10 p-1 gap-2"
       >
-        {deckCards[1]?.cards
+        {/* {deckCards[1]?.cards
           ?.sort(function (a, b) {
             return (
               extraDeck.indexOf(a?.card?.cardType?.label) -
@@ -160,7 +160,7 @@ const DeckCards = ({ deckCards, setDeckCards, cardTypes, extraDeck }) => {
                 </div>
               );
             });
-          })}
+          })} */}
       </div>
     </div>
   );
