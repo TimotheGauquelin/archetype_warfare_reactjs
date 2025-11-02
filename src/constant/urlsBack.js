@@ -103,6 +103,7 @@ export const URL_BACK_GET_ALL_MY_DECKS = (userId) => `/decks/all/user/${userId}`
 export const URL_BACK_GET_DECK_BY_ID = (deckId) => `/decks/${deckId}`
 export const URL_BACK_CREATE_DECK = `/decks/create`
 export const URL_BACK_UPDATE_DECK = (deckId) => `/decks/updateMyDeck/${deckId}`
+export const URL_BACK_DELETE_MY_DECK = (deckId) => `/decks/deleteMyDeck/${deckId}`
 
 // USER
 

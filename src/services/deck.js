@@ -1,5 +1,5 @@
 import { api_aw_token } from "../api/api_aw_token";
-import { URL_BACK_CREATE_DECK, URL_BACK_GET_ALL_MY_DECKS, URL_BACK_GET_DECK_BY_ID, URL_BACK_UPDATE_DECK } from "../constant/urlsBack";
+import { URL_BACK_CREATE_DECK, URL_BACK_DELETE_MY_DECK, URL_BACK_GET_ALL_MY_DECKS, URL_BACK_GET_DECK_BY_ID, URL_BACK_UPDATE_DECK } from "../constant/urlsBack";
 import { URL_FRONT_MY_DECKS } from "../constant/urlsFront";
 
 export const getMyDecks = (token, id, setMyDecks) => {
@@ -59,6 +59,23 @@ export const updateDeck = (token, deckId, myDeck, toast, navigate, setIsLoading)
     })
     .catch((error) => {
         toast.error("Une erreur est survenue lors de la modification du deck");
+        setIsLoading(false);
+    });
+};
+
+
+// DELETE
+export const deleteMyDeck = (token, deckId, setIsLoading, navigate, toast) => {
+    api_aw_token(token).delete(URL_BACK_DELETE_MY_DECK(deckId))
+    .then((response) => {
+        if (response.status === 200) {
+            setIsLoading(false);
+            toast.success("Deck supprimé avec succès");
+            navigate(URL_FRONT_MY_DECKS);
+        }
+    })
+    .catch((error) => {
+        toast.error("Une erreur est survenue lors de la suppression du deck");
         setIsLoading(false);
     });
 };

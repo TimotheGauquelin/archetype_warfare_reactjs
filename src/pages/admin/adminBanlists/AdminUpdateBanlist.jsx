@@ -173,7 +173,7 @@ const AdminUpdateBanlist = () => {
             
             {/* Informations principales */}
             <div className="bg-gray-300 rounded p-4 mb-4">
-                <div className="flex flex-row justify-between items-center mb-4">
+                <div className="flex flex-row justify-between items-center mb-2">
                     <h2 className="font-bold text-xl">Informations Principales</h2>
                     <div className="flex justify-center items-center">
                         <SwitchInput 

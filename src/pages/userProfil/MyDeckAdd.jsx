@@ -38,9 +38,9 @@ const MyDeckAdd = () => {
       <Navbar />
       <ProfilTemplate>
         <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-          <div className="flex flex-row justify-between items-center mb-4">
+          <div className="flex flex-row justify-between items-center mb-2">
 
-            <h3 className="text-xl font-bold mb-4 text-black">Création d'un deck</h3>
+            <h3 className="text-xl font-bold text-black">Création d'un deck</h3>
             <span className="cursor-pointer hover:text-green-400 transition-all duration-200" onClick={() => navigate(-1)}>Retour</span>
           </div>
           <DeckData myDeck={myDeck} setMyDeck={setMyDeck} archetypes={archetypes} />

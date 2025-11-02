@@ -1,6 +1,9 @@
 import React from 'react'
 
 const DeckData = ({ myDeck, setMyDeck, archetypes }) => {
+
+console.log("myDeck", myDeck);
+
     return (
         <div className="p-4 bg-gray-300 rounded-lg">
             <div className="grid grid-cols-2 gap-4">
@@ -19,7 +22,7 @@ const DeckData = ({ myDeck, setMyDeck, archetypes }) => {
                     <select
                         className="mt-2 p-2"
                         value={myDeck?.archetype_id || ""}
-                        disabled={myDeck?.cards?.length > 0}
+                        disabled={myDeck?.deck_cards?.length > 0}
                         onChange={(e) => setMyDeck({ ...myDeck, archetype_id: e.target.value })}
                     >
                         <option value="" disabled>Sélectionnez un archétype</option>
