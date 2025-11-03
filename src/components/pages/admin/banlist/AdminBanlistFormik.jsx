@@ -40,13 +40,13 @@ const AdminBanlistFormik = ({
       <AdminBanlistFormikData newBanlist={newBanlist} setNewBanlist={setNewBanlist} />
       <div className="bg-gray-300 mt-4 rounded p-2">
         <h2 className="font-bold text-xl">Cartes de la banlist :</h2>
-        <div className="bg-gray-300 grid grid-cols-12 gap-2">
+        <div className="bg-gray-300 grid grid-cols-12 gap-1">
           <div className="bg-gray-400 col-span-9 mt-2 p-3 rounded">
             <div
               // className={`overflow-y-auto col-span-8 grid bg-white p-2 rounded ${
               //   banlistCardsLength > 0 && "grid-cols-12"
               // } gap-4 ${banlistCardsLength === 0 && "text-red-500 my-2"}`}
-              style={{ maxHeight: "400px" }}
+              style={{ height: "400px" }}
             >
               {banlistCardsLength > 0
                 ? banlist?.cards

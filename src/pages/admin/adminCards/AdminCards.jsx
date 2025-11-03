@@ -157,7 +157,7 @@ const AdminCards = () => {
 
           {cards?.length > 0 && (
             <div className="bg-slate-200 rounded p-2 ">
-              <div className="grid grid-cols-12 gap-2">
+              <div className="grid grid-cols-12 gap-1">
                 {cards?.map((card) => {
                   return (
                     <div key={card.id} className="col-span-2 ">

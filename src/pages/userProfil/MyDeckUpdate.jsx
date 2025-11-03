@@ -13,6 +13,8 @@ import DeckUpdatator from "../../components/pages/userProfil/deckUpdate/DeckUpda
 import { laborIllusion } from "../../utils/functions/laborIllusion";
 import usePopup from "../../hooks/usePopup";
 import PopUp from "../../components/generic/PopUp";
+import { FaCopy } from "react-icons/fa";
+import { MAIN_DECK_LABELS } from "../../utils/const/extraDeckConst";
 
 const MyDeckUpdate = () => {
     const navigate = useNavigate();
@@ -30,8 +32,9 @@ const MyDeckUpdate = () => {
     const [archetypes, setArchetypes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
+    const [mainDeckCards, setMainDeckCards] = useState([]);
 
-    const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
+    const { isOpen, popupConfig, closePopup, showConfirmDialog, openPopup } = usePopup();
 
     useEffect(() => {
         setIsFetching(true);
@@ -77,6 +80,65 @@ const MyDeckUpdate = () => {
         );
     }, [deckId, myDeck]);
 
+    const handleTestHand = useCallback(() => {
+        const mainDeckCards = myDeck?.deck_cards.filter((deckCard) => MAIN_DECK_LABELS.includes(deckCard.card.card_type.toLowerCase()));
+        console.log(mainDeckCards);
+        const fullCardsMainDeck = []
+        for (const deckCard of mainDeckCards) {
+            for (let i = 0; i < deckCard.quantity; i++) {
+                fullCardsMainDeck.push(deckCard.card);
+            }
+        }
+
+        const getFiveRandomCards = fullCardsMainDeck.sort(() => Math.random() - 0.5).slice(0, 5);
+
+        openPopup({
+            title: "Tester une main",
+            content: (
+                <div>
+                    <div>
+                        <div className="grid grid-cols-10 gap-1 p-2">
+                            {getFiveRandomCards.map((card, index) => (
+                                <img key={card.id + index} className="col-span-2" src={card.img_url || card.img_url} alt={card.name} loading="lazy" />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            ),
+            showCloseButton: true,
+        });
+    }, [myDeck, openPopup, MAIN_DECK_LABELS]);
+
+    const handleExportForCM = useCallback(() => {
+        const lines = (myDeck?.deck_cards || []).map((dc) => {
+            const qty = dc?.quantity ?? 0;
+            const name = dc?.card?.name || "";
+            return `${qty} ${name}`;
+        });
+
+        openPopup({
+            title: "Exporter pour CM",
+            content: (
+                <div>
+                    <div className="flex flex-row justify-end items-center gap-1 mb-2">
+                        <FaCopy
+                            className="text-blue-500 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                            onClick={() => {
+                                navigator.clipboard.writeText(lines.join("\n"));
+                            }}
+                        />
+                    </div>
+                    <div className="space-y-2 bg-gray-100 p-2">
+                        <pre className="whitespace-pre-wrap text-sm">
+                            {lines.length ? lines.join("\n") : "Aucune carte dans le deck."}
+                        </pre>
+                    </div>
+                </div>
+            ),
+            showCloseButton: true,
+        });
+    }, [myDeck, openPopup]);
+
     return (
         <div>
             <Header />
@@ -95,13 +157,16 @@ const MyDeckUpdate = () => {
                         </button>
                     </div>
 
-                    <div className="flex flex-row justify-end items-center gap-2 mb-2">
+                    <div className="flex flex-row justify-end items-center gap-1 mb-2">
                         <Button
                             className="bg-blue-200 mt-2 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
-                            buttonText="Exporter au format CSV"
-                            disabled={isLoading}
-                            loadingText="Modification en cours..."
-                        // action={handleUpdate}
+                            buttonText="Tester une main"
+                            action={() => { handleTestHand() }}
+                        />
+                        <Button
+                            className="bg-blue-200 mt-2 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
+                            buttonText="Exporter pour CM"
+                            action={() => { handleExportForCM() }}
                         />
                         <Button
                             className="bg-red-200 mt-2 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"

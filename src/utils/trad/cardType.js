@@ -1,5 +1,4 @@
 export const cardTypeToFrench = (cardType) => {
-    console.log(cardType);
     switch (cardType.toLowerCase()) {
         case "normal monster":
             return "Monstre Normal";

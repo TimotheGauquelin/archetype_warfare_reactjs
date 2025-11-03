@@ -101,8 +101,8 @@ const AddCardModule = ({ newArchetype, setNewArchetype }) => {
 
   return (
     <div className="col-span-4 grid grid-cols-12 mt-2">
-      <div className="bg-gray-400 col-span-12 ml-1 p-3 rounded">
-        <div className="grid grid-cols-12 gap-2">
+      <div className="bg-gray-400 col-span-12 ml-1 p-2 rounded">
+        <div className="grid grid-cols-12 gap-1 mb-2">
           <input
             className={`w-full p-1 col-span-8`}
             value={filters.name}
@@ -117,14 +117,14 @@ const AddCardModule = ({ newArchetype, setNewArchetype }) => {
             }}
           />
           <div
-            className="bg-yellow-300 hover:bg-yellow-400 shadow-md col-span-4 rounded text-white font-bold text-center cursor-pointer"
+            className="text-sm bg-yellow-300 hover:bg-yellow-400 shadow-md col-span-4 rounded text-white font-bold text-center cursor-pointer"
             onClick={addAllCardsToArchetype}
           >
             Ajouter tout
           </div>
         </div>
         <div
-          className="overflow-y-auto bg-white grid grid-cols-12"
+          className="overflow-y-auto bg-white grid grid-cols-12 gap-1 p-1"
           style={{ maxHeight: "400px" }}
         >
           {cards?.map((card, index) => {
@@ -133,7 +133,7 @@ const AddCardModule = ({ newArchetype, setNewArchetype }) => {
             );
 
             return (
-              <div className="col-span-3 p-1 relative" key={index}>
+              <div className="col-span-3 relative" key={index}>
                 <img
                   className={`hover:saturate-150 cursor-pointer ${isCardAlreadyInArchetype ? 'opacity-50' : ''
                     }`}

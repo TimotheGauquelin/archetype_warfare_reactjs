@@ -57,12 +57,12 @@ const MyProfil = () => {
               </div>
               <div className="col-span-12 md:col-span-6 mb-4 flex flex-col">
                 <p className="font-semibold text-black mb-2">Rôle(s):</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1">
                   {roles?.map((role, index) => {
                     return (
                       <div
                         key={index}
-                        className="flex items-center gap-2 px-3 py-1 bg-red-500 text-white font-bold rounded-md shadow-sm"
+                        className="flex items-center gap-1 px-3 py-1 bg-red-500 text-white font-bold rounded-md shadow-sm"
                       >
                         <FaCrown className="text-xs" />
                         <span>{role}</span>
@@ -83,7 +83,7 @@ const MyProfil = () => {
         </div>
 
         <div className="bg-red-200 rounded-lg p-4">
-          <h3 className="text-xl font-bold mb-4 text-red-500 flex items-center gap-2">
+          <h3 className="text-xl font-bold mb-4 text-red-500 flex items-center gap-1">
             Zone de danger
           </h3>
           <p className="text-sm mb-4">

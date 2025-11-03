@@ -141,7 +141,7 @@ const DeckCreator = ({
           attributes={attributes}
         />
 
-        <div className="grid grid-cols-12 gap-2 mt-2">
+        <div className="grid grid-cols-12 gap-1 mt-2">
           <div className="col-span-9">
             <div className="p-2 bg-gray-200 rounded">
               <div className="flex flex-row justify-between">
@@ -211,7 +211,7 @@ const DeckCreator = ({
                   <span>{extraDeckTotal}/15</span>
                 </span>
               </div>
-              <div className="grid grid-cols-10 gap-2 p-1 bg-white">
+              <div className="grid grid-cols-10 gap-1 p-1 bg-white">
                 {extraDeckCards.map((deckCard, cardIndex) => {
                   // Créer un tableau avec autant d'éléments que la quantité de la carte
                   const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({

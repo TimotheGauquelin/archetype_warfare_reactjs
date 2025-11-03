@@ -86,7 +86,7 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
     return (
         <div className="col-span-4 grid grid-cols-12 mt-2">
             <div className="bg-gray-400 col-span-12 ml-1 p-3 rounded">
-                <div className="grid grid-cols-12 gap-2">
+                <div className="grid grid-cols-12 gap-1">
                     <input
                         className={`w-full p-1 col-span-8`}
                         value={filters.name}
@@ -103,7 +103,7 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
                 </div>
                 <div
                     className="overflow-y-auto bg-white grid grid-cols-12"
-                    style={{ maxHeight: "400px" }}
+                    style={{ height: "400px" }}
                 >
                     {cards?.map((card, index) => {
                         const isCardAlreadyInBanlist = banlist.banlist_archetype_cards.some(

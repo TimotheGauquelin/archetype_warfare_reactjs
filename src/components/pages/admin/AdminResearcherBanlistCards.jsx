@@ -44,7 +44,7 @@ const AdminResearcherBanlistCards = ({
       />
       <div
         className="overflow-y-auto bg-white grid grid-cols-12"
-        style={{ maxHeight: "400px" }}
+        style={{ height: "400px" }}
       >
         {researchedCards?.slice(0, 20).map((card, index) => {
           return (

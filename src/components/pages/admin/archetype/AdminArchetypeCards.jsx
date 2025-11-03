@@ -28,10 +28,10 @@ const AdminArchetypeCards = ({ newArchetype, setNewArchetype }) => {
     <div className="bg-gray-300 rounded p-2">
       <h2 className="font-bold text-xl">Cartes de l'archetypes :</h2>
       {/* Afficher les cartes déjà dans l'archetype */}
-      <div className="bg-gray-300 grid grid-cols-12 gap-2">
+      <div className="bg-gray-300 grid grid-cols-12 gap-1">
         <div className="bg-gray-400 col-span-8 mt-2 p-3 rounded">
           <div
-            className={`overflow-y-auto h-full grid gap-2 ${newArchetype.cards.length > 0 && "grid-cols-12"
+            className={`overflow-y-auto h-full grid gap-1 ${newArchetype.cards.length > 0 && "grid-cols-12"
               } bg-white p-2 rounded`}
           >
             {newArchetype.cards.length > 0

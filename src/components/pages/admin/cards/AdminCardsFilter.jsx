@@ -22,7 +22,7 @@ const AdminCardsFilter = ({
           Reset les filtres
         </p>{" "}
       </div>
-      <div className="grid grid-cols-12 gap-2">
+      <div className="grid grid-cols-12 gap-1">
         <input
           className="col-span-4 p-2 rounded"
           placeholder="Quelle carte recherchez-vous ?"

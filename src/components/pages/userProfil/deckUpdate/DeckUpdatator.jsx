@@ -139,7 +139,7 @@ const DeckUpdatator = ({ myDeck, setMyDeck }) => {
                 attributes={attributes}
             />
 
-            <div className="grid grid-cols-12 gap-2 mt-2">
+            <div className="grid grid-cols-12 gap-1 mt-2">
                 <div className="col-span-9">
                     <div className="p-2 bg-gray-200 rounded">
                         <div className="flex flex-row justify-between">

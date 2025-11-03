@@ -189,7 +189,7 @@ export const updatePassword = (userId, form, navigate, setMultipleErrors, setIsU
     });
 };
 
-export const updateUserByAdmin = (userId, form, navigate, toast) => {
+export const updateUserByAdmin = (userId, form, navigate, toast, setIsLoading) => {
   api_aw
     .put(URL_BACK_UPDATE_USER_BY_ADMIN(userId), form)
     .then((response) => {
@@ -199,6 +199,7 @@ export const updateUserByAdmin = (userId, form, navigate, toast) => {
       }
     })
     .catch((error) => {
+      setIsLoading(false);
       console.log(error);
       toast.error(error.response.data.message);
     });

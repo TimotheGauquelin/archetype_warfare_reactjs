@@ -22,7 +22,7 @@ const Slide = ({ archetype }) => {
             {archetype.slider_info}
           </p>
           <Link
-            className={`group sliderButton inline-flex items-center gap-2 px-6 py-3 rounded-md font-semibold text-white transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-0.5`}
+            className={`group sliderButton inline-flex items-center gap-1 px-6 py-3 rounded-md font-semibold text-white transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-0.5`}
             style={{ animation: "awGlow 2.4s ease-in-out infinite" }}
             to={`/archetype/${archetype.id}`}
           >

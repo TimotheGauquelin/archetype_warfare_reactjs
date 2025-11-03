@@ -55,7 +55,7 @@ const SkeletonArchetypePage = () => {
                             <div className="h-6 bg-gray-300 rounded w-32 mb-4 animate-pulse"></div>
                             <div className="h-full flex flex-col justify-between gap-4">
                                 {[...Array(3)].map((_, index) => (
-                                    <div key={index} className="flex flex-col gap-2">
+                                    <div key={index} className="flex flex-col gap-1">
                                         <div className="h-4 bg-gray-300 rounded w-24 animate-pulse"></div>
                                         <div className="h-2 bg-gray-200 rounded-full w-full animate-pulse"></div>
                                     </div>

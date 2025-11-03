@@ -4,6 +4,8 @@ import { getUserById, updateUserByAdmin } from "../../../../services/user";
 import { useNavigate, useParams } from "react-router-dom";
 import MultiSelectInput from "../../../generic/form/MultiSelectInput";
 import { toast } from "react-toastify";
+import Button from "../../../generic/Button";
+import { laborIllusion } from "../../../../utils/functions/laborIllusion";
 
 const AdminUserUpdateForm = () => {
   const [user, setUser] = useState({
@@ -11,6 +13,7 @@ const AdminUserUpdateForm = () => {
     email: "",
     roles: [],
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   const { userId } = useParams();
 
@@ -56,15 +59,19 @@ const AdminUserUpdateForm = () => {
         </div>
       </div>
 
-      <button
-        id="form"
-        className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded"
-        onClick={() => {
-          updateUserByAdmin(Number(userId), user, navigate, toast);
+      <Button
+        className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded font-semibold transition-all duration-200 shadow-sm"
+        buttonText="Modifier l'utilisateur"
+        action={() => {
+          setIsLoading(true);
+          laborIllusion(
+            () => updateUserByAdmin(Number(userId), user, navigate, toast, setIsLoading),
+            1
+          );
         }}
-      >
-        Modifier l'utilisateur
-      </button>
+        disabled={isLoading}
+        loadingText="Modification en cours..."
+      />
     </div>
   );
 };

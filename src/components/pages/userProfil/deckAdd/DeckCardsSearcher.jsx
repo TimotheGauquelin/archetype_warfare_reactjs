@@ -300,7 +300,7 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
 
   return (
     <div className="bg-gray-200 col-span-3 p-2 rounded">
-      <div className="grid grid-cols-12 gap-2">
+      <div className="grid grid-cols-12 gap-1">
         <div className="col-span-12 relative">
           {isLoading && (
             <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
@@ -311,7 +311,7 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
       </div>
       <div
         className="overflow-y-auto bg-white grid grid-cols-12"
-        style={{ maxHeight: "400px" }}
+        style={{ height: "400px" }}
       >
         {renderedCards}
       </div>

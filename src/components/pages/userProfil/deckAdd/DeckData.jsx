@@ -1,9 +1,6 @@
 import React from 'react'
 
 const DeckData = ({ myDeck, setMyDeck, archetypes }) => {
-
-console.log("myDeck", myDeck);
-
     return (
         <div className="p-4 bg-gray-300 rounded-lg">
             <div className="grid grid-cols-2 gap-4">

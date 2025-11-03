@@ -59,7 +59,7 @@ const AdminArchetypeBanlist = ({
           </select>
         </div>
         <div className="grid grid-cols-12"></div>
-        <div className="bg-white grid grid-cols-12 p-2 gap-2 rounded">
+        <div className="bg-white grid grid-cols-12 p-2 gap-1 rounded">
           {currentBanlistCards
             .sort(function (a, b) {
               return (
