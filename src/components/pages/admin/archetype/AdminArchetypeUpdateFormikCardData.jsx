@@ -8,6 +8,7 @@ import { cardStatusToFrench } from "../../../../utils/trad/cardStatus";
 const AdminArchetypeUpdateFormikCardData = ({
   newArchetype,
   setNewArchetype,
+  activeTab,
 }) => {
   const [cardsRefresh, setCardsRefresh] = useState(false);
   const [cardStatus, setCardStatus] = useState([]);
@@ -59,7 +60,7 @@ const AdminArchetypeUpdateFormikCardData = ({
   }, [cardsRefresh, newArchetype]);
 
   return (
-    <div className="bg-gray-300 mt-4 rounded p-2">
+    <div className={`bg-gray-300 rounded p-2 ${activeTab === "cards" ? "" : "hidden"}`}>
       <h2 className="font-bold text-xl">Cartes de l'archetypes :</h2>
       {/* Afficher les cartes déjà dans l'archetype */}
       <div className="bg-gray-300 grid grid-cols-12 gap-1">

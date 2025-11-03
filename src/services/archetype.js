@@ -115,16 +115,18 @@ export const addArchetype = (newArchetype, navigate, toast) => {
 
 // PUT
 
-export const updateArchetype = (archetypeId, archetype, navigate, toast) => {
+export const updateArchetype = (archetypeId, archetype, navigate, toast, setIsLoading) => {
     try {
         api_aw
             .put(URL_BACK_UPDATE_ARCHETYPE(archetypeId), archetype)
             .then((response) => {
                 if (response.status === 200) {
+                    setIsLoading(false);
                     navigate(URL_FRONT_ADMIN_ARCHETYPES);
                 }
             })
             .catch((error) => {
+                setIsLoading(false);
                 if (error.response.status === 400) {
                     toast.error(error.response.data.message);
                 } else {
@@ -133,6 +135,7 @@ export const updateArchetype = (archetypeId, archetype, navigate, toast) => {
                 toast.error(error.response.data.message);
             });
     } catch (error) {
+        setIsLoading(false);
         console.log(error);
         toast.error(error.response.data.message);
     }

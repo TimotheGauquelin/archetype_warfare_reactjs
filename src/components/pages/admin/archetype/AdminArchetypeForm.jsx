@@ -18,7 +18,6 @@ const AdminArchetypeForm = ({
   const [attributes, setAttributes] = useState([]);
   const [summonMechanics, setSummonMechanics] = useState([]);
   const [activeTab, setActiveTab] = useState("informations");
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getEras(setEras);

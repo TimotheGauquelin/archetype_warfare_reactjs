@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { getArchetypeById, updateArchetype } from "../../../services/archetype";
 import AdminArchetypeUpdateFormik from "../../../components/pages/admin/archetype/AdminArchetypeUpdateFormik";
+import { laborIllusion } from "../../../utils/functions/laborIllusion";
 
 const AdminArchetypeUpdatePage = () => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const AdminArchetypeUpdatePage = () => {
     summonmechanics: [],
     cards: [],
   });
+  const [isLoading, setIsLoading] = useState(false);
 
 
   useEffect(() => {
@@ -46,9 +48,13 @@ const AdminArchetypeUpdatePage = () => {
       <AdminArchetypeUpdateFormik
         archetype={archetype}
         setArchetype={setArchetype}
-        updateArchetype={() => { updateArchetype(archetypeId, archetype, navigate, toast) }}
+        updateArchetype={() => {
+          setIsLoading(true);
+          laborIllusion(() => updateArchetype(archetypeId, archetype, navigate, toast, setIsLoading), 1);
+        }}
+        isLoading={isLoading}
       />
-      <ToastContainer 
+      <ToastContainer
         position="bottom-right"
         autoClose={5000}
         hideProgressBar={false}

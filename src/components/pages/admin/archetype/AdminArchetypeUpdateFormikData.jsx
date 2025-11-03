@@ -5,7 +5,8 @@ import { CheckboxInput } from "../../../generic/form/CheckboxInput";
 import { DateInput } from "../../../generic/form/DateInput";
 import { summonMechanicsToFrench } from "../../../../utils/trad/summonMechanics";
 import { monsterTypeToFrench } from "../../../../utils/trad/monsterType";
-import { attributeToFrench } from "../../../../utils/trad/attribute"; 
+import { attributeToFrench } from "../../../../utils/trad/attribute";
+import { convertBase64 } from "../../../../utils/img/convertBase";
 
 const AdminArchetypeUpdateFormikData = ({
   eras,
@@ -14,12 +15,13 @@ const AdminArchetypeUpdateFormikData = ({
   summonMechanics,
   archetype,
   setArchetype,
+  activeTab,
 }) => {
 
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="bg-gray-300 rounded p-2">
+    <div className={`bg-gray-300 rounded p-2 ${activeTab === "informations" ? "" : "hidden"}`}>
       <div className="flex flex-row justify-between items-center">
         <h2 className="font-bold text-xl">Informations Principales :</h2>
         <div className="flex justify-center items-center">
@@ -186,6 +188,15 @@ const AdminArchetypeUpdateFormikData = ({
           <div className="p-2 bg-gray-100 rounded-md mt-2">
             <img className="bg-gray-200 rounded-md border border-black" src={archetype.slider_img_url} alt="Jumbotron de l'archetype" />
           </div>
+          <input className="mt-2" type="file"
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              const base64Img = await convertBase64(file);
+              setArchetype((prevState) => ({
+                ...prevState,
+                slider_img_url: base64Img,
+              }));
+            }} />
         </div>
         <div className={`flex flex-col col-span-12 tablet:col-span-6`}>
           <label className="font-medium">
@@ -194,6 +205,15 @@ const AdminArchetypeUpdateFormikData = ({
           <div className="w-[150px] h-[150px] p-2 bg-gray-100 rounded-md mt-2">
             <img className="" src={archetype.card_img_url} alt="Présentation de l'archetype" />
           </div>
+          <input className="mt-2" type="file"
+            onChange={async (e) => {
+              const file = e.target.files[0];
+              const base64Img = await convertBase64(file);
+              setArchetype((prevState) => ({
+                ...prevState,
+                card_img_url: base64Img,
+              }));
+            }} />
         </div>
       </div>
     </div>

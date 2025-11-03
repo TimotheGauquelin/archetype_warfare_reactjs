@@ -88,7 +88,7 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
             <div className="bg-gray-400 col-span-12 ml-1 p-3 rounded">
                 <div className="grid grid-cols-12 gap-1">
                     <input
-                        className={`w-full p-1 col-span-8`}
+                        className={`w-full p-1 col-span-12 mb-2`}
                         value={filters.name}
                         type="text"
                         placeholder="Quelle carte recherchez-vous ?"

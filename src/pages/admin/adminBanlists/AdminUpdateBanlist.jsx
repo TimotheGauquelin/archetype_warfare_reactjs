@@ -10,6 +10,7 @@ import { getCardTypes } from '../../../services/cardtype';
 import { FaTrashAlt } from 'react-icons/fa';
 import AdminBanlistAddCard from '../../../components/pages/admin/banlist/AdminBanlistAddCard';
 import { getCardStatus } from '../../../services/cardStatus';
+import { cardStatusToFrench } from '../../../utils/trad/cardStatus';
 
 const AdminUpdateBanlist = () => {
     const [banlist, setBanlist] = useState({
@@ -270,7 +271,7 @@ const AdminUpdateBanlist = () => {
                                                         >
                                                             {cardStatus.map((status) => (
                                                                 <option key={status.id} value={status.id}>
-                                                                    {status.label}
+                                                                    {cardStatusToFrench(status.label)}
                                                                 </option>
                                                             ))}
                                                         </select>
