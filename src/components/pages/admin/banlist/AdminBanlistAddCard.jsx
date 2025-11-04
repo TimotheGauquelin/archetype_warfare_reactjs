@@ -43,27 +43,12 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
         );
 
         if (!isCardAlreadyInBanlist) {
-            // const newCard = {
-            //     banlist: {
-            //         id: 1,
-            //     },
-            //     card: {
-            //         id: card.id,
-            //         name: card.name,
-            //         img_url: card.img_url
-            //     },
-            //     card_status: {
-            //         id: 4,
-            //     },
-            //     card_status_id: 4,
-            //     explanation_text: "Carte limitée dans cette banlist"
-            // };
 
             const newCard = {
                 card_id: card.id,
                 archetype_id: null,
                 card_status_id: 1,
-                explanation_text: "Too versatile",
+                explanation_text: "Trop Versatile",
                 card: card,
                 card_status: {
                     id: 1,

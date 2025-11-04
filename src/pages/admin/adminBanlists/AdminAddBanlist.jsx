@@ -1,22 +1,24 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import AdminStructure from '../../../components/pages/admin/AdminStructure';
 import AdminBodyHeader from '../../../components/pages/admin/AdminBodyHeader';
-import { ToastContainer } from 'react-toastify';
-import { useNavigate, useParams } from 'react-router-dom';
 import { SwitchInput } from '../../../components/generic/form/SwitchInput';
 import { Input } from '../../../components/generic/form/Input';
-import { getBanlistById, updateBanlist } from '../../../services/banlist';
-import { getCardTypes } from '../../../services/cardtype';
 import { FaTrashAlt } from 'react-icons/fa';
 import AdminBanlistAddCard from '../../../components/pages/admin/banlist/AdminBanlistAddCard';
-import { getCardStatus } from '../../../services/cardStatus';
 import { cardStatusToFrench } from '../../../utils/trad/cardStatus';
 import Button from '../../../components/generic/Button';
+import { getCardStatus } from '../../../services/cardStatus';
 import { laborIllusion } from '../../../utils/functions/laborIllusion';
+import { addBanlist } from '../../../services/banlist';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { formatDateForInput } from '../../../utils/date/databaseDataToInput';
 import { useSelector } from 'react-redux';
 
-const AdminUpdateBanlist = () => {
+const AdminAddBanlist = () => {
+
+    const navigate = useNavigate();
+
     const [banlist, setBanlist] = useState({
         label: "",
         release_date: new Date().toISOString().split('T')[0],
@@ -24,86 +26,24 @@ const AdminUpdateBanlist = () => {
         is_active: false,
         banlist_archetype_cards: [],
     });
-
-    const [cardTypes, setCardTypes] = useState([]);
     const [cardStatus, setCardStatus] = useState([]);
-    const [isFetching, setIsFetching] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState(null);
-
     const { token } = useSelector((state) => state.user);
-    const { banlistId } = useParams();
-    const navigate = useNavigate();
 
-    const loadBanlistData = useCallback(async () => {
-        if (!banlistId) return;
-
-        setIsFetching(true);
-        setError(null);
-
-        try {
-            await Promise.all([
-                getBanlistById(banlistId, setBanlist),
-                getCardTypes(setCardTypes),
-                getCardStatus(setCardStatus)
-            ]);
-        } catch (err) {
-            setError("Erreur lors du chargement de la banlist");
-            console.error("Erreur:", err);
-        } finally {
-            setIsFetching(false);
-        }
-    }, [banlistId]);
-
-    useEffect(() => {
-        loadBanlistData();
-    }, [loadBanlistData]);
-
-    const sortedCards = useMemo(() => {
-        if (!banlist?.banlist_archetype_cards || !cardTypes.length) return [];
-
-        return [...banlist.banlist_archetype_cards].sort((a, b) => {
-            const cardTypeA = cardTypes.find(
-                (type) => type.label === a.card.card_type
-            );
-            const cardTypeB = cardTypes.find(
-                (type) => type.label === b.card.card_type
-            );
-
-            if (cardTypeA && cardTypeB) {
-                const typeComparison = cardTypeA.num_order - cardTypeB.num_order;
-                if (typeComparison !== 0) return typeComparison;
-
-                const atkComparison = (b.card.atk || 0) - (a.card.atk || 0);
-                if (atkComparison !== 0) return atkComparison;
-
-                return (b.card.level || 0) - (a.card.level || 0);
-            }
-
-            return 0;
-        });
-    }, [banlist?.banlist_archetype_cards, cardTypes]);
-
-    const genericCards = useMemo(() => {
-        return sortedCards.filter((card) => card.archetype_id === null);
-    }, [sortedCards]);
+    const handleAddBanlist = useCallback(() => {
+        setIsLoading(true);
+        laborIllusion(() => addBanlist(token,banlist, navigate, toast, setIsLoading), 2);
+    }, [banlist, navigate, toast]);
 
     const updateCardStatus = useCallback((cardId, statusId) => {
         setBanlist(prevBanlist => ({
             ...prevBanlist,
             banlist_archetype_cards: prevBanlist.banlist_archetype_cards.map(banlistCard =>
                 banlistCard.card.id === cardId
-                    ? {
-                        ...banlistCard,
-                        card_status_id: parseInt(statusId),
-                        card_status: {
-                            ...banlistCard.card_status,
-                            id: parseInt(statusId)
-                        }
-                    }
+                    ? { ...banlistCard, card_status_id: parseInt(statusId) }
                     : banlistCard
-            )
-        }));
+                )
+            }));
     }, []);
 
     const updateCardExplanation = useCallback((cardId, explanation) => {
@@ -111,68 +51,31 @@ const AdminUpdateBanlist = () => {
             ...prevBanlist,
             banlist_archetype_cards: prevBanlist.banlist_archetype_cards.map(banlistCard =>
                 banlistCard.card.id === cardId
-                    ? {
-                        ...banlistCard,
-                        explanation_text: explanation
-                    }
+                    ? { ...banlistCard, explanation_text: explanation }
                     : banlistCard
-            )
+                )
         }));
     }, []);
 
     const deleteCard = useCallback((cardId) => {
         setBanlist(prevBanlist => ({
             ...prevBanlist,
-            banlist_archetype_cards: prevBanlist.banlist_archetype_cards.filter(
-                (card) => card.card.id !== cardId
-            )
+            banlist_archetype_cards: prevBanlist.banlist_archetype_cards.filter(card => card.card.id !== cardId)
         }));
     }, []);
 
-    const handleUpdateBanlist = useCallback(() => {
-
-        setIsLoading(true);
-        // Préparer les données avec banlist_id pour chaque carte
-        const updatedBanlist = {
-            ...banlist,
-            banlist_archetype_cards: banlist.banlist_archetype_cards.map(card => ({
-                ...card,
-                banlist_id: parseInt(banlistId)
-            }))
-        };
-
-        laborIllusion(() => updateBanlist(token, banlistId, updatedBanlist, navigate, setIsLoading), 1);
-    }, [banlist, banlistId, navigate]);
-
-    if (isFetching) {
-        return (
-            <AdminStructure>
-                <div className="flex justify-center items-center min-h-screen">
-                    <div className="text-lg">Chargement de la banlist...</div>
-                </div>
-            </AdminStructure>
-        );
-    }
-
-    if (error) {
-        return (
-            <AdminStructure>
-                <div className="flex justify-center items-center min-h-screen">
-                    <div className="text-red-500 text-lg">{error}</div>
-                </div>
-            </AdminStructure>
-        );
-    }
+    useEffect(() => {
+        getCardStatus(setCardStatus);
+    }, []);
 
     return (
         <AdminStructure>
             <AdminBodyHeader
-                label="Modifier une banlist"
+                label="Ajouter une banlist"
                 catchphrase="Gérez les cartes et leurs statuts"
                 returnButton
             />
 
-            {/* Informations principales */}
             <div className="bg-gray-300 rounded p-4 mb-4">
                 <div className="flex flex-row justify-between items-center mb-2">
                     <h2 className="font-bold text-xl">Informations Principales</h2>
@@ -223,22 +126,20 @@ const AdminUpdateBanlist = () => {
                 </div>
             </div>
 
-            {/* Section des cartes */}
             <div className="bg-gray-300 rounded p-4 mb-4">
                 <h2 className="font-bold text-xl mb-4">
-                    Cartes génériques de la banlist ({genericCards.length})
+                    Cartes génériques de la banlist ({banlist.banlist_archetype_cards.length})
                 </h2>
 
                 <div className="grid grid-cols-12 gap-4">
-                    {/* Liste des cartes */}
                     <div className="col-span-8">
                         <div
                             className="bg-white rounded-lg p-4 overflow-y-auto"
                             style={{ height: "500px" }}
                         >
-                            {genericCards.length > 0 ? (
+                            {banlist.banlist_archetype_cards.length > 0 ? (
                                 <div className="grid grid-cols-12 gap-4">
-                                    {genericCards.map((card, index) => (
+                                    {banlist.banlist_archetype_cards.map((card, index) => (
                                         <div
                                             key={`${card.card.id}-${index}`}
                                             className="col-span-4"
@@ -310,14 +211,14 @@ const AdminUpdateBanlist = () => {
 
             <Button
                 className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded font-semibold transition-all duration-200 shadow-sm"
-                buttonText="Modifier la banlist"
-                action={handleUpdateBanlist}
+                buttonText="Ajouter la banlist"
+                action={handleAddBanlist}
                 disabled={isLoading}
-                loadingText="Modification en cours..."
+                loadingText="Ajout en cours..."
             />
 
         </AdminStructure>
     );
 }
 
-export default AdminUpdateBanlist;
+export default AdminAddBanlist

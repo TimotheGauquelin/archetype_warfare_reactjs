@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 const AdminBanlistPaginationTableBody = ({
   arrayItems,
+  handleDeleteBanlist,
 }) => {
 
   const numberOfCardsFromArchetypePerStatus = (item, status) => {
@@ -43,7 +44,7 @@ const AdminBanlistPaginationTableBody = ({
               <p
                 className="font-medium text-blue-600 hover:text-red-600 hover:underline cursor-pointer"
                 onClick={() => {
-                  // deleteBanlist(item.id);
+                  handleDeleteBanlist(item.id);
                 }}
               >
                 Supprimer

@@ -3,17 +3,32 @@ import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../../../components/pages/admin/AdminStructure";
 import CurrentBanlistAlert from "../../../components/generic/CurrentBanlistAlert";
 import AdminBanlistPagination from "../../../components/pages/admin/AdminBanlistPagination";
-import { ToastContainer } from "react-toastify";
 import { getBanlists, getCurrentBanlist } from "../../../services/banlist";
-import { URL_FRONT_ADMIN_BANLIST_FORM } from "../../../constant/urlsFront";
+import { URL_FRONT_ADMIN_BANLIST_ADD } from "../../../constant/urlsFront";
+import usePopup from "../../../hooks/usePopup";
+import PopUp from "../../../components/generic/PopUp";
 
 const AdminBanlist = () => {
   const [banlists, setBanlists] = useState([]);
   const [currentBanlist, setCurrentBanlist] = useState({});
   const [refresh, setRefresh] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
+
+  const handleDeleteBanlist = (banlistId) => {
+    showConfirmDialog({
+      title: "Supprimer la banlist",
+      message: "Êtes-vous sûr de vouloir supprimer cette banlist ?",
+      onConfirm: () => {
+        console.log("Supprimer la banlist", banlistId);
+        // deleteBanlist(banlistId, setRefresh);
+      }
+    });
+  };
 
   useEffect(() => {
-    getCurrentBanlist(setCurrentBanlist)
+    getCurrentBanlist(setCurrentBanlist, setIsLoading);
     getBanlists(setBanlists);
     setRefresh(false);
   }, [refresh]);
@@ -23,7 +38,7 @@ const AdminBanlist = () => {
       <AdminBodyHeader
         label="Banlist"
         catchphrase="Bannir, Limiter ou Illimiter"
-        buttonUrl={URL_FRONT_ADMIN_BANLIST_FORM}
+        buttonUrl={URL_FRONT_ADMIN_BANLIST_ADD}
         buttonLabel="Ajouter une banlist"
       />
       <p>Banlist en cours :</p>
@@ -31,8 +46,18 @@ const AdminBanlist = () => {
       <AdminBanlistPagination
         banlists={banlists}
         setRefresh={setRefresh}
+        handleDeleteBanlist={handleDeleteBanlist}
       />
-      <ToastContainer />
+      <PopUp
+        isOpen={isOpen}
+        onClose={closePopup}
+        title={popupConfig.title}
+        className={popupConfig.className}
+        showCloseButton={popupConfig.showCloseButton}
+        closeOnBackdropClick={popupConfig.closeOnBackdropClick}
+      >
+        {popupConfig.content}
+      </PopUp>
     </AdminStructure>
   );
 };

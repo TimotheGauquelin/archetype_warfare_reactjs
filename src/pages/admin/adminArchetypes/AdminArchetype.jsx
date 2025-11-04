@@ -3,9 +3,9 @@ import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../../../components/pages/admin/AdminStructure";
 import AdminArchetypeFilter from "../../../components/pages/admin/archetype/AdminArchetypeFilter";
 import AdminArchetypePagination from "../../../components/pages/admin/archetype/AdminArchetypePagination";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import { getArchetypesWithCriteria } from "../../../services/archetype";
-import { URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM } from "../../../constant/urlsFront";
+import { URL_FRONT_ADMIN_BANLIST_ADD } from "../../../constant/urlsFront";
 import PopUp from "../../../components/generic/PopUp";
 import usePopup from "../../../hooks/usePopup";
 
@@ -72,7 +72,7 @@ const AdminArchetype = () => {
       <AdminBodyHeader
         label="Archetype"
         catchphrase="Vous avez des archétypes de toute sorte"
-        buttonUrl={URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM}
+        buttonUrl={URL_FRONT_ADMIN_BANLIST_ADD}
         buttonLabel="Ajouter un archetype"
       />
       <AdminArchetypeFilter
@@ -92,7 +92,6 @@ const AdminArchetype = () => {
         pageSize={pagination?.pageSize}
         showConfirmPopupDialog={showConfirmDialog}
       />
-      <ToastContainer />
       <PopUp
         isOpen={isOpen}
         onClose={closePopup}

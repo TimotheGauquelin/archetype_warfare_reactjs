@@ -44,6 +44,7 @@ import {
   URL_FRONT_MY_DECKS,
   URL_FRONT_MY_DECK_ADD,
   URL_FRONT_MY_DECK_UPDATE,
+  URL_FRONT_ADMIN_BANLIST_ADD,
 } from "./constant/urlsFront";
 import Loader from "./components/generic/Loader";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
@@ -61,6 +62,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MyDeckAdd from "./pages/userProfil/MyDeckAdd";
 import MyDeckUpdate from "./pages/userProfil/MyDeckUpdate";
+import AdminAddBanlist from "./pages/admin/adminBanlists/AdminAddBanlist";
 
 const Archetype = lazy(() => import("./pages/Archetype"));
 const Archetypes = lazy(() => import("./pages/Archetypes"));
@@ -154,6 +156,12 @@ const AppContent = () => {
             <Route
               path={URL_FRONT_ADMIN_BANLISTS}
               element={<AdminBanlist />}
+            />
+          </Route>
+          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+            <Route
+              path={URL_FRONT_ADMIN_BANLIST_ADD}
+              element={<AdminAddBanlist />}
             />
           </Route>
           <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>

@@ -7,15 +7,19 @@ const PopUp = ({
   children, 
   className = "",
   showCloseButton = true,
+  closeOnBackdropClick = true,
 }) => {
   if (!isOpen) return null;
 
   return (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      // onClick={}
+      onClick={closeOnBackdropClick ? onClose : undefined}
     >
-      <div className={`bg-white rounded-lg shadow-xl max-w-md w-1/2 mx-4 max-h-[90vh] overflow-y-auto ${className}`}>
+      <div 
+        className={`bg-white rounded-lg shadow-xl max-w-md w-1/2 mx-4 max-h-[90vh] overflow-y-auto ${className}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
             {title && (

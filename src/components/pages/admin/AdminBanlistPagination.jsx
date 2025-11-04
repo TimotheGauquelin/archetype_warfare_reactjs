@@ -5,6 +5,7 @@ import AdminBanlistPaginationTableBody from "./AdminBanlistPaginationTableBody";
 const AdminBanlistPagination = ({
   banlists,
   setRefresh,
+  handleDeleteBanlist,
 }) => {
   const tableHeadItemArray = [
     {
@@ -45,6 +46,7 @@ const AdminBanlistPagination = ({
         <AdminBanlistPaginationTableBody
           arrayItems={banlists}
           setRefresh={setRefresh}
+          handleDeleteBanlist={handleDeleteBanlist}
         />
       </div>
     </div>
