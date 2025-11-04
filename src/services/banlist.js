@@ -47,10 +47,15 @@ export const addBanlist = (newBanlist, navigate) => {
 
 // PUT
 
-export const updateBanlist = (banlistId, data, navigate) => {
-    api_aw.put(URL_BACK_UPDATE_BANLIST(banlistId), data).then((response) => {
-        if (response.status === 200) {
-            navigate(URL_FRONT_ADMIN_BANLISTS);
-        }
-    });
+export const updateBanlist = (banlistId, data, navigate, setIsLoading) => {
+    try {
+        api_aw.put(URL_BACK_UPDATE_BANLIST(banlistId), data).then((response) => {
+            if (response.status === 200) {
+                navigate(URL_FRONT_ADMIN_BANLISTS);
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        setIsLoading(false);
+    }
 };

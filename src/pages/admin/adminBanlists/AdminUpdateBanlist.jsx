@@ -11,11 +11,13 @@ import { FaTrashAlt } from 'react-icons/fa';
 import AdminBanlistAddCard from '../../../components/pages/admin/banlist/AdminBanlistAddCard';
 import { getCardStatus } from '../../../services/cardStatus';
 import { cardStatusToFrench } from '../../../utils/trad/cardStatus';
+import Button from '../../../components/generic/Button';
+import { laborIllusion } from '../../../utils/functions/laborIllusion';
 
 const AdminUpdateBanlist = () => {
     const [banlist, setBanlist] = useState({
         label: "",
-        release_date: "",
+        release_date: new Date().toISOString().split('T')[0],
         description: "",
         is_active: false,
         banlist_archetype_cards: [],
@@ -23,13 +25,13 @@ const AdminUpdateBanlist = () => {
 
     const [cardTypes, setCardTypes] = useState([]);
     const [cardStatus, setCardStatus] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [isFetching, setIsFetching] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const { banlistId } = useParams();
     const navigate = useNavigate();
 
-    // Fonction pour convertir la date ISO en format YYYY-MM-DD
     const formatDateForInput = useCallback((isoDate) => {
         if (!isoDate) return "";
         const date = new Date(isoDate);
@@ -39,7 +41,7 @@ const AdminUpdateBanlist = () => {
     const loadBanlistData = useCallback(async () => {
         if (!banlistId) return;
 
-        setLoading(true);
+        setIsFetching(true);
         setError(null);
 
         try {
@@ -52,7 +54,7 @@ const AdminUpdateBanlist = () => {
             setError("Erreur lors du chargement de la banlist");
             console.error("Erreur:", err);
         } finally {
-            setLoading(false);
+            setIsFetching(false);
         }
     }, [banlistId]);
 
@@ -93,8 +95,8 @@ const AdminUpdateBanlist = () => {
     const updateCardStatus = useCallback((cardId, statusId) => {
         setBanlist(prevBanlist => ({
             ...prevBanlist,
-            banlist_archetype_cards: prevBanlist.banlist_archetype_cards.map(banlistCard => 
-                banlistCard.card.id === cardId 
+            banlist_archetype_cards: prevBanlist.banlist_archetype_cards.map(banlistCard =>
+                banlistCard.card.id === cardId
                     ? {
                         ...banlistCard,
                         card_status_id: parseInt(statusId),
@@ -111,8 +113,8 @@ const AdminUpdateBanlist = () => {
     const updateCardExplanation = useCallback((cardId, explanation) => {
         setBanlist(prevBanlist => ({
             ...prevBanlist,
-            banlist_archetype_cards: prevBanlist.banlist_archetype_cards.map(banlistCard => 
-                banlistCard.card.id === cardId 
+            banlist_archetype_cards: prevBanlist.banlist_archetype_cards.map(banlistCard =>
+                banlistCard.card.id === cardId
                     ? {
                         ...banlistCard,
                         explanation_text: explanation
@@ -132,6 +134,8 @@ const AdminUpdateBanlist = () => {
     }, []);
 
     const handleUpdateBanlist = useCallback(() => {
+
+        setIsLoading(true);
         // Préparer les données avec banlist_id pour chaque carte
         const updatedBanlist = {
             ...banlist,
@@ -140,11 +144,11 @@ const AdminUpdateBanlist = () => {
                 banlist_id: parseInt(banlistId)
             }))
         };
-        
-        updateBanlist(banlistId, updatedBanlist, navigate);
+
+        laborIllusion(() => updateBanlist(banlistId, updatedBanlist, navigate, setIsLoading), 1);
     }, [banlist, banlistId, navigate]);
 
-    if (loading) {
+    if (isFetching) {
         return (
             <AdminStructure>
                 <div className="flex justify-center items-center min-h-screen">
@@ -171,21 +175,21 @@ const AdminUpdateBanlist = () => {
                 catchphrase="Gérez les cartes et leurs statuts"
                 returnButton
             />
-            
+
             {/* Informations principales */}
             <div className="bg-gray-300 rounded p-4 mb-4">
                 <div className="flex flex-row justify-between items-center mb-2">
                     <h2 className="font-bold text-xl">Informations Principales</h2>
                     <div className="flex justify-center items-center">
-                        <SwitchInput 
-                            label="En ligne" 
-                            attribute="is_active" 
-                            data={banlist} 
-                            setAction={setBanlist} 
+                        <SwitchInput
+                            label="En ligne"
+                            attribute="is_active"
+                            data={banlist}
+                            setAction={setBanlist}
                         />
                     </div>
                 </div>
-                
+
                 <div className="grid grid-cols-12 gap-4">
                     <Input
                         label="Nom"
@@ -205,12 +209,12 @@ const AdminUpdateBanlist = () => {
                         colSpanWidth="6"
                         data={{
                             ...banlist,
-                            release_date: formatDateForInput(banlist.release_date)
+                            release_date: formatDateForInput(banlist?.release_date)
                         }}
                         setAction={setBanlist}
                     />
                 </div>
-                
+
                 <div className="mt-4">
                     <Input
                         label="Description"
@@ -228,11 +232,11 @@ const AdminUpdateBanlist = () => {
                 <h2 className="font-bold text-xl mb-4">
                     Cartes génériques de la banlist ({genericCards.length})
                 </h2>
-                
+
                 <div className="grid grid-cols-12 gap-4">
                     {/* Liste des cartes */}
                     <div className="col-span-8">
-                        <div 
+                        <div
                             className="bg-white rounded-lg p-4 overflow-y-auto"
                             style={{ height: "500px" }}
                         >
@@ -258,14 +262,14 @@ const AdminUpdateBanlist = () => {
                                                         <FaTrashAlt size={12} />
                                                     </button>
                                                 </div>
-                                                
+
                                                 <div className="space-y-2">
                                                     <div>
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                                             Statut
                                                         </label>
-                                                        <select 
-                                                            value={card.card_status?.id || ""} 
+                                                        <select
+                                                            value={card.card_status?.id || ""}
                                                             onChange={(e) => updateCardStatus(card.card.id, e.target.value)}
                                                             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                                         >
@@ -276,13 +280,13 @@ const AdminUpdateBanlist = () => {
                                                             ))}
                                                         </select>
                                                     </div>
-                                                    
+
                                                     <div>
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                                             Explication
                                                         </label>
-                                                        <textarea 
-                                                            value={card.explanation_text || ""} 
+                                                        <textarea
+                                                            value={card.explanation_text || ""}
                                                             onChange={(e) => updateCardExplanation(card.card.id, e.target.value)}
                                                             placeholder="Explication du statut..."
                                                             className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
@@ -301,22 +305,21 @@ const AdminUpdateBanlist = () => {
                             )}
                         </div>
                     </div>
-                    
+
                     <div className="col-span-4">
                         <AdminBanlistAddCard banlist={banlist} setBanlist={setBanlist} />
                     </div>
                 </div>
             </div>
 
-            <div className="flex justify-end">
-                <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-lg"
-                    onClick={handleUpdateBanlist}
-                >
-                    Modifier la banlist
-                </button>
-            </div>
-            
+            <Button
+                className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded font-semibold transition-all duration-200 shadow-sm"
+                buttonText="Modifier la banlist"
+                action={handleUpdateBanlist}
+                disabled={isLoading}
+                loadingText="Modification en cours..."
+            />
+
             <ToastContainer />
         </AdminStructure>
     );
