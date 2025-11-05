@@ -13,12 +13,13 @@ import Button from "../../../components/generic/Button";
 
 const MyDecks = () => {
   const [myDecks, setMyDecks] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
   const { id, token } = useSelector((state) => state.user);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    getMyDecks(token, id, setMyDecks);
+    getMyDecks(token, id, setMyDecks, setIsFetching);
   }, []);
 
   return (
@@ -36,21 +37,37 @@ const MyDecks = () => {
               action={() => navigate(URL_FRONT_MY_DECK_ADD)}
             />
           </div>
-          <div className="grid grid-cols-1 sscreen:grid-cols-2 lscreen:grid-cols-4 gap-4 relative">
-            {myDecks?.length > 0
-              ? myDecks?.map((deck, deckIndex) => {
-                return (
-                  <Link
-                    key={deckIndex}
-                    className="p-4 bg-blue-200 rounded-lg"
-                    to={`/my-decks/update/${deck.id}`}
-                  >
-                    <div>{deck.label}</div>
-                  </Link>
-                );
-              })
-              : "Vous n'avez aucun deck pour le moment"}
-          </div>
+          {
+            isFetching ? (
+              <div className="grid grid-cols-1 sscreen:grid-cols-2 lscreen:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, index) => (
+                  <div key={index} className="p-4 bg-gray-300 rounded-lg animate-pulse h-20"></div>
+                ))}
+              </div>
+            ) : (
+              <div className={`grid gap-2 ${myDecks?.length > 0 ? "grid-cols-12" : ""}`}>
+                {myDecks?.length > 0
+                  ? myDecks?.map((deck, deckIndex) => {
+                    return (
+                      <Link
+                        key={deckIndex}
+                        className="p-4 bg-blue-200 rounded-lg col-span-3"
+                        to={`/my-decks/update/${deck.id}`}
+                      >
+                        <div>{deck.label}</div>
+                      </Link>
+                    );
+                  })
+                  :
+                  (
+                    <p className="text-gray-700 bg-gray-200 rounded-lg p-2">
+                      Vous n'avez aucun deck pour le moment.
+                    </p>
+                  )
+                }
+              </div>
+            )
+          }
           <Link
             to="/"
             className="block bg-blue-200 absolute right-0 p-5 shadow rounded-full sscreen:hidden"

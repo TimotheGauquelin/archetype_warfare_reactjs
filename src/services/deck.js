@@ -2,15 +2,18 @@ import { api_aw_token } from "../api/api_aw_token";
 import { URL_BACK_CREATE_DECK, URL_BACK_DELETE_MY_DECK, URL_BACK_GET_ALL_MY_DECKS, URL_BACK_GET_DECK_BY_ID, URL_BACK_UPDATE_DECK } from "../constant/urlsBack";
 import { URL_FRONT_MY_DECKS } from "../constant/urlsFront";
 
-export const getMyDecks = (token, id, setMyDecks) => {
+export const getMyDecks = (token, id, setMyDecks, setIsFetching) => {
+    setIsFetching(true);
     api_aw_token(token).get(URL_BACK_GET_ALL_MY_DECKS(id))
     .then((response) => {
         if (response.status === 200) {
             setMyDecks(response.data);
+            setIsFetching(false);
         }
     })
     .catch((error) => {
         console.log(error);
+        setIsFetching(false);
     });
 };
 
