@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react'
 import AdminStructure from '../../../components/pages/admin/AdminStructure';
 import AdminBodyHeader from '../../../components/pages/admin/AdminBodyHeader';
-import { ToastContainer } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import { SwitchInput } from '../../../components/generic/form/SwitchInput';
 import { Input } from '../../../components/generic/form/Input';
@@ -24,6 +23,8 @@ const AdminUpdateBanlist = () => {
         is_active: false,
         banlist_archetype_cards: [],
     });
+
+    console.log(banlist);
 
     const [cardTypes, setCardTypes] = useState([]);
     const [cardStatus, setCardStatus] = useState([]);
@@ -132,7 +133,6 @@ const AdminUpdateBanlist = () => {
     const handleUpdateBanlist = useCallback(() => {
 
         setIsLoading(true);
-        // Préparer les données avec banlist_id pour chaque carte
         const updatedBanlist = {
             ...banlist,
             banlist_archetype_cards: banlist.banlist_archetype_cards.map(card => ({
@@ -149,16 +149,6 @@ const AdminUpdateBanlist = () => {
             <AdminStructure>
                 <div className="flex justify-center items-center min-h-screen">
                     <div className="text-lg">Chargement de la banlist...</div>
-                </div>
-            </AdminStructure>
-        );
-    }
-
-    if (error) {
-        return (
-            <AdminStructure>
-                <div className="flex justify-center items-center min-h-screen">
-                    <div className="text-red-500 text-lg">{error}</div>
                 </div>
             </AdminStructure>
         );

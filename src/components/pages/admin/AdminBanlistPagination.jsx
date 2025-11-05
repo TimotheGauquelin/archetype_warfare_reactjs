@@ -39,9 +39,9 @@ const AdminBanlistPagination = ({
   ];
 
   return (
-    <div className="">
+    <div className="mt-2">
       <p>Toutes les banlists :</p>
-      <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+      <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400 mt-2">
         <PaginationTableHead tableHeadItem={tableHeadItemArray} />
         <AdminBanlistPaginationTableBody
           arrayItems={banlists}

@@ -1,3 +1,4 @@
+// 2025-11-04 -> 04/11/2025
 export const dateToInputDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
