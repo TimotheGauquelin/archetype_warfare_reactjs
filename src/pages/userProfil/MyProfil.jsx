@@ -5,7 +5,7 @@ import ProfilTemplate from "../../components/pages/userProfil/ProfilTemplate";
 import Button from "../../components/generic/Button";
 import PopUp from "../../components/generic/PopUp";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import usePopup from "../../hooks/usePopup";
 import { deleteUser } from "../../services/user";
 import { FaCrown } from "react-icons/fa";
@@ -13,6 +13,7 @@ import { FaCrown } from "react-icons/fa";
 const MyProfil = () => {
   const { isOpen, showConfirmDialog, closePopup, popupConfig } = usePopup();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { id, username, roles } = useSelector((state) => state.user);
 
   const [userStats, setUserStats] = useState({
@@ -28,7 +29,7 @@ const MyProfil = () => {
     showConfirmDialog({
       title: "Supprimer votre compte",
       message: "Cette action est irréversible. Êtes-vous sûr de vouloir supprimer votre compte ?",
-      onConfirm: () => { deleteUser(id, navigate) }
+      onConfirm: () => { deleteUser(id, dispatch) }
     });
   };
 

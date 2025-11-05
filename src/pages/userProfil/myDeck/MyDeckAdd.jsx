@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../components/generic/header/Header";
-import Navbar from "../../components/pages/userProfil/Navbar";
-import ProfilTemplate from "../../components/pages/userProfil/ProfilTemplate";
-import DeckCreator from "../../components/pages/userProfil/deckAdd/DeckCreator";
+import Header from "../../../components/generic/header/Header";
+import Navbar from "../../../components/pages/userProfil/Navbar";
+import ProfilTemplate from "../../../components/pages/userProfil/ProfilTemplate";
+import DeckCreator from "../../../components/pages/userProfil/deckAdd/DeckCreator";
 import { useSelector } from "react-redux";
-import DeckData from "../../components/pages/userProfil/deckAdd/DeckData";
-import Button from "../../components/generic/Button";
-import { createDeck } from "../../services/deck";
+import DeckData from "../../../components/pages/userProfil/deckAdd/DeckData";
+import Button from "../../../components/generic/Button";
+import { createDeck } from "../../../services/deck";
 import { toast } from "react-toastify";
-import { getArchetypesNames } from "../../services/archetype";
+import { getArchetypesNames } from "../../../services/archetype";
 
 const MyDeckAdd = () => {
 

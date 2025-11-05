@@ -48,7 +48,11 @@ const AddCardModule = ({ newArchetype, setNewArchetype }) => {
         card: {
           id: card.id,
           name: card.name,
-          img_url: card.img_url
+          img_url: card.img_url,
+          card_type: card.card_type,
+          atk: card.atk,
+          def: card.def,
+          level: card.level,
         },
         card_status: {
           id: 4,
@@ -70,7 +74,11 @@ const AddCardModule = ({ newArchetype, setNewArchetype }) => {
       card: {
         id: card.id,
         name: card.name,
-        img_url: card.img_url
+        img_url: card.img_url,
+        card_type: card.card_type,
+        atk: card.atk,
+        def: card.def,
+        level: card.level,
       },
       card_status: {
         id: 4,

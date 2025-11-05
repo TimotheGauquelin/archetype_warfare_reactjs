@@ -1,15 +1,15 @@
 import React from "react";
 import { useEffect } from "react";
 import { useState } from "react";
-import Header from "../../components/generic/header/Header";
-import Navbar from "../../components/pages/userProfil/Navbar";
-import ProfilTemplate from "../../components/pages/userProfil/ProfilTemplate";
+import Header from "../../../components/generic/header/Header";
+import Navbar from "../../../components/pages/userProfil/Navbar";
+import ProfilTemplate from "../../../components/pages/userProfil/ProfilTemplate";
 import { Link, useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { getMyDecks } from "../../services/deck";
-import { URL_FRONT_MY_DECK_ADD } from "../../constant/urlsFront";
-import Button from "../../components/generic/Button";
+import { getMyDecks } from "../../../services/deck";
+import { URL_FRONT_MY_DECK_ADD } from "../../../constant/urlsFront";
+import Button from "../../../components/generic/Button";
 
 const MyDecks = () => {
   const [myDecks, setMyDecks] = useState([]);

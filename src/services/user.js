@@ -1,6 +1,7 @@
 import api_aw from "../api/api_aw";
 import { URL_BACK_ADD_USER, URL_BACK_CREATE_USER_BY_ADMIN, URL_BACK_DELETE_USER, URL_BACK_GET_ALL_USERS, URL_BACK_GET_USER_BY_ID, URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN, URL_BACK_SEARCH_USERS, URL_BACK_SWITCH_USER_IS_ACTIVE, URL_BACK_SWITCH_USER_IS_BANNED, URL_BACK_UPDATE_PASSWORD, URL_BACK_UPDATE_USER_BY_ADMIN } from "../constant/urlsBack";
 import { URL_FRONT_ADMIN_USERS, URL_FRONT_HOME, URL_FRONT_LOGIN } from "../constant/urlsFront";
+import { logOut } from "./auth";
 
 /**
  * Retrieve all users.
@@ -212,12 +213,12 @@ export const updateUserByAdmin = (userId, form, navigate, toast, setIsLoading) =
 * @param {function} navigate - Hook to navigate among pages.
 * @returns {Promise<void>} - Promise indicating the completion of the operation.
 */
-export const deleteUser = (userId, navigate) => {
+export const deleteUser = (userId, dispatch) => {
   api_aw
     .delete(URL_BACK_DELETE_USER(userId))
     .then((response) => {
       if (response.status === 200) {
-        navigate(URL_FRONT_HOME);
+        dispatch(logOut());
       }
     })
     .then((error) => console.log(error));

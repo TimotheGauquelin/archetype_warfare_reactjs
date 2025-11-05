@@ -4,6 +4,7 @@ import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
 import { getAttributes } from "../../../../services/attribute";
 import { getCardTypes } from "../../../../services/cardtype";
 import AdminCardsFilter from "../../admin/cards/AdminCardsFilter";
+import { sortedDeck } from "../../../../utils/functions/sortedDeck";
 
 const DeckCreator = ({
   myDeck,
@@ -108,6 +109,14 @@ const DeckCreator = ({
     });
   };
 
+  const sortedMainDeckCards = useMemo(() => {
+    return sortedDeck(mainDeckCards, cardTypes);
+  }, [mainDeckCards, cardTypes]);
+
+  const sortedExtraDeckCards = useMemo(() => {
+    return sortedDeck(extraDeckCards, cardTypes);
+  }, [extraDeckCards, cardTypes]);
+
   useEffect(() => {
     getAttributes(setAttributes);
     getCardTypes(setCardTypes);
@@ -166,7 +175,7 @@ const DeckCreator = ({
                 </div>
               </div>
               <div className="grid grid-cols-10 gap-1 p-1 mt-2 bg-white">
-                {mainDeckCards.map((deckCard, cardIndex) => {
+                {sortedMainDeckCards.map((deckCard, cardIndex) => {
 
                   const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
                     ...deckCard,
@@ -212,7 +221,7 @@ const DeckCreator = ({
                 </span>
               </div>
               <div className="grid grid-cols-10 gap-1 p-1 bg-white">
-                {extraDeckCards.map((deckCard, cardIndex) => {
+                {sortedExtraDeckCards.map((deckCard, cardIndex) => {
                   // Créer un tableau avec autant d'éléments que la quantité de la carte
                   const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
                     ...deckCard,

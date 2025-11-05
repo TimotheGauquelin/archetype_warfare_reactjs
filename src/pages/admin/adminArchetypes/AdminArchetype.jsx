@@ -5,7 +5,7 @@ import AdminArchetypeFilter from "../../../components/pages/admin/archetype/Admi
 import AdminArchetypePagination from "../../../components/pages/admin/archetype/AdminArchetypePagination";
 import { toast } from "react-toastify";
 import { getArchetypesWithCriteria } from "../../../services/archetype";
-import { URL_FRONT_ADMIN_BANLIST_ADD } from "../../../constant/urlsFront";
+import { URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM, URL_FRONT_ADMIN_BANLIST_ADD } from "../../../constant/urlsFront";
 import PopUp from "../../../components/generic/PopUp";
 import usePopup from "../../../hooks/usePopup";
 
@@ -72,7 +72,7 @@ const AdminArchetype = () => {
       <AdminBodyHeader
         label="Archetype"
         catchphrase="Vous avez des archétypes de toute sorte"
-        buttonUrl={URL_FRONT_ADMIN_BANLIST_ADD}
+        buttonUrl={URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM}
         buttonLabel="Ajouter un archetype"
       />
       <AdminArchetypeFilter

@@ -4,6 +4,7 @@ import AdminCardsFilter from "../../admin/cards/AdminCardsFilter";
 import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
 import { getAttributes } from "../../../../services/attribute";
 import { getCardTypes } from "../../../../services/cardtype";
+import { sortedDeck } from "../../../../utils/functions/sortedDeck";
 
 const DeckUpdatator = ({ myDeck, setMyDeck }) => {
 
@@ -52,6 +53,14 @@ const DeckUpdatator = ({ myDeck, setMyDeck }) => {
 
         return { mainDeckCards: main, extraDeckCards: extra, mainDeckTotal: mainTotal, extraDeckTotal: extraTotal };
     }, [myDeck?.deck_cards, EXTRA_DECK_LABELS]);
+
+    const sortedMainDeckCards = useMemo(() => {
+        return sortedDeck(mainDeckCards, cardTypes);
+    }, [mainDeckCards, cardTypes]);
+
+    const sortedExtraDeckCards = useMemo(() => {
+        return sortedDeck(extraDeckCards, cardTypes);
+    }, [extraDeckCards, cardTypes]);
 
     const removeCardFromDeck = useCallback((deckCard) => {
         if (!myDeck?.deck_cards) return;
@@ -164,7 +173,7 @@ const DeckUpdatator = ({ myDeck, setMyDeck }) => {
                             </div>
                         </div>
                         <div className="grid grid-cols-10 gap-1 p-1 mt-2 bg-white">
-                            {mainDeckCards.map((deckCard, cardIndex) => {
+                            {sortedMainDeckCards.map((deckCard, cardIndex) => {
                                 const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
                                     ...deckCard,
                                     uniqueKey: `${deckCard.card.id}-${cardIndex}-${index}`,
@@ -209,7 +218,7 @@ const DeckUpdatator = ({ myDeck, setMyDeck }) => {
                             </span>
                         </div>
                         <div className="grid grid-cols-10 gap-1 p-1 mt-2 bg-white">
-                            {extraDeckCards.map((deckCard, cardIndex) => {
+                            {sortedExtraDeckCards.map((deckCard, cardIndex) => {
                                 const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
                                     ...deckCard,
                                     uniqueKey: `${deckCard.card.id}-${cardIndex}-${index}`,

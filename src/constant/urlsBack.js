@@ -76,6 +76,7 @@ export const URL_BACK_GET_CURRENT_BANLIST = `/banlists/current`;
 export const URL_BACK_GET_BANLISTS = `/banlists`;
 export const URL_BACK_ADD_BANLIST = `/banlists`;
 export const URL_BACK_UPDATE_BANLIST = (banlistId) => `/banlists/${banlistId}`;
+export const URL_BACK_DELETE_BANLIST = (banlistId) => `/banlists/${banlistId}`;
 
 // ERA
 

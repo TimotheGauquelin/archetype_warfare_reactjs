@@ -41,10 +41,10 @@ import {
   URL_FRONT_PASSWORD_RESET,
   URL_FRONT_ADMIN_USER_UPDATE,
   URL_FRONT_ADMIN_BANLIST_UPDATE,
+  URL_FRONT_ADMIN_BANLIST_ADD,
   URL_FRONT_MY_DECKS,
   URL_FRONT_MY_DECK_ADD,
   URL_FRONT_MY_DECK_UPDATE,
-  URL_FRONT_ADMIN_BANLIST_ADD,
 } from "./constant/urlsFront";
 import Loader from "./components/generic/Loader";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
@@ -57,11 +57,11 @@ import DiscordLoginSuccesful from "./pages/DiscordLoginSuccesful";
 import AdminUserUpdate from "./pages/admin/adminUsers/AdminUserUpdate";
 import AdminUpdateBanlist from "./pages/admin/adminBanlists/AdminUpdateBanlist";
 import UpdateMyProfil from "./pages/userProfil/UpdateMyProfil";
-import MyDecks from "./pages/userProfil/MyDecks";
+import MyDecks from "./pages/userProfil/myDeck/MyDecks";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import MyDeckAdd from "./pages/userProfil/MyDeckAdd";
-import MyDeckUpdate from "./pages/userProfil/MyDeckUpdate";
+import MyDeckAdd from "./pages/userProfil/myDeck/MyDeckAdd";
+import MyDeckUpdate from "./pages/userProfil/myDeck/MyDeckUpdate";
 import AdminAddBanlist from "./pages/admin/adminBanlists/AdminAddBanlist";
 
 const Archetype = lazy(() => import("./pages/Archetype"));

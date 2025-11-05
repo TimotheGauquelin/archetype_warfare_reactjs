@@ -1,25 +1,25 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Header from "../../components/generic/header/Header";
-import Navbar from "../../components/pages/userProfil/Navbar";
-import ProfilTemplate from "../../components/pages/userProfil/ProfilTemplate";
+import Header from "../../../components/generic/header/Header";
+import Navbar from "../../../components/pages/userProfil/Navbar";
+import ProfilTemplate from "../../../components/pages/userProfil/ProfilTemplate";
 import { useSelector } from "react-redux";
-import DeckData from "../../components/pages/userProfil/deckAdd/DeckData";
-import Button from "../../components/generic/Button";
-import { deleteMyDeck, getDeckById, updateDeck } from "../../services/deck";
+import DeckData from "../../../components/pages/userProfil/deckAdd/DeckData";
+import Button from "../../../components/generic/Button";
+import { deleteMyDeck, getDeckById, updateDeck } from "../../../services/deck";
 import { toast } from "react-toastify";
-import { getArchetypesNames } from "../../services/archetype";
-import DeckUpdatator from "../../components/pages/userProfil/deckUpdate/DeckUpdatator";
-import { laborIllusion } from "../../utils/functions/laborIllusion";
-import usePopup from "../../hooks/usePopup";
-import PopUp from "../../components/generic/PopUp";
+import { getArchetypesNames } from "../../../services/archetype";
+import DeckUpdatator from "../../../components/pages/userProfil/deckUpdate/DeckUpdatator";
+import { laborIllusion } from "../../../utils/functions/laborIllusion";
+import usePopup from "../../../hooks/usePopup";
+import PopUp from "../../../components/generic/PopUp";
 import { FaCopy } from "react-icons/fa";
-import { MAIN_DECK_LABELS } from "../../utils/const/extraDeckConst";
+import { MAIN_DECK_LABELS } from "../../../utils/const/extraDeckConst";
 
 const MyDeckUpdate = () => {
     const navigate = useNavigate();
     const { deckId } = useParams();
-    const { id, token } = useSelector((state) => state.user);
+    const { token } = useSelector((state) => state.user);
 
     const [myDeck, setMyDeck] = useState({
         label: "",
