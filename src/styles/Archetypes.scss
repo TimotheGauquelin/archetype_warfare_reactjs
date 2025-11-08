@@ -1,3 +1,6 @@
+@use "sass:color";
+@use "reset/mixins" as m;
+
 .imageBackground {
   background-image: url("../../public/assets/archetypes_bg.svg");
   background-size: cover;

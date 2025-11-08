@@ -5,7 +5,8 @@
   background-image: url("../../public/assets/sliderBg.svg");
   background-size: cover;
   background-position: center;
-  object-fit: cover;
+  background-repeat: no-repeat;
+  position: relative;
 }
 
 .whiteVeilText {

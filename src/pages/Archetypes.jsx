@@ -16,6 +16,7 @@ import SelectInput from "../components/generic/form/SelectInput";
 import { Input } from "../components/generic/form/Input";
 import Footer from "../components/generic/footer/Footer";
 import Button from "../components/generic/Button";
+import { laborIllusion } from "../utils/functions/laborIllusion";
 
 const Archetypes = () => {
   const [archetypes, setArchetypes] = useState([]);
@@ -39,7 +40,9 @@ const Archetypes = () => {
   const navigate = useNavigate();
 
   const handleRandomArchetype = useCallback(() => {
-    getRandomArchetype(navigate);
+    setIsLoading(true);
+    laborIllusion(() => getRandomArchetype(navigate), 0.5);
+    setIsLoading(false);
   }, [navigate]);
 
   const loadData = useCallback(async () => {
@@ -95,7 +98,7 @@ const Archetypes = () => {
               style={{ backgroundColor: "#F95757" }}
               className="col-span-2 p-2 rounded-md  flex justify-center items-center text-white"
               action={handleRandomArchetype}
-              disabled={isFetching || archetypes.length === 0}
+              disabled={isFetching || archetypes.length === 0 || isLoading}
             >
               <FaRandom />
             </Button>

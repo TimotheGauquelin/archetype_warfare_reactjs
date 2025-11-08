@@ -1,15 +1,11 @@
 import React, { useState } from "react";
 import { cardStatusToFrench } from "../../utils/trad/cardStatus";
 
-const Card = ({ card, status }) => {
+const Card = ({ card }) => {
   const [cardPopUp, setCardPopUp] = useState(false);
   return (
     <div
-      // key={cardIndex}
-      // style={{
-      //   display: status ? "flex" : "none",
-      // }}
-      className={`relative lscreen:col-span-2 sscreen:col-span-3 col-span-4 cursor-pointer`}
+      className={`relative lscreen:col-span-2 sscreen:col-span-3 col-span-6 cursor-pointer`}
       onMouseOver={() => setCardPopUp(true)}
       onMouseOut={() => setCardPopUp(false)}
     >
@@ -18,15 +14,20 @@ const Card = ({ card, status }) => {
           src={card.card.img_url}
           alt={card?.card.name}
           style={{ boxShadow: "rgba(0, 0, 0, 0.75) 1.95px 1.95px 2.6px" }}
-          className={`${cardPopUp && card.card_status.label !== "Unlimited" && "grayscale blur-[2px] scale-105"}`}
+          className={`transition-all duration-300 ease-in-out ${
+            cardPopUp && card.card_status.label !== "Unlimited" 
+              ? "grayscale blur-[2px] scale-105" 
+              : "grayscale-0 blur-0 scale-100"
+          }`}
         />
         {card.card_status && (
           <img
-            className="absolute"
+            className="absolute transition-all duration-300 ease-in-out"
             style={{
               top: "-13px",
               right: "-10px",
               width: "30px",
+              transform: cardPopUp ? "scale(1.1)" : "scale(1)",
             }}
             loading="lazy"
             src={
@@ -37,9 +38,9 @@ const Card = ({ card, status }) => {
           />
         )}
         {cardPopUp && card.card_status.label !== "Unlimited" && (
-          <div className="-translate-y-1/2 absolute flex flex-col text-white p-4 top-1/2 transform ">
-            <p className="text-red-500 font-bold">Pourquoi cette carte est {cardStatusToFrench(card.card_status.label)}:</p>
-            <p>{card.explanation_text}</p>
+          <div className="absolute -translate-y-1/2 top-1/2 left-0 right-0 flex flex-col text-white p-4 transform transition-all duration-300 ease-in-out animate-fadeIn">
+            <p className="text-red-500 font-bold mb-2">Pourquoi cette carte est {cardStatusToFrench(card.card_status.label).toLowerCase()} :</p>
+            <p className="text-sm">{card.explanation_text}</p>
           </div>
         )}
       </div>

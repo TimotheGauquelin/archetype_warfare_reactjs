@@ -4,7 +4,6 @@ import Slider from "../components/generic/Slider";
 
 import "../styles/Home.scss";
 import PageContentBlock from "../components/generic/PageContentBlock";
-import Slide from "../components/pages/home/Slide";
 import ArchetypeList from "../components/pages/home/ArchetypeList";
 import {
   getEightMostRecentArchetypes,
@@ -52,9 +51,17 @@ const Home = () => {
     loadData();
   }, [loadData]);
 
-  const HomePageContent = () => {
-    return (
-      <>
+  const slidesToDisplay = archetypesForSlider.length > 0
+    ? archetypesForSlider.filter((archetype) => archetype.is_highlighted)
+    : [welcomeArchetype];
+
+  return (
+    <div className="flex flex-col">
+      <div id="headBlock" className="imgBackground">
+        <Header />
+        <Slider array={slidesToDisplay} slidesPerView={1} />
+      </div>
+      <PageContentBlock>
         <ArchetypeList
           dataArray={fiveMostFamousArchetypes}
           subTitleDividerText="Archétypes Populaires"
@@ -68,22 +75,6 @@ const Home = () => {
           isLoading={isLoading}
           skeletonItemCount={8}
         />
-      </>
-    );
-  };
-
-  const slidesToDisplay = archetypesForSlider.length > 0 
-    ? archetypesForSlider.filter((archetype) => archetype.is_highlighted)
-    : [welcomeArchetype];
-
-  return (
-    <div className="flex flex-col">
-      <div id="headBlock" className="imgBackground">
-        <Header />
-        <Slider array={slidesToDisplay} slidesPerView={1} />
-      </div>
-      <PageContentBlock>
-        <HomePageContent />
       </PageContentBlock>
       <Footer />
     </div>

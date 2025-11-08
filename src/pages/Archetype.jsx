@@ -9,12 +9,12 @@ import { performancesLabel } from "../constant/genericData";
 import "../styles/Archetype.scss";
 import PageContentBlock from "../components/generic/PageContentBlock";
 import ErrorText from "../components/generic/ErrorText";
-import Loader from "../components/generic/Loader";
 import { getArchetypeById } from "../services/archetype";
 import Card from "../components/generic/Card";
 import { getCardTypes } from "../services/cardtype";
 import SkeletonArchetypePage from "../components/skeletons/SkeletonArchetypePage";
 import Footer from "../components/generic/footer/Footer";
+import "../styles/Home.scss";
 
 const Archetype = () => {
   const [archetype, setArchetype] = useState({});
@@ -82,7 +82,7 @@ const Archetype = () => {
 
   return (
     <div>
-      <div id="headBlock" className="imgBackground">
+      <div id="headBlock" className="imageBackground">
         <Header />
         <Jumbotron
           itemMainTitle={archetype.name}

@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { URL_FRONT_ARCHETYPES } from "../constant/urlsFront";
 import RevealOnScroll from "../components/generic/RevealOnScroll";
 import Footer from "../components/generic/footer/Footer";
+import "../styles/Archetypes.scss";
 
 const Concept = () => {
   const archetypeSample = [

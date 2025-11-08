@@ -40,17 +40,17 @@ const PasswordReset = () => {
   }, [resetToken, navigate]);
 
   return (
-    <div className="bg-graybackground w-screen h-screen fixed left-0 top-0 flex justify-center items-center">
+    <div className="bg-graybackground w-screen min-h-screen fixed left-0 top-0 flex justify-center items-center p-4">
       <div
-        className={`bg-white w-[400px] max-w-[400px] cardShadow rounded-xl flex flex-col p-6`}
+        className={`bg-white w-full max-w-[400px] cardShadow rounded-xl flex flex-col p-4 sm:p-6`}
       >
         {user && !errorMessageFromURLToken ? (
           <>
-            <h3 className="text-2xl text-center mb-4 font-semibold">
+            <h3 className="text-xl sm:text-2xl text-center mb-4 font-semibold">
               Réinitialiser le mot de passe
             </h3>
             <div>
-              <p className="text-gray-600 mb-4">
+              <p className="text-sm sm:text-base text-gray-600 mb-4">
                 Créez un nouveau mot de passe pour votre compte.
               </p>
               
@@ -58,7 +58,9 @@ const PasswordReset = () => {
                 <InputPassword
                   label="Mot de passe"
                   required
+                  colSpanWidth="12"
                   attribute="password"
+                  data={form}
                   setAction={setForm}
                   disabled={isUpdating}
                 />
@@ -68,7 +70,9 @@ const PasswordReset = () => {
                 <InputPassword
                   label="Confirmation du mot de passe"
                   required
+                  colSpanWidth="12"
                   attribute="confirmationPassword"
+                  data={form}
                   setAction={setForm}
                   disabled={isUpdating}
                 />
@@ -94,8 +98,8 @@ const PasswordReset = () => {
         ) : (
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-            <p className="text-gray-700">{errorMessageFromURLToken}</p>
-            <p className="mt-2 text-gray-500 text-sm">
+            <p className="text-sm sm:text-base text-gray-700">{errorMessageFromURLToken}</p>
+            <p className="mt-2 text-sm text-gray-500">
               Vous allez être redirigé vers la page d'accueil dans quelques secondes...
             </p>
           </div>

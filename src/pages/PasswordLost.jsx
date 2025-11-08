@@ -9,7 +9,7 @@ import { URL_FRONT_LOGIN } from "../constant/urlsFront";
 import { requestNewPassword } from "../services/auth";
 
 const PasswordLost = () => {
-  const [log, setLog] = useState("");
+  const [log, setLog] = useState({ email: "" });
   const [error, setError] = useState("");
   const [requestIsDone, setRequestIsDone] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,19 +27,19 @@ const PasswordLost = () => {
   };
 
   return (
-    <div className="bg-graybackground w-screen h-screen fixed left-0 top-0 flex justify-center items-center">
+    <div className="bg-graybackground w-screen min-h-screen fixed left-0 top-0 flex justify-center items-center p-4">
       <div
-        className={`bg-white w-[400px] max-w-[400px] cardShadow rounded-xl flex flex-col p-6`}
+        className={`bg-white w-full max-w-[400px] cardShadow rounded-xl flex flex-col p-4 sm:p-6`}
       >
         {requestIsDone ? (
           <>
             <div className="text-center mb-4">
-              <h3 className="text-2xl font-semibold">
+              <h3 className="text-xl sm:text-2xl font-semibold">
                 Email envoyé !
               </h3>
             </div>
             <div className="bg-green-100 rounded p-4 mb-4">
-              <p className=" text-green-700 ">
+              <p className="text-sm sm:text-base text-green-700">
                 Un e-mail vient de vous être envoyé. Il contient un lien valable 24 heures 
                 pour réinitialiser votre mot de passe.
               </p>
@@ -52,11 +52,11 @@ const PasswordLost = () => {
           </>
         ) : (
           <>
-            <h3 className="text-2xl text-center mb-4 font-semibold">
+            <h3 className="text-xl sm:text-2xl text-center mb-4 font-semibold">
               Mot de passe oublié ?
             </h3>
             <div>
-              <p className="text-gray-600 mb-4">
+              <p className="text-sm sm:text-base text-gray-600 mb-4">
                 Indiquez l'adresse e-mail associée à votre compte. Vous allez recevoir 
                 un lien pour réinitialiser votre mot de passe.
               </p>
@@ -69,6 +69,7 @@ const PasswordLost = () => {
                   inputName="email"
                   colSpanWidth="12"
                   attribute="email"
+                  data={log}
                   setAction={setLog}
                   disabled={isLoading}
                 />

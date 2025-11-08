@@ -12,6 +12,7 @@ import Button from "../components/generic/Button";
 import { Input } from "../components/generic/form/Input.jsx";
 import { logIn } from "../services/auth.js";
 import ErrorText from "../components/generic/ErrorText.jsx";
+import { laborIllusion } from "../utils/functions/laborIllusion.js";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,29 +27,31 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = () => {
+    setIsLoading(true);
     setError("");
 
     if (!log.email || !log.email.includes("@")) {
       setError("Veuillez saisir une adresse email valide");
+      setIsLoading(false);
       return;
     }
 
     if (!log.password) {
       setError("Veuillez saisir votre mot de passe");
+      setIsLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    logIn(log, dispatch, navigate, setError, setIsLoading);
+    laborIllusion(() => logIn(log, dispatch, navigate, setError, setIsLoading), 1);
   };
 
   return (
-    <div className="bg-graybackground w-screen h-screen fixed left-0 top-0 flex justify-center items-center">
+    <div className="bg-graybackground w-screen min-h-screen fixed left-0 top-0 flex justify-center items-center p-4">
       <div
-        className={`bg-white w-[400px] max-w-[400px] cardShadow rounded-xl flex flex-col p-6`}
+        className={`bg-white w-full max-w-[400px] cardShadow rounded-xl flex flex-col p-4 sm:p-6`}
       >
         <div>
-          <h3 className="text-2xl text-center mb-4 font-semibold">
+          <h3 className="text-xl sm:text-2xl text-center mb-4 font-semibold">
             Connectez-vous
           </h3>
 
@@ -58,8 +61,9 @@ const Login = () => {
               required
               inputType="email"
               inputName="email"
-              cmt-4 nWidth="12"
+              colSpanWidth="12"
               attribute="email"
+              data={log}
               setAction={setLog}
               disabled={isLoading}
             />
@@ -71,6 +75,7 @@ const Login = () => {
               required
               colSpanWidth="12"
               attribute="password"
+              data={log}
               setAction={setLog}
               disabled={isLoading}
             />
@@ -96,9 +101,6 @@ const Login = () => {
             action={() => navigate(URL_FRONT_PASSWORD_LOST)}
           />
           <div>
-            {/* <p className="text-sm text-gray-600">
-              Les inscriptions sont fermées pour le moment.
-            </p> */}
             <Link to={URL_FRONT_REGISTER} className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200">
               Créer un compte
             </Link>

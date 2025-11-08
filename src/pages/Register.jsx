@@ -42,48 +42,64 @@ const Register = () => {
   };
 
   return (
-    <div className="bg-graybackground w-screen h-screen fixed left-0 top-0 flex justify-center items-center">
+    <div className="bg-graybackground w-screen min-h-screen fixed left-0 top-0 flex justify-center items-center p-4">
       <div
-        className={`bg-white w-[400px] max-w-[400px] cardShadow rounded-xl flex flex-col p-6`}
+        className={`bg-white w-full max-w-[400px] cardShadow rounded-xl flex flex-col p-4 sm:p-6 overflow-y-auto max-h-[95vh]`}
       >
         <div>
-          <h3 className="text-2xl text-center mb-4">Créer mon compte</h3>
+          <h3 className="text-xl sm:text-2xl text-center mb-4">Créer mon compte</h3>
 
-          <Input
-            label="Nom d'utilisateur"
-            required
-            inputType="text"
-            inputName="username"
-            colSpanWidth="12"
-            attribute="username"
-            setAction={setRegisterData}
-          />
+          <div className="mb-4">
+            <Input
+              label="Nom d'utilisateur"
+              required
+              inputType="text"
+              inputName="username"
+              colSpanWidth="12"
+              attribute="username"
+              data={registerData}
+              setAction={setRegisterData}
+              disabled={isLoading}
+            />
+          </div>
 
-          <Input
-            label="Email"
-            required
-            inputType="email"
-            inputName="email"
-            colSpanWidth="12"
-            attribute="email"
-            setAction={setRegisterData}
-          />
+          <div className="mb-4">
+            <Input
+              label="Email"
+              required
+              inputType="email"
+              inputName="email"
+              colSpanWidth="12"
+              attribute="email"
+              data={registerData}
+              setAction={setRegisterData}
+              disabled={isLoading}
+            />
+          </div>
 
-          <InputPassword
-            label="Mot de passe"
-            required
-            colSpanWidth="12"
-            attribute="password"
-            setAction={setRegisterData}
-          />
+          <div className="mb-4">
+            <InputPassword
+              label="Mot de passe"
+              required
+              colSpanWidth="12"
+              attribute="password"
+              data={registerData}
+              setAction={setRegisterData}
+              disabled={isLoading}
+            />
+          </div>
 
-          <InputPassword
-            label="Confirmation du mot de passe"
-            required
-            colSpanWidth="12"
-            attribute="passwordConfirmation"
-            setAction={setRegisterData}
-          />
+          <div className="mb-4">
+            <InputPassword
+              label="Confirmation du mot de passe"
+              required
+              colSpanWidth="12"
+              attribute="passwordConfirmation"
+              data={registerData}
+              setAction={setRegisterData}
+              disabled={isLoading}
+            />
+          </div>
 
           <div className="my-4 flex items-start">
             <input
@@ -92,6 +108,7 @@ const Register = () => {
               checked={registerData.has_accepted_terms_and_conditions}
               onChange={(e) => setRegisterData({ ...registerData, has_accepted_terms_and_conditions: e.target.checked })}
               className="mt-1 mr-2"
+              disabled={isLoading}
             />
             <label htmlFor="acceptTerms" className="text-sm">
               J'accepte les{" "}
@@ -99,6 +116,7 @@ const Register = () => {
                 type="button"
                 onClick={() => navigate(URL_FRONT_TERMS_AND_CONDITIONS)}
                 className="text-blue-600 hover:underline"
+                disabled={isLoading}
               >
                 termes et conditions
               </button>{" "}
@@ -118,7 +136,7 @@ const Register = () => {
           buttonText="Créer mon compte"
           className="bg-black text-white w-full p-2 mb-2 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed"
           action={handleRegister}
-          disabled={isLoading}
+          disabled={isLoading || !registerData.has_accepted_terms_and_conditions}
           loadingText="Inscription en cours..."
         />
 
@@ -128,6 +146,7 @@ const Register = () => {
             buttonText="Se connecter"
             className="text-sm text-blue-900 cursor-pointer hover:underline"
             action={() => navigate(URL_FRONT_LOGIN)}
+            disabled={isLoading}
           />
         </div>
       </div>

@@ -7,7 +7,7 @@ const Button = ({ children, style, submit, disabled, buttonText, className, acti
       type={submit ? "submit" : "button"}
       onClick={() => action && !disabled && action()}
     >
-      {disabled && !children && (
+      {disabled && (
         <span className="flex items-center justify-center">
           <svg
             className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -32,10 +32,11 @@ const Button = ({ children, style, submit, disabled, buttonText, className, acti
           {loadingText || "Chargement..."}
         </span>
       )}
-      {!disabled && buttonText && (
+
+      {buttonText && !disabled && (
         <span>{buttonText}</span>
       )}
-      {children && children}
+      {children && !disabled && children}
     </button>
   );
 };

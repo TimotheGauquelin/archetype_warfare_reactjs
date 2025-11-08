@@ -8,6 +8,7 @@ import { getCardTypes } from "../services/cardtype";
 import { getCurrentBanlist } from "../services/banlist";
 import Footer from "../components/generic/footer/Footer";
 import { STATUS_FORBIDDEN, STATUS_LIMITED, STATUS_SEMI_LIMITED, STATUS_UNLIMITED } from "../utils/const/banlistConst";
+import "../styles/Archetypes.scss";
 
 const Banlist = () => {
   const [banlistSearchInput, setBanlistSearchInput] = useState("");

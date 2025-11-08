@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Slide from "../pages/home/Slide";
 
-const Slider = ({ array, slidesPerView = 1, autoplayDelay = 10000 }) => {
+const Slider = ({ array, slidesPerView = 1, autoplayDelay = 5000 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [imageVisible, setImageVisible] = useState(true);
@@ -100,7 +100,7 @@ const Slider = ({ array, slidesPerView = 1, autoplayDelay = 10000 }) => {
       </div>
 
       {totalSlides > slidesPerView && (
-        <div className="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 gap-2 z-10">
+        <div className="md:flex absolute bottom-4 left-1/2 -translate-x-1/2 gap-2 z-10">
           {Array.from({ length: Math.ceil(totalSlides / slidesPerView) }).map(
             (_, index) => {
               const slideIndex = index * slidesPerView;

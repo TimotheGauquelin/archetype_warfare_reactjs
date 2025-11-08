@@ -6,7 +6,7 @@ import PageContentBlock from "../generic/PageContentBlock";
 const SkeletonArchetypePage = () => {
     return (
         <div>
-            <div id="headBlock" className="imgBackground">
+            <div id="headBlock" className="imageBackground">
                 <Header />
 
                 <div className="p-5 h-[430px] tablet:h-[520px]">

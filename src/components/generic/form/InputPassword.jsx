@@ -7,8 +7,14 @@ export const InputPassword = ({
   attribute,
   setAction,
   colSpanWidth,
+  data,
+  disabled,
 }) => {
   const [displayPassword, setDisplayPassword] = useState(false);
+
+  const inputValue = typeof data === 'object' && data !== null 
+    ? (data[attribute] || '') 
+    : (data || '');
 
   return (
     <>
@@ -21,18 +27,20 @@ export const InputPassword = ({
           <input
             id={label}
             name={label}
-            type={displayPassword ? "string" : "password"}
+            type={displayPassword ? "text" : "password"}
             autoComplete="off"
+            value={inputValue}
             onChange={(e) => {
               setAction((prevState) => ({
                 ...prevState,
                 [attribute]: e.target.value,
               }));
             }}
-            className="bg-gray-100 w-80 p-2 rounded-l-md group-hover:outline group-hover:outline-2 group-hover:outline-black"
+            disabled={disabled}
+            className="bg-gray-100 w-full flex-1 p-2 rounded-l-md group-hover:outline group-hover:outline-2 group-hover:outline-black disabled:opacity-50"
           />
           <div
-            className="bg-black hover:bg-gray-900 group-hover:outline group-hover:outline-2 group-hover:outline-black w-20 p-2 flex justify-center items-center rounded-r-md cursor-pointer"
+            className="bg-black hover:bg-gray-900 group-hover:outline group-hover:outline-2 group-hover:outline-black w-12 sm:w-20 p-2 flex justify-center items-center rounded-r-md cursor-pointer transition-colors duration-200"
             onClick={() => {
               setDisplayPassword(!displayPassword);
             }}
