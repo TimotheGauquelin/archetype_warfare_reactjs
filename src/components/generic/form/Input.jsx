@@ -21,6 +21,10 @@ export const Input = ({
     }));
   }, [setAction, attribute]);
 
+  const inputValue = typeof data === 'object' && data !== null 
+    ? (data[attribute] || '') 
+    : (data || '');
+
   return (
     <div className={`flex flex-col col-span-${colSpanWidth}`}>
       {label && (
@@ -37,7 +41,7 @@ export const Input = ({
         max={max}
         type={inputType}
         name={inputName}
-        value={data && data[attribute]}
+        value={inputValue}
         onChange={handleChange}
         disabled={disabled ? true : false}
       />

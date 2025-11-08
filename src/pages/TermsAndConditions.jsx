@@ -20,7 +20,7 @@ const TermsAndConditions = () => {
         </div>
 
         <div className="prose prose-lg max-w-none">
-          <section className="mb-8">
+          <section className="mb-4">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               1. Acceptation des termes
             </h2>
@@ -29,7 +29,7 @@ const TermsAndConditions = () => {
             </p>
           </section>
 
-          <section className="mb-8">
+          <section className="mb-4">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               2. Description du service
             </h2>
@@ -38,7 +38,7 @@ const TermsAndConditions = () => {
             </p>
           </section>
 
-          <section className="mb-8">
+          <section className="mb-4">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               3. Compte utilisateur
             </h2>
@@ -53,7 +53,7 @@ const TermsAndConditions = () => {
             </div>
           </section>
 
-          <section className="mb-8">
+          <section className="mb-4">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               4. Utilisation acceptable
             </h2>
@@ -69,7 +69,7 @@ const TermsAndConditions = () => {
             </div>
           </section>
 
-          <section className="mb-8">
+          <section className="mb-4">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               5. Propriété intellectuelle
             </h2>
@@ -78,7 +78,7 @@ const TermsAndConditions = () => {
             </p>
           </section>
 
-          <section className="mb-8">
+          <section className="mb-4">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               6. Confidentialité
             </h2>
@@ -87,7 +87,7 @@ const TermsAndConditions = () => {
             </p>
           </section>
 
-          <section className="mb-8">
+          <section className="mb-4">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               7. Limitation de responsabilité
             </h2>
@@ -96,7 +96,7 @@ const TermsAndConditions = () => {
             </p>
           </section>
 
-          <section className="mb-8">
+          <section className="mb-4">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               8. Modifications des termes
             </h2>
@@ -105,7 +105,7 @@ const TermsAndConditions = () => {
             </p>
           </section>
 
-          <section className="mb-8">
+          <section className="mb-4">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">
               9. Contact
             </h2>

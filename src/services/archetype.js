@@ -2,7 +2,7 @@ import api_aw from "../api/api_aw";
 import { URL_BACK_ADD_ARCHETYPE, URL_BACK_DELETE_ARCHETYPE, URL_BACK_GET_ARCHETYPE_BY_ID, URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES, URL_BACK_GET_EIGHT_MOST_FAMOUS_ARCHETYPES, URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES, URL_BACK_GET_RANDOM_ARCHETYPE, URL_BACK_RESET_POPULARITY, URL_BACK_SEARCH_ARCHETYPES, URL_BACK_SWITCH_ALL_TO_IS_NOT_HIGHLIGHTED, URL_BACK_SWITCH_ALL_TO_IS_UNACTIVE, URL_BACK_SWITCH_IS_ACTIVE, URL_BACK_SWITCH_IS_HIGHLIGHTED, URL_BACK_UPDATE_ARCHETYPE } from "../constant/urlsBack";
 import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ARCHETYPE } from "../constant/urlsFront";
 
-export const getArchetypesWithCriteria = (criteria, setArchetypes, setPagination) => {
+export const getArchetypesWithCriteria = (criteria, setArchetypes, setPagination, setErrorMessage) => {
     api_aw
         .get(
             URL_BACK_SEARCH_ARCHETYPES(criteria.size, criteria.page, criteria.name, criteria.era, criteria.type, criteria.attribute, criteria.summonmechanic)
@@ -12,6 +12,9 @@ export const getArchetypesWithCriteria = (criteria, setArchetypes, setPagination
                 setArchetypes(response.data.data)
                 setPagination(response.data.pagination);
             }
+        })
+        .catch((error) => {
+            setErrorMessage("Aucun archétype trouvé");
         });
 };
 

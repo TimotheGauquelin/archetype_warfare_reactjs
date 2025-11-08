@@ -15,6 +15,7 @@ import { getEras } from "../services/era";
 import SelectInput from "../components/generic/form/SelectInput";
 import { Input } from "../components/generic/form/Input";
 import Footer from "../components/generic/footer/Footer";
+import Button from "../components/generic/Button";
 
 const Archetypes = () => {
   const [archetypes, setArchetypes] = useState([]);
@@ -24,7 +25,8 @@ const Archetypes = () => {
     totalElements: 0,
     totalPages: 0,
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [eras, setEras] = useState([]);
   const [filters, setFilters] = useState({
     name: "",
@@ -32,6 +34,7 @@ const Archetypes = () => {
     size: 12,
     page: 0
   });
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const navigate = useNavigate();
 
@@ -41,16 +44,15 @@ const Archetypes = () => {
 
   const loadData = useCallback(async () => {
     try {
-      setIsLoading(true);
-      
+      setIsFetching(true);
       await Promise.all([
-        getArchetypesWithCriteria(filters, setArchetypes, setPagination),
+        getArchetypesWithCriteria(filters, setArchetypes, setPagination, setErrorMessage),
         getEras(setEras)
       ]);
     } catch (err) {
       console.log("Erreur lors du chargement des archétypes");
     } finally {
-      setIsLoading(false);
+      setIsFetching(false);
     }
   }, [filters]);
 
@@ -59,7 +61,7 @@ const Archetypes = () => {
   }, [loadData]);
 
   const eraOptions = useMemo(() => eras, [eras]);
-  
+
   return (
     <div className="flex flex-col">
       <div id="headBlock" className="imageBackground">
@@ -89,13 +91,14 @@ const Archetypes = () => {
               defaultOptionLabel="De quelle ère est votre archetype ?"
               setAction={setFilters}
             />
-            <button
+            <Button
               style={{ backgroundColor: "#F95757" }}
               className="col-span-2 p-2 rounded-md  flex justify-center items-center text-white"
-              onClick={handleRandomArchetype}
+              action={handleRandomArchetype}
+              disabled={isFetching || archetypes.length === 0}
             >
               <FaRandom />
-            </button>
+            </Button>
           </AbsoluteInput>
         </div>
       </div>
@@ -103,8 +106,9 @@ const Archetypes = () => {
         <div className="flex flex-col justify-center w-full">
           <ArchetypeList
             dataArray={archetypes}
-            isLoading={isLoading}
+            isFetching={isFetching}
             skeletonItemCount={8}
+            errorMessage={errorMessage}
           />
         </div>
       </PageContentBlock>

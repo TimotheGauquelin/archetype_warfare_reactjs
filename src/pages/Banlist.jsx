@@ -3,35 +3,33 @@ import AbsoluteInput from "../components/generic/AbsoluteInput";
 import PageContentBlock from "../components/generic/PageContentBlock";
 import Header from "../components/generic/header/Header";
 import Jumbotron from "../components/generic/Jumbotron";
-import Loader from "../components/generic/Loader";
-import ErrorText from "../components/generic/ErrorText";
-import SubtitleDivider from "../components/generic/SubtitleDivider";
-import Card from "../components/generic/Card";
+import CardsSection from "../components/generic/CardsSection";
 import { getCardTypes } from "../services/cardtype";
 import { getCurrentBanlist } from "../services/banlist";
 import Footer from "../components/generic/footer/Footer";
+import { STATUS_FORBIDDEN, STATUS_LIMITED, STATUS_SEMI_LIMITED, STATUS_UNLIMITED } from "../utils/const/banlistConst";
 
 const Banlist = () => {
   const [banlistSearchInput, setBanlistSearchInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [banlist, setBanlist] = useState(null);
   const [cardTypes, setCardTypes] = useState([]);
   const [error, setError] = useState(null);
 
   const loadBanlistData = useCallback(async () => {
-    setLoading(true);
+    setIsFetching(true);
     setError(null);
 
     try {
       await Promise.all([
-        getCurrentBanlist(setBanlist, setLoading),
+        getCurrentBanlist(setBanlist, setIsFetching),
         getCardTypes(setCardTypes)
       ]);
     } catch (err) {
-      setError("Erreur lors du chargement de la banlist");
+      setError("Aucune banlist trouvée");
       console.error("Erreur:", err);
     } finally {
-      setLoading(false);
+      setIsFetching(false);
     }
   }, []);
 
@@ -59,7 +57,7 @@ const Banlist = () => {
 
         return (b.card.level || 0) - (a.card.level || 0);
       }
-      
+
       return 0;
     });
   }, [banlist?.banlist_archetype_cards, cardTypes]);
@@ -68,7 +66,6 @@ const Banlist = () => {
     setBanlistSearchInput(e.target.value);
   }, []);
 
-  // Séparation des cartes par statut
   const cardsByStatus = useMemo(() => {
     const forbidden = [];
     const limited = [];
@@ -78,23 +75,22 @@ const Banlist = () => {
     sortedBanlistCards.forEach(card => {
       const cardName = card.card.name.toLowerCase();
       const searchTerm = banlistSearchInput.toLowerCase();
-      
-      // Filtrer par recherche si nécessaire
+
       if (banlistSearchInput.trim() && !cardName.includes(searchTerm)) {
         return;
       }
 
       switch (card.card_status?.label) {
-        case "Forbidden":
+        case STATUS_FORBIDDEN:
           forbidden.push(card);
           break;
-        case "Limited":
+        case STATUS_LIMITED:
           limited.push(card);
           break;
-        case "Semi-Limited":
+        case STATUS_SEMI_LIMITED:
           semiLimited.push(card);
           break;
-        case "Unlimited":
+        case STATUS_UNLIMITED:
         default:
           unlimited.push(card);
           break;
@@ -103,43 +99,6 @@ const Banlist = () => {
 
     return { forbidden, limited, semiLimited, unlimited };
   }, [sortedBanlistCards, banlistSearchInput]);
-
-  // Composant pour afficher une section de cartes
-  const CardSection = ({ title, cards, statusColor }) => (
-    <div className="mb-8">
-      <SubtitleDivider 
-        label={`${title} (${cards.length})`} 
-        displayDivider 
-      />
-      <div className="bg-gray-100 p-4 grid grid-cols-12 gap-4 border border-gray-200 rounded-lg">
-        {cards.length > 0 ? (
-          cards.map((card, index) => (
-            <Card key={`${card.card.id}-${index}`} card={card} />
-          ))
-        ) : (
-          <div className="col-span-12 flex justify-center py-8">
-            <ErrorText errorText={`Aucune carte ${title.toLowerCase()} trouvée.`} />
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Loader />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <ErrorText errorText={error} />
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col">
@@ -165,37 +124,24 @@ const Banlist = () => {
 
       <PageContentBlock>
         <div className="flex flex-col w-full justify-center max-w-containerSize m-auto">
-          {/* Section des cartes interdites */}
-          <CardSection 
-            title="Cartes Interdites" 
+
+          <CardsSection
+            title="Cartes Interdites"
             cards={cardsByStatus.forbidden}
-            statusColor="text-red-600"
+            isFetching={isFetching}
           />
 
-          {/* Section des cartes limitées */}
-          <CardSection 
-            title="Cartes Limitées" 
+          <CardsSection
+            title="Cartes Limitées"
             cards={cardsByStatus.limited}
-            statusColor="text-orange-600"
+            isFetching={isFetching}
           />
 
-          {/* Section des cartes semi-limitées */}
-          <CardSection 
-            title="Cartes Semi-Limitées" 
+          <CardsSection
+            title="Cartes Semi-Limitées"
             cards={cardsByStatus.semiLimited}
-            statusColor="text-yellow-600"
+            isFetching={isFetching}
           />
-
-          {/* Message si aucune carte trouvée */}
-          {banlistSearchInput.trim() && 
-           cardsByStatus.forbidden.length === 0 && 
-           cardsByStatus.limited.length === 0 && 
-           cardsByStatus.semiLimited.length === 0 && 
-           cardsByStatus.unlimited.length === 0 && (
-            <div className="flex justify-center py-8">
-              <ErrorText errorText="Aucune carte trouvée avec ce nom." />
-            </div>
-          )}
         </div>
       </PageContentBlock>
       <Footer />

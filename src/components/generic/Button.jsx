@@ -1,12 +1,13 @@
-const Button = ({ submit, disabled, buttonText, className, action, loadingText }) => {
+const Button = ({ children, style, submit, disabled, buttonText, className, action, loadingText }) => {
   return (
     <button
+      style={style && style}
       disabled={disabled}
       className={`${className} transition-all duration-200 ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:opacity-90"}`}
       type={submit ? "submit" : "button"}
       onClick={() => action && !disabled && action()}
     >
-      {disabled ? (
+      {disabled && !children && (
         <span className="flex items-center justify-center">
           <svg
             className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
@@ -30,9 +31,11 @@ const Button = ({ submit, disabled, buttonText, className, action, loadingText }
           </svg>
           {loadingText || "Chargement..."}
         </span>
-      ) : (
+      )}
+      {!disabled && buttonText && (
         <span>{buttonText}</span>
       )}
+      {children && children}
     </button>
   );
 };

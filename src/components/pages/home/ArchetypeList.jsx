@@ -3,20 +3,22 @@ import { Link } from "react-router-dom";
 import ArchetypeCard from "../../generic/ArchetypeCard";
 import SubtitleDivider from "../../generic/SubtitleDivider";
 import ArchetypeListSkeleton from "../../skeletons/ArchetypeListSkeleton";
+import NoItemMessage from "../../generic/NoItemMessage";
 
 const ArchetypeList = ({
   dataArray,
   subTitleDividerText,
   haveMedal,
-  isLoading = false,
+  isFetching = false,
   skeletonItemCount = 8,
+  errorMessage = null,
 }) => {
   const [visibleCards, setVisibleCards] = useState(0);
 
   useEffect(() => {
-    if (!isLoading && dataArray?.length > 0) {
+    if (!isFetching && dataArray?.length > 0) {
       setVisibleCards(0); // Reset
-      
+
       const interval = setInterval(() => {
         setVisibleCards(prev => {
           if (prev < dataArray.length) {
@@ -32,9 +34,9 @@ const ArchetypeList = ({
     } else {
       setVisibleCards(0);
     }
-  }, [isLoading, dataArray]);
+  }, [isFetching, dataArray]);
 
-  if (isLoading || !dataArray || dataArray.length === 0) {
+  if (isFetching) {
     return (
       <ArchetypeListSkeleton
         itemCount={skeletonItemCount}
@@ -44,39 +46,44 @@ const ArchetypeList = ({
   }
 
   return (
-    <div className="w-full m-auto mb-5">
+    <div className="w-full m-auto mb-[50px]">
       {subTitleDividerText && (
         <SubtitleDivider displayDivider label={subTitleDividerText} />
       )}
-      <div className="grid pb-5 grid-cols-12 gap-4">
-        {dataArray.map((archetype, index) => {
-          const isVisible = index < visibleCards;
-          
-          return (
-            <div
-              key={`${archetype?.id}-${index}`}
-              className={`col-span-6 sscreen:col-span-4 lscreen:col-span-3 transition-all duration-500 ease-out ${
-                isVisible 
-                  ? "opacity-100 translate-y-0 scale-100" 
+
+      {dataArray.length > 0 ? (
+        <div className="grid pb-5 grid-cols-12 gap-4">
+          {dataArray.map((archetype, index) => {
+            const isVisible = index < visibleCards;
+
+            return (
+              <div
+                key={`${archetype?.id}-${index}`}
+                className={`col-span-12 sscreen:col-span-4 lscreen:col-span-3 transition-all duration-500 ease-out ${isVisible
+                  ? "opacity-100 translate-y-0 scale-100"
                   : "opacity-0 translate-y-4 scale-95"
-              }`}
-            >
-              <Link
-                to={`/archetype/${archetype?.id}`}
-                state={{ id: archetype?.id }}
-                className="bg-white p-3 rounded-lg aspect-square cardShadow hover:shadow-lg transition-shadow duration-200 block"
+                  }`}
               >
-                <ArchetypeCard
-                  archetype={archetype}
-                  index={index}
-                  haveAMedal={haveMedal}
-                />
-              </Link>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+                <Link
+                  to={`/archetype/${archetype?.id}`}
+                  state={{ id: archetype?.id }}
+                  className="bg-white p-3 rounded-lg aspect-square cardShadow hover:shadow-lg transition-shadow duration-200 block"
+                >
+                  <ArchetypeCard
+                    archetype={archetype}
+                    index={index}
+                    haveAMedal={haveMedal}
+                  />
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <NoItemMessage message={errorMessage || "Aucun archétype trouvé"} />
+      )
+      }
+    </div >
   );
 };
 

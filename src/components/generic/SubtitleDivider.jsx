@@ -8,7 +8,7 @@ const SubtitleDivider = ({
 }) => {
   return (
     <div
-      className={`text-2xl sscreen:text-4xl font-bold flex items-center mb-8 w-full`}
+      className={`text-2xl sscreen:text-4xl font-bold flex items-center mb-4 w-full`}
     >
       {leftIcon && <img className="w-[40px] mr-2" src={leftIcon} alt="" />}
       <span className="">{label}</span>

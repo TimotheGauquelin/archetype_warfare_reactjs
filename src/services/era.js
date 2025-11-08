@@ -8,5 +8,8 @@ export const getEras = (setEras) => {
             if (response.status === 200) {
                 setEras(response.data)
             }
+        })
+        .catch((error) => {
+           console.log(error);
         });
 };

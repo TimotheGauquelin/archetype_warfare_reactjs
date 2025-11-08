@@ -4,7 +4,6 @@ import Slider from "../components/generic/Slider";
 
 import "../styles/Home.scss";
 import PageContentBlock from "../components/generic/PageContentBlock";
-import { SwiperSlide } from "swiper/react";
 import Slide from "../components/pages/home/Slide";
 import ArchetypeList from "../components/pages/home/ArchetypeList";
 import {
@@ -22,17 +21,19 @@ const Home = () => {
   const [errorMessages, setErrorMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const noHighlightedArchetype = {
-    id: 1,
-    name: "Magicien Sombre",
-    sliderInfo: "Maitrisez la magie des cartes de Yugi",
+  const welcomeArchetype = {
+    name: "Bienvenue sur",
+    nameSubtitle: "Archetype Battle",
+    slider_info: "Chargement des données, veuillez patienter...",
+    isWelcome: true,
+    slider_img_url: process.env.PUBLIC_URL + "/assets/yugi.png",
   };
 
-  const loadData = useCallback(async () => {    
+  const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
       setHasError(false);
-      
+
       await Promise.all([
         getEightMostFamousArchetypes(setFiveMostFamousArchetypes, setErrorMessages),
         getEightMostRecentArchetypes(setEightMostRecentArchetypes, setErrorMessages),
@@ -71,25 +72,15 @@ const Home = () => {
     );
   };
 
+  const slidesToDisplay = archetypesForSlider.length > 0 
+    ? archetypesForSlider.filter((archetype) => archetype.is_highlighted)
+    : [welcomeArchetype];
+
   return (
     <div className="flex flex-col">
       <div id="headBlock" className="imgBackground">
         <Header />
-        {archetypesForSlider.length > 0 ? (
-          <Slider>
-            {archetypesForSlider.map((archetype, index) => {
-              return (
-                archetype.is_highlighted && (
-                  <SwiperSlide key={index}>
-                    <Slide archetype={archetype} />
-                  </SwiperSlide>
-                )
-              );
-            })}
-          </Slider>
-        ) : (
-          <Slide archetype={noHighlightedArchetype} />
-        )}
+        <Slider array={slidesToDisplay} slidesPerView={1} />
       </div>
       <PageContentBlock>
         <HomePageContent />
