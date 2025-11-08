@@ -100,7 +100,7 @@ const Slider = ({ array, slidesPerView = 1, autoplayDelay = 5000 }) => {
       </div>
 
       {totalSlides > slidesPerView && (
-        <div className="md:flex absolute bottom-4 left-1/2 -translate-x-1/2 gap-2 z-10">
+        <div className="md:flex absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
           {Array.from({ length: Math.ceil(totalSlides / slidesPerView) }).map(
             (_, index) => {
               const slideIndex = index * slidesPerView;
@@ -111,7 +111,7 @@ const Slider = ({ array, slidesPerView = 1, autoplayDelay = 5000 }) => {
                 <button
                   key={index}
                   onClick={() => goToSlide(slideIndex)}
-                  className={`h-2 rounded-full transition-all ${
+                  className={`h-2 rounded-full transition-all mx-1 ${
                     isActive
                       ? "bg-white w-8"
                       : "bg-white bg-opacity-50 w-2 hover:bg-opacity-75"

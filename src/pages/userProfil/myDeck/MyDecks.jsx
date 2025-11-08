@@ -16,6 +16,8 @@ const MyDecks = () => {
   const [isFetching, setIsFetching] = useState(false);
   const { id, token } = useSelector((state) => state.user);
 
+  console.log(myDecks);
+
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -8,6 +8,7 @@ const Jumbotron = ({ itemMainTitle, itemSubTitle, itemImg }) => {
         backgroundImage: `url(${
           itemImg ? itemImg : process.env.PUBLIC_URL + "/assets/yugi.png"
         })`,
+        height: "100vh"
       }}
     >
       <div className="flex flex-row h-full max-w-containerSize m-auto">

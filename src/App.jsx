@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { lazy } from "react";
 
 import Home from "./pages/Home";
 import MyProfil from "./pages/userProfil/MyProfil";
@@ -46,7 +46,6 @@ import {
   URL_FRONT_MY_DECK_ADD,
   URL_FRONT_MY_DECK_UPDATE,
 } from "./constant/urlsFront";
-import Loader from "./components/generic/Loader";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
 import AdminArchetypeAdd from "./pages/admin/adminArchetypes/AdminArchetypeAdd";
 import AdminUserAdd from "./pages/admin/adminUsers/AdminUserAdd";
@@ -63,9 +62,8 @@ import "react-toastify/dist/ReactToastify.css";
 import MyDeckAdd from "./pages/userProfil/myDeck/MyDeckAdd";
 import MyDeckUpdate from "./pages/userProfil/myDeck/MyDeckUpdate";
 import AdminAddBanlist from "./pages/admin/adminBanlists/AdminAddBanlist";
-
-const Archetype = lazy(() => import("./pages/Archetype"));
-const Archetypes = lazy(() => import("./pages/Archetypes"));
+import Archetype from "./pages/Archetype";
+import Archetypes from "./pages/Archetypes";
 
 const AppContent = () => {  
   return (
@@ -80,9 +78,7 @@ const AppContent = () => {
           <Route
             path={URL_FRONT_HOME}
             element={
-              <Suspense fallback={<Loader />}>
                 <Home />
-              </Suspense>
             }
           />
           <Route exact path={URL_FRONT_LOGIN} element={<Login />} />
@@ -96,17 +92,13 @@ const AppContent = () => {
           <Route
             path={URL_FRONT_ARCHETYPES}
             element={
-              <Suspense fallback={<Loader />}>
                 <Archetypes />
-              </Suspense>
             }
           />
           <Route
             path="/archetype/:id"
             element={
-              <Suspense fallback={<Loader />}>
                 <Archetype />
-              </Suspense>
             }
           />
           <Route path={URL_FRONT_ABOUT} element={<Concept />} />
