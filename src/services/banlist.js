@@ -32,7 +32,7 @@ export const getBanlistById = (id, setBanlist) => {
     console.log(id);
     try {
         api_aw.get(`/banlists/${id}`).then((response) => {
-            console.log(response);
+            console.log("ici", response);
             if (response.status === 200) {
                 console.log(response.data);
                 setBanlist(response.data);
