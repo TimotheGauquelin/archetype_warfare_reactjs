@@ -28,7 +28,7 @@ export const getBanlists = (setBanlists) => {
     }
 };
 
-export const getBanlistById = (id, setBanlist) => {
+export const getBanlistById = async(id, setBanlist) => {
     console.log(id);
     try {
         api_aw.get(`/banlists/${id}`).then((response) => {
