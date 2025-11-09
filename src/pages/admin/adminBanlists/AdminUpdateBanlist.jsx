@@ -1,9 +1,13 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getBanlistById } from "../../../services/banlist";
+
 const AdminUpdateBanlist = () => {
     const [banlist, setBanlist] = useState({});
     const { banlistId } = useParams();
 
     useEffect(() => {
-        getBanlistById(banlistId, setBanlist);
+        getBanlistById(Number(banlistId), setBanlist);
     }, [banlistId]);
 
     console.log(banlist);
