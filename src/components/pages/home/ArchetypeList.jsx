@@ -66,7 +66,6 @@ const ArchetypeList = ({
               >
                 <Link
                   to={`/archetype/${archetype?.id}`}
-                  state={{ id: archetype?.id }}
                   className="bg-white p-3 rounded-lg aspect-square cardShadow hover:shadow-lg transition-shadow duration-200 block"
                 >
                   <ArchetypeCard

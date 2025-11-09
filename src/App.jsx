@@ -45,6 +45,8 @@ import {
   URL_FRONT_MY_DECKS,
   URL_FRONT_MY_DECK_ADD,
   URL_FRONT_MY_DECK_UPDATE,
+  URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD,
+  URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON,
 } from "./constant/urlsFront";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
 import AdminArchetypeAdd from "./pages/admin/adminArchetypes/AdminArchetypeAdd";
@@ -64,8 +66,10 @@ import MyDeckUpdate from "./pages/userProfil/myDeck/MyDeckUpdate";
 import AdminAddBanlist from "./pages/admin/adminBanlists/AdminAddBanlist";
 import Archetype from "./pages/Archetype";
 import Archetypes from "./pages/Archetypes";
+import AdminFilesIntroductionCard from "./pages/admin/adminFiles/ArchetypeFileIntroductionCard";
+import ScrollToTop from "./utils/scroll/ScrollToTop";
 
-const AppContent = () => {  
+const AppContent = () => {
   return (
     <div className="relative">
       <BrowserRouter
@@ -74,11 +78,12 @@ const AppContent = () => {
           v7_relativeSplatPath: true,
         }}
       >
+        <ScrollToTop />
         <Routes>
           <Route
             path={URL_FRONT_HOME}
             element={
-                <Home />
+              <Home />
             }
           />
           <Route exact path={URL_FRONT_LOGIN} element={<Login />} />
@@ -92,13 +97,13 @@ const AppContent = () => {
           <Route
             path={URL_FRONT_ARCHETYPES}
             element={
-                <Archetypes />
+              <Archetypes />
             }
           />
           <Route
             path="/archetype/:id"
             element={
-                <Archetype />
+              <Archetype />
             }
           />
           <Route path={URL_FRONT_ABOUT} element={<Concept />} />
@@ -173,8 +178,12 @@ const AppContent = () => {
           </Route>
           <Route path={URL_FRONT_ADMIN_FILES} element={<AdminFiles />} />
           <Route
-            path="/admin/files/:archetypefile"
+            path={URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON}
             element={<AdminFilesJumbotron />}
+          />
+          <Route
+            path={URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD}
+            element={<AdminFilesIntroductionCard />}
           />
           <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
             <Route path={URL_FRONT_ADMIN_CARDS} element={<AdminCards />} />

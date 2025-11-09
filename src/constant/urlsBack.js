@@ -110,6 +110,7 @@ export const URL_BACK_DELETE_MY_DECK = (deckId) => `/decks/deleteMyDeck/${deckId
 
 export const URL_BACK_SEARCH_USERS = (size, pagination, username) => `/users/search?size=${size}&page=${pagination}&username=${username}`
 export const URL_BACK_GET_ALL_USERS = '/users'
+export const URL_BACK_GET_NEW_USERS = '/users/getNewUsers'
 export const URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN = (resetToken) => `/users/getUserByResetPassword/${resetToken}`
 export const URL_BACK_GET_USER_BY_ID = (userId) => `/users/${userId}`
 export const URL_BACK_ADD_USER = '/users'
