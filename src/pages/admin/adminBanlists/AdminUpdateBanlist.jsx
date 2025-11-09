@@ -24,8 +24,6 @@ const AdminUpdateBanlist = () => {
         banlist_archetype_cards: [],
     });
 
-    console.log(banlist);
-
     const [cardTypes, setCardTypes] = useState([]);
     const [cardStatus, setCardStatus] = useState([]);
     const [isFetching, setIsFetching] = useState(false);
@@ -144,6 +142,9 @@ const AdminUpdateBanlist = () => {
     useEffect(() => {
         loadBanlistData();
     }, [banlistId]);
+
+    console.log(banlist);
+
 
     if (isFetching) {
         return (
