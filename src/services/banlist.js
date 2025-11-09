@@ -3,7 +3,7 @@ import { api_aw_token } from "../api/api_aw_token";
 import { URL_BACK_ADD_BANLIST, URL_BACK_DELETE_BANLIST, URL_BACK_GET_BANLIST, URL_BACK_GET_BANLISTS, URL_BACK_GET_CURRENT_BANLIST, URL_BACK_UPDATE_BANLIST } from "../constant/urlsBack";
 import { URL_FRONT_ADMIN_BANLISTS } from "../constant/urlsFront";
 
-export const getCurrentBanlist = (setBanlist, setIsFetching) => {
+export const getCurrentBanlist = (setBanlist) => {
     try {
         api_aw.get(URL_BACK_GET_CURRENT_BANLIST).then((response) => {
             if (response.status === 200) {
@@ -29,9 +29,11 @@ export const getBanlists = (setBanlists) => {
 };
 
 export const getBanlistById = (id, setBanlist) => {
+    console.log(id);
     try {
         api_aw.get(URL_BACK_GET_BANLIST(id)).then((response) => {
             if (response.status === 200) {
+                console.log(response.data);
                 setBanlist(response.data);
             }
         });

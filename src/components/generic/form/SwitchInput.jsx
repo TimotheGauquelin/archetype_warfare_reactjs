@@ -6,7 +6,7 @@ export const SwitchInput = ({
   data,
   setAction,
 }) => {
-  const [toggle, setToggle] = useState(data[attribute]);
+  const [toggle, setToggle] = useState(false);
 
   return (
     <div className="flex flex-col justify-center items-center px-2">
