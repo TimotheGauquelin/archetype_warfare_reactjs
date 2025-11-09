@@ -65,7 +65,7 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
 
 
     useEffect(() => {
-        searchCards(setCards, setPagination, filters.size, filters.page, filters.name);
+        // searchCards(setCards, setPagination, filters.size, filters.page, filters.name);
     }, [filters]);
 
     return (
