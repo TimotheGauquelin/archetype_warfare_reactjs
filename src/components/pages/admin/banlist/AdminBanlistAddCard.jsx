@@ -38,8 +38,8 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
     };
 
     const addCardToBanlist = (card) => {
-        const isCardAlreadyInBanlist = banlist.banlist_archetype_cards.some(
-            (banlistCard) => banlistCard.card?.id === card.id
+        const isCardAlreadyInBanlist = banlist?.banlist_archetype_cards.some(
+            (banlistCard) => banlistCard?.card?.id === card.id
         );
 
         if (!isCardAlreadyInBanlist) {
@@ -91,8 +91,8 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
                     style={{ height: "400px" }}
                 >
                     {cards?.map((card, index) => {
-                        const isCardAlreadyInBanlist = banlist.banlist_archetype_cards.some(
-                            (banlistCard) => banlistCard.card?.id === card.id
+                        const isCardAlreadyInBanlist = banlist?.banlist_archetype_cards.some(
+                            (banlistCard) => banlistCard?.card?.id === card.id
                         );
 
                         return (
