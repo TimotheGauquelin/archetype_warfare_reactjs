@@ -43,11 +43,12 @@ const AdminUpdateBanlist = () => {
         setError(null);
         
         try {
-            await Promise.all([
-                getBanlistById(banlistId, setBanlist),
-                // getCardTypes(setCardTypes),
-                // getCardStatus(setCardStatus)
-            ]);
+            // await Promise.all([
+            //     getBanlistById(banlistId, setBanlist),
+            //     // getCardTypes(setCardTypes),
+            //     // getCardStatus(setCardStatus)
+            // ]);
+            await getBanlistById(banlistId, setBanlist);
         } catch (err) {
             setError("Erreur lors du chargement de la banlist");
             console.error("Erreur:", err);
