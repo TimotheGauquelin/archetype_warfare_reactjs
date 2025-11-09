@@ -201,7 +201,7 @@ const AdminUpdateBanlist = () => {
                     />
                 </div>
 
-                <div className="mt-4">
+                {/* <div className="mt-4">
                     <Input
                         label="Description"
                         required
@@ -210,7 +210,7 @@ const AdminUpdateBanlist = () => {
                         data={banlist}
                         setAction={setBanlist}
                     />
-                </div>
+                </div> */}
             </div>
 
             {/* Section des cartes */}
