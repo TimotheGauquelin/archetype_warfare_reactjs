@@ -1,13 +1,9 @@
 import React, { memo, useState } from "react";
 import { BsPerson } from "react-icons/bs";
 import { Link, useLocation } from "react-router-dom";
-import {
-  URL_FRONT_HOME,
-  URL_FRONT_LOGIN,
-  URL_FRONT_MY_PROFIL,
-} from "../../../constant/urlsFront";
 import { FaTimes, FaBars } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { URL_FRONT_ABOUT, URL_FRONT_ARCHETYPES, URL_FRONT_BANLIST,URL_FRONT_ROAD_MAP, URL_FRONT_HOME, URL_FRONT_LOGIN, URL_FRONT_MY_PROFIL} from "../../../constant/urlsFront";
 
 const HeaderMemo = memo(function Header() {
   const [displayNav, setDisplayNav] = useState(false);
@@ -17,15 +13,19 @@ const HeaderMemo = memo(function Header() {
   const navBarComponent = [
     {
       title: "Concept",
-      url: "/about",
+      url: URL_FRONT_ABOUT,
     },
     {
       title: "Archetypes",
-      url: "/archetypes",
+      url: URL_FRONT_ARCHETYPES,
     },
     {
       title: "Banlist",
-      url: "/banlist",
+      url: URL_FRONT_BANLIST,
+    },
+    {
+      title: "RoadMap",
+      url: URL_FRONT_ROAD_MAP,
     },
   ];
 

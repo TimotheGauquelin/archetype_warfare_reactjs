@@ -47,6 +47,7 @@ import {
   URL_FRONT_MY_DECK_UPDATE,
   URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD,
   URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON,
+  URL_FRONT_ROAD_MAP,
 } from "./constant/urlsFront";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
 import AdminArchetypeAdd from "./pages/admin/adminArchetypes/AdminArchetypeAdd";
@@ -66,6 +67,7 @@ import MyDeckUpdate from "./pages/userProfil/myDeck/MyDeckUpdate";
 import AdminAddBanlist from "./pages/admin/adminBanlists/AdminAddBanlist";
 import Archetype from "./pages/Archetype";
 import Archetypes from "./pages/Archetypes";
+import RoadMap from "./pages/RoadMap";
 import AdminFilesIntroductionCard from "./pages/admin/adminFiles/ArchetypeFileIntroductionCard";
 import ScrollToTop from "./utils/scroll/ScrollToTop";
 
@@ -86,6 +88,7 @@ const AppContent = () => {
               <Home />
             }
           />
+          <Route path={URL_FRONT_ROAD_MAP} element={<RoadMap />} />
           <Route exact path={URL_FRONT_LOGIN} element={<Login />} />
           <Route exact path={URL_FRONT_REGISTER} element={<Register />} />
           <Route exact path={URL_FRONT_TERMS_AND_CONDITIONS} element={<TermsAndConditions />} />
