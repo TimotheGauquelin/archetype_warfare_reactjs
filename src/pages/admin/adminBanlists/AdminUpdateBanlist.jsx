@@ -34,11 +34,6 @@ const AdminUpdateBanlist = () => {
     const { banlistId } = useParams();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        getBanlistById(Number(banlistId), setBanlist);
-        getCardTypes(setCardTypes);
-        getCardStatus(setCardStatus);
-    }, [banlistId]);
 
     const sortedCards = useMemo(() => {
         if (!banlist?.banlist_archetype_cards || !cardTypes.length) return [];
@@ -124,8 +119,11 @@ const AdminUpdateBanlist = () => {
         laborIllusion(() => updateBanlist(token, banlistId, updatedBanlist, navigate, setIsLoading), 1);
     }, [banlist, banlistId, navigate]);
 
+
     useEffect(() => {
-        loadBanlistData();
+        getBanlistById(Number(banlistId), setBanlist);
+        getCardTypes(setCardTypes);
+        getCardStatus(setCardStatus);
     }, [banlistId]);
 
     if (isFetching) {
