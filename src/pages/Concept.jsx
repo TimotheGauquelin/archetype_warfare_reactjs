@@ -41,9 +41,9 @@ const Concept = () => {
             </h2>
             <p className="mt-4 text-gray-800 leading-relaxed text-justify">
               Depuis plus de <span className="font-semibold text-indigo-600">25 ans</span>, Yu-Gi-Oh! fait vibrer les duellistes
-              du monde entier. Né d’un manga culte, le TCG s’est imposé comme un <span className="font-semibold">monument stratégique</span>,
-              où chaque duel raconte une histoire. Des mécaniques iconiques ont façonné son identité — <span className="font-semibold">Fusion</span>, <span className="font-semibold">Synchro</span>, <span className="font-semibold">Xyz</span>, <span className="font-semibold">Pendule</span>, <span className="font-semibold">Lien</span> —
-              enrichissant sans cesse le gameplay. Chaque deck incarne un <span className="font-semibold">archétype</span> : une famille de cartes, un style, une vision de la victoire.
+              du monde entier. Né d’un manga culte, le jeu de cartes Yu-Gi-Oh! s’est imposé comme un <span className="font-semibold">monument stratégique</span>
+              où chaque duel raconte une histoire. Des mécaniques d'invocation iconiques ont façonné son identité — <span className="font-semibold text-purple-500">Fusion</span>, <span className="text-gray-500 font-semibold">Synchro</span>, <span className="text-black font-semibold">Xyz</span>, <span className="text-green-500 font-semibold">Pendule</span>, <span className="text-blue-500 font-semibold">Lien</span> —
+              enrichissant sans cesse le gameplay.
             </p>
 
             <div className="grid grid-cols-12 gap-4 mt-6">
@@ -70,13 +70,12 @@ const Concept = () => {
               Une meta devenue déséquilibrée
             </h2>
             <p className="mt-4 text-gray-800 leading-relaxed text-justify">
-              Au fil du temps, la meta compétitive s’est transformée en un terrain inégal. Des cartes trop puissantes écourtent les duels,
-              des combos étouffent l’interaction, et les decks “meta” se vendent à prix d’or. Résultat : un jeu parfois <span className="font-semibold">rapide</span>,
-              <span className="font-semibold">brutal</span> et <span className="font-semibold">coûteux</span>, loin de l’esprit d’origine.
+              Au fil du temps, le jeu s'est complexifié et l'aspect compétitif s’est transformé en un terrain inégal. Des cartes trop puissantes écourtent les duels,
+              des combos étouffent l’interaction entre les joueurs et les decks “meta” valent des fortunes.
             </p>
             <div className="mt-4 text-center">
               <span className="inline-block px-4 py-2 rounded-full bg-red-200 shadow-sm text-red-700 font-bold">
-                Problème: Yu-Gi-Oh! est un jeu injuste et qui coute cher, où l’équité et le plaisir de jeu en souffrent
+                Résultat: Yu-Gi-Oh! est un jeu injuste et qui coute cher, où l’équité et le plaisir de jeu en souffrent
               </span>
             </div>
           </RevealOnScroll>
@@ -104,8 +103,8 @@ const Concept = () => {
               ))}
             </div>
             <div className="mt-4 text-center">
-            <span className="inline-block px-4 py-2 rounded-full bg-green-200 shadow-sm text-green-700 font-bold">
-                Timing, ressources, lecture : le cerveau avant le portefeuille
+              <span className="inline-block px-4 py-2 rounded-full bg-green-200 shadow-sm text-green-700 font-bold">
+                Timing, ressources, lecture : le cerveau et l'amusementavant le portefeuille
               </span>
             </div>
           </RevealOnScroll>

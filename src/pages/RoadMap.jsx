@@ -8,8 +8,8 @@ import RevealOnScroll from '../components/generic/RevealOnScroll'
 const RoadMap = () => {
     const quarters = [
         {
-            period: "T3 - T4 2025",
-            dates: "Juin - Decembre 2025",
+            period: "T0 2025",
+            dates: "Juillet - Decembre 2025",
             color: "from-gray-200 via-gray-100 to-purple-200 bg-gradient-to-b",
             titleColor: "text-gray-700",
             items: [
@@ -25,8 +25,8 @@ const RoadMap = () => {
             color: "bg-blue-100",
             titleColor: "text-blue-700",
             items: [
-                "Développement des fonctionnalités Tournoi (Création de tournoi, Inscription à un tournoi, Résultats de tournoi)",
-                "Développement des fonctionnalités Classement (Classement des joueurs, Classement des decks, Classement des tournois)",
+                "Développement des fonctionnalités Tournoi (Création de tournoi par l'admin, Inscription à un tournoi, Résultats de tournoi)",
+                "Développement des fonctionnalités Classement (Classement des joueurs, Classement des meilleurs archétypes, Maître des Archétypes)",
             ]
         },
         {
@@ -35,6 +35,7 @@ const RoadMap = () => {
             color: "bg-green-100",
             titleColor: "text-green-700",
             items: [
+                "Premiers tournois en ligne",
                 "Développement des fonctionnalités Quizz (Quizz de connaissances sur l'univers Yu-Gi-Oh! - Manga/Anime, JdC, produits dérivés, etc.)",
                 "Développement d'un système d'Utilisateur Premium (Creation de plus de decks, Personnalisation du profil, Accès à des tournois privés)"
             ]
@@ -50,12 +51,14 @@ const RoadMap = () => {
             ]
         },
         {
-            period: "T4 2026",
-            dates: "Octobre - Décembre 2026",
+            period: "T4 2026 et plus loin",
+            dates: "Octobre 2026 - Proche dans le futur",
             color: "bg-purple-100",
             titleColor: "text-purple-700",
             items: [
-                "En Attente",
+                "Internationalisation du site web (Anglais, Japonais)",
+                "Tournois avec Cash Prize",
+                "Tournoi physique à 64 joueurs sur Lille (France)"
             ]
         }
     ]
