@@ -37,6 +37,7 @@ const AdminUpdateBanlist = () => {
     const navigate = useNavigate();
 
     const loadBanlistData = useCallback(async () => {
+        console.log(banlistId);
         if (!banlistId) return;
 
         setIsFetching(true);
