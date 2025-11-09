@@ -37,12 +37,11 @@ const AdminUpdateBanlist = () => {
     const navigate = useNavigate();
 
     const loadBanlistData = useCallback(async () => {
-        console.log(banlistId);
         if (!banlistId) return;
-
+        
         setIsFetching(true);
         setError(null);
-
+        
         try {
             await Promise.all([
                 getBanlistById(banlistId, setBanlist),
@@ -59,7 +58,7 @@ const AdminUpdateBanlist = () => {
 
     useEffect(() => {
         loadBanlistData();
-    }, [loadBanlistData]);
+    }, [banlistId]);
 
     const sortedCards = useMemo(() => {
         if (!banlist?.banlist_archetype_cards || !cardTypes.length) return [];
