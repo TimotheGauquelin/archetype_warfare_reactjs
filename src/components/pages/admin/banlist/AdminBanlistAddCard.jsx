@@ -38,29 +38,29 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
     };
 
     const addCardToBanlist = (card) => {
-        const isCardAlreadyInBanlist = banlist?.banlist_archetype_cards.some(
-            (banlistCard) => banlistCard?.card?.id === card.id
-        );
+        // const isCardAlreadyInBanlist = banlist?.banlist_archetype_cards.some(
+        //     (banlistCard) => banlistCard?.card?.id === card.id
+        // );
 
-        if (!isCardAlreadyInBanlist) {
+        // if (!isCardAlreadyInBanlist) {
 
-            const newCard = {
-                card_id: card.id,
-                archetype_id: null,
-                card_status_id: 1,
-                explanation_text: "Trop Versatile",
-                card: card,
-                card_status: {
-                    id: 1,
-                    label: "Forbidden"
-                }
-            }
+        //     const newCard = {
+        //         card_id: card.id,
+        //         archetype_id: null,
+        //         card_status_id: 1,
+        //         explanation_text: "Trop Versatile",
+        //         card: card,
+        //         card_status: {
+        //             id: 1,
+        //             label: "Forbidden"
+        //         }
+        //     }
 
-            setBanlist((prevState) => ({
-                ...prevState,
-                banlist_archetype_cards: [...prevState.banlist_archetype_cards, newCard],
-            }));
-        }
+        //     setBanlist((prevState) => ({
+        //         ...prevState,
+        //         banlist_archetype_cards: [...prevState.banlist_archetype_cards, newCard],
+        //     }));
+        // }
     }
 
 
@@ -90,7 +90,7 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
                     className="overflow-y-auto bg-white grid grid-cols-12"
                     style={{ height: "400px" }}
                 >
-                    {cards?.map((card, index) => {
+                    {/* {cards?.map((card, index) => {
                         const isCardAlreadyInBanlist = banlist?.banlist_archetype_cards.some(
                             (banlistCard) => banlistCard?.card?.id === card.id
                         );
@@ -114,7 +114,7 @@ const AdminBanlistAddCard = ({ banlist, setBanlist }) => {
                                 )}
                             </div>
                         );
-                    })}
+                    })} */}
                 </div>
 
                 <div className="flex justify-around items-center">
