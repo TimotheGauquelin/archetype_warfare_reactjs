@@ -5,21 +5,32 @@ import AdminStructure from "../../../components/pages/admin/AdminStructure";
 import { getImagesFromCloudinaryFolder } from "../../../services/file";
 import { URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD, URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON } from "../../../constant/urlsFront";
 import Button from "../../../components/generic/Button";
+import { FOLDER_INTRODUCTION, FOLDER_JUMBOTRON } from "../../../utils/const/cloudinary";
 
 const AdminFiles = () => {
   const [archetypeJumbotronsImages, setArchetypeJumbotronsImages] = useState([]);
   const [archetypeCardsImages, setArchetypeCardsImages] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
 
   const navigate = useNavigate();
 
+  const fetchImages = async () => {
+    try {
+      setIsFetching(true);
+
+      await Promise.all([
+        getImagesFromCloudinaryFolder(FOLDER_INTRODUCTION, setArchetypeCardsImages),
+        getImagesFromCloudinaryFolder(FOLDER_JUMBOTRON, setArchetypeJumbotronsImages),
+      ]);
+    } catch (err) {
+      console.error("Erreur lors du chargement des images:", err);
+    } finally {
+      setIsFetching(false);
+    }
+  };
+
   useEffect(() => {
-    Promise.all([
-      getImagesFromCloudinaryFolder("introduction_archetypes", setArchetypeCardsImages),
-      getImagesFromCloudinaryFolder("jumbotron_archetypes", setArchetypeJumbotronsImages),
-    ]).then(([archetypeCardsImages, archetypeJumbotronsImages]) => {
-      setArchetypeCardsImages(archetypeCardsImages);
-      setArchetypeJumbotronsImages(archetypeJumbotronsImages);
-    });
+    fetchImages();
   }, []);
 
   return (
@@ -34,13 +45,19 @@ const AdminFiles = () => {
         </p>
         <div className="flex flex-col items-end">
           <div className="grid grid-cols-12 gap-1 bg-gray-200 rounded p-1 my-2 ">
-            {archetypeCardsImages?.length > 0 && archetypeCardsImages.slice(0, 4).map((header) => {
-              return (
-                <div key={header.id} className="col-span-3 border-2 border-black rounded">
-                  <img src={header.url} alt="" />
-                </div>
-              );
-            })}
+            {isFetching ? (
+              <div className="w-full h-[100px] bg-gray-200 rounded animate-pulse">
+              </div>
+            ) : archetypeCardsImages.length > 0 && (
+              archetypeCardsImages.slice(0, 4).map((header) => {
+                return (
+                  <div key={header.id} className="col-span-3 border-2 border-black rounded">
+                    <img src={header.url} alt="" />
+                  </div>
+                );
+              })
+
+            )}
           </div>
           <Button
             buttonText="Voir toutes les cartes de présentation"
@@ -57,13 +74,18 @@ const AdminFiles = () => {
         </p>
         <div className="flex flex-col items-end">
           <div className="grid grid-cols-12 gap-1 bg-gray-200 rounded p-1 my-2 ">
-            {archetypeJumbotronsImages?.length > 0 && archetypeJumbotronsImages.slice(0, 2).map((jumbotron) => {
-              return (
-                <div key={jumbotron.id} className="col-span-6 border-2 border-black rounded">
-                  <img src={jumbotron.url} alt="" />
+            {isFetching
+              ? (
+                <div className="w-full h-[100px] bg-gray-200 rounded animate-pulse">
                 </div>
-              );
-            })}
+              )
+              : archetypeJumbotronsImages?.length > 0 && (archetypeJumbotronsImages.slice(0, 2).map((jumbotron) => {
+                return (
+                  <div key={jumbotron.id} className="col-span-6 border-2 border-black rounded">
+                    <img src={jumbotron.url} alt="" />
+                  </div>
+                )
+              }))}
           </div>
           <Button
             buttonText="Voir tous les jumbotrons"

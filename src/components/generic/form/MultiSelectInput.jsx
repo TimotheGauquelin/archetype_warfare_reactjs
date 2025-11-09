@@ -34,8 +34,8 @@ const MultiSelectInput = ({ colSpanWidth, label, required, array, data, setActio
             {label && <label className="mt-2 font-medium">
                 {label}: {required && <span className="text-red-500 font-bold">*</span>}
             </label>}
-            <div className="w-full border-1 border-gray200 rounded-md p-2">
-                <div className="flex flex-col w-full p-1 rounded-md">
+            <div className="w-full border-1 border-gray200 rounded-md">
+                <div className="flex flex-col w-full rounded-md">
                     <div className={`${selectedTags.length > 0 && "mb-2"}`}>
                         {selectedTags.map((item) => (
                             <span

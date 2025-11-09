@@ -34,7 +34,7 @@ const AdminUserUpdateForm = () => {
         <div className="flex flex-row justify-between items-center">
           <h2 className="font-bold text-xl">Informations Principales :</h2>
         </div>
-        <div className="tablet:grid tablet:grid-cols-12 tablet:gap-4">
+        <div className="tablet:grid tablet:grid-cols-12 gap-2">
           <Input
             label="Pseudo"
             required
@@ -55,6 +55,8 @@ const AdminUserUpdateForm = () => {
             data={user}
             setAction={setUser}
           />
+        </div>
+        <div className="grid grid-cols-12">
           <MultiSelectInput colSpanWidth="6" label="Roles" required array={roles} data={user} setAction={setUser} />
         </div>
       </div>
