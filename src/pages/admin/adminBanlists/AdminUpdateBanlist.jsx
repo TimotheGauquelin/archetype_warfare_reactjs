@@ -145,7 +145,6 @@ const AdminUpdateBanlist = () => {
 
     console.log(banlist);
 
-
     if (isFetching) {
         return (
             <AdminStructure>
