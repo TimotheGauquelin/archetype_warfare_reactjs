@@ -75,6 +75,8 @@ const Banlist = () => {
     const semiLimited = [];
     const unlimited = [];
 
+    console.log("sortedBanlistCards", sortedBanlistCards);
+
     sortedBanlistCards.forEach(card => {
       const cardName = card.card.name.toLowerCase();
       const searchTerm = banlistSearchInput.toLowerCase();
@@ -99,6 +101,11 @@ const Banlist = () => {
           break;
       }
     });
+
+    console.log("forbidden", forbidden);
+    console.log("limited", limited);
+    console.log("semiLimited", semiLimited);
+    console.log("unlimited", unlimited);
 
     return { forbidden, limited, semiLimited, unlimited };
   }, [sortedBanlistCards, banlistSearchInput]);
