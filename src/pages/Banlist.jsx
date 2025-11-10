@@ -34,16 +34,17 @@ const Banlist = () => {
     }
   }, []);
 
-  useEffect(() => {
-    loadBanlistData();
-  }, [loadBanlistData]);
+  const handleSearchChange = useCallback((e) => {
+    setBanlistSearchInput(e.target.value);
+  }, []);
 
+  
   const sortedBanlistCards = useMemo(() => {
     console.log("banlist?.banlist_archetype_cards", banlist?.banlist_archetype_cards);
     console.log("cardTypes", cardTypes);
     if (!banlist?.banlist_archetype_cards || !cardTypes.length) return [];
 
-    return [...banlist.banlist_archetype_cards].sort((a, b) => {
+    const sortedCards = [...banlist.banlist_archetype_cards].sort((a, b) => {
       const cardTypeA = cardTypes.find(
         (type) => type.label === a?.card?.card_type
       );
@@ -63,11 +64,10 @@ const Banlist = () => {
 
       return 0;
     });
-  }, [banlist?.banlist_archetype_cards, cardTypes]);
 
-  const handleSearchChange = useCallback((e) => {
-    setBanlistSearchInput(e.target.value);
-  }, []);
+    console.log("sortedCards", sortedCards);
+    return sortedCards;
+  }, [banlist?.banlist_archetype_cards, cardTypes]);
 
   const cardsByStatus = useMemo(() => {
     const forbidden = [];
@@ -103,6 +103,10 @@ const Banlist = () => {
 
     return { forbidden, limited, semiLimited };
   }, [sortedBanlistCards, banlistSearchInput]);
+
+  useEffect(() => {
+    loadBanlistData();
+  }, [loadBanlistData]);
 
   return (
     <div className="flex flex-col">
