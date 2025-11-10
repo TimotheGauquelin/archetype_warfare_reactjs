@@ -12,6 +12,7 @@ const ArchetypeList = ({
   isFetching = false,
   skeletonItemCount = 8,
   errorMessage = null,
+  displayDate = false,
 }) => {
   const [visibleCards, setVisibleCards] = useState(0);
 
@@ -72,6 +73,7 @@ const ArchetypeList = ({
                     archetype={archetype}
                     index={index}
                     haveAMedal={haveMedal}
+                    displayDate={displayDate}
                   />
                 </Link>
               </div>

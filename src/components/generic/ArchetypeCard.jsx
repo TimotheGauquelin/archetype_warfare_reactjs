@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
+import { databaseDateToCalendarDate } from "../../utils/date/databaseDateToCalendarDate";
 
-const ArchetypeCard = ({ archetype, index, haveAMedal }) => {
+const ArchetypeCard = ({ archetype, index, haveAMedal, displayDate = false }) => {
 
   const imageUrl = useMemo(() => {
     if (
@@ -33,7 +34,9 @@ const ArchetypeCard = ({ archetype, index, haveAMedal }) => {
             <img src={medalPath} alt="" />
           </div>
         )}
-        <p className={`${index < 3 && "pl-2"}`}>{archetype?.name}</p>
+        <p className={`${index < 3 && "pl-2"} flex flex-col`}>
+          <span>{archetype?.name}</span>
+          <span className="text-xs">{displayDate && ` (${databaseDateToCalendarDate(archetype?.in_aw_date)})`}</span></p>
       </div>
     </div>
   );

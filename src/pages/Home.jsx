@@ -74,6 +74,7 @@ const Home = () => {
           subTitleDividerText="Nouveaux Archétypes"
           isLoading={isLoading}
           skeletonItemCount={8}
+          displayDate
         />
       </PageContentBlock>
       <Footer />
