@@ -77,16 +77,18 @@ const Banlist = () => {
     console.log("sortedBanlistCards", sortedBanlistCards);
 
     sortedBanlistCards.forEach(card => {
+
+      const cardStatus = card.card_status?.label.toLowerCase();
       console.log("card", card);
-      console.log("card.card_status?.label", card.card_status?.label);
-      switch (card.card_status?.label) {
-        case STATUS_FORBIDDEN:
+      console.log("card.card_status?.label", cardStatus);
+      switch (cardStatus) {
+        case STATUS_FORBIDDEN.toLowerCase():
           forbidden.push(card);
           break;
-        case STATUS_LIMITED:
+        case STATUS_LIMITED.toLowerCase():
           limited.push(card);
           break;
-        case STATUS_SEMI_LIMITED:
+        case STATUS_SEMI_LIMITED.toLowerCase():
           semiLimited.push(card);
           break;
       }
