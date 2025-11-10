@@ -77,13 +77,8 @@ const Banlist = () => {
     console.log("sortedBanlistCards", sortedBanlistCards);
 
     sortedBanlistCards.forEach(card => {
-      const cardName = card.card.name.toLowerCase();
-      const searchTerm = banlistSearchInput.toLowerCase();
-
-      if (banlistSearchInput.trim() && !cardName.includes(searchTerm)) {
-        return;
-      }
-
+      console.log("card", card);
+      console.log("card.card_status?.label", card.card_status?.label);
       switch (card.card_status?.label) {
         case STATUS_FORBIDDEN:
           forbidden.push(card);
