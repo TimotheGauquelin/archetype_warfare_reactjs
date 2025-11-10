@@ -4,24 +4,20 @@ import { searchCards, searchCardsWithoutArchetypeAndByOneArchetypeId } from "../
 import { debounce } from "../../../../utils/functions/debounce";
 import { toast } from "react-toastify";
 import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
+import { STATUS_FORBIDDEN, STATUS_UNLIMITED } from "../../../../utils/const/banlistConst";
 
 const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination, setPagination }) => {
 
   const [researchedCards, setResearchedCards] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-
-  // Ref pour stocker l'AbortController actuel
   const abortControllerRef = useRef(null);
 
-  // Fonction de recherche avec gestion d'annulation
   const performSearch = useCallback((name, page, size, card_type, level, min_atk, max_atk, min_def, max_def, attribute) => {
-    // Annuler la requête précédente si elle existe
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Créer un nouveau AbortController
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
 
@@ -121,15 +117,13 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
 
   const addCardsIntoDeck = useCallback((card) => {
 
-    if (card?.card_status?.label === "Forbidden" || card?.card_status?.label === "Interdit") {
-      return; // Ne pas ajouter de carte interdite
+    if (card?.card_status?.label.toLowerCase() === STATUS_FORBIDDEN.toLowerCase()) {
+      return;
     }
 
-    // Déterminer si la carte est pour l'ExtraDeck ou le MainDeck
     const cardType = card?.card_type || card?.cardType?.label || "";
     const isExtraDeck = EXTRA_DECK_LABELS.includes(cardType);
 
-    // Calculer les totaux actuels
     const currentCards = myDeck?.deck_cards || [];
     const mainDeckCards = currentCards.filter(
       (deckCard) => {
@@ -170,23 +164,23 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
       return;
     }
 
-    // Trouver l'index de la carte dans le deck
+    const totalQuantityInDeck = myDeck.deck_cards
+      .filter((deckCard) => deckCard.card.id === card.id)
+      .reduce((acc, deckCard) => acc + deckCard.quantity, 0);
+
+    if (totalQuantityInDeck >= cardLimit) {
+      toast.error(`Limite de ${cardLimit} exemplaire(s) atteinte pour cette carte.`);
+      return;
+    }
+
     const cardIndex = myDeck.deck_cards.findIndex(
       (deckCard) =>
         deckCard.card.id === card.id && deckCard.img_url === card.img_url
     );
 
-    // Si la carte est déjà dans le deck
     if (cardIndex >= 0) {
       const existingCard = myDeck.deck_cards[cardIndex];
 
-      // Vérifier si on a déjà atteint la limite définie par card_status.limit
-      if (existingCard.quantity >= cardLimit) {
-        // Limite atteinte, ne pas ajouter
-        return;
-      }
-
-      // Vérifier les limites du deck après incrémentation
       const wouldAddToMainDeck = !isExtraDeck;
       const wouldAddToExtraDeck = isExtraDeck;
 
@@ -200,8 +194,7 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
         return;
       }
 
-      // Incrémenter la quantité (maximum défini par card_status.limit)
-      const newQuantity = Math.min(existingCard.quantity + 1, cardLimit);
+      const newQuantity = Math.min(existingCard.quantity + 1, cardLimit - (totalQuantityInDeck - existingCard.quantity));
 
       setMyDeck((prev) => ({
         ...prev,
@@ -212,7 +205,11 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
         ),
       }));
     } else {
-      // Nouvelle carte, l'ajouter avec quantité 1
+      if (totalQuantityInDeck >= cardLimit) {
+        toast.error(`Limite de ${cardLimit} exemplaire(s) atteinte pour cette carte.`);
+        return;
+      }
+
       setMyDeck((prev) => ({
         ...prev,
         deck_cards: [...prev.deck_cards, { card: card, img_url: card.img_url, quantity: 1 }],
@@ -233,20 +230,21 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
     return researchedCards.map((card) => {
       if (!card?.id) return null;
 
-      // Vérifier si la carte est déjà dans le deck et sa quantité
+      const totalQuantityInDeck = myDeck?.deck_cards
+        ?.filter((deckCard) => deckCard.card.id === card.id)
+        .reduce((acc, deckCard) => acc + deckCard.quantity, 0) || 0;
+
+      const cardLimit = card?.card_status?.limit || 3;
+
       const deckCard = myDeck?.deck_cards?.find(
         (deckCard) =>
           deckCard.card.id === card.id && deckCard.img_url === card.img_url
       );
 
-      // Obtenir la limite depuis card_status.limit (par défaut 3 si non défini)
-      const cardLimit = card?.card_status?.limit || 3;
-
-      const isInDeck = !!deckCard;
-      const hasReachedLimit = deckCard?.quantity >= cardLimit;
-      const isForbidden = card?.card_status?.label === "Forbidden" || card?.card_status?.label === "Interdit";
+      const hasReachedLimit = totalQuantityInDeck >= cardLimit;
+      const isForbidden = card?.card_status?.label.toLowerCase() === STATUS_FORBIDDEN.toLowerCase();
       const shouldDisable = hasReachedLimit || isForbidden;
-      const cardStatusLabel = card?.card_status?.label ? card?.card_status?.label?.toLowerCase() : "unlimited";
+      const cardStatusLabel = card?.card_status?.label ? card?.card_status?.label?.toLowerCase() : STATUS_UNLIMITED.toLowerCase();
 
       return (
         <div key={card.id} className="col-span-4 relative">
@@ -264,8 +262,8 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
                 ? "Cette carte est interdite"
                 : hasReachedLimit
                   ? `Limite de ${cardLimit} exemplaire(s) atteinte`
-                  : isInDeck
-                    ? `${deckCard.quantity}/${cardLimit} exemplaire(s) dans le deck`
+                  : totalQuantityInDeck > 0
+                    ? `${totalQuantityInDeck}/${cardLimit} exemplaire(s) dans le deck`
                     : "Cliquez pour ajouter au deck"
             }
           >
@@ -278,9 +276,9 @@ const DeckCardsSearcher = ({ myDeck, setMyDeck, filters, setFilters, pagination,
                 e.target.src = `${process.env.PUBLIC_URL}/assets/waiting_archetype_image.jpg`;
               }}
             />
-            {isInDeck && (
+            {totalQuantityInDeck > 0 && (
               <div className="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
-                {deckCard.quantity}/{cardLimit}
+                {totalQuantityInDeck}/{cardLimit}
               </div>
             )}
           </div>
