@@ -39,14 +39,16 @@ const Banlist = () => {
   }, [loadBanlistData]);
 
   const sortedBanlistCards = useMemo(() => {
+    console.log("banlist?.banlist_archetype_cards", banlist?.banlist_archetype_cards);
+    console.log("cardTypes", cardTypes);
     if (!banlist?.banlist_archetype_cards || !cardTypes.length) return [];
 
     return [...banlist.banlist_archetype_cards].sort((a, b) => {
       const cardTypeA = cardTypes.find(
-        (type) => type.label === a.card.card_type
+        (type) => type.label === a?.card?.card_type
       );
       const cardTypeB = cardTypes.find(
-        (type) => type.label === b.card.card_type
+        (type) => type.label === b?.card?.card_type
       );
 
       if (cardTypeA && cardTypeB) {

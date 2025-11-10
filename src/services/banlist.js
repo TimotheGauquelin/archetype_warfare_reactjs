@@ -7,6 +7,7 @@ export const getCurrentBanlist = (setBanlist) => {
     try {
         api_aw.get(URL_BACK_GET_CURRENT_BANLIST).then((response) => {
             if (response.status === 200) {
+                console.log("response.data", response.data);
                 setBanlist(response.data);
             }
         });
