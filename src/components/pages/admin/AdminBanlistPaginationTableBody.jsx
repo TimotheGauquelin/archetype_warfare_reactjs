@@ -2,6 +2,7 @@ import { format } from "date-fns";
 import { enGB } from "date-fns/locale";
 import React from "react";
 import { Link } from "react-router-dom";
+import { STATUS_FORBIDDEN, STATUS_LIMITED, STATUS_SEMI_LIMITED } from "../../../utils/const/banlistConst";
 
 const AdminBanlistPaginationTableBody = ({
   arrayItems,
@@ -9,7 +10,7 @@ const AdminBanlistPaginationTableBody = ({
 }) => {
 
   const numberOfCardsFromArchetypePerStatus = (item, status) => {
-    return item.banlist_archetype_cards.filter((card) => card.archetype_id === null && card.card_status.label === status).length;
+    return item.banlist_archetype_cards.filter((card) => card.archetype_id === null && card.card_status.label.toLowerCase() === status.toLowerCase()).length;
   };
 
   return (
@@ -32,13 +33,13 @@ const AdminBanlistPaginationTableBody = ({
               {item.banlist_archetype_cards.length > 1 ? `${item.banlist_archetype_cards.length} cards` : `${item.banlist_archetype_cards.length} card`}
             </div>
             <div className={`col-span-1 px-3 py-4`}>
-              {numberOfCardsFromArchetypePerStatus(item, "Forbidden")}
+              {numberOfCardsFromArchetypePerStatus(item, STATUS_FORBIDDEN.toLowerCase())}
             </div>
             <div className={`col-span-1 px-3 py-4`}>
-              {numberOfCardsFromArchetypePerStatus(item, "Limited")}
+              {numberOfCardsFromArchetypePerStatus(item, STATUS_LIMITED.toLowerCase())}
             </div>
             <div className={`col-span-1 px-3 py-4`}>
-              {numberOfCardsFromArchetypePerStatus(item, "Semi-Limited")}
+              {numberOfCardsFromArchetypePerStatus(item, STATUS_SEMI_LIMITED.toLowerCase())}
             </div>
             <div className="col-span-4 bg-gray-100 p-4 text-right">
               <p
