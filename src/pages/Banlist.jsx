@@ -73,7 +73,6 @@ const Banlist = () => {
     const forbidden = [];
     const limited = [];
     const semiLimited = [];
-    const unlimited = [];
 
     console.log("sortedBanlistCards", sortedBanlistCards);
 
@@ -95,19 +94,14 @@ const Banlist = () => {
         case STATUS_SEMI_LIMITED:
           semiLimited.push(card);
           break;
-        case STATUS_UNLIMITED:
-        default:
-          unlimited.push(card);
-          break;
       }
     });
 
     console.log("forbidden", forbidden);
     console.log("limited", limited);
     console.log("semiLimited", semiLimited);
-    console.log("unlimited", unlimited);
 
-    return { forbidden, limited, semiLimited, unlimited };
+    return { forbidden, limited, semiLimited };
   }, [sortedBanlistCards, banlistSearchInput]);
 
   return (
