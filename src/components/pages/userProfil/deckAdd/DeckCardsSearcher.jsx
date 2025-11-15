@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import { searchCards, searchCardsWithoutArchetypeAndByOneArchetypeId } from "../../../../services/card";
+import { searchCardsWithoutArchetypeAndByOneArchetypeId } from "../../../../services/card";
 import { debounce } from "../../../../utils/functions/debounce";
 import { toast } from "react-toastify";
 import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";

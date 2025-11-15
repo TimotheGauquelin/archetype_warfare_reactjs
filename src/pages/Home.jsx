@@ -11,6 +11,7 @@ import {
   getFiveRandomHighlightedArchetypes,
 } from "../services/archetype";
 import Footer from "../components/generic/footer/Footer";
+import StreamBar from "../components/generic/header/StreamBar";
 
 const Home = () => {
   const [fiveMostFamousArchetypes, setFiveMostFamousArchetypes] = useState([]);

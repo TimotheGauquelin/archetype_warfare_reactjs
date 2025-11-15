@@ -1,5 +1,4 @@
-import React, { lazy } from "react";
-
+import React from "react";
 import Home from "./pages/Home";
 import MyProfil from "./pages/userProfil/MyProfil";
 import Login from "./pages/Login";
@@ -70,10 +69,14 @@ import Archetypes from "./pages/Archetypes";
 import RoadMap from "./pages/RoadMap";
 import AdminFilesIntroductionCard from "./pages/admin/adminFiles/ArchetypeFileIntroductionCard";
 import ScrollToTop from "./utils/scroll/ScrollToTop";
+import StreamBar from "./components/generic/header/StreamBar";
 
 const AppContent = () => {
   return (
     <div className="relative">
+      {
+        <StreamBar />
+      }
       <BrowserRouter
         future={{
           v7_startTransition: true,

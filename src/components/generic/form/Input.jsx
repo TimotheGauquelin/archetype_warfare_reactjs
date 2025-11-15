@@ -15,6 +15,7 @@ export const Input = ({
   disabled,
 }) => {
   const handleChange = useCallback((e) => {
+    console.log("ici", e.target.value);
     setAction((prevState) => ({
       ...prevState,
       [attribute]: e.target.value,

@@ -45,6 +45,7 @@ const AdminArchetypeData = ({
           inputName="nom"
           colSpanWidth="6"
           attribute="name"
+          data={newArchetype}
           setAction={setNewArchetype}
         />
         <div className={`flex flex-col col-span-3`}>

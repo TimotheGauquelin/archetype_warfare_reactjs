@@ -1,14 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import {
-  URL_FRONT_HOME,
-  URL_FRONT_ABOUT,
-  URL_FRONT_ARCHETYPES,
-  URL_FRONT_BANLIST,
-  URL_FRONT_TERMS_AND_CONDITIONS,
-  URL_FRONT_LOGIN,
-  URL_FRONT_REGISTER,
-} from "../../../constant/urlsFront";
+import { FaDiscord, FaTwitch, FaYoutube } from "react-icons/fa";
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -23,6 +14,17 @@ const Footer = () => {
         <p className="text-gray-500">
           Conçu avec passion pour les duellistes
         </p>
+        <div className="flex flex-row justify-center items-center gap-1">
+          <div className="bg-purple-700 p-1">
+            <FaTwitch className='w-4 h-4' color="white" />
+          </div>
+          <div className="bg-blue-600 p-1">
+            <FaDiscord className='w-4 h-4' color="white" />
+          </div>
+          <div className="bg-red-700 p-1">
+            <FaYoutube className='w-4 h-4' color="white" />
+          </div>
+        </div>
       </div>
     </footer>
   );
