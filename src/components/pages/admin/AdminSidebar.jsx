@@ -2,8 +2,8 @@ import "../../../styles/components/page/admin/AdminSideBar.scss";
 
 import React from "react";
 import { FaHome } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
-import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ADMIN_BANLISTS, URL_FRONT_ADMIN_CARDS, URL_FRONT_ADMIN_HOME } from "../../../constant/urlsFront";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ADMIN_BANLISTS, URL_FRONT_ADMIN_CARDS, URL_FRONT_ADMIN_HOME, URL_FRONT_ADMIN_OPTIONS } from "../../../constant/urlsFront";
 
 const sideBarCategories = [
   {
@@ -40,14 +40,14 @@ const sideBarCategories = [
 
 const AdminSideBar = ({ displayedNavbar }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const url = location.pathname;
 
   return (
     <aside
-      className={`sscreen:col-span-3 lscreen:col-span-2 flex flex-col sscreen:tabletAndDesktopHeight ${
-        displayedNavbar ? "block" : "hidden"
-      }`}
+      className={`sscreen:col-span-3 lscreen:col-span-2 flex flex-col sscreen:tabletAndDesktopHeight ${displayedNavbar ? "block" : "hidden"
+        }`}
     >
       <div className="flex-grow flex flex-col justify-between text-gray-500 bg-gray-800">
         <nav className="flex flex-col mx-4 my-6 space-y-4">
@@ -57,28 +57,21 @@ const AdminSideBar = ({ displayedNavbar }) => {
                 <Link
                   key={category.title + index}
                   to={category.url}
-                  className={`w-full ${
-                    url.includes(category.url) && "bg-gray-600"
-                  } inline-flex items-center py-3 hover:text-gray-400 hover:bg-gray-500 focus:text-gray-400 focus:bg-gray-700 rounded-lg px-2`}
+                  className={`w-full ${url.includes(category.url) && "bg-gray-600"
+                    } inline-flex items-center py-3 hover:text-gray-400 hover:bg-gray-500 focus:text-gray-400 focus:bg-gray-700 rounded-lg px-2`}
                 >
                   {category.icon}
                   <span className="ml-2" x-show="menu">
                     {category.title}
                   </span>
                 </Link>
-                {/* {category.title === "Fichiers" && (
-                  <div>
-                    <Link to="/admin/files/archetypesjumbotron">
-                      <span className="ml-2">Jumbotron</span>
-                    </Link>
-                    <p>DEF</p>
-                  </div>
-                )} */}
               </div>
             );
           })}
         </nav>
-        <div className="flex justify-end">
+        <div className="flex justify-end"
+          onClick={() => navigate(URL_FRONT_ADMIN_OPTIONS)}
+        >
           <button className="inline-flex p-3 hover:text-gray-400 justify-center border-gray-700 h-15 w-full border-t hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 px-2">
             <svg
               aria-hidden="true"

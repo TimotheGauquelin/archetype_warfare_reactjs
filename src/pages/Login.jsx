@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import {
@@ -13,6 +13,7 @@ import { Input } from "../components/generic/form/Input.jsx";
 import { logIn } from "../services/auth.js";
 import ErrorText from "../components/generic/ErrorText.jsx";
 import { laborIllusion } from "../utils/functions/laborIllusion.js";
+import { getConfig } from "../services/websiteactions.js";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const Login = () => {
   });
 
   const [error, setError] = useState("");
+  const [config, setConfig] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = () => {
@@ -44,6 +46,10 @@ const Login = () => {
 
     laborIllusion(() => logIn(log, dispatch, navigate, setError, setIsLoading), 1);
   };
+
+  useEffect(() => {
+    getConfig(setConfig);
+  }, []);
 
   return (
     <div className="bg-graybackground w-screen min-h-screen fixed left-0 top-0 flex justify-center items-center p-4">
@@ -100,11 +106,13 @@ const Login = () => {
             className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200"
             action={() => navigate(URL_FRONT_PASSWORD_LOST)}
           />
-          <div>
-            <Link to={URL_FRONT_REGISTER} className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200">
-              Créer un compte
-            </Link>
-          </div>
+          {
+            config?.registration_enabled && config?.registration_enabled === true && <div>
+              <Link to={URL_FRONT_REGISTER} className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200">
+                Créer un compte
+              </Link>
+            </div>
+          }
         </div>
       </div>
     </div>

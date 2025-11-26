@@ -123,3 +123,8 @@ export const URL_BACK_DELETE_USER = (userId) => `/users/${userId}`
 ///// PASSWORD
 export const URL_BACK_UPDATE_PASSWORD = (userId) => `/authenticate/user/${userId}/update-password`
 export const URL_BACK_REQUEST_NEW_PASSWORD = `/authenticate/request-new-password`
+
+///// WEBSITE ACTIONS
+export const URL_BACK_GET_CONFIG = '/website-actions'
+export const URL_BACK_TOGGLE_STREAM_BAR = '/website-actions/stream-banner'
+export const URL_BACK_TOGGLE_REGISTRATION = '/website-actions/registration'

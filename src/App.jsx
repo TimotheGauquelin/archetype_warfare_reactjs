@@ -1,4 +1,3 @@
-import React from "react";
 import Home from "./pages/Home";
 import MyProfil from "./pages/userProfil/MyProfil";
 import Login from "./pages/Login";
@@ -47,7 +46,9 @@ import {
   URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD,
   URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON,
   URL_FRONT_ROAD_MAP,
+  URL_FRONT_ADMIN_OPTIONS,
 } from "./constant/urlsFront";
+import AdminOptions from "./pages/admin/adminOptions/AdminOptions";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
 import AdminArchetypeAdd from "./pages/admin/adminArchetypes/AdminArchetypeAdd";
 import AdminUserAdd from "./pages/admin/adminUsers/AdminUserAdd";
@@ -70,12 +71,20 @@ import RoadMap from "./pages/RoadMap";
 import AdminFilesIntroductionCard from "./pages/admin/adminFiles/ArchetypeFileIntroductionCard";
 import ScrollToTop from "./utils/scroll/ScrollToTop";
 import StreamBar from "./components/generic/header/StreamBar";
+import { getConfig } from "./services/websiteactions";
+import { useEffect, useState } from "react";
 
 const AppContent = () => {
+  const [config, setConfig] = useState({});
+
+  useEffect(() => {
+    getConfig(setConfig);
+  }, []);
+
   return (
     <div className="relative">
       {
-        <StreamBar />
+        config?.stream_banner_enabled && config?.stream_banner_enabled === true && <StreamBar />
       }
       <BrowserRouter
         future={{
@@ -93,7 +102,7 @@ const AppContent = () => {
           />
           <Route path={URL_FRONT_ROAD_MAP} element={<RoadMap />} />
           <Route exact path={URL_FRONT_LOGIN} element={<Login />} />
-          <Route exact path={URL_FRONT_REGISTER} element={<Register />} />
+          <Route exact path={URL_FRONT_REGISTER} element={config?.registration_enabled ? <Register /> : <Navigate to={URL_FRONT_HOME} />} />
           <Route exact path={URL_FRONT_TERMS_AND_CONDITIONS} element={<TermsAndConditions />} />
           <Route
             exact
@@ -193,6 +202,9 @@ const AppContent = () => {
           />
           <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
             <Route path={URL_FRONT_ADMIN_CARDS} element={<AdminCards />} />
+          </Route>
+          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+            <Route path={URL_FRONT_ADMIN_OPTIONS} element={<AdminOptions />} />
           </Route>
         </Routes>
         <ToastContainer

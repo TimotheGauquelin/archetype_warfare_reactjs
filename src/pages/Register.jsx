@@ -136,7 +136,7 @@ const Register = () => {
           buttonText="Créer mon compte"
           className="bg-black text-white w-full p-2 mb-2 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed"
           action={handleRegister}
-          disabled={isLoading || !registerData.has_accepted_terms_and_conditions}
+          disabled={isLoading}
           loadingText="Inscription en cours..."
         />
 

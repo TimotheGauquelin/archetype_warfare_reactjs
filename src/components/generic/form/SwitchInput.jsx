@@ -10,7 +10,7 @@ export const SwitchInput = ({
 
   return (
     <div className="flex flex-col justify-center items-center px-2">
-      <label className="mt-2 font-medium">{label}</label>
+      {label && <label className="mt-2 font-medium">{label}</label>}
       <label className="inline-flex relative items-center cursor-pointer">
         <input
           type="checkbox"

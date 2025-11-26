@@ -30,6 +30,7 @@ export const URL_FRONT_ADMIN_USERS = "/admin/users";
 export const URL_FRONT_ADMIN_USER_ADD = "/admin/users/add";
 export const URL_FRONT_ADMIN_USER_UPDATE = "/admin/users/update/:userId";
 export const URL_FRONT_ADMIN_CARDS = "/admin/cards";
+export const URL_FRONT_ADMIN_OPTIONS = "/admin/options";
 export const URL_FRONT_ADMIN_FILES = "/admin/files";
 export const URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON = "/admin/files/archetypes/jumbotron";
 export const URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD = "/admin/files/archetypes/introduction-card";
