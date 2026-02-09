@@ -8,9 +8,15 @@ services:
     environment:
       - NODE_ENV=development
       - BACKEND_URL=http://localhost:8889
+      - REACT_APP_BASE_URL=http://localhost:8888
+      - DOCKER=true
     volumes:
       - ./src:/app/src
       - ./public:/app/public
+      - ./index.html:/app/index.html
+      - ./vite.config.ts:/app/vite.config.ts
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./tsconfig.node.json:/app/tsconfig.node.json
     ports:
       - '8888:3000'
     networks:

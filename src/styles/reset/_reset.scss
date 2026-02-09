@@ -7,12 +7,13 @@
 }
 
 html {
-  font-size: 62, 5%;
+  font-size: 100%;
   scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
+  overflow-x: hidden;
   background-color: #fafafe;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

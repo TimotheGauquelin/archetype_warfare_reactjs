@@ -7,6 +7,11 @@ COPY package.json .
 COPY package-lock.json .
 COPY tailwind.config.js .
 COPY postcss.config.js .
+COPY vite.config.ts .
+COPY tsconfig.json .
+COPY tsconfig.node.json .
+COPY vitest.config.ts .
+COPY index.html .
 
 # Installation des dépendances
 RUN npm ci

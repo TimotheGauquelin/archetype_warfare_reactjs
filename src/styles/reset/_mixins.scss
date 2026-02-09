@@ -1,8 +1,3 @@
-@mixin no-margin {
-  margin: 0;
-  padding: 0;
-}
-
 @mixin button($background-color) {
   display: flex;
   flex-direction: row;

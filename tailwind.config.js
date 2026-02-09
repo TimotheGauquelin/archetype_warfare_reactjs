@@ -8,6 +8,17 @@ module.exports = {
       lscreen: "1025px",
       xscreen: "1200px",
     },
+    fontSize: {
+      xs: "0.50rem", 
+      sm: "0.625rem", 
+      base: "0.75rem", 
+      md: "1rem",
+      lg: "1.25rem",
+      xl: "1.50rem",
+      "2xl": "2rem",
+      "3xl": "3rem",
+      "4xl": "4rem",
+    },
     maxWidth: {
       containerSize: "1200px",
     },
