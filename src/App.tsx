@@ -31,7 +31,6 @@ import {
   URL_FRONT_ADMIN_USERS,
   URL_FRONT_ARCHETYPES,
   URL_FRONT_BANLIST,
-  URL_FRONT_DISCORD_CALLBACK,
   URL_FRONT_HOME,
   URL_FRONT_LOGIN,
   URL_FRONT_REGISTER,
@@ -50,6 +49,7 @@ import {
   URL_FRONT_ROAD_MAP,
   URL_FRONT_ADMIN_OPTIONS,
   URL_FRONT_MY_PROFILE_EDIT,
+  URL_FRONT_TOURNAMENTS,
 } from "./constant/urlsFront";
 import AdminOptions from "./pages/admin/adminOptions/AdminOptions";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
@@ -73,6 +73,8 @@ import type { SiteConfig } from "./types";
 import ArchetypesPage from "./pages/user/archetypesPage/ArchetypesPage";
 import ArchetypePage from "./pages/user/archetypePage/ArchetypePage";
 import UpdateMyDeckPage from "./pages/userProfil/myDecks/updateADeck/UpdateMyDeckPage";
+import TournamentsPage from "./pages/user/tournaments/TournamentsPage";
+import TournamentDetailPage from "./pages/user/tournamentDetail/TournamentDetailPage";
 
 const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SiteConfig>({});
@@ -118,6 +120,8 @@ const AppContent: React.FC = () => {
           />
           <Route path={URL_FRONT_ABOUT} element={<ConceptPage />} />
           <Route path={URL_FRONT_BANLIST} element={<BanlistPage />} />
+          <Route path={URL_FRONT_TOURNAMENTS} element={<TournamentsPage />} />
+          <Route path="/tournaments/:id" element={<TournamentDetailPage />} />
           <Route path={URL_FRONT_PASSWORD_LOST} element={<PasswordLostPage />} />
           <Route
             path={URL_FRONT_PASSWORD_RESET}

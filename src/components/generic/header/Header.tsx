@@ -3,7 +3,7 @@ import { BsPerson } from "react-icons/bs";
 import { Link, useLocation } from "react-router-dom";
 import { FaTimes, FaBars } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { URL_FRONT_ABOUT, URL_FRONT_ARCHETYPES, URL_FRONT_BANLIST,URL_FRONT_ROAD_MAP, URL_FRONT_HOME, URL_FRONT_LOGIN, URL_FRONT_MY_PROFILE} from "../../../constant/urlsFront";
+import { URL_FRONT_ABOUT, URL_FRONT_ARCHETYPES, URL_FRONT_BANLIST,URL_FRONT_ROAD_MAP, URL_FRONT_HOME, URL_FRONT_LOGIN, URL_FRONT_MY_PROFILE, URL_FRONT_TOURNAMENTS} from "../../../constant/urlsFront";
 import type { RootState } from "../../../types";
 
 const HeaderMemo = memo(function Header() {
@@ -23,6 +23,10 @@ const HeaderMemo = memo(function Header() {
     {
       title: "Banlist",
       url: URL_FRONT_BANLIST,
+    },
+    {
+      title: "Tournois",
+      url: URL_FRONT_TOURNAMENTS,
     },
     {
       title: "RoadMap",

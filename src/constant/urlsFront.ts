@@ -10,6 +10,8 @@ export const URL_FRONT_ARCHETYPES = "/archetypes";
 export const URL_FRONT_ARCHETYPE = (id: number | string): string => `/archetype/${id}`;
 export const URL_FRONT_BANLIST = "/banlist";
 export const URL_FRONT_ROAD_MAP = "/road-map";
+export const URL_FRONT_TOURNAMENTS = "/tournaments";
+export const URL_FRONT_TOURNAMENT = (id: number | string): string => `/tournaments/${id}`;
 
 //Profil
 export const URL_FRONT_MY_PROFILE = "/my-profile";

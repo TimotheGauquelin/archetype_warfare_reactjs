@@ -1,5 +1,5 @@
+import { dateToInputDate } from "@/utils/date/date";
 import React from "react";
-import { dateToInputDate } from "../../../utils/date/verbalDate";
 
 interface DateInputProps {
     label?: string;

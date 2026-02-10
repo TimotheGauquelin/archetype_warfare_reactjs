@@ -129,3 +129,9 @@ export const URL_BACK_REQUEST_NEW_PASSWORD = `/authenticate/request-new-password
 export const URL_BACK_GET_CONFIG = '/website-actions'
 export const URL_BACK_TOGGLE_STREAM_BAR = '/website-actions/stream-banner'
 export const URL_BACK_TOGGLE_REGISTRATION = '/website-actions/registration'
+
+// TOURNAMENTS
+export const URL_BACK_GET_TOURNAMENTS = '/tournaments';
+export const URL_BACK_GET_TOURNAMENT = (id: number | string) => `/tournaments/${id}`;
+export const URL_BACK_REGISTER_TOURNAMENT = (id: number | string) => `/tournaments/${id}/register`;
+export const URL_BACK_UNREGISTER_TOURNAMENT = (id: number | string) => `/tournaments/${id}/register`;
