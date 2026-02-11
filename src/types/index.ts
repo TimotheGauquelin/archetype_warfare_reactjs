@@ -282,7 +282,7 @@ export interface Tournament {
   event_date_end?: string;
   is_online?: boolean;
   number_of_rounds?: number;
-  match_type?: number;
+  matches_per_round?: number;
   players?: TournamentPlayer[];
   [key: string]: unknown;
 }

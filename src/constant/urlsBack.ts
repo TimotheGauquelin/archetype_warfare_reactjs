@@ -134,4 +134,8 @@ export const URL_BACK_TOGGLE_REGISTRATION = '/website-actions/registration'
 export const URL_BACK_GET_TOURNAMENTS = '/tournaments';
 export const URL_BACK_GET_TOURNAMENT = (id: number | string) => `/tournaments/${id}`;
 export const URL_BACK_REGISTER_TOURNAMENT = (id: number | string) => `/tournaments/${id}/register`;
-export const URL_BACK_UNREGISTER_TOURNAMENT = (id: number | string) => `/tournaments/${id}/register`;
+export const URL_BACK_UNREGISTER_TOURNAMENT = (id: number | string) => `/tournaments/${id}/unregister`;
+export const URL_BACK_GET_MY_TOURNAMENTS = '/tournaments/my-tournaments';
+export const URL_BACK_GET_MY_TOURNAMENT_DETAIL = (id: number | string) => `/tournaments/${id}/my-details`;
+export const URL_BACK_REPORT_MATCH_RESULT = (matchId: number | string) =>
+  `/tournaments/matches/${matchId}/result`;

@@ -50,6 +50,7 @@ import {
   URL_FRONT_ADMIN_OPTIONS,
   URL_FRONT_MY_PROFILE_EDIT,
   URL_FRONT_TOURNAMENTS,
+  URL_FRONT_MY_TOURNAMENTS,
 } from "./constant/urlsFront";
 import AdminOptions from "./pages/admin/adminOptions/AdminOptions";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
@@ -75,6 +76,8 @@ import ArchetypePage from "./pages/user/archetypePage/ArchetypePage";
 import UpdateMyDeckPage from "./pages/userProfil/myDecks/updateADeck/UpdateMyDeckPage";
 import TournamentsPage from "./pages/user/tournaments/TournamentsPage";
 import TournamentDetailPage from "./pages/user/tournamentDetail/TournamentDetailPage";
+import AllMyTournamentsPage from "./pages/userProfil/myTournaments/myTournamentsMain/AllMyTournamentsPage";
+import MyTournamentDetail from "./pages/userProfil/myTournaments/myTournamentDetail/MyTournamentDetail";
 
 const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SiteConfig>({});
@@ -135,6 +138,8 @@ const AppContent: React.FC = () => {
           <Route path={URL_FRONT_MY_DECKS} element={<MyDecksPage />} />
           <Route path={URL_FRONT_MY_DECK_ADD} element={<MyDeckAdd />} />
           <Route path={URL_FRONT_MY_DECK_UPDATE} element={<UpdateMyDeckPage />} />
+          <Route path={URL_FRONT_MY_TOURNAMENTS} element={<AllMyTournamentsPage />} />
+          <Route path="/my-tournaments/:tournamentId" element={<MyTournamentDetail />} />
 
           {/* Admin */}
           <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>

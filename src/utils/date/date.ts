@@ -1,3 +1,4 @@
+// 2026-02-11 -> 11/02/2026
 export const dateToInputDate = (dateString: string | undefined | null): string => {
     if (!dateString) return '';
     const date = new Date(dateString);

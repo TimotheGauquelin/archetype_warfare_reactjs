@@ -2,11 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import UserBasicLayout from "../layout";
-import TournamentDetail from "../../../components/pages/user/tournaments/TournamentDetail";
 import { getTournamentById, registerToTournament, unregisterFromTournament } from "../../../services/tournament";
-import type { Tournament } from "../../../types";
+import type { Tournament, TournamentPlayer } from "../../../types";
 import type { RootState } from "../../../redux/store";
 import { URL_FRONT_TOURNAMENTS } from "../../../constant/urlsFront";
+import { TournamentDetailsMatchMaking } from "@/components/pages/user/tournaments/TournamentDetailsMatchMaking";
+import TournamentDetailsPlayers from "../../../components/pages/user/tournaments/TournamentDetailsPlayers";
+import TournamentDetailsMainInfo from "../../../components/pages/user/tournaments/TournamentDetailsMainInfo";
 
 const TournamentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,10 +35,6 @@ const TournamentDetailPage: React.FC = () => {
       setIsLoading(false);
     }
   }, [id]);
-
-  useEffect(() => {
-    loadTournament();
-  }, [loadTournament]);
 
   const handleRegister = useCallback(async () => {
     if (!id || !user.token) return;
@@ -67,6 +65,11 @@ const TournamentDetailPage: React.FC = () => {
       setIsUnregistering(false);
     }
   }, [id, user.token, loadTournament]);
+
+
+  useEffect(() => {
+    loadTournament();
+  }, [loadTournament]);
 
   if (!id) {
     return (
@@ -110,7 +113,7 @@ const TournamentDetailPage: React.FC = () => {
       subTitle="Détail du tournoi"
     >
       <div className="px-4 py-6 max-w-4xl mx-auto">
-        <TournamentDetail
+        <TournamentDetailsMainInfo
           tournament={tournament}
           isLoggedIn={user.isAuthenticated}
           currentUserId={user.id}
@@ -122,6 +125,17 @@ const TournamentDetailPage: React.FC = () => {
           isUnregistering={isUnregistering}
           unregisterErrorMessage={unregisterErrorMessage}
         />
+        <TournamentDetailsPlayers
+          players={tournament.players ?? [] as TournamentPlayer[]}
+        />
+
+        {
+          !tournament.status.includes("registration") && (
+            <TournamentDetailsMatchMaking
+              tournamentId={Number(id)}
+            />)
+        }
+
       </div>
     </UserBasicLayout>
   );

@@ -20,6 +20,8 @@ export const URL_FRONT_MY_DECKS = "/my-decks";
 export const URL_FRONT_MY_DECK_ADD = "/my-decks/add";
 export const URL_FRONT_MY_DECK_UPDATE = "/my-decks/update/:deckId";
 export const getMyDeckUpdatePath = (deckId: number | string): string => `/my-decks/update/${deckId}`;
+export const URL_FRONT_MY_TOURNAMENTS = "/my-tournaments";
+export const URL_FRONT_MY_TOURNAMENT_DETAIL = (id: number | string): string => `/my-tournaments/${id}`;
 
 //Admin
 

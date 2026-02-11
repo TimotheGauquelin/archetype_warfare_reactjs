@@ -15,7 +15,7 @@ const UserProfileLayoutTitle = ({ title, buttonText, buttonUrl, buttonClassName,
 
     return (
         <div className="flex flex-row justify-between items-center mb-2">
-            <h3 data-testid="user-profile-layout-title" className="text-xl font-bold text-black">{title}:</h3>
+            <h3 data-testid="user-profile-layout-title" className="text-xl font-bold text-black">{title}</h3>
             {returnButton ? (
                 <span className="cursor-pointer hover:text-green-400 transition-all duration-200" onClick={() => navigate(-1)}>Retour</span>
             ) : buttonText && buttonUrl ? (

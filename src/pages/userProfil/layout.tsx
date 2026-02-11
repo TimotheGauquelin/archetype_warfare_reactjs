@@ -6,6 +6,7 @@ import {
   URL_FRONT_ADMIN_HOME,
   URL_FRONT_MY_DECKS,
   URL_FRONT_MY_PROFILE,
+  URL_FRONT_MY_TOURNAMENTS,
 } from "../../constant/urlsFront";
 import { ROLE_ADMIN } from "../../utils/const/rolesConst";
 import { logOut } from "../../services/auth";
@@ -78,6 +79,10 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
     {
       url: URL_FRONT_MY_DECKS,
       label: "Mes Decks",
+    },
+    {
+      url: URL_FRONT_MY_TOURNAMENTS,
+      label: "Mes Tournois",
     },
   ];
 

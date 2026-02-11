@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import type { Tournament } from "../../../../types";
 import { URL_FRONT_TOURNAMENT } from "../../../../constant/urlsFront";
-import { TOURNAMENT_STATUS } from "@/utils/trad/tournament_status";
+import { TOURNAMENT_STATUS } from "@/utils/trad/tournamentStatus";
 import { verbalDate } from "@/utils/date/verbalDate";
 
 function getCardColorClass(status: string | undefined): string {
@@ -14,18 +14,23 @@ function getCardColorClass(status: string | undefined): string {
 
 interface TournamentCardProps {
   tournament: Tournament;
+  /**
+   * Route cible optionnelle. Si non fournie, on utilise la page publique du tournoi.
+   */
+  to?: string;
 }
 
-const TournamentCard: React.FC<TournamentCardProps> = ({ tournament }) => {
+const TournamentCard: React.FC<TournamentCardProps> = ({ tournament, to }) => {
   const playersCount = tournament.players?.length ?? 0;
   const maxPlayers = tournament.max_players;
   const statusLabel = TOURNAMENT_STATUS(tournament.status as string);
   const cardColorClass = getCardColorClass(tournament.status as string);
+  const target = to ?? URL_FRONT_TOURNAMENT(tournament.id);
 
   return (
     <Link
-      to={URL_FRONT_TOURNAMENT(tournament.id)}
-      className={`block p-4 rounded-lg ${cardColorClass} hover:shadow transition-all`}
+      to={target}
+      className={`block border border-gray-200 p-4 rounded-lg ${cardColorClass} hover:shadow transition-all`}
     >
       <h2 className="text-lg font-semibold text-gray-900 mb-2">{tournament.name}</h2>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
