@@ -3,7 +3,7 @@ import "../../../styles/components/page/admin/AdminSideBar.scss";
 import React from "react";
 import { FaHome } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ADMIN_BANLISTS, URL_FRONT_ADMIN_CARDS, URL_FRONT_ADMIN_HOME, URL_FRONT_ADMIN_OPTIONS } from "../../../constant/urlsFront";
+import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ADMIN_BANLISTS, URL_FRONT_ADMIN_CARDS, URL_FRONT_ADMIN_FILES, URL_FRONT_ADMIN_HOME, URL_FRONT_ADMIN_OPTIONS, URL_FRONT_ADMIN_TOURNAMENTS, URL_FRONT_ADMIN_USERS } from "../../../constant/urlsFront";
 
 const sideBarCategories = [
   {
@@ -29,12 +29,17 @@ const sideBarCategories = [
   {
     title: "Utilisateurs",
     icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-    url: "/admin/users",
+    url: URL_FRONT_ADMIN_USERS,
+  },
+  {
+    title: "Tournois",
+    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    url: URL_FRONT_ADMIN_TOURNAMENTS,
   },
   {
     title: "Fichiers",
     icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
-    url: "/admin/files",
+    url: URL_FRONT_ADMIN_FILES,
   },
 ];
 

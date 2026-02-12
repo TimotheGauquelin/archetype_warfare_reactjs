@@ -13,7 +13,7 @@ export interface Match {
   round_id: number;
   tournament_id: number;
   player1_tournament_player_id: number;
-  player2_tournament_player_id: number;
+  player2_tournament_player_id: number | null; // null = bye
   player1_games_won: number;
   player2_games_won: number;
   winner_tournament_player_id: number | null;
@@ -51,6 +51,47 @@ export interface Standing {
 }
 
 type StandingMap = Record<number, Standing | undefined>; // key = tournament_player_id
+
+const computeRoundPointsByRoundId = (rounds: Round[]) => {
+  const pointsByRoundId: Record<number, Record<number, number>> = {};
+  const cumulativePoints: Record<number, number> = {};
+
+  const sortedRounds = [...rounds].sort(
+    (a, b) => a.round_number - b.round_number
+  );
+
+  for (const round of sortedRounds) {
+    for (const match of round.matches) {
+      if (match.status !== "completed") continue;
+
+      const p1Id = match.player1_tournament_player_id;
+      const p2Id = match.player2_tournament_player_id;
+      const isBye = p2Id == null;
+
+      if (cumulativePoints[p1Id] === undefined) cumulativePoints[p1Id] = 0;
+      if (!isBye && cumulativePoints[p2Id] === undefined) cumulativePoints[p2Id] = 0;
+
+      if (isBye) {
+        if (match.winner_tournament_player_id === p1Id) {
+          cumulativePoints[p1Id] += 3;
+        }
+      } else {
+        if (match.winner_tournament_player_id === p1Id) {
+          cumulativePoints[p1Id] += 3;
+        } else if (match.winner_tournament_player_id === p2Id) {
+          cumulativePoints[p2Id] += 3;
+        } else {
+          cumulativePoints[p1Id] += 1;
+          cumulativePoints[p2Id] += 1;
+        }
+      }
+    }
+
+    pointsByRoundId[round.id] = { ...cumulativePoints };
+  }
+
+  return pointsByRoundId;
+};
 
 export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) => {
   const [tournament, setTournament] = useState<TournamentDetail | null>(null);
@@ -102,14 +143,12 @@ export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) 
   if (error) return <div>Erreur : {error}</div>;
   if (!tournament) return <div>Aucun tournoi trouvé.</div>;
 
-  // petite fonction pour calculer des « points » (par ex. 3 par victoire, 1 par nul)
-  const getPoints = (st?: Standing) => {
-    if (!st) return 0;
-    return st.match_wins * 3 + st.match_draws * 1;
-  };
-
   const sortedRounds = [...(tournament.rounds || [])].sort(
     (a, b) => a.round_number - b.round_number
+  );
+
+  const roundPointsByRoundId = computeRoundPointsByRoundId(
+    tournament.rounds || []
   );
 
   return (
@@ -151,35 +190,62 @@ export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) 
                   </tr>
                 </thead>
                 <tbody>
-                  {round.matches.map((match, index) => {
-                    const p1 = standings[match.player1_tournament_player_id];
-                    const p2 = standings[match.player2_tournament_player_id];
+                {[...round.matches]
+                  .sort((a, b) => a.id - b.id)
+                  .map((match, index) => {
+                    const isBye = match.player2_tournament_player_id == null;
+                    const p1Standing =
+                      standings[match.player1_tournament_player_id];
+                    const p2Standing = isBye
+                      ? undefined
+                      : standings[match.player2_tournament_player_id!];
 
                     const p1Name =
-                      p1?.username ?? `TP#${match.player1_tournament_player_id}`;
-                    const p2Name =
-                      p2?.username ?? `TP#${match.player2_tournament_player_id}`;
+                      p1Standing?.username ??
+                      `TP#${match.player1_tournament_player_id}`;
+                    const p2Name = isBye
+                      ? "BYE"
+                      : p2Standing?.username ??
+                        `TP#${match.player2_tournament_player_id}`;
 
-                    const p1Points = getPoints(p1);
-                    const p2Points = getPoints(p2);
+                    const roundPoints = roundPointsByRoundId[round.id] || {};
+                    const p1Points =
+                      roundPoints[match.player1_tournament_player_id] ?? 0;
+                    const p2Points = isBye
+                      ? null
+                      : (roundPoints[match.player2_tournament_player_id!] ?? 0);
 
                     const isCompleted = match.status === "completed";
 
                     return (
-                      <tr key={match.id} className="border-b odd:bg-gray-200 bg-white">
+                      <tr
+                        key={match.id}
+                        className="border-b odd:bg-gray-200 bg-white"
+                      >
                         <td className="p-2 text-center">Table {index + 1}</td>
                         <td className="p-2 text-center">
                           {p1Name} ({p1Points} pts)
                         </td>
                         <td className="p-2 text-center">
-                          {p2Name} ({p2Points} pts)
+                          {p2Name}
+                          {p2Points !== null ? ` (${p2Points} pts)` : ""}
                         </td>
                         <td className="p-2 text-center">
                           {isCompleted
                             ? `${match.player1_games_won} - ${match.player2_games_won}`
                             : "—"}
                         </td>
-                        <td className={`p-2 text-center ${match.status === "completed" ? "text-green-500" : match.status === "in_progress" ? "text-yellow-500" : "text-red-500"}`}>{TOURNAMENT_MATCH_STATUS(match.status)}</td>
+                        <td
+                          className={`p-2 text-center ${
+                            match.status === "completed"
+                              ? "text-green-500"
+                              : match.status === "in_progress"
+                              ? "text-yellow-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {TOURNAMENT_MATCH_STATUS(match.status)}
+                        </td>
                       </tr>
                     );
                   })}

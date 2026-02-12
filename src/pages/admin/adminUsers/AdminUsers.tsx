@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
-import AdminStructure from "../../../components/pages/admin/AdminStructure";
+import AdminStructure from "../adminLayout";
 import AdminUserPagination from "../../../components/pages/admin/users/AdminUserPagination";
 import { searchUsers } from "../../../services/user";
 import { URL_FRONT_ADMIN_USER_ADD } from "../../../constant/urlsFront";

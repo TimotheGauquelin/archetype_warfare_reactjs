@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
-import AdminStructure from "../../../components/pages/admin/AdminStructure";
+import AdminStructure from "../adminLayout";
 import { getImagesFromCloudinaryFolder, type CloudinaryImage } from "../../../services/file";
 
 const AdminFilesJumbotron = () => {

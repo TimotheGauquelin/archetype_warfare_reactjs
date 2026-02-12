@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
-import AdminStructure from "../../../components/pages/admin/AdminStructure";
+import AdminStructure from "../adminLayout";
 import { getImagesFromCloudinaryFolder, type CloudinaryImage } from "../../../services/file";
 import { URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD, URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON } from "../../../constant/urlsFront";
 import Button from "../../../components/generic/buttons/classicButton/Button";

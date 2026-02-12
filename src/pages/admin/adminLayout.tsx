@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import AdminBody from "./AdminBody";
-import AdminHeader from "./AdminHeader";
-import AdminSideBar from "./AdminSidebar";
+import AdminBody from "../../components/pages/admin/AdminBody";
+import AdminHeader from "../../components/pages/admin/AdminHeader";
+import AdminSideBar from "../../components/pages/admin/AdminSidebar";
 
 interface AdminStructureProps {
   children: React.ReactNode;
 }
 
-const AdminStructure: React.FC<AdminStructureProps> = ({ children }) => {
+const AdminLayout: React.FC<AdminStructureProps> = ({ children }) => {
   const [displayedNavbar, setDisplayedNavbar] = useState(true);
 
   return (
@@ -25,4 +25,4 @@ const AdminStructure: React.FC<AdminStructureProps> = ({ children }) => {
   );
 };
 
-export default AdminStructure;
+export default AdminLayout;

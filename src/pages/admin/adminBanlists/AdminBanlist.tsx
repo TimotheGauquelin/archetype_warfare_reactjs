@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
-import AdminStructure from "../../../components/pages/admin/AdminStructure";
+import AdminStructure from "../adminLayout";
 import CurrentBanlistAlert from "../../../components/generic/CurrentBanlistAlert";
 import AdminBanlistPagination from "../../../components/pages/admin/AdminBanlistPagination";
 import { deleteBanlist, getBanlists, getCurrentBanlist } from "../../../services/banlist";

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import AdminStructure from '../../../components/pages/admin/AdminStructure';
+import AdminStructure from '../adminLayout';
 import { useNavigate } from 'react-router-dom';
 import { addArchetype } from '../../../services/archetype';
 import AdminBodyHeader from '../../../components/pages/admin/AdminBodyHeader';

@@ -27,3 +27,14 @@ export const TOURNAMENT_MATCH_STATUS = (status: string) => {
             return 'Terminé';
     }
 }
+
+export const TOURNAMENT_ROUND_STATUS = (status: string) => {
+    switch (status) {
+        case 'pending':
+            return 'En attente';
+        case 'in_progress':
+            return 'En cours';
+        case 'completed':
+            return 'Terminé';
+    }
+}

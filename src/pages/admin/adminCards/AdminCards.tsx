@@ -4,7 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import api_aw from "../../../api/api_aw";
 import Loader from "../../../components/generic/Loader";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
-import AdminStructure from "../../../components/pages/admin/AdminStructure";
+import AdminStructure from "../adminLayout";
 import AdminCardsFilter from "../../../components/pages/admin/cards/AdminCardsFilter";
 import AdminCardsPagination from "../../../components/pages/admin/cards/AdminCardsPagination";
 import { getCardTypes } from "../../../services/cardtype";

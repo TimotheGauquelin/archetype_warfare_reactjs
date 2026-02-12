@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import AdminBodyHeader from '../../../components/pages/admin/AdminBodyHeader';
-import AdminStructure from '../../../components/pages/admin/AdminStructure';
+import AdminStructure from '../adminLayout';
 import { getConfig, toggleStreamBar, toggleRegistration } from '../../../services/websiteactions';
 import { SwitchInput } from '../../../components/generic/form/SwitchInput';
 import { useSelector } from 'react-redux';

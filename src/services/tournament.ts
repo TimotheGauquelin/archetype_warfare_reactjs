@@ -5,9 +5,11 @@ import {
   URL_BACK_GET_TOURNAMENT,
   URL_BACK_REGISTER_TOURNAMENT,
   URL_BACK_UNREGISTER_TOURNAMENT,
+  URL_BACK_DROP_TOURNAMENT,
   URL_BACK_GET_MY_TOURNAMENTS,
   URL_BACK_GET_MY_TOURNAMENT_DETAIL,
   URL_BACK_REPORT_MATCH_RESULT,
+  URL_BACK_GET_TOURNAMENT_STANDINGS,
 } from "../constant/urlsBack";
 import type { Tournament } from "../types";
 import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
@@ -40,50 +42,68 @@ export interface MyTournamentPlayer {
 }
 
 export interface MyTournamentMatch {
-  id: number;
-  round_id: number;
-  tournament_id: number;
-  player1_tournament_player_id: number;
-  player2_tournament_player_id: number;
-  player1_games_won: number;
-  player2_games_won: number;
-  winner_tournament_player_id: number | null;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  player1?: MyTournamentPlayer;
-  player2?: MyTournamentPlayer;
-  winner?: MyTournamentPlayer | null;
-  [key: string]: unknown;
+  id: number,
+  round_id: number,
+  status: "in_progress" | "completed" | "pending",
+  player1: {
+    id: number,
+    username: string,
+    isWinner: boolean,
+    gamesWon: number
+  },
+  player2: {
+    id: number,
+    username: string,
+    isWinner: boolean,
+    gamesWon: number
+  }
 }
 
 export interface MyTournamentRound {
-  id: number;
-  tournament_id: number;
-  round_number: number;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  matches: MyTournamentMatch[];
-  [key: string]: unknown;
+  id: number,
+  round_number: number,
+  status: "in_progress" | "completed" | "pending"
+  match: MyTournamentMatch
 }
 
 export interface MyTournamentDetail {
-  id: number;
-  name: string;
-  number_of_rounds: number;
-  matches_per_round: number;
-  status: string;
-  current_round: number | null;
-  max_players: number;
-  location: string;
-  event_date: string;
-  event_date_end?: string | null;
-  is_online: boolean;
-  created_at: string;
-  updated_at: string;
-  rounds: MyTournamentRound[];
-  [key: string]: unknown;
+  id: number,
+  name: string,
+  status: "tournament_in_progress" | "tournament_finished" | "tournament_cancelled",
+  number_of_rounds: number,
+  matches_per_round: number,
+  current_round: number,
+  event_date: string,
+  event_date_end: string,
+  location: string,
+  max_players: number,
+  is_online: boolean,
+  tournament_player: MyTournamentPlayer,
+  rounds: MyTournamentRound[]
+}
+
+export interface TournamentStanding {
+  rank: number,
+  tournament_player_id: number,
+  user_id: string,
+  username: string,
+  matches_breakdown: {
+    wins: {
+      count: number,
+      total_points: number
+    },
+    losses: {
+      count: number,
+      total_points: number
+    },
+    draws: {
+      count: number,
+      total_points: number
+    },
+    hasDropped: boolean,
+    games_won: number,
+    games_played: number
+  }
 }
 
 export interface MatchResultPayload {
@@ -141,6 +161,24 @@ export const getTournamentById = async (id: number | string): Promise<Tournament
 };
 
 /**
+ * Get final standings for a tournament, ordered from best to worst.
+ */
+export const getTournamentStandings = async (
+  id: number | string
+): Promise<TournamentStanding[]> => {
+  try {
+    const response = await api_aw.get<TournamentStanding[]>(
+      URL_BACK_GET_TOURNAMENT_STANDINGS(id)
+    );
+    return response?.data ?? [];
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getTournamentStandings");
+    throw appError;
+  }
+};
+
+/**
  * Get my personal details for a tournament (includes rounds & matches with players).
  */
 export const getMyTournamentDetail = async (
@@ -167,11 +205,8 @@ export const reportMatchResult = async (
   payload: MatchResultPayload,
   token: string
 ): Promise<void> => {
-  console.log(token);
-  const api = api_aw_token(token);
-  console.log(payload);
   try {
-    await api.put(URL_BACK_REPORT_MATCH_RESULT(matchId), payload);
+    await api_aw_token(token).put(URL_BACK_REPORT_MATCH_RESULT(matchId), payload);
     toast.success("Résultat du match enregistré.");
   } catch (error) {
     const appError = handleApiError(error);
@@ -216,6 +251,26 @@ export const unregisterFromTournament = async (
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "unregisterFromTournament");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
+/**
+ * Drop from a tournament. Requires a token.
+ * POST /tournaments/:id/drop. Backend applique les règles (avant/pendant tournoi).
+ */
+export const dropFromTournament = async (
+  id: number | string,
+  token: string
+): Promise<void> => {
+  const api = api_aw_token(token);
+  try {
+    await api.post(URL_BACK_DROP_TOURNAMENT(id));
+    toast.success("Vous avez quitté le tournoi.");
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "dropFromTournament");
     toast.error(getErrorMessage(appError));
     throw appError;
   }

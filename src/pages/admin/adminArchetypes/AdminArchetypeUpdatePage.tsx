@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
-import AdminStructure from "../../../components/pages/admin/AdminStructure";
+import AdminStructure from "../adminLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { getArchetypeById, updateArchetype } from "../../../services/archetype";

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import AdminStructure from '../../../components/pages/admin/AdminStructure';
+import AdminStructure from '../adminLayout';
 import AdminBodyHeader from '../../../components/pages/admin/AdminBodyHeader';
 import { SwitchInput } from '../../../components/generic/form/SwitchInput';
 import { Input } from '../../../components/generic/form/input/Input';

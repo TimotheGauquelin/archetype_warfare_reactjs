@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import AdminBodyHeader from "../../components/pages/admin/AdminBodyHeader";
 
-import AdminStructure from "../../components/pages/admin/AdminStructure";
+import AdminStructure from "./adminLayout";
 import api_aw from "../../api/api_aw";
 import { URL_BACK_GET_NEW_USERS } from "../../constant/urlsBack";
 import { useSelector } from "react-redux";

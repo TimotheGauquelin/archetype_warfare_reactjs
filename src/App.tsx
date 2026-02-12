@@ -51,6 +51,8 @@ import {
   URL_FRONT_MY_PROFILE_EDIT,
   URL_FRONT_TOURNAMENTS,
   URL_FRONT_MY_TOURNAMENTS,
+  URL_FRONT_ADMIN_TOURNAMENTS,
+  URL_FRONT_ADMIN_TOURNAMENT_ADD,
 } from "./constant/urlsFront";
 import AdminOptions from "./pages/admin/adminOptions/AdminOptions";
 import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
@@ -78,6 +80,8 @@ import TournamentsPage from "./pages/user/tournaments/TournamentsPage";
 import TournamentDetailPage from "./pages/user/tournamentDetail/TournamentDetailPage";
 import AllMyTournamentsPage from "./pages/userProfil/myTournaments/myTournamentsMain/AllMyTournamentsPage";
 import MyTournamentDetail from "./pages/userProfil/myTournaments/myTournamentDetail/MyTournamentDetail";
+import AdminTournaments from "./pages/admin/adminTournaments/adminAllTournaments/AdminTournaments";
+import AdminAddTournament from "./pages/admin/adminTournaments/adminAddTournament/AdminAddTournament";
 
 const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SiteConfig>({});
@@ -205,6 +209,12 @@ const AppContent: React.FC = () => {
           </Route>
           <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
             <Route path={URL_FRONT_ADMIN_OPTIONS} element={<AdminOptions />} />
+          </Route>
+          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+            <Route path={URL_FRONT_ADMIN_TOURNAMENTS} element={<AdminTournaments />} />
+          </Route>
+          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+            <Route path={URL_FRONT_ADMIN_TOURNAMENT_ADD} element={<AdminAddTournament />} />
           </Route>
         </Routes>
         <ToastContainer

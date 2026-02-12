@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import UserBasicLayout from "../layout";
-import { getTournamentById, registerToTournament, unregisterFromTournament } from "../../../services/tournament";
+import { getTournamentById, getTournamentStandings, registerToTournament, unregisterFromTournament, type TournamentStanding } from "../../../services/tournament";
 import type { Tournament, TournamentPlayer } from "../../../types";
 import type { RootState } from "../../../redux/store";
 import { URL_FRONT_TOURNAMENTS } from "../../../constant/urlsFront";
 import { TournamentDetailsMatchMaking } from "@/components/pages/user/tournaments/TournamentDetailsMatchMaking";
 import TournamentDetailsPlayers from "../../../components/pages/user/tournaments/TournamentDetailsPlayers";
 import TournamentDetailsMainInfo from "../../../components/pages/user/tournaments/TournamentDetailsMainInfo";
+import { TournamentDetailsStanding } from "@/components/pages/user/tournaments/TournamentDetailsStanding";
 
 const TournamentDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +22,9 @@ const TournamentDetailPage: React.FC = () => {
   const [registerErrorMessage, setRegisterErrorMessage] = useState<string | null>(null);
   const [isUnregistering, setIsUnregistering] = useState(false);
   const [unregisterErrorMessage, setUnregisterErrorMessage] = useState<string | null>(null);
+  const [standings, setStandings] = useState<TournamentStanding[] | null>(null);
+  const [isLoadingStandings, setIsLoadingStandings] = useState(false);
+  const [standingsError, setStandingsError] = useState<string | null>(null);
 
   const loadTournament = useCallback(async () => {
     if (!id) return;
@@ -36,7 +40,21 @@ const TournamentDetailPage: React.FC = () => {
     }
   }, [id]);
 
-  const handleRegister = useCallback(async () => {
+  const loadStandings = useCallback(async () => {
+    if (!id) return;
+    setIsLoadingStandings(true);
+    setStandingsError(null);
+    try {
+      const data = await getTournamentStandings(id);
+      setStandings(data);
+    } catch (err) {
+      setStandingsError(err instanceof Error ? err.message : "Impossible de charger le classement final.");
+    } finally {
+      setIsLoadingStandings(false);
+    }
+  }, [id]);
+
+  const handleRegister = async () => {
     if (!id || !user.token) return;
     setRegisterErrorMessage(null);
     setRegisterSuccessMessage(null);
@@ -50,9 +68,9 @@ const TournamentDetailPage: React.FC = () => {
     } finally {
       setIsRegistering(false);
     }
-  }, [id, user.token, loadTournament]);
+  }
 
-  const handleUnregister = useCallback(async () => {
+  const handleUnregister = async () => {
     if (!id || !user.token) return;
     setUnregisterErrorMessage(null);
     setIsUnregistering(true);
@@ -64,12 +82,19 @@ const TournamentDetailPage: React.FC = () => {
     } finally {
       setIsUnregistering(false);
     }
-  }, [id, user.token, loadTournament]);
+  }
 
 
   useEffect(() => {
     loadTournament();
   }, [loadTournament]);
+
+  useEffect(() => {
+    if (!tournament) return;
+    if (!tournament.status || !tournament.status.toString().includes("finished")) return;
+    if (standings && standings.length > 0) return;
+    void loadStandings();
+  }, [tournament, standings, loadStandings]);
 
   if (!id) {
     return (
@@ -125,9 +150,31 @@ const TournamentDetailPage: React.FC = () => {
           isUnregistering={isUnregistering}
           unregisterErrorMessage={unregisterErrorMessage}
         />
-        <TournamentDetailsPlayers
-          players={tournament.players ?? [] as TournamentPlayer[]}
-        />
+
+        {tournament.status.includes("finished") && (
+          <>
+            {isLoadingStandings && (
+              <p className="mt-4 text-gray-500 text-sm">
+                Chargement du classement final…
+              </p>
+            )}
+            {standingsError && (
+              <p className="mt-4 text-red-600 text-sm" role="alert">
+                {standingsError}
+              </p>
+            )}
+            {standings && standings.length > 0 && (
+              <TournamentDetailsStanding standings={standings} />
+            )}
+          </>
+        )}
+
+        {
+          !tournament.status.includes("tournament_finished") && (
+            <TournamentDetailsPlayers
+              players={tournament.players ?? [] as TournamentPlayer[]}
+            />)
+        }
 
         {
           !tournament.status.includes("registration") && (
