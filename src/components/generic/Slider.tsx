@@ -13,7 +13,7 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
   const [isPaused, setIsPaused] = useState(false);
   const [imageVisible, setImageVisible] = useState(true);
   const [showText, setShowText] = useState(true);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const childrenArray = array || [];
   const totalSlides = childrenArray.length;
 
