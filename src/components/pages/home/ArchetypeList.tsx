@@ -64,7 +64,7 @@ const ArchetypeList: React.FC<ArchetypeListProps> = ({
   }
 
   return (
-    <div className="w-full m-auto">
+    <div className="w-full px-4 lscreen:px-0 m-auto">
       {subTitleDividerText && (
         <SubtitleDivider displayDivider label={subTitleDividerText} />
       )}

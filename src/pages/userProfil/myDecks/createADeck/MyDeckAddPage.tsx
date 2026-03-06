@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DeckCreator from "../../../../components/pages/userProfil/deckAdd/DeckCreator";
 import { useSelector } from "react-redux";
@@ -7,17 +7,18 @@ import Button from "../../../../components/generic/buttons/classicButton/Button"
 import { createDeck } from "../../../../services/deck";
 import { toast } from "react-toastify";
 import { useArchetypesName } from "../../../../hooks/useArchetypesName";
-import type { RootState } from "../../../../types";
+import type { Archetype, RootState } from "../../../../types";
 import type { Deck } from "../../../../types";
 import UserProfilLayout from "../../layout";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
+import { getArchetypesNames } from "@/services/archetype";
 
 const MyDeckAddPage = () => {
 
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-  const { archetypes } = useArchetypesName();
+  const [archetypes, setArchetypes] = useState<Archetype[]>([]);
   const [myDeck, setMyDeck] = useState<Deck>({
     label: "",
     comment: "",
@@ -27,6 +28,10 @@ const MyDeckAddPage = () => {
   });
 
   const { token } = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    getArchetypesNames(setArchetypes);
+  }, []);
 
   return (
     <UserProfilLayout>

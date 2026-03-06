@@ -18,7 +18,7 @@ const SubtitleDivider: React.FC<SubtitleDividerProps> = ({
     >
       {leftIcon && <img className="w-[40px] mr-2" src={leftIcon} alt="" />}
       <span className="">{label}</span>
-      {displayDivider && <div className="flex-grow h-[3px] ml-5 bg-gray-300"></div>}
+      {displayDivider && <div className="hidden lscreen:flex flex-grow h-[3px] ml-5 bg-gray-300"></div>}
     </div>
   );
 };

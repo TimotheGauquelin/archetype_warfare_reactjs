@@ -6,6 +6,14 @@ interface CardType {
     num_order?: number;
 }
 
+/**
+ * Utility function to sort cards of a deck
+ * 
+ * @param deckCards - Array of deck cards to sort
+ * @param cardTypes - Array of card types with their order
+ * @returns Array of sorted deck cards
+ */
+
 export const sortedDeck = (deckCards: DeckCard[] | undefined, cardTypes: CardType[] | undefined): DeckCard[] => {
     if (!deckCards || !cardTypes || !cardTypes.length) return deckCards || [];
 

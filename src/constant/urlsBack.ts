@@ -101,7 +101,9 @@ export const URL_BACK_GET_ALL_CARD_STATUS = '/card-statuses'
 
 // DECKS
 
-export const URL_BACK_GET_ALL_MY_DECKS = (userId: number | string) => `/decks/all/user/${userId}`
+export const URL_BACK_GET_ALL_MY_DECKS = (userId: number | string) => `/decks/all/user/${userId}`;
+export const URL_BACK_GET_PLAYABLE_DECKS = (userId: number | string) =>
+  `/decks/all/user/${userId}?is_playable=true`;
 export const URL_BACK_GET_DECK_BY_ID = (deckId: number | string) => `/decks/${deckId}`
 export const URL_BACK_CREATE_DECK = `/decks/create`
 export const URL_BACK_UPDATE_DECK = (deckId: number | string) => `/decks/updateMyDeck/${deckId}`
@@ -131,14 +133,49 @@ export const URL_BACK_TOGGLE_STREAM_BAR = '/website-actions/stream-banner'
 export const URL_BACK_TOGGLE_REGISTRATION = '/website-actions/registration'
 
 // TOURNAMENTS
-export const URL_BACK_GET_TOURNAMENTS = '/tournaments';
+export const URL_BACK_GET_CURRENT_TOURNAMENTS = '/tournaments/current';
+export const URL_BACK_GET_ALL_TOURNAMENTS = '/tournaments/all';
+export const URL_BACK_CREATE_TOURNAMENT = '/tournaments';
 export const URL_BACK_GET_TOURNAMENT = (id: number | string) => `/tournaments/${id}`;
+export const URL_BACK_UPDATE_TOURNAMENT = (id: number | string) => `/tournaments/${id}`;
+export const URL_BACK_DELETE_TOURNAMENT = (id: number | string) => `/tournaments/${id}`;
 export const URL_BACK_REGISTER_TOURNAMENT = (id: number | string) => `/tournaments/${id}/register`;
 export const URL_BACK_UNREGISTER_TOURNAMENT = (id: number | string) => `/tournaments/${id}/unregister`;
 export const URL_BACK_DROP_TOURNAMENT = (id: number | string) => `/tournaments/${id}/drop`;
 export const URL_BACK_GET_MY_TOURNAMENTS = '/tournaments/my-tournaments';
 export const URL_BACK_GET_MY_TOURNAMENT_DETAIL = (id: number | string) => `/tournaments/${id}/my-details`;
+export const URL_BACK_SET_TOURNAMENT_MY_DECK = (tournamentId: number | string) =>
+  `/tournaments/${tournamentId}/my-deck`;
 export const URL_BACK_REPORT_MATCH_RESULT = (matchId: number | string) =>
   `/tournaments/matches/${matchId}/result`;
 export const URL_BACK_GET_TOURNAMENT_STANDINGS = (id: number | string) =>
   `/tournaments/${id}/standings`;
+export const URL_BACK_START_TOURNAMENT = (id: number | string) =>
+  `/tournaments/${id}/start`;
+export const URL_BACK_TOURNAMENT_NEXT_ROUND = (id: number | string) =>
+  `/tournaments/${id}/rounds/next`;
+export const URL_BACK_TOURNAMENT_ROLLBACK_ROUND = (id: number | string) =>
+  `/tournaments/${id}/rounds/rollback`;
+export const URL_BACK_TOURNAMENT_PLAYER_BAN = (
+  tournamentId: number | string,
+  tournamentPlayerId: number | string
+) => `/tournaments/${tournamentId}/players/${tournamentPlayerId}/ban`;
+export const URL_BACK_REMOVE_TOURNAMENT_PLAYER = (
+  tournamentId: number | string,
+  tournamentPlayerId: number | string
+) => `/tournaments/${tournamentId}/players/${tournamentPlayerId}/remove`;
+export const URL_BACK_ADD_TOURNAMENT_PLAYER = (
+  tournamentId: number | string,
+  userId: number | string
+) => `/tournaments/${tournamentId}/players/${userId}`;
+
+export const URL_BACK_TOGGLE_TOURNAMENT_REGISTRATION = (tournamentId: number | string) => `/tournaments/${tournamentId}/registration/toggle`;  
+
+export const URL_BACK_GET_TOURNAMENT_PLAYER_DECK_SNAPSHOT = (
+  playerId: number | string
+) => `/tournaments/players/${playerId}/deck-snapshot`;
+
+export const URL_BACK_ASSIGN_TOURNAMENT_PLAYER_DECK = (
+  tournamentId: number | string,
+  playerId: number | string
+) => `/tournaments/${tournamentId}/players/${playerId}/deck`;

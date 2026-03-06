@@ -245,7 +245,7 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
       const cardStatusLabel = card?.card_status?.label ? card?.card_status?.label?.toLowerCase() : STATUS_UNLIMITED.toLowerCase();
 
       return (
-        <div key={card.id} className="col-span-4 relative">
+        <div key={card.id} className="col-span-12 lscreen:col-span-4 relative">
           <div
             key={card.id}
             className={`p-1 hover:saturate-150 relative transition-opacity ${shouldDisable ? "grayscale opacity-50 cursor-not-allowed" : "cursor-pointer"

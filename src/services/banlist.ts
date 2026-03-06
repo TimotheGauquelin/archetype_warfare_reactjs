@@ -11,7 +11,7 @@ import type { ToastFunction } from "./websiteactions";
  * Retrieves the current banlist
  */
 export const getCurrentBanlist = async (
-  setBanlist: SetStateCallback<Banlist>
+  setBanlist: SetStateCallback<Banlist | null>
 ): Promise<void> => {
   try {
     const response = await api_aw.get(URL_BACK_GET_CURRENT_BANLIST);
@@ -50,8 +50,8 @@ export const getBanlistById = async (
 ): Promise<void> => {
   try {
     const response = await api_aw.get(`/banlists/${id}`);
-    if (response.status === 200 && response.data?.data) {
-      setBanlist(response.data.data);
+    if (response.status === 200 && response.data) {
+      setBanlist(response.data);
     }
   } catch (error) {
     const appError = handleApiError(error);

@@ -5,6 +5,7 @@ export const TOURNAMENT_STATUS = (status: string): string => {
         case 'registration_closed':
             return 'Inscriptions closes';
         case 'tournament_beginning':
+        case 'tournament_is_beginning':
             return 'Début du tournoi';
         case 'tournament_in_progress':
             return 'Tournoi en cours';

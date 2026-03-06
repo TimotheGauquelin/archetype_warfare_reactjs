@@ -62,7 +62,7 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
   return (
     <div className="space-y-6">
       <div>
-        <div className="flex flex-row justify-between items-center">
+        <div className="flex flex-col-reverse lscreen:flex-row justify-between items-end lscreen:items-center">
           <span className="text-2xl font-bold text-gray-900">{tournament.name}</span>
           <Link
             to={URL_FRONT_TOURNAMENTS}
@@ -109,7 +109,7 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
         {tournament.rounds != null && (
           <div>
             <dt className="text-gray-500">Rondes</dt>
-            <dd className="font-medium">{tournament.number_of_rounds}</dd>
+            <dd className="font-medium">{tournament.max_number_of_rounds}</dd>
           </div>
         )}
         <div>

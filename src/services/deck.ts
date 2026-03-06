@@ -1,5 +1,5 @@
 import { api_aw_token } from "../api/api_aw_token";
-import { URL_BACK_CREATE_DECK, URL_BACK_DELETE_MY_DECK, URL_BACK_GET_ALL_MY_DECKS, URL_BACK_GET_DECK_BY_ID, URL_BACK_UPDATE_DECK } from "../constant/urlsBack";
+import { URL_BACK_CREATE_DECK, URL_BACK_DELETE_MY_DECK, URL_BACK_GET_ALL_MY_DECKS, URL_BACK_GET_PLAYABLE_DECKS, URL_BACK_GET_DECK_BY_ID, URL_BACK_UPDATE_DECK } from "../constant/urlsBack";
 import { URL_FRONT_MY_DECKS } from "../constant/urlsFront";
 import type { Deck, SetStateCallback } from "../types";
 import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
@@ -33,6 +33,20 @@ export const getMyDecks = async (
 };
 
 /**
+ * Récupère tous les decks jouables d'un utilisateur (is_playable=true).
+ */
+export const getMyPlayableDecks = async (
+  token: string,
+  userId: number | string
+): Promise<Deck[]> => {
+  const response = await api_aw_token(token).get(URL_BACK_GET_PLAYABLE_DECKS(userId));
+  if (response.status === 200 && Array.isArray(response.data)) {
+    return response.data;
+  }
+  return [];
+};
+
+/**
  * Récupère un deck par son ID
  */
 export const getDeckById = async (
@@ -56,6 +70,26 @@ export const getDeckById = async (
     logError(appError, 'getDeckById');
     toast.error("Impossible de récupérer le deck");
     navigate(URL_FRONT_MY_DECKS);
+  }
+};
+
+/**
+ * Récupère un deck par son ID et le renvoie directement (sans navigation/toast).
+ */
+export const fetchDeckById = async (
+  token: string,
+  deckId: number | string
+): Promise<Deck | null> => {
+  try {
+    const response = await api_aw_token(token).get(URL_BACK_GET_DECK_BY_ID(deckId));
+    if (response.status === 200 && response.data) {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "fetchDeckById");
+    return null;
   }
 };
 

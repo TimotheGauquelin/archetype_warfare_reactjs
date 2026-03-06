@@ -27,7 +27,7 @@ const PopUp: React.FC<PopUpProps> = ({
       onClick={closeOnBackdropClick ? onClose : undefined}
     >
       <div 
-        className={`bg-white rounded-lg shadow-xl max-w-md w-1/2 mx-4 max-h-[90vh] overflow-y-auto ${className}`}
+        className={`bg-white rounded-lg shadow-xl max-w-md lscreen:w-1/2 mx-4 max-h-[90vh] overflow-y-auto ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {(title || showCloseButton) && (

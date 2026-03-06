@@ -32,7 +32,7 @@ export interface TournamentDetail {
   id: number;
   name: string;
   current_round: number;
-  number_of_rounds: number;
+  max_number_of_rounds: number;
   status: string;
   rounds: Round[];
 }
@@ -161,8 +161,8 @@ export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) 
       {sortedRounds
         .sort((a, b) => b.round_number - a.round_number)
         .map((round) => (
-          <div key={round.id} className="mb-2">
-            <h3 className="text-lg font-medium mb-2">
+          <div key={round.id} className="space-y-2">
+            <h3 className="text-lg font-medium">
               Ronde {round.round_number} ( {round.status === "pending" ? "En attente" : round.status === "in_progress" ? "En cours" : "Terminée"} )
             </h3>
 
@@ -190,65 +190,73 @@ export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) 
                   </tr>
                 </thead>
                 <tbody>
-                {[...round.matches]
-                  .sort((a, b) => a.id - b.id)
-                  .map((match, index) => {
-                    const isBye = match.player2_tournament_player_id == null;
-                    const p1Standing =
-                      standings[match.player1_tournament_player_id];
-                    const p2Standing = isBye
-                      ? undefined
-                      : standings[match.player2_tournament_player_id!];
+                  {[...round.matches]
+                    .sort((a, b) => a.id - b.id)
+                    .map((match, index) => {
+                      const isBye = match.player2_tournament_player_id == null;
+                      const p1Standing =
+                        standings[match.player1_tournament_player_id];
+                      const p2Standing = isBye
+                        ? undefined
+                        : standings[match.player2_tournament_player_id!];
 
-                    const p1Name =
-                      p1Standing?.username ??
-                      `TP#${match.player1_tournament_player_id}`;
-                    const p2Name = isBye
-                      ? "BYE"
-                      : p2Standing?.username ??
+                      const p1Name =
+                        p1Standing?.username ??
+                        `TP#${match.player1_tournament_player_id}`;
+                      const p2Name = isBye
+                        ? "BYE"
+                        : p2Standing?.username ??
                         `TP#${match.player2_tournament_player_id}`;
 
-                    const roundPoints = roundPointsByRoundId[round.id] || {};
-                    const p1Points =
-                      roundPoints[match.player1_tournament_player_id] ?? 0;
-                    const p2Points = isBye
-                      ? null
-                      : (roundPoints[match.player2_tournament_player_id!] ?? 0);
+                      const roundPoints = roundPointsByRoundId[round.id] || {};
+                      const p1Points =
+                        roundPoints[match.player1_tournament_player_id] ?? 0;
+                      const p2Points = isBye
+                        ? null
+                        : (roundPoints[match.player2_tournament_player_id!] ?? 0);
 
-                    const isCompleted = match.status === "completed";
+                      const isCompleted = match.status === "completed";
 
-                    return (
-                      <tr
-                        key={match.id}
-                        className="border-b odd:bg-gray-200 bg-white"
-                      >
-                        <td className="p-2 text-center">Table {index + 1}</td>
-                        <td className="p-2 text-center">
-                          {p1Name} ({p1Points} pts)
-                        </td>
-                        <td className="p-2 text-center">
-                          {p2Name}
-                          {p2Points !== null ? ` (${p2Points} pts)` : ""}
-                        </td>
-                        <td className="p-2 text-center">
-                          {isCompleted
-                            ? `${match.player1_games_won} - ${match.player2_games_won}`
-                            : "—"}
-                        </td>
-                        <td
-                          className={`p-2 text-center ${
-                            match.status === "completed"
-                              ? "text-green-500"
-                              : match.status === "in_progress"
-                              ? "text-yellow-500"
-                              : "text-red-500"
-                          }`}
+                      return (
+                        <tr
+                          key={match.id}
+                          className="border-b odd:bg-gray-200 bg-white"
                         >
-                          {TOURNAMENT_MATCH_STATUS(match.status)}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                          <td className="p-2 text-center">Table {index + 1}</td>
+                          <td className="block p-2 text-center flex flex-col lscreen:flex-row justify-center items-center">
+                            <span className="font-bold">
+                              {p1Name}
+                            </span>
+                            <span>
+                              ({p1Points} pts)
+                            </span>
+                          </td>
+                          <td className="p-2 text-center">
+                            <span className="font-bold">
+                            {p2Name}
+                            </span>
+                            <span>
+                              {p2Points !== null ? ` (${p2Points} pts)` : ""}
+                            </span>
+                          </td>
+                          <td className="p-2 text-center">
+                            {isCompleted
+                              ? `${match.player1_games_won} - ${match.player2_games_won}`
+                              : "—"}
+                          </td>
+                          <td
+                            className={`p-2 text-center ${match.status === "completed"
+                                ? "text-green-500"
+                                : match.status === "in_progress"
+                                  ? "text-yellow-500"
+                                  : "text-red-500"
+                              }`}
+                          >
+                            {TOURNAMENT_MATCH_STATUS(match.status)}
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             )}

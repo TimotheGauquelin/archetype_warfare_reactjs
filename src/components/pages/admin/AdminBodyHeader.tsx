@@ -30,7 +30,7 @@ const AdminBodyHeader: React.FC<AdminBodyHeaderProps> = ({
   return (
     <div className="flex flex-col sscreen:flex-row justify-between mb-4">
       <div className="mr-6">
-        <h1 className="text-4xl font-semibold mb-2">{label}</h1>
+        <h1 className="text-2xl font-semibold mb-2">{label}</h1>
         <h2 className="text-gray-600 ml-0.5">{catchphrase}</h2>
       </div>
       {buttonUrl && (

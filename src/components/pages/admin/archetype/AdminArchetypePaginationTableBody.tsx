@@ -28,22 +28,22 @@ const AdminArchetypePaginationTableBody: React.FC<AdminArchetypePaginationTableB
             className="grid grid-cols-12 col-span-12 flex items-center border-b border-l border-r hover:bg-slate-200 cursor-pointer"
             key={index}
           >
-            <div className={`col-span-2 px-3 py-4`}>{item?.name}</div>
-            <div className={`col-span-1 px-3 py-4`}>
+            <div className={`col-span-2 p-1`}>{item?.name}</div>
+            <div className={`col-span-1 p-1`}>
               {item?.attributes
                 ?.map((attribute: { id: number; label: string }, index: number) => {
                   return <div key={index}>{ attributeToFrench(attribute?.label)}</div>;
                 })
                 .slice(0, 2)}
             </div>
-            <div className={`col-span-1 px-3 py-4`}>
+            <div className={`col-span-1 p-1`}>
               {item?.types
                 ?.map((type: { id: number; label: string }, index: number) => {
                   return <div key={index}>{ monsterTypeToFrench(type?.label)}</div>;
                 })
                 .slice(0, 2)}
             </div>
-            <div className={`col-span-1 px-3 py-4`}>
+            <div className={`col-span-1 p-1`}>
               {item?.summon_mechanics
                 ?.map((summonMechanic: { id: number; label: string }, index: number) => {
                   return (
@@ -54,7 +54,7 @@ const AdminArchetypePaginationTableBody: React.FC<AdminArchetypePaginationTableB
                 })
                 .slice(0, 2)}
             </div>
-            <div className={`col-span-1 px-3 py-4`}>
+            <div className={`col-span-1 p-1`}>
               <div className="flex justify-center">
                 <label className="inline-flex relative items-center mr-5 cursor-pointer">
                   <input
@@ -69,7 +69,7 @@ const AdminArchetypePaginationTableBody: React.FC<AdminArchetypePaginationTableB
                 </label>
               </div>
             </div>
-            <div className={`col-span-1 px-3 py-4`}>
+            <div className={`col-span-1 p-1`}>
               <div className="flex justify-center">
                 <label className="inline-flex relative items-center mr-5 cursor-pointer">
                   <input
@@ -84,10 +84,10 @@ const AdminArchetypePaginationTableBody: React.FC<AdminArchetypePaginationTableB
                 </label>
               </div>
             </div>
-            <div className={`col-span-1 px-3 py-4`}>{item?.cards?.length ?? 0}</div>
-            <div className={`col-span-1 px-3 py-4`}>{item?.popularity ?? (item as { popularity_poll?: number }).popularity_poll ?? 0}</div>
-            <div className={`col-span-1 px-3 py-4`}>{null}</div>
-            <div className="col-span-2 bg-gray-100 p-4 text-right">
+            <div className={`col-span-1 p-1`}>{item?.cards?.length ?? 0}</div>
+            <div className={`col-span-1 p-1`}>{item?.popularity ?? (item as { popularity_poll?: number }).popularity_poll ?? 0}</div>
+            <div className={`col-span-1 p-1`}>{null}</div>
+            <div className="col-span-2 bg-gray-100 p-1 text-right">
               <p
                 className="font-medium text-blue-600 hover:text-red-600 hover:underline cursor-pointer"
                 onClick={() => {

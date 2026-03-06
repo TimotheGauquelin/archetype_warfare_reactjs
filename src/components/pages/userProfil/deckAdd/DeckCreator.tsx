@@ -4,6 +4,8 @@ import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
 import { useAttributes } from "../../../../hooks/useAttributes";
 import { useCardTypes } from "../../../../hooks/useCardTypes";
 import AdminCardsFilter from "../../admin/cards/AdminCardsFilter";
+import DeckCardsGrid from "../deckCommon/DeckCardsGrid";
+import DeckSection from "../deckCommon/DeckSection";
 import { sortedDeck } from "../../../../utils/functions/sortedDeck";
 import type { Deck, DeckCard, CardSearchCriteria } from "../../../../types";
 
@@ -155,111 +157,62 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
 
         <div className="grid grid-cols-12 gap-1 mt-2">
           <div className="col-span-9">
-            <div className="p-2 bg-gray-200 rounded">
-              <div className="flex flex-row justify-between">
-                <p className="font-bold">Cartes du MainDeck</p>
-                <div className="flex flex-row gap-1">
-                  <span className="bg-orange-200 text-orange-700 p-1 rounded-md">
-                    <span className="font-bold">Monstre: </span>
-                    <span>{mainDeckCards.filter((card) => card.card?.card_type?.includes("Monster")).reduce((acc, card) => acc + card.quantity, 0)}</span>
-                  </span>
-                  <span className="bg-green-200 text-green-700 p-1 rounded-md">
-                    <span className="font-bold">Magie: </span>
-                    <span>{mainDeckCards.filter((card) => card.card?.card_type?.includes("Spell")).reduce((acc, card) => acc + card.quantity, 0)}</span>
-                  </span>
-                  <span className="bg-purple-200 text-purple-700 p-1 rounded-md">
-                    <span className="font-bold">Piège: </span>
-                    <span>{mainDeckCards.filter((card) => card.card?.card_type?.includes("Trap")).reduce((acc, card) => acc + card.quantity, 0)}</span>
-                  </span>
-                  <span className={`p-1 rounded-md ${mainDeckTotal >= 60 ? "bg-red-200 text-red-700" : "bg-red-200 text-red-700"}`}>
-                    <span className="font-bold">Total MainDeck: </span>
-                    <span>{mainDeckTotal}/60</span>
-                  </span>
-                </div>
-              </div>
-              <div className="grid grid-cols-10 gap-1 p-1 mt-2 bg-white">
-                {sortedMainDeckCards.map((deckCard, cardIndex) => {
-
-                  const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
-                    ...deckCard,
-                    uniqueKey: `${deckCard.card.id}-${cardIndex}-${index}`,
-                  }));
-
-                  return cardCopies.map((copy, copyIndex) => (
-                    <div
-                      key={copy.uniqueKey}
-                      className="col-span-1 relative cursor-pointer hover:opacity-80 transition-opacity group"
-                      onClick={() => removeCardFromDeck(deckCard)}
-                      title="Cliquez pour retirer un exemplaire"
-                    >
-                      <img
-                        src={copy.img_url || copy.card?.img_url}
-                        alt={copy.card?.name || "Carte"}
-                        className="w-full h-auto"
-                        loading="lazy"
-                      />
-                      {copy.quantity > 1 && copyIndex === copy.quantity - 1 && (
-                        <div className="absolute bottom-0 right-0 bg-black bg-opacity-70 text-white px-1 rounded">
-                          x{copy.quantity}
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-red-500 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
-                        <span className="text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                          -
-                        </span>
-                      </div>
-                    </div>
-                  ));
-                })}
-              </div>
+            <DeckSection
+              title="Cartes du MainDeck"
+              badges={[
+                {
+                  label: "Monstre",
+                  value: mainDeckCards
+                    .filter((card) => card.card?.card_type?.includes("Monster"))
+                    .reduce((acc, card) => acc + card.quantity, 0),
+                  className: "bg-orange-200 text-orange-700 p-1 rounded-md",
+                },
+                {
+                  label: "Magie",
+                  value: mainDeckCards
+                    .filter((card) => card.card?.card_type?.includes("Spell"))
+                    .reduce((acc, card) => acc + card.quantity, 0),
+                  className: "bg-green-200 text-green-700 p-1 rounded-md",
+                },
+                {
+                  label: "Piège",
+                  value: mainDeckCards
+                    .filter((card) => card.card?.card_type?.includes("Trap"))
+                    .reduce((acc, card) => acc + card.quantity, 0),
+                  className: "bg-purple-200 text-purple-700 p-1 rounded-md",
+                },
+                {
+                  label: "Total MainDeck",
+                  value: `${mainDeckTotal}/60`,
+                  className: `p-1 rounded-md ${mainDeckTotal >= 60 ? "bg-red-200 text-red-700" : "bg-red-200 text-red-700"}`,
+                },
+              ]}
+            >
+              <DeckCardsGrid cards={sortedMainDeckCards} onCardClick={removeCardFromDeck} />
+            </DeckSection>
+            <div className="mt-2">
+              <DeckSection
+                title="Cartes de l'ExtraDeck"
+                badges={[
+                  {
+                    label: "Total ExtraDeck",
+                    value: `${extraDeckTotal}/15`,
+                    className: `p-1 rounded-md ${extraDeckTotal >= 15 ? "bg-red-200 text-red-700" : "bg-gray-300 text-gray-700"}`,
+                  },
+                ]}
+              >
+                <DeckCardsGrid cards={sortedExtraDeckCards} onCardClick={removeCardFromDeck} />
+              </DeckSection>
             </div>
-            <div className="p-2 mt-2 bg-gray-200">
-              <div className="flex flex-row justify-between">
-                <p className="font-bold">Cartes de l'ExtraDeck</p>
-                <span className={`p-1 rounded-md ${extraDeckTotal >= 15 ? "bg-red-200 text-red-700" : "bg-gray-300 text-gray-700"}`}>
-                  <span className="font-bold">Total ExtraDeck: </span>
-                  <span>{extraDeckTotal}/15</span>
-                </span>
-              </div>
-              <div className="grid grid-cols-10 gap-1 p-1 bg-white">
-                {sortedExtraDeckCards.map((deckCard, cardIndex) => {
-                  const cardCopies = Array.from({ length: deckCard.quantity || 1 }, (_, index) => ({
-                    ...deckCard,
-                    uniqueKey: `${deckCard.card.id}-${cardIndex}-${index}`,
-                  }));
-
-                  return cardCopies.map((copy, copyIndex) => (
-                    <div
-                      key={copy.uniqueKey}
-                      className="col-span-1 relative cursor-pointer hover:opacity-80 transition-opacity group"
-                      onClick={() => removeCardFromDeck(deckCard)}
-                      title="Cliquez pour retirer un exemplaire"
-                    >
-                      <img
-                        src={copy.img_url || copy.card?.img_url}
-                        alt={copy.card?.name || "Carte"}
-                        className="w-full h-auto"
-                        loading="lazy"
-                      />
-                      {copy.quantity > 1 && copyIndex === copy.quantity - 1 && (
-                        <div className="absolute bottom-0 right-0 bg-black bg-opacity-70 text-white px-1 rounded">
-                          x{copy.quantity}
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-red-500 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
-                        <span className="text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                          -
-                        </span>
-                      </div>
-                    </div>
-                  ));
-                })}
-              </div>
-            </div>
-
-
           </div>
-          <DeckCardsSearcher myDeck={myDeck} setMyDeck={setMyDeck} filters={filters} setFilters={setFilters} pagination={pagination} setPagination={setPagination} />
+          <DeckCardsSearcher
+            myDeck={myDeck}
+            setMyDeck={setMyDeck}
+            filters={filters}
+            setFilters={setFilters}
+            pagination={pagination}
+            setPagination={setPagination}
+          />
         </div>
       </div>
     );

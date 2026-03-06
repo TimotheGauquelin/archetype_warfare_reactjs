@@ -12,7 +12,7 @@ import { laborIllusion } from '../../../utils/functions/laborIllusion/laborIllus
 import { addBanlist } from '../../../services/banlist';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { formatDateForInput } from '../../../utils/date/databaseDataToInput';
+import { formatDateForInput } from '../../../utils/date/formatDateForInput';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import type { BanlistCard } from '../../../types';

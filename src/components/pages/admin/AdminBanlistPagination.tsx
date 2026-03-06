@@ -43,6 +43,8 @@ const AdminBanlistPagination: React.FC<AdminBanlistPaginationProps> = ({
     },
   ];
 
+  console.log(banlists);
+
   return (
     <div className="mt-2">
       <p>Toutes les banlists :</p>

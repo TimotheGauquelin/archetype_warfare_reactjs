@@ -47,10 +47,11 @@ const MyDecksPage = () => {
                 .map((deck) => (
                   <Link
                     key={deck.id}
-                    className="p-4 bg-blue-200 rounded-lg col-span-3"
+                    className="p-4 bg-blue-200 rounded-lg col-span-6 lscreen:col-span-3"
                     to={getMyDeckUpdatePath(deck.id)}
                   >
                     <div>{deck.label}</div>
+                    <div>{deck.is_playable ? "Jouable" : "Non jouable"} en tournoi</div>
                   </Link>
                 ))
             ) : (

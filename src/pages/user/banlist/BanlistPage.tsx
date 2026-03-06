@@ -8,7 +8,7 @@ import { sortArchetypeCards } from "../../../utils/functions/sortCards";
 import { useCardTypes } from "../../../hooks/useCardTypes";
 import { useDebounce } from "../../../utils/functions/debounce/useDebounce";
 import "../../../styles/Archetypes.scss";
-import type { Banlist as BanlistType, BanlistCard, SetStateCallback, Banlist } from "../../../types";
+import type { Banlist as BanlistType, BanlistCard, SetStateCallback } from "../../../types";
 import UserHeroLayout from "../layout";
 
 
@@ -23,7 +23,7 @@ const BanlistPage = () => {
     setIsFetching(true);
 
     try {
-      await getCurrentBanlist(setBanlist as SetStateCallback<Banlist>);
+      await getCurrentBanlist(setBanlist as SetStateCallback<BanlistType | null>);
     } catch (err) {
       console.error("Erreur:", err);
     } finally {

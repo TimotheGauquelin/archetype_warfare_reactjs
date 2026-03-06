@@ -12,7 +12,7 @@ import { getCardStatus } from '../../../services/cardStatus';
 import { cardStatusToFrench } from '../../../utils/trad/cardStatus';
 import Button from '../../../components/generic/buttons/classicButton/Button';
 import { laborIllusion } from '../../../utils/functions/laborIllusion/laborIllusion';
-import { formatDateForInput } from '../../../utils/date/databaseDataToInput';
+import { formatDateForInput } from '../../../utils/date/formatDateForInput';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import type { Banlist, BanlistCard } from '../../../types';

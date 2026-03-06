@@ -22,6 +22,7 @@ interface TournamentCardProps {
 
 const TournamentCard: React.FC<TournamentCardProps> = ({ tournament, to }) => {
   const playersCount = tournament.players?.length ?? 0;
+  console.log("tournament", tournament);
   const maxPlayers = tournament.max_players;
   const statusLabel = TOURNAMENT_STATUS(tournament.status as string);
   const cardColorClass = getCardColorClass(tournament.status as string);
@@ -41,7 +42,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({ tournament, to }) => {
           {playersCount}
           {maxPlayers != null ? ` / ${maxPlayers}` : ""} joueurs
         </span>
-        {tournament.number_of_rounds != null && <span>{tournament.number_of_rounds} rondes</span>}
+        {tournament.max_number_of_rounds != null && <span>{tournament.max_number_of_rounds} rondes</span>}
         {tournament.event_date && <span>{verbalDate(tournament.event_date)}</span>}
         {tournament.location && <span>{tournament.location}</span>}
         {tournament.is_online !== undefined && (

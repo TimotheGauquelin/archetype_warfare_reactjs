@@ -24,17 +24,17 @@ const AdminBanlistPaginationTableBody: React.FC<AdminBanlistPaginationTableBodyP
   };
 
   return (
-    <div className="grid grid-cols-12">
+    <div className="grid grid-cols-12 even:bg-slate-100">
       {arrayItems?.map((item, index) => {
         return (
           <div
-            className="grid grid-cols-12 col-span-12 flex items-center border-b border-l border-r hover:bg-slate-200 cursor-pointer"
+            className="even:bg-slate-100 grid grid-cols-12 col-span-12 flex items-center border-b border-l border-r hover:bg-slate-200 cursor-pointer"
             key={index}
           >
-            <div className={`col-span-2 px-3 py-4`}>
+            <div className={`col-span-2 p-1`}>
               <p>{item?.label}</p>
             </div>
-            <div className={`col-span-2 px-3 py-4`}>
+            <div className={`col-span-2 p-1`}>
               <p>Active {item?.release_date ? format(new Date(item.release_date), "PPP", {
                 locale: enGB,
               }) : "Date non définie"}</p>

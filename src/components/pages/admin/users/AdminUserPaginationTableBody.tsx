@@ -26,8 +26,8 @@ const AdminUserPaginationTableBody: React.FC<AdminUserPaginationTableBodyProps> 
             className="grid grid-cols-12 col-span-12 flex items-center border-b border-l border-r hover:bg-slate-200 cursor-pointer"
             key={index}
           >
-            <div className={`col-span-1 px-3 py-4`}>{item?.id}</div>
-            <div className={`col-span-2 px-3 py-4 flex flex-col`}>
+            <div className={`col-span-1 p-1`}>{item?.id}</div>
+            <div className={`col-span-2 p-1 flex flex-col`}>
               <span className="text-md mb-1">{item?.username}</span>
               <div className="flex flex-row gap-1">
                 {item?.roles && Array.isArray(item.roles) && item.roles.length > 0
@@ -40,8 +40,8 @@ const AdminUserPaginationTableBody: React.FC<AdminUserPaginationTableBodyProps> 
                   : <span className="text-gray-500">Aucun rôle</span>}
               </div>
             </div>
-            <div className={`col-span-4 px-3 py-4`}>{item?.email}</div>
-            <div className={`col-span-1 px-3 py-4`}>
+            <div className={`col-span-4 p-1`}>{item?.email}</div>
+            <div className={`col-span-1 p-1`}>
               <label className="inline-flex relative items-center mr-5 cursor-pointer">
                 <input
                   type="checkbox"
