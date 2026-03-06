@@ -98,7 +98,6 @@ export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) 
   const [standings, setStandings] = useState<StandingMap>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedRound, setSelectedRound] = useState<number | null>(null);
 
   useEffect(() => {
     let isMounted = true;

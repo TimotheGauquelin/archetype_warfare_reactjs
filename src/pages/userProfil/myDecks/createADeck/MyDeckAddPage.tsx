@@ -6,7 +6,6 @@ import DeckData from "../../../../components/pages/userProfil/deckAdd/DeckData";
 import Button from "../../../../components/generic/buttons/classicButton/Button";
 import { createDeck } from "../../../../services/deck";
 import { toast } from "react-toastify";
-import { useArchetypesName } from "../../../../hooks/useArchetypesName";
 import type { Archetype, RootState } from "../../../../types";
 import type { Deck } from "../../../../types";
 import UserProfilLayout from "../../layout";

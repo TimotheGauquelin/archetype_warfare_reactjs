@@ -8,7 +8,7 @@ const TournamentsPage: React.FC = () => {
 
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   const loadTournaments = useCallback(async () => {
     setIsLoading(true);

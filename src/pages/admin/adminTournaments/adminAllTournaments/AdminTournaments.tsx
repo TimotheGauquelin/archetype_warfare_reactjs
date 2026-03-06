@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import AdminBodyHeader from "@/components/pages/admin/AdminBodyHeader";
 import AdminSection from "@/components/pages/admin/AdminSection";
-import AdminSectionTitle from "@/components/pages/admin/AdminSectionTitle";
 import AdminTournamentTable from "@/components/pages/admin/archetype/adminTournaments/AdminTournamentTable";
 import { URL_FRONT_ADMIN_TOURNAMENT_ADD } from "@/constant/urlsFront";
 import { deleteTournament, getTournaments } from "@/services/tournament";
@@ -95,8 +94,7 @@ const AdminTournaments = () => {
         <p className="mt-4 text-gray-600 text-sm">Chargement…</p>
       ) : (
         <div className="mt-4 space-y-8">
-          <AdminSection>
-            <AdminSectionTitle sectionTitle="En cours" />
+          <AdminSection adminSectionTitle="En cours">
             <AdminTournamentTable
               tournaments={inProgress}
               emptyMessage="Aucun tournoi en cours."
@@ -104,8 +102,7 @@ const AdminTournaments = () => {
             />
           </AdminSection>
 
-          <AdminSection>
-            <AdminSectionTitle sectionTitle="À venir" />
+          <AdminSection adminSectionTitle="À venir">
             <AdminTournamentTable
               tournaments={upcoming}
               emptyMessage="Aucun tournoi à venir."
@@ -113,8 +110,7 @@ const AdminTournaments = () => {
             />
           </AdminSection>
 
-          <AdminSection>
-            <AdminSectionTitle sectionTitle="Passés" />
+          <AdminSection adminSectionTitle="Passés">
             <AdminTournamentTable
               tournaments={finished}
               emptyMessage="Aucun tournoi passé."

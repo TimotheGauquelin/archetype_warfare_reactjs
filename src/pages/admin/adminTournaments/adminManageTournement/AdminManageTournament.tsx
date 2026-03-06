@@ -3,16 +3,12 @@ import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import AdminBodyHeader from "@/components/pages/admin/AdminBodyHeader";
 import AdminLayout from "../../adminLayout";
-import Button from "@/components/generic/buttons/classicButton/Button";
 import {
     addPlayerToTournament,
-    getTournamentById,
     getTournamentDetail,
     getTournamentStandings,
     startTournament,
     tournamentNextRound,
-    updateTournament,
-    setTournamentPlayerBanned,
     removePlayerFromTournament,
     type TournamentDetail,
     type TournamentStanding,
@@ -38,9 +34,9 @@ const AdminManageTournament = () => {
     const [standings, setStandings] = useState<TournamentStanding[]>([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [, setError] = useState<string | null>(null);
 
-    const [removePlayer, setRemovePlayer] = useState<TournamentPlayerAdmin | null>(null);
+    const [, setRemovePlayer] = useState<TournamentPlayerAdmin | null>(null);
 
     const [addPlayerUsername, setAddPlayerUsername] = useState("");
     const [addPlayerResults, setAddPlayerResults] = useState<PaginatedResponse<User> | null>(null);
@@ -132,8 +128,6 @@ const AdminManageTournament = () => {
         [token, tournamentId, loadData]
     );
 
-    const canStart =
-        (tournament && (tournament.status === "registration_closed" || tournament.status === "registration_open")) ?? false;
     const currentRound = tournament && tournament.rounds?.find(
         (r) => r.round_number === tournament?.current_round
     );
