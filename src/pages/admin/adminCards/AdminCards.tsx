@@ -11,6 +11,7 @@ import { getCardTypes } from "../../../services/cardtype";
 import { getAttributes } from "../../../services/attribute";
 import { searchCards } from "../../../services/card";
 import type { Card, CardSearchCriteria, Pagination } from "../../../types";
+import { useNavigate } from "react-router-dom";
 
 interface ApiCard {
   id: number;
@@ -65,6 +66,8 @@ const AdminCards = () => {
   const [attributes, setAttributes] = useState<Attribute[]>([]);
   const [databaseUpdateLoader, setDatabaseUpdateLoader] = useState(false);
   const [refresh, setRefresh] = useState(false);
+
+  const navigate = useNavigate();
 
   const getApiCards = () => {
     axios
@@ -171,8 +174,8 @@ const AdminCards = () => {
         actionButton={() => {
           updateDatabase();
         }}
-        actionButtonColor={`${databaseUpdateLoader ? "bg-gray-200" : "bg-green-500"
-          } p-2 rounded text-white font-bold`}
+        actionButtonColor={`h-fit ${databaseUpdateLoader ? "bg-gray-200" : "bg-green-500 hover:bg-green-600"
+          } p-2 rounded text-white font-bold cursor-pointer`}
         actionButtonText="Mettre à jour la BDD"
         actionButtonDisabled={databaseUpdateLoader}
       />
@@ -189,16 +192,24 @@ const AdminCards = () => {
 
           {cards?.length > 0 && (
             <div className="bg-slate-200 rounded p-2 ">
-              <div className="grid grid-cols-12 gap-1">
+              <div className="grid grid-cols-10 gap-1">
                 {cards?.map((card) => {
                   return (
-                    <div key={card.id} className="col-span-2 ">
+                    <div
+                      key={card.id}
+                      className="col-span-1 cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => {
+                        navigate(`/admin/cards/${card.id}`);
+                      }}
+                    >
                       <img
                         className="w-full"
                         src={card.img_url}
                         alt={card.name}
                       />
-                      {card.name}
+                      <span className="text-xs line-clamp-1">
+                        {card.name}
+                      </span>
                     </div>
                   );
                 })}

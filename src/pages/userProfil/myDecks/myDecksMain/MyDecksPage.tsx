@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { getMyDecks } from "../../../../services/deck";
 import { URL_FRONT_MY_DECK_ADD, getMyDeckUpdatePath } from "../../../../constant/urlsFront";
-import type { RootState } from "../../../../types";
+import type { DeckWithArchetypeDetails, RootState } from "../../../../types";
 import type { Deck } from "../../../../types";
 import UserProfilLayout from "../../layout";
 import NoItemMessage from "@/components/generic/NoItemMessage";
@@ -12,7 +12,7 @@ import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle"
 import MyDecksDivSkeleton from "@/components/skeletons/MyDecksDivSkeleton";
 
 const MyDecksPage = () => {
-  const [myDecks, setMyDecks] = useState<Deck[]>([]);
+  const [myDecks, setMyDecks] = useState<DeckWithArchetypeDetails[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { id, token } = useSelector((state: RootState) => state.user);
@@ -43,19 +43,24 @@ const MyDecksPage = () => {
           <div className={`grid gap-2 ${myDecks.length > 0 ? "grid-cols-12" : ""}`}>
             {myDecks.length > 0 ? (
               myDecks
-                .filter((deck): deck is Deck & { id: number } => deck.id != null)
+                .filter((deck): deck is DeckWithArchetypeDetails & { id: string } => deck.id != null && deck.id !== "")
                 .map((deck) => (
                   <Link
                     key={deck.id}
-                    className="p-4 bg-blue-200 rounded-lg col-span-6 lscreen:col-span-3"
+                    className="p-4 space-y-2 bg-white cardShadow rounded-lg col-span-6 lscreen:col-span-2"
                     to={getMyDeckUpdatePath(deck.id)}
                   >
-                    <div>{deck.label}</div>
-                    <div>{deck.is_playable ? "Jouable" : "Non jouable"} en tournoi</div>
+                    <div className="rounded-md">
+                      <img className="rounded-md" src={deck.archetype.card_img_url} alt={deck.archetype.label} />
+                    </div>
+                    <p className="flex justify-between items-center">
+                      <span className="font-bold line-clamp-1">{deck.label}</span>
+                      <span className={`text-white text-sm p-1 rounded-sm ${deck.is_playable === true ? "bg-green-500" : "bg-red-500"}`}>{deck.is_playable ? "Jouable" : "Non jouable"}</span>
+                    </p>
                   </Link>
                 ))
             ) : (
-              <NoItemMessage message="Vous n'avez aucun deck pour le moment." textPosition="left" />
+              <NoItemMessage message="Vous n'avez aucun deck pour le moment" textPosition="left" />
             )}
           </div>
         )}

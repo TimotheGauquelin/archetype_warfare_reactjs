@@ -73,9 +73,9 @@ export const URL_BACK_GET_ALL_ATTRIBUTES = `/attributes`;
 
 // BANLIST
 
-export const URL_BACK_GET_CURRENT_BANLIST = `/banlists/current`;
-export const URL_BACK_GET_BANLISTS = `/banlists`;
-export const URL_BACK_ADD_BANLIST = `/banlists`;
+export const URL_BACK_GET_CURRENT_BANLIST = (displayArchetypesCards?: boolean) => `/banlists/current?include_archetype_cards=${displayArchetypesCards}`;
+export const URL_BACK_GET_BANLISTS = `/banlists`; 
+export const URL_BACK_ADD_BANLIST = `/banlists`;    
 export const URL_BACK_UPDATE_BANLIST = (banlistId: number | string) => `/banlists/${banlistId}`;
 export const URL_BACK_DELETE_BANLIST = (banlistId: number | string) => `/banlists/${banlistId}`;
 

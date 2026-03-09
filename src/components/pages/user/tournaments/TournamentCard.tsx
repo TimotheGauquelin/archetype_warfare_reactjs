@@ -22,7 +22,6 @@ interface TournamentCardProps {
 
 const TournamentCard: React.FC<TournamentCardProps> = ({ tournament, to }) => {
   const playersCount = tournament.players?.length ?? 0;
-  console.log("tournament", tournament);
   const maxPlayers = tournament.max_players;
   const statusLabel = TOURNAMENT_STATUS(tournament.status as string);
   const cardColorClass = getCardColorClass(tournament.status as string);

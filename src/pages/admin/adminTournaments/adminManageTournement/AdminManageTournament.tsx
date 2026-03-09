@@ -40,7 +40,7 @@ const AdminManageTournament = () => {
 
     const [addPlayerUsername, setAddPlayerUsername] = useState("");
     const [addPlayerResults, setAddPlayerResults] = useState<PaginatedResponse<User> | null>(null);
-    const [addingUserId, setAddingUserId] = useState<number | null>(null);
+    const [addingUserId, setAddingUserId] = useState<string | null>(null);
 
     const loadData = useCallback(async () => {
         if (!tournamentId) return;
@@ -90,7 +90,7 @@ const AdminManageTournament = () => {
     const handleToggleRegistration = useCallback(async () => {
         try {
             if (!token || !tournamentId) return;
-            await toggleTournamentRegistration(Number(tournamentId), token);
+            await toggleTournamentRegistration(tournamentId, token);
             await loadData();
         } finally {
             setActionLoading(false);
@@ -113,7 +113,7 @@ const AdminManageTournament = () => {
     const handleAddPlayer = useCallback(
         async (user: User) => {
             if (!token || !tournamentId || user.id == null) return;
-            setAddingUserId(Number(user.id));
+            setAddingUserId(user.id);
             try {
                 await addPlayerToTournament(tournamentId, user.id, token);
                 await loadData();
@@ -249,7 +249,7 @@ const AdminManageTournament = () => {
                     <TournamentDetailsStanding standings={standings} />
                 ) : (
                     <p className="text-gray-600 text-sm">
-                        Aucun classement disponible pour ce tournoi pour le moment.
+                        Aucun classement disponible pour ce tournoi pour le moment
                     </p>
                 )}
             </AdminSection>

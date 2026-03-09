@@ -25,7 +25,7 @@ const AdminUpdateTournament = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingTournament, setIsLoadingTournament] = useState(true);
   const [tournament, setTournament] = useState<Tournament>({
-    id: 0,
+    id: "",
     name: "",
     status: "registration_open",
     max_players: 2,

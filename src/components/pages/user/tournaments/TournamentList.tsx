@@ -96,7 +96,7 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments, isLoading 
         const dateA = a.event_date ? new Date(a.event_date).getTime() : Number.POSITIVE_INFINITY;
         const dateB = b.event_date ? new Date(b.event_date).getTime() : Number.POSITIVE_INFINITY;
         if (dateA !== dateB) return dateA - dateB;
-        return (a.id ?? 0) - (b.id ?? 0);
+        return (a.id ?? "").localeCompare(b.id ?? "");
       });
 
     return {
@@ -115,7 +115,7 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments, isLoading 
   if (!tournaments.length) {
     return (
       <NoItemMessage
-        message="Aucun tournoi pour le moment."
+        message="Aucun tournoi pour le moment"
         textPosition="center"
       />
     );

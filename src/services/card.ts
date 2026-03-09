@@ -124,3 +124,24 @@ export const searchCardsWithoutArchetypeAndByOneArchetypeId = async (
     }
   }
 };
+
+/** Réponse API pour une carte détail (id en string, attribute/card_type en string) */
+export interface CardDetailResponse {
+  id: string;
+  name: string;
+  description?: string;
+  img_url?: string;
+  level?: number;
+  atk?: number;
+  def?: number;
+  attribute?: string;
+  card_type?: string;
+}
+
+export const getCardById = async (cardId: string): Promise<CardDetailResponse> => {
+  const response = await api_aw.get<CardDetailResponse>(`/cards/${cardId}`);
+  if (response.status !== 200 || !response.data) {
+    throw new Error("Carte introuvable");
+  }
+  return response.data;
+};

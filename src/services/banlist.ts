@@ -14,7 +14,7 @@ export const getCurrentBanlist = async (
   setBanlist: SetStateCallback<Banlist | null>
 ): Promise<void> => {
   try {
-    const response = await api_aw.get(URL_BACK_GET_CURRENT_BANLIST);
+    const response = await api_aw.get(URL_BACK_GET_CURRENT_BANLIST(false));
     if (response.status === 200 && response.data) {
       setBanlist(response.data);
     }

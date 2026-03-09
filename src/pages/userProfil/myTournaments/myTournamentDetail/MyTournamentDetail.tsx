@@ -39,7 +39,7 @@ const MyTournamentDetail: React.FC = () => {
     const [isDropping, setIsDropping] = useState(false);
     const [playableDecks, setPlayableDecks] = useState<Deck[]>([]);
     const [playableDecksLoading, setPlayableDecksLoading] = useState(false);
-    const [selectedDeckId, setSelectedDeckId] = useState<number | "">("");
+    const [selectedDeckId, setSelectedDeckId] = useState<string | "">("");
     const [isSubmittingDeck, setIsSubmittingDeck] = useState(false);
     const [deckSnapshot, setDeckSnapshot] = useState<TournamentPlayerDeckSnapshot | null>(null);
     const [deckSnapshotLoading, setDeckSnapshotLoading] = useState(false);
@@ -49,8 +49,6 @@ const MyTournamentDetail: React.FC = () => {
     const { cardTypes } = useCardTypes();
 
     const user = useSelector((state: RootState) => state.user);
-
-    console.log("tournament!!!!", tournament)
 
     const maxWinningDuelPerPlayer = tournament ? Math.ceil(tournament.matches_per_round / 2) : 1;
     const isTournamentPhase = tournament?.status?.includes("tournament") ?? false;
@@ -333,15 +331,15 @@ const MyTournamentDetail: React.FC = () => {
                                                     <select
                                                         id="tournament-deck-select"
                                                         value={selectedDeckId}
-                                                        onChange={(e) => setSelectedDeckId(e.target.value === "" ? "" : Number(e.target.value))}
+                                                        onChange={(e) => setSelectedDeckId(e.target.value)}
                                                         className="w-full max-w-md rounded border border-gray-300 bg-white py-2 px-3 text-gray-700 focus:border-blue-500 focus:outline-none"
                                                         disabled={!isRegistrationOpen || playableDecks.length === 0 || playableDecksLoading}
                                                     >
                                                         <option value="" disabled>Sélectionner votre deck</option>
                                                         {playableDecks
-                                                            .filter((d): d is Deck & { id: number } => d.id != null)
+                                                            .filter((d): d is Deck & { id: string } => d.id != null && d.id !== "")
                                                             .map((deck) => (
-                                                                <option key={deck.id} value={deck.id} selected={deck.id === Number(selectedDeckId)}>
+                                                                <option key={deck.id} value={deck.id} selected={deck.id === selectedDeckId}>
                                                                     {deck.label}
                                                                 </option>
                                                             ))}

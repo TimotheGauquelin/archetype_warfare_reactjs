@@ -13,7 +13,7 @@ const initialState: User = {
 
 interface SetUserPayload {
   isAuthenticated: boolean;
-  id: number | null;
+  id: string | null;
   username: string | null;
   email: string | null;
   roles: string[];

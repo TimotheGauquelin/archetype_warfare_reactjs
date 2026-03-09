@@ -16,7 +16,7 @@ function getMatchTypeLabel(matchType: number | undefined): string {
 interface TournamentDetailProps {
   tournament: Tournament;
   isLoggedIn: boolean;
-  currentUserId: number | null;
+  currentUserId: string | null;
   onRegister: () => void;
   isRegistering: boolean;
   registerSuccessMessage: string | null;
@@ -42,7 +42,7 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
   const REGISTRATION_DEADLINE_HOURS = 48;
   const players = tournament.players ?? [];
   const withinWindow = deadlineWindow(tournament.event_date, REGISTRATION_DEADLINE_HOURS);
-  const isRegistered = players.some((player: TournamentPlayer) => (player.user_id ?? (player.user as { id?: number | string })?.id) === currentUserId);
+  const isRegistered = players.some((player: TournamentPlayer) => (player.user_id ?? (player.user as { id?: string })?.id) === currentUserId);
 
   const canRegisterToTournament =
     isLoggedIn &&

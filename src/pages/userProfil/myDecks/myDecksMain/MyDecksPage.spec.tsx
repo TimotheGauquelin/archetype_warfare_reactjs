@@ -30,7 +30,7 @@ const mockUser = {
 function createTestStore() {
   return configureStore({
     reducer: { user: userReducer },
-    preloadedState: { user: mockUser },
+    preloadedState: { user:  mockUser },
   });
 }
 
@@ -92,7 +92,7 @@ describe("MyDecksPage (integration)", () => {
       await waitFor(
         () => {
           expect(screen.getByTestId("no-item-message")).toBeInTheDocument();
-          expect(screen.getByTestId("no-item-message-text")).toHaveTextContent("Vous n'avez aucun deck pour le moment.");
+          expect(screen.getByTestId("no-item-message-text")).toHaveTextContent("Vous n'avez aucun deck pour le moment");
         },
         { timeout: 2000 }
       );
@@ -100,8 +100,8 @@ describe("MyDecksPage (integration)", () => {
 
     it("display the decks returned by the API with links to the update", async () => {
       const mockDecks: Deck[] = [
-        { id: 1, label: "Deck Dragon" },
-        { id: 2, label: "Deck Magician" },
+        { id: "1", label: "Deck Dragon" },
+        { id: "2", label: "Deck Magician" },
       ];
       server.use(
         http.get(`${API_BASE_URL}${URL_BACK_GET_ALL_MY_DECKS(1)}`, () => {

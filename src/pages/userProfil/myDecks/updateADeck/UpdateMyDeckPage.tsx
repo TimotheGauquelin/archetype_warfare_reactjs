@@ -12,15 +12,18 @@ import usePopup from "../../../../hooks/usePopup";
 import PopUp from "../../../../components/generic/PopUp";
 import { FaCopy } from "react-icons/fa";
 import { MAIN_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
-import type { RootState } from "../../../../types";
+import type { Archetype, RootState } from "../../../../types";
 import type { Deck, DeckCard, Card } from "../../../../types";
 import UserProfilLayout from "../../layout";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
+import { getArchetypesNames } from "@/services/archetype";
 
 const UpdateMyDeckPage = () => {
     const navigate = useNavigate();
     const { deckId } = useParams<{ deckId?: string }>();
     const { token } = useSelector((state: RootState) => state.user);
+
+    const [archetypes, setArchetypes] = useState<Archetype[]>([]);
 
     const [myDeck, setMyDeck] = useState<Deck>({
         label: "",
@@ -30,7 +33,6 @@ const UpdateMyDeckPage = () => {
         deck_cards: []
     });
 
-    const { archetypes } = useArchetypesName();
     const [isLoading, setIsLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(true);
 
@@ -48,6 +50,7 @@ const UpdateMyDeckPage = () => {
                 navigate
             );
         }
+        getArchetypesNames(setArchetypes);
     }, [token, deckId, navigate]);
 
     const handleDelete = useCallback(() => {
@@ -88,7 +91,6 @@ const UpdateMyDeckPage = () => {
             const cardType = deckCard.card?.card_type || deckCard.card?.cardType?.label || "";
             return MAIN_DECK_LABELS.includes(cardType.toLowerCase());
         });
-        console.log(mainDeckCards);
         const fullCardsMainDeck: Card[] = [];
         for (const deckCard of mainDeckCards) {
             for (let i = 0; i < (deckCard.quantity || 0); i++) {

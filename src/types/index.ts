@@ -5,7 +5,7 @@ export interface Role {
 }
 
 export interface User {
-  id: number | null;
+  id: string | null;
   username: string | null;
   email: string | null;
   roles: Role[] | string[];
@@ -65,7 +65,7 @@ export interface PasswordRequestForm {
 }
 
 export interface DecodedToken {
-  id: number;
+  id: string;
   username: string;
   email: string;
   roles: string[];
@@ -189,16 +189,24 @@ export interface DeckCard {
 }
 
 export interface Deck {
-  id?: number;
+  id?: string;
   name?: string;
   label?: string;
   comment?: string;
   archetype_id?: number;
-  user_id?: number;
+  user_id?: string;
   deck_cards?: DeckCard[];
   created_at?: string;
   updated_at?: string;
   [key: string]: unknown;
+}
+
+export interface DeckWithArchetypeDetails extends Deck {
+  archetype: {
+    id:number;
+    label: string;
+    card_img_url: string
+  }
 }
 
 // Types pour les cartes de banlist
@@ -259,7 +267,7 @@ export type SetErrorMessageCallback = SetStateCallback<string>;
 export type TournamentStatus = "registration_open" | "registration_closed" | "tournament_beginning" | "tournament_in_progress" | "tournament_finished" | "tournament_cancelled";
 
 export interface TournamentPlayerUser {
-  id?: number;
+  id?: string;
   username?: string;
   email?: string;
   [key: string]: unknown;
@@ -267,13 +275,13 @@ export interface TournamentPlayerUser {
 
 export interface TournamentPlayer {
   id?: number;
-  user_id?: number;
+  user_id?: string;
   user?: TournamentPlayerUser;
   [key: string]: unknown;
 }
 
 export interface Tournament {
-  id: number;
+  id: string;
   name: string;
   status: TournamentStatus;
   max_players: number;

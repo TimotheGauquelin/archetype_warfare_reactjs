@@ -232,7 +232,6 @@ const AdminUpdateBanlist = () => {
                                 <div className="grid grid-cols-12 gap-4">
                                     {genericCards.map((card, index) => 
                                     {
-                                        console.log(card);
                                         return(
                                         <div
                                             key={`${card.card?.id}-${index}`}

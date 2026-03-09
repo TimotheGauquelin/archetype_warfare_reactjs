@@ -102,7 +102,7 @@ const AdminArchetypeFilter: React.FC<AdminArchetypeFilterProps> = ({
       </div>
 
       <div className="flex justify-between items-center">
-        <div className="grid grid-cols-12 col-span-12 pt-4 gap-4 flex justify-center items-center">
+        <div className="grid grid-cols-12 pt-4 gap-4 flex justify-center items-center">
           <input
             className="col-span-2 p-2 rounded"
             placeholder="Quel archetype recherchez-vous ?"

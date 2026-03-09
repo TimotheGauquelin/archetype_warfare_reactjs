@@ -17,7 +17,7 @@ const Jumbotron: React.FC<JumbotronProps> = ({ itemMainTitle, itemSubTitle, item
             <h2 data-testid="jumbotron-main-title" className="leading-none whiteVeilText font-bold text-3xl mb-5">
               {itemMainTitle}
             </h2>
-            <p data-testid="jumbotron-sub-title" className="leading-none whiteVeilText font-bold text-1xl tablet:text-2xl mb-5">
+            <p data-testid="jumbotron-sub-title" className="leading-none whiteVeilText font-bold text-xl mb-5">
               {itemSubTitle}
             </p>
           </div>

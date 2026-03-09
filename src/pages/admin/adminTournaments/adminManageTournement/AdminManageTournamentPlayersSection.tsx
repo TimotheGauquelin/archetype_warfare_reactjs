@@ -23,7 +23,7 @@ interface AdminManageTournamentPlayersSectionProps {
   setAddPlayerUsername: (username: string) => void;
   addPlayerResults: any;
   inscribedUserIds: Set<string>;
-  addingUserId: number | null;
+  addingUserId: string | null;
   handleAddPlayer: (user: User) => void;
   handleRemovePlayer: (player: any) => void;
   setRemovePlayer: (player: any) => void;
@@ -47,7 +47,7 @@ const AdminManageTournamentPlayersSection = ({
   const [assignDeckPlayer, setAssignDeckPlayer] = useState<TournamentPlayerAdmin | null>(null);
   const [playableDecks, setPlayableDecks] = useState<Deck[]>([]);
   const [playableDecksLoading, setPlayableDecksLoading] = useState(false);
-  const [selectedDeckId, setSelectedDeckId] = useState<number | "">("");
+  const [selectedDeckId, setSelectedDeckId] = useState<string | "">("");
   const [assignDeckLoading, setAssignDeckLoading] = useState(false);
   const [assignDeckError, setAssignDeckError] = useState<string | null>(null);
   const [playerToRemove, setPlayerToRemove] = useState<TournamentPlayerAdmin | null>(null);
@@ -93,7 +93,7 @@ const AdminManageTournamentPlayersSection = ({
     setAssignDeckError(null);
     const existingDeckId = player.deck_id;
     if (existingDeckId !== undefined && existingDeckId !== null && existingDeckId !== "") {
-      setSelectedDeckId(Number(existingDeckId));
+      setSelectedDeckId(existingDeckId);
     } else {
       setSelectedDeckId("");
     }
@@ -135,7 +135,7 @@ const AdminManageTournamentPlayersSection = ({
 
   const handleConfirmAssignDeck = async () => {
     const player = assignDeckPlayer;
-    if (!token || !tournament?.id || !player || selectedDeckId === "" || typeof selectedDeckId !== "number") return;
+    if (!token || !tournament?.id || !player || selectedDeckId === "") return;
     setAssignDeckError(null);
     setAssignDeckLoading(true);
     try {
@@ -205,7 +205,7 @@ const AdminManageTournamentPlayersSection = ({
               items={addPlayerResults?.data ?? []}
               getItemLabel={(user: User) => user.username ?? ""}
               alreadyAdded={players.map((p) => p.user).filter(Boolean) as User[]}
-              getItemId={(user: User) => user.id ?? 0}
+              getItemId={(user: User) => user.id ?? ""}
               value={addPlayerUsername}
               onChange={(value) => setAddPlayerUsername(value)}
               onSelect={(user: User) => handleAddPlayer(user)}
@@ -414,7 +414,7 @@ const AdminManageTournamentPlayersSection = ({
                 <select
                   id="assign-deck-select"
                   value={selectedDeckId}
-                  onChange={(e) => setSelectedDeckId(e.target.value === "" ? "" : Number(e.target.value))}
+                  onChange={(e) => setSelectedDeckId(e.target.value)}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
                 >
                   <option value="">— Choisir un deck —</option>

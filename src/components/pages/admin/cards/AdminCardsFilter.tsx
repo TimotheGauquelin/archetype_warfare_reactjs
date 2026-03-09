@@ -33,7 +33,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
       </div>
       <div className="grid grid-cols-12 gap-1">
         <input
-          className="md:col-span-4 col-span-6 p-2 rounded"
+          className="lscreen:col-span-4 col-span-6 p-2 rounded"
           placeholder="Quelle carte recherchez-vous ?"
           type="text"
           value={criteria.name}
@@ -46,7 +46,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
           }}
         />
         <input
-          className="md:col-span-2 col-span-6 p-2 rounded"
+          className="lscreen:col-span-2 col-span-6 p-2 rounded"
           placeholder="Level"
           type="number"
           value={criteria.level ?? ''}
@@ -60,7 +60,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
           }}
         />
         <input
-          className="md:col-span-2 col-span-3 p-2 rounded"
+          className="lscreen:col-span-2 col-span-3 p-2 rounded"
           placeholder="Atk <"
           type="number"
           step="50"
@@ -77,7 +77,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
           }}
         />
         <input
-          className="md:col-span-2 col-span-3 p-2 rounded"
+          className="lscreen:col-span-2 col-span-3 p-2 rounded"
           placeholder="Atk >"
           type="number"
           step="50"
@@ -94,7 +94,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
           }}
         />
         <input
-          className="md:col-span-2 col-span-3 p-2 rounded"
+          className="lscreen:col-span-2 col-span-3 p-2 rounded"
           placeholder="Def <"
           type="number"
           step="50"
@@ -111,7 +111,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
           }}
         />
         <input
-          className="md:col-span-2 col-span-3 p-2 rounded"
+          className="lscreen:col-span-2 col-span-3 p-2 rounded"
           placeholder="Def >"
           type="number"
           step="50"
@@ -129,7 +129,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
         />
         <select
           value={criteria.card_type}
-          className="md:col-span-3 col-span-6 p-2 rounded bg-white"
+          className="lscreen:col-span-3 col-span-6 p-2 rounded bg-white"
           onChange={(e) => {
             setCriteria((prevState) => ({
               ...prevState,
@@ -151,7 +151,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
         </select>
         <select
           value={criteria.attribute}
-          className="md:col-span-3 col-span-6 p-2 bg-white rounded"
+          className="lscreen:col-span-3 col-span-6 p-2 bg-white rounded"
           onChange={(e) => {
             setCriteria((prevState) => ({
               ...prevState,

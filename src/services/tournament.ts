@@ -32,7 +32,7 @@ import { toast } from "react-toastify";
  * Types spécifiques au détail de MON tournoi (/tournaments/:id/my-details)
  */
 export interface MyTournamentPlayerUser {
-  id: string | number;
+  id: string;
   username?: string;
   email?: string;
   [key: string]: unknown;
@@ -40,8 +40,8 @@ export interface MyTournamentPlayerUser {
 
 export interface MyTournamentPlayer {
   id: number;
-  tournament_id: number;
-  user_id: string | number;
+  tournament_id: string;
+  user_id: string;
   match_wins: number;
   match_losses: number;
   match_draws: number;
@@ -51,7 +51,7 @@ export interface MyTournamentPlayer {
   created_at: string;
   updated_at: string;
   user?: MyTournamentPlayerUser;
-  deck_id?: number | null;
+  deck_id?: string | null;
   penalties?: MyTournamentPlayerPenalty[];
   [key: string]: unknown;
 }
@@ -97,19 +97,19 @@ export interface MyTournamentRound {
 }
 
 export interface MyTournamentDetail {
-  id: number,
-  name: string,
-  status: "tournament_in_progress" | "tournament_finished" | "tournament_cancelled" | "registration_open" | "registration_closed",
-  max_number_of_rounds: number,
-  matches_per_round: number,
-  current_round: number,
-  event_date: string,
-  event_date_end: string,
-  location: string,
-  max_players: number,
-  is_online: boolean,
-  tournament_player: MyTournamentPlayer,
-  rounds: MyTournamentRound[]
+  id: string;
+  name: string;
+  status: "tournament_in_progress" | "tournament_finished" | "tournament_cancelled" | "registration_open" | "registration_closed";
+  max_number_of_rounds: number;
+  matches_per_round: number;
+  current_round: number;
+  event_date: string;
+  event_date_end: string;
+  location: string;
+  max_players: number;
+  is_online: boolean;
+  tournament_player: MyTournamentPlayer;
+  rounds: MyTournamentRound[];
   require_deck_list: boolean;
   allow_penalities: boolean;
 }
@@ -143,7 +143,7 @@ export interface TournamentStanding {
 export interface TournamentDetailMatch {
   id: number;
   round_id: number;
-  tournament_id: number;
+  tournament_id: string;
   player1_tournament_player_id: number;
   player2_tournament_player_id: number | null;
   player1_games_won: number;
@@ -155,14 +155,14 @@ export interface TournamentDetailMatch {
 /** Ronde telle que renvoyée par GET /tournaments/:id. */
 export interface TournamentDetailRound {
   id: number;
-  tournament_id: number;
+  tournament_id: string;
   round_number: number;
   status: "pending" | "in_progress" | "completed";
   matches: TournamentDetailMatch[];
 }
 
 export interface TournamentDetail {
-  id: number;
+  id: string;
   name: string;
   current_round: number;
   max_number_of_rounds: number;
@@ -216,13 +216,13 @@ export interface TournamentPlayerDeckSnapshot {
 /** Joueur du tournoi avec infos pour l’admin (liste joueurs, bannir, deck). */
 export interface TournamentPlayerAdmin {
   id: number;
-  tournament_id: number;
-  user_id?: number | string;
-  user?: { id?: number; username?: string; [key: string]: unknown };
+  tournament_id: string;
+  user_id?: string;
+  user?: { id?: string; username?: string; [key: string]: unknown };
   banned?: boolean;
   dropped?: boolean;
   /** ID du deck associé (si présent) */
-  deck_id?: number | string | null;
+  deck_id?: string | null;
   /** Snapshot du deck au moment de l’inscription (inclut cartes) */
   deck_snapshot?: TournamentPlayerDeckSnapshot | null;
   [key: string]: unknown;
@@ -576,16 +576,16 @@ export const rollbackTournamentRound = async (
 
 /**
  * Définit le deck du joueur pour ce tournoi (inscription au deck).
- * PUT /tournaments/:id/my-deck avec body { deck_id: number }.
+ * PUT /tournaments/:id/my-deck avec body { deckId: string } (UUID).
  */
 export const setTournamentMyDeck = async (
   tournamentId: number | string,
-  deckId: number,
+  deckId: string,
   token: string
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
-    await api.put(URL_BACK_SET_TOURNAMENT_MY_DECK(tournamentId), { deckId: deckId });
+    await api.put(URL_BACK_SET_TOURNAMENT_MY_DECK(tournamentId), { deckId });
     toast.success("Deck enregistré pour le tournoi.");
   } catch (error) {
     const appError = handleApiError(error);
@@ -618,12 +618,12 @@ export const getTournamentPlayerDeckSnapshot = async (
 
 /**
  * Assigne un deck jouable à un joueur du tournoi (Admin).
- * PUT /tournaments/:tournamentId/players/:playerId/deck avec body { deckId: number }.
+ * PUT /tournaments/:tournamentId/players/:playerId/deck avec body { deckId: string } (UUID).
  */
 export const assignTournamentPlayerDeck = async (
   tournamentId: number | string,
   playerId: number | string,
-  deckId: number,
+  deckId: string,
   token: string
 ): Promise<{ tournamentPlayer: TournamentPlayerAdmin } | null> => {
   const api = api_aw_token(token);

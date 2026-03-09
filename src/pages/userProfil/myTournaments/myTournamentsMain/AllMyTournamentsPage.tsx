@@ -78,7 +78,7 @@ const AllMyTournamentsPage: React.FC = () => {
         )}
 
         {!isLoading && tournaments.length === 0 && !error && (
-          <p className="text-gray-500 text-sm">Vous n&apos;êtes inscrit à aucun tournoi pour le moment.</p>
+          <p className="text-gray-500 text-sm">Vous n&apos;êtes inscrit à aucun tournoi pour le moment</p>
         )}
 
         {inProgressTournaments.length > 0 && (

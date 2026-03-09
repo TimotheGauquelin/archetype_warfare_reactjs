@@ -47,16 +47,12 @@ const AdminArchetypeCards: React.FC<AdminArchetypeCardsProps> = ({ newArchetype,
   }, [setNewArchetype]);
 
   const sortedCards = useMemo(() => {
-    console.log("ici", newArchetype?.cards);
-    console.log("cardTypes", cardTypes);
     if (!newArchetype?.cards || !cardTypes.length) return [];
-    // Convertir BanlistCard[] en DeckCard[] pour sortedDeck
     const deckCards = newArchetype.cards.map((banlistCard) => ({
       card: banlistCard.card,
       quantity: 1,
     }));
     const sortedDeckCards = sortedDeck(deckCards, cardTypes);
-    // Reconvertir en BanlistCard[] en préservant les données originales
     return sortedDeckCards.map((deckCard) => {
       const originalBanlistCard = newArchetype.cards?.find(
         (bc) => bc.card.id === deckCard.card.id

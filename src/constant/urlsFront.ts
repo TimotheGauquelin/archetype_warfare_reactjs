@@ -42,6 +42,7 @@ export const getAdminTournamentManagePath = (tournamentId: number | string) => `
 export const URL_FRONT_ADMIN_USER_ADD = "/admin/users/add";
 export const URL_FRONT_ADMIN_USER_UPDATE = "/admin/users/update/:userId";
 export const URL_FRONT_ADMIN_CARDS = "/admin/cards";
+export const URL_FRONT_ADMIN_CARD_DETAIL = "/admin/cards/:cardId";
 export const URL_FRONT_ADMIN_OPTIONS = "/admin/options";
 export const URL_FRONT_ADMIN_FILES = "/admin/files";
 export const URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON = "/admin/files/archetypes/jumbotron";

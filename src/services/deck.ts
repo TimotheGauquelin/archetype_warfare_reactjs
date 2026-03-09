@@ -1,7 +1,7 @@
 import { api_aw_token } from "../api/api_aw_token";
 import { URL_BACK_CREATE_DECK, URL_BACK_DELETE_MY_DECK, URL_BACK_GET_ALL_MY_DECKS, URL_BACK_GET_PLAYABLE_DECKS, URL_BACK_GET_DECK_BY_ID, URL_BACK_UPDATE_DECK } from "../constant/urlsBack";
 import { URL_FRONT_MY_DECKS } from "../constant/urlsFront";
-import type { Deck, SetStateCallback } from "../types";
+import type { Deck, DeckWithArchetypeDetails, SetStateCallback } from "../types";
 import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
 import type { NavigateFunction } from "react-router-dom";
 import type { ToastFunction } from "./websiteactions";
@@ -12,7 +12,7 @@ import type { ToastFunction } from "./websiteactions";
 export const getMyDecks = async (
   token: string,
   id: number | string,
-  setMyDecks: SetStateCallback<Deck[]>,
+  setMyDecks: SetStateCallback<DeckWithArchetypeDetails[]>,
   setIsFetching: SetStateCallback<boolean>,
   setError?: SetStateCallback<string | null>
 ): Promise<void> => {

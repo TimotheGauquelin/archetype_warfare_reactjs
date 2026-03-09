@@ -152,7 +152,7 @@ describe("BanlistPage (integration)", () => {
 
   beforeEach(() => {
     server.resetHandlers(
-      http.get(`${API_BASE_URL}${URL_BACK_GET_CURRENT_BANLIST}`, () => {
+      http.get(`${API_BASE_URL}${URL_BACK_GET_CURRENT_BANLIST(false)}`, () => {
         return HttpResponse.json(mockBanlist);
       }),
       http.get(`${API_BASE_URL}${URL_BACK_GET_ALL_CARD_TYPES}`, () => {
@@ -200,7 +200,7 @@ describe("BanlistPage (integration)", () => {
     it("load the banlist from the API", async () => {
       let requestCalled = false;
       server.use(
-        http.get(`${API_BASE_URL}${URL_BACK_GET_CURRENT_BANLIST}`, () => {
+        http.get(`${API_BASE_URL}${URL_BACK_GET_CURRENT_BANLIST(false)}`, () => {
           requestCalled = true;
           return HttpResponse.json(mockBanlist);
         })

@@ -5,7 +5,7 @@ const TournamentDetailsPlayers = ({ players }: { players: TournamentPlayer[] }) 
     return (
         <TournamentDropDown title="Joueurs inscrits">
             {players.length === 0 ? (
-                <p className="text-gray-500">Aucun joueur inscrit pour le moment.</p>
+                <p className="text-gray-500">Aucun joueur inscrit pour le moment</p>
             ) : (
                 <ul className="list-none p-0 m-0 space-y-2">
                     {players
