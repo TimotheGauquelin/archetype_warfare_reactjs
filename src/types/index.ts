@@ -1,14 +1,13 @@
-// Types pour les rôles
 export interface Role {
   id?: number;
-  label: string;
+  label: string | null;
 }
 
 export interface User {
   id: string | null;
   username: string | null;
   email: string | null;
-  roles: Role[] | string[];
+  roles: string[]
   token: string | null;
   isAuthenticated: boolean;
   is_active?: boolean;

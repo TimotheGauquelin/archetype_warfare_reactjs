@@ -11,10 +11,8 @@ interface PrivateRouteProps {
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ allowedRoles }) => {
   const authUser = useSelector((state: RootState) => state.user);
 
-  const hasRoles = authUser?.roles?.some((role) => {
-    const roleLabel = typeof role === 'string' ? role : role.label;
-    return allowedRoles.includes(roleLabel);
-  });
+  const roles = authUser?.roles ?? [];
+  const hasRoles = roles.some((role) => allowedRoles.includes(role));
 
   return hasRoles ? <Outlet /> : <Navigate to={URL_FRONT_HOME} />;
 };

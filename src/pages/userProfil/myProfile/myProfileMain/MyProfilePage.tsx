@@ -6,9 +6,7 @@ import PopUp from "../../../../components/generic/PopUp";
 import { deleteUser } from "../../../../services/user";
 import { FaCrown } from "react-icons/fa";
 import type { RootState } from "../../../../types";
-import type { Role } from "../../../../types";
 import UserProfilLayout from "../../layout";
-import { URL_FRONT_MY_PROFILE_EDIT } from "@/constant/urlsFront";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 
 const MyProfile = () => {
@@ -31,9 +29,6 @@ const MyProfile = () => {
       <div className="bg-white rounded-lg shadow-sm p-4 mb-2">
         <UserProfileLayoutTitle
           title="Informations du compte"
-          buttonUrl={URL_FRONT_MY_PROFILE_EDIT}
-          buttonText="Modifier mes informations"
-          buttonClassName="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
         />
 
         <div className="space-y-2 mb-2">
@@ -43,28 +38,21 @@ const MyProfile = () => {
               <p className="text-black">{username}</p>
             </div>
             <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-              <p className="font-semibold text-black mb-2">Rôle(s):</p>
+              <p className="font-semibold text-black">Rôle(s):</p>
               <div className="flex flex-wrap gap-1">
-                {roles?.map((role: Role | string, index: number) => {
-                  const roleLabel = typeof role === 'string' ? role : role.label;
+                {roles?.map((role: any, index: number) => {
+                  console.log(role);
                   return (
                     <div
                       key={index}
-                      className="flex items-center gap-1 px-3 py-1 bg-red-500 text-white font-bold rounded-md shadow-sm"
+                      className={`flex items-center gap-1 px-3 py-1 ${role?.toLowerCase() === "admin" ? "bg-red-500" : "bg-green-500"} text-white font-bold rounded-md shadow-sm`}
                     >
-                      <FaCrown className="text-xs" />
-                      <span>{roleLabel}</span>
+                      {role?.toLowerCase() === "admin" && <FaCrown className="text-xs" />}
+                      <span>{role}</span>
                     </div>
                   );
                 })}
               </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-12 space-y-2">
-            <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-              <p className="font-semibold text-black">Archétype favori :</p>
-              <p className="text-black">Aucun</p>
             </div>
           </div>
         </div>

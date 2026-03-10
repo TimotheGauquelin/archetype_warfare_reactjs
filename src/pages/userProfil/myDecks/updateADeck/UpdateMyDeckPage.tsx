@@ -5,7 +5,6 @@ import DeckData from "../../../../components/pages/userProfil/deckAdd/DeckData";
 import Button from "../../../../components/generic/buttons/classicButton/Button";
 import { deleteMyDeck, getDeckById, updateDeck } from "../../../../services/deck";
 import { toast } from "react-toastify";
-import { useArchetypesName } from "../../../../hooks/useArchetypesName";
 import DeckUpdatator from "../../../../components/pages/userProfil/deckUpdate/DeckUpdatator";
 import { laborIllusion } from "../../../../utils/functions/laborIllusion/laborIllusion";
 import usePopup from "../../../../hooks/usePopup";

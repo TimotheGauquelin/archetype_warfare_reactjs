@@ -127,7 +127,7 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
                       );
                     })}
                   </ul>
-                  {(authUser?.roles as string[])?.includes(ROLE_ADMIN) && (
+                  { (authUser?.roles ?? []).includes(ROLE_ADMIN) && (
                     <ul>
                       <NavSideItem url={URL_FRONT_ADMIN_HOME} label="Panneau Admin" />
                     </ul>

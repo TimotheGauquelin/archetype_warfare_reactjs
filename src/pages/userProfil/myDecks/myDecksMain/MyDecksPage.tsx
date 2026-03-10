@@ -5,7 +5,6 @@ import { useSelector } from "react-redux";
 import { getMyDecks } from "../../../../services/deck";
 import { URL_FRONT_MY_DECK_ADD, getMyDeckUpdatePath } from "../../../../constant/urlsFront";
 import type { DeckWithArchetypeDetails, RootState } from "../../../../types";
-import type { Deck } from "../../../../types";
 import UserProfilLayout from "../../layout";
 import NoItemMessage from "@/components/generic/NoItemMessage";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";

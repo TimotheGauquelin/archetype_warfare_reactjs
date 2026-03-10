@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useAuthAutoLogout } from "./hooks/useAuthAutoLogout";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -88,6 +89,49 @@ import AdminAddTournament from "./pages/admin/adminTournaments/adminAddTournamen
 import AdminUpdateTournament from "./pages/admin/adminTournaments/adminUpdateTournament/AdminUpdateTournament";
 import AdminManageTournament from "./pages/admin/adminTournaments/adminManageTournement/AdminManageTournament";
 import AdminCardDetail from "./pages/admin/adminCards/AdminCardDetail";
+import PopUp from "./components/generic/PopUp";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "./redux/store";
+import { logOut } from "./services/auth";
+
+const AuthAutoLogout: React.FC = () => {
+  const isExpired = useAuthAutoLogout();
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (isExpired) {
+      setOpen(true);
+    }
+  }, [isExpired]);
+
+  const handleClose = () => {
+    setOpen(false);
+    logOut(dispatch, navigate);
+  };
+
+  return (
+    <PopUp
+      isOpen={open}
+      onClose={handleClose}
+      title="Session expirée"
+      showCloseButton={false}
+      closeOnBackdropClick={false}
+    >
+      <p className="text-gray-700 mb-3">
+        Votre session a expiré. Vous allez être déconnecté et devrez vous reconnecter pour continuer.
+      </p>
+      <button
+        type="button"
+        onClick={handleClose}
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
+      >
+        OK
+      </button>
+    </PopUp>
+  );
+};
 
 const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SiteConfig>({});
@@ -107,6 +151,7 @@ const AppContent: React.FC = () => {
           v7_relativeSplatPath: true,
         }}
       >
+        <AuthAutoLogout />
         <ScrollToTop />
         <Routes>
           <Route

@@ -30,13 +30,20 @@ const AdminUserPaginationTableBody: React.FC<AdminUserPaginationTableBodyProps> 
             <div className={`col-span-2 p-1 flex flex-col`}>
               <span className="text-md mb-1">{item?.username}</span>
               <div className="flex flex-row gap-1">
-                {item?.roles && Array.isArray(item.roles) && item.roles.length > 0
-                  ? item.roles
-                    .filter((role): role is { label: string } => typeof role === 'object' && role !== null && 'label' in role)
-                    .sort((a, b) => a.label.localeCompare(b.label))
-                    .map((role) => {
-                      return <span key={role.label} className={`text-xs rounded-sm ${role.label === "Admin" ? "bg-red-200 text-red-700 p-1" : "bg-green-200 text-green-700 p-1"}`}>{role.label}</span>
-                    })
+                {item?.roles && item.roles.length > 0
+                  ? [...item.roles]
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((role) => (
+                      <span
+                        key={role}
+                        className={`text-xs rounded-sm ${role === "Admin"
+                          ? "bg-red-200 text-red-700 p-1"
+                          : "bg-green-200 text-green-700 p-1"
+                          }`}
+                      >
+                        {role}
+                      </span>
+                    ))
                   : <span className="text-gray-500">Aucun rôle</span>}
               </div>
             </div>
