@@ -27,7 +27,8 @@ const ArchetypesPage = () => {
     name: "",
     era: "",
     size: 12,
-    page: 0
+    page: 0,
+    is_active: true
   });
   const [, setPagination] = useState({
     total: 0,
@@ -59,7 +60,8 @@ const ArchetypesPage = () => {
         name: debouncedName,
         era: filters.era,
         size: filters.size,
-        page: filters.page
+        page: filters.page,
+        is_active: filters.is_active
       };
       await getArchetypesWithCriteria(searchFilters, setArchetypes, setPagination, (v) => setErrorMessage(prev => typeof v === 'function' ? (v as (p: string) => string)(prev ?? '') : v));
     } catch (err) {

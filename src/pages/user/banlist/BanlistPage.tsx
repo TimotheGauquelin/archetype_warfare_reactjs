@@ -10,29 +10,33 @@ import { useDebounce } from "../../../utils/functions/debounce/useDebounce";
 import "../../../styles/Archetypes.scss";
 import type { Banlist as BanlistType, BanlistCard, SetStateCallback } from "../../../types";
 import UserHeroLayout from "../layout";
+import { SwitchInput } from "@/components/generic/form/SwitchInput";
 
 
 const BanlistPage = () => {
-  const [banlistSearchInput, setBanlistSearchInput] = useState("");
+  const [filters, setFilters] = useState({
+    banlistSearchInput: "",
+    showArchetypeCards: false,
+  });
   const [isFetching, setIsFetching] = useState(false);
   const [banlist, setBanlist] = useState<BanlistType | null>(null);
   const { cardTypes } = useCardTypes();
-  const debouncedSearchInput = useDebounce(banlistSearchInput, 300);
+  const debouncedSearchInput = useDebounce(filters.banlistSearchInput, 300);
 
   const loadBanlistData = useCallback(async () => {
     setIsFetching(true);
 
     try {
-      await getCurrentBanlist(setBanlist as SetStateCallback<BanlistType | null>);
+      await getCurrentBanlist(setBanlist as SetStateCallback<BanlistType | null>, filters.showArchetypeCards);
     } catch (err) {
       console.error("Erreur:", err);
     } finally {
       setIsFetching(false);
     }
-  }, []);
+  }, [filters.showArchetypeCards]);
 
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setBanlistSearchInput(e.target.value);
+    setFilters((prev) => ({ ...prev, banlistSearchInput: e.target.value }));
   }, []);
 
 
@@ -83,11 +87,18 @@ const BanlistPage = () => {
       <AbsoluteInput>
         <input
           type="text"
-          className="col-span-12 bg-gray-100 rounded-md p-2"
+          className="col-span-8 bg-gray-100 rounded-md p-2"
           placeholder="Quelle carte recherchez-vous ?"
-          value={banlistSearchInput}
+          value={filters.banlistSearchInput}
           onChange={handleSearchChange}
           aria-label="Rechercher une carte"
+        />
+        <SwitchInput
+          label="Afficher les cartes d'archétypes"
+          attribute="showArchetypeCards"
+          data={filters}
+          setAction={setFilters}
+          displayRow={true}
         />
       </AbsoluteInput>
       <PageContentBlock>

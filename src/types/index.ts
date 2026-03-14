@@ -142,6 +142,7 @@ export interface SearchCriteria {
   type?: string;
   attribute?: string;
   summonmechanic?: string;
+  is_active?: boolean;
 }
 
 // Types pour les cartes
@@ -243,6 +244,10 @@ export interface Banlist {
 // Types pour les cartes avec statut de banlist
 export interface CardWithBanlistStatus {
   card: Card;
+  archetype?: {
+    id: number;
+    name: string;
+  };
   card_status: {
     id: number;
     label: string;

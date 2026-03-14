@@ -11,10 +11,11 @@ import type { ToastFunction } from "./websiteactions";
  * Retrieves the current banlist
  */
 export const getCurrentBanlist = async (
-  setBanlist: SetStateCallback<Banlist | null>
+  setBanlist: SetStateCallback<Banlist | null>,
+  showArchetypeCards: boolean
 ): Promise<void> => {
   try {
-    const response = await api_aw.get(URL_BACK_GET_CURRENT_BANLIST(false));
+    const response = await api_aw.get(URL_BACK_GET_CURRENT_BANLIST(showArchetypeCards));
     if (response.status === 200 && response.data) {
       setBanlist(response.data);
     }
