@@ -93,6 +93,7 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
           inputName="popularityPoll"
           colSpanWidth="3"
           attribute="popularity_poll"
+          min={0}
           data={newArchetype}
           setAction={setNewArchetype}
         />

@@ -142,6 +142,7 @@ export interface SearchCriteria {
   type?: string;
   attribute?: string;
   summonmechanic?: string;
+  is_active?: boolean;
 }
 
 // Types pour les cartes
@@ -197,6 +198,12 @@ export interface Deck {
   deck_cards?: DeckCard[];
   created_at?: string;
   updated_at?: string;
+  archetype: {
+    id: number;
+    label: string;
+    card_img_url: string;
+    is_active: boolean;
+  };
   [key: string]: unknown;
 }
 
@@ -205,6 +212,7 @@ export interface DeckWithArchetypeDetails extends Deck {
     id:number;
     label: string;
     card_img_url: string
+    is_active: boolean
   }
 }
 
@@ -243,6 +251,10 @@ export interface Banlist {
 // Types pour les cartes avec statut de banlist
 export interface CardWithBanlistStatus {
   card: Card;
+  archetype?: {
+    id: number;
+    name: string;
+  };
   card_status: {
     id: number;
     label: string;

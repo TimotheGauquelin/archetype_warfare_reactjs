@@ -146,7 +146,7 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
             )}
           </div>
         )}
-        {showUnregisterClosedMessage && (
+        {showUnregisterClosedMessage && !tournament.status.includes("tournament") && (
           <p className="text-amber-700 font-medium">Désinscription impossible 48 h avant le début.</p>
         )}
         {canUnregisterToTournament && (

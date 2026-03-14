@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState, useCallback } from "react";
-import { FaTrashAlt } from "react-icons/fa";
 import AddCardModule from "../../../generic/AddCardModule";
 import { getCardStatus } from "../../../../services/cardStatus";
 import { getCardTypes } from "../../../../services/cardtype";
-import { cardStatusToFrench } from "../../../../utils/trad/cardStatus";
 import { sortedDeck } from "../../../../utils/functions/sortedDeck";
 import type { Archetype, BanlistCard } from "../../../../types";
+import BanlistCardComponent from "../../../generic/BanlistCard";
 
 interface AdminArchetypeCardsProps {
   newArchetype: Archetype;
@@ -39,7 +38,15 @@ const AdminArchetypeCards: React.FC<AdminArchetypeCardsProps> = ({ newArchetype,
     setNewArchetype((prevState) => {
       const updatedCards = prevState?.cards?.map((card) =>
         card.card.id === cardId
-          ? { ...card, card_status_id: Number(statusId) }
+          ? {
+              ...card,
+              card_status_id: Number(statusId),
+              // `BanlistCard` lit `card.card_status.id` pour piloter le <select>.
+              card_status: {
+                ...card.card_status,
+                id: Number(statusId),
+              },
+            }
           : card
       ) || [];
       return { ...prevState, cards: updatedCards };
@@ -78,57 +85,24 @@ const AdminArchetypeCards: React.FC<AdminArchetypeCardsProps> = ({ newArchetype,
       <div className="bg-gray-300 grid grid-cols-12 gap-1">
         <div className="bg-gray-400 col-span-8 mt-2 p-3 rounded">
           <div
-            className={`overflow-y-auto h-full grid gap-1 ${
-              sortedCards.length > 0 && "grid-cols-12"
+            className={`overflow-y-auto grid gap-1 ${
+              sortedCards.length > 0 && "grid-cols-3"
             } bg-white p-2 rounded`}
             style={{ maxHeight: "600px" }}
           >
             {sortedCards.length > 0 ? (
               sortedCards.map((card: BanlistCard) => (
-                <div
+                <BanlistCardComponent
                   key={card.card.id}
-                  className="lscreen:col-span-3 sscreen:col-span-3 col-span-3 bg-gray-200 p-1 rounded text-center"
-                >
-                  <div className="relative">
-                      <img
-                        src={card?.card?.img_url}
-                        alt={card?.card?.name || "Carte"}
-                        className="w-full h-auto"
-                        loading="lazy"
-                      />
-                    <div
-                      style={{ width: "30px", height: "30px" }}
-                      className="absolute top-0 shadow-md shadow-gray-800 left-0 bg-red-500 cursor-pointer border border-red-800 border-2 flex justify-center items-center rounded-full text-white p-2 hover:bg-red-600 transition-colors"
-                      onClick={() => deleteCard(card.card.id)}
-                      title="Supprimer la carte"
-                    >
-                      <FaTrashAlt size={12} />
-                    </div>
-                  </div>
-                  <textarea
-                    className="w-full mt-2 p-2 border border-gray-300 rounded"
-                    rows={3}
-                    placeholder="Explication..."
-                    value={card.explanation_text || ""}
-                    onChange={(e) => updateCardExplanation(card.card.id, e.target.value)}
-                  />
-                  <div className="mt-2">
-                    <select
-                      className="w-full p-2 border border-gray-300 rounded"
-                      value={String(card.card_status_id || card.card_status?.id || "")}
-                      onChange={(e) => updateCardStatus(card.card.id, Number(e.target.value))}
-                    >
-                      <option value="" disabled>
-                        ------
-                      </option>
-                      {cardStatus?.map((option) => (
-                        <option key={option.id} value={option.id}>
-                          {cardStatusToFrench(option.label)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+                  card={card}
+                  cardStatus={cardStatus}
+                  deleteCard={deleteCard}
+                  canBeUnlimited={true}
+                  updateCardStatus={(_, statusId) => updateCardStatus(card.card.id, statusId)}
+                  updateCardExplanation={(_, explanation) =>
+                    updateCardExplanation(card.card.id, explanation)
+                  }
+                />
               ))
             ) : (
               <div className="col-span-12 text-center text-gray-500 py-8">

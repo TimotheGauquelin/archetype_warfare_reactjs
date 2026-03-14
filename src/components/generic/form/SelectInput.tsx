@@ -5,7 +5,7 @@ interface Option {
   label: string;
 }
 
-interface SelectInputProps {
+interface SelectInputProps<T extends Record<string, unknown> = Record<string, unknown>> {
   defaultOptionLabel: string;
   className?: string;
   label?: string;
@@ -15,14 +15,14 @@ interface SelectInputProps {
   required?: boolean;
   colSpanWidth?: string;
   attribute: string;
-  setAction: React.Dispatch<React.SetStateAction<Record<string, unknown>>>;
-  data: Record<string, unknown>;
+  setAction: React.Dispatch<React.SetStateAction<T>>;
+  data: T;
 }
 
-const SelectInput: React.FC<SelectInputProps> = ({ 
-  defaultOptionLabel, 
+const SelectInput = <T extends Record<string, unknown>>({
+  defaultOptionLabel,
   className,
-  label, 
+  label,
   disabled,
   options,
   inputName,
@@ -31,13 +31,12 @@ const SelectInput: React.FC<SelectInputProps> = ({
   attribute,
   setAction,
   data,
-}) => {
+}: SelectInputProps<T>) => {
   const handleChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    
-    setAction((prevState: Record<string, unknown>) => {
+    setAction((prevState: T) => {
       return {
         ...prevState,
-        [attribute]: e.target.value
+        [attribute]: e.target.value,
       };
     });
   }, [setAction, attribute]);

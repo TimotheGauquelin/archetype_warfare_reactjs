@@ -140,11 +140,9 @@ const DeckUpdatator: React.FC<DeckUpdatatorProps> = ({ myDeck, setMyDeck }) => {
     return (
         <div className="mt-2 p-4 bg-gray-300 rounded-lg">
             {mainDeckTotal < 40 && (
-                <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 rounded-md">
-                    <p className="text-sm font-semibold">
+                    <p className="mb-2 p-2 bg-yellow-100 text-yellow-800 rounded-md text-sm font-semibold">
                         ⚠️ Attention : Le deck n'est pas jouable. Le MainDeck doit contenir au minimum 40 cartes.
                     </p>
-                </div>
             )}
 
             <AdminCardsFilter

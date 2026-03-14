@@ -52,9 +52,9 @@ const MyDecksPage = () => {
                     <div className="rounded-md">
                       <img className="rounded-md" src={deck.archetype.card_img_url} alt={deck.archetype.label} />
                     </div>
-                    <p className="flex justify-between items-center">
+                    <p className="flex flex-col justify-between items-center">
                       <span className="font-bold line-clamp-1">{deck.label}</span>
-                      <span className={`text-white text-sm p-1 rounded-sm ${deck.is_playable === true ? "bg-green-500" : "bg-red-500"}`}>{deck.is_playable ? "Jouable" : "Non jouable"}</span>
+                      <span className={`text-white text-sm p-1 rounded-sm ${deck.is_playable && deck.archetype.is_active === true ? "bg-green-500" : "bg-red-500"}`}>{deck.is_playable && deck.archetype.is_active ? "Jouable" : "Non jouable"}</span>
                     </p>
                   </Link>
                 ))

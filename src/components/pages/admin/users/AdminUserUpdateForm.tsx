@@ -29,7 +29,7 @@ const AdminUserUpdateForm = () => {
   ];
 
   useEffect(() => {
-    getUserById(Number(userId), setUser);
+    getUserById(String(userId), setUser);
   }, [userId]);
 
   return (
@@ -90,7 +90,7 @@ const AdminUserUpdateForm = () => {
             roles: Array.isArray(user.roles) ? user.roles.filter((r): r is string => typeof r === 'string') : []
           };
           laborIllusion(
-            () => updateUserByAdmin(Number(userId), userForm, navigate, toast, setIsLoading),
+            () => updateUserByAdmin(String(userId), userForm, navigate, toast, setIsLoading),
             1
           );
         }}

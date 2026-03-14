@@ -179,7 +179,7 @@ const TournamentDetailPage: React.FC = () => {
         {
           !tournament.status.includes("registration") && (
             <TournamentDetailsMatchMaking
-              tournamentId={Number(id)}
+              tournamentId={id}
             />)
         }
 

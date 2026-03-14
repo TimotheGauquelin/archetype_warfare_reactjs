@@ -22,6 +22,12 @@ const MyDeckAddPage = () => {
     label: "",
     comment: "",
     archetype_id: undefined,
+    archetype: {
+      id: 0,
+      label: "",
+      card_img_url: "",
+      is_active: true,
+    },
     user_id: undefined,
     deck_cards: [],
   });

@@ -35,7 +35,7 @@ const AdminBanlist = () => {
   };
 
   useEffect(() => {
-    getCurrentBanlist((v) => setCurrentBanlist(prev => typeof v === 'function' ? (v as (p: Banlist | null) => Banlist | null)(prev) : v));
+    getCurrentBanlist((v) => setCurrentBanlist(prev => typeof v === 'function' ? (v as (p: Banlist | null) => Banlist | null)(prev) : v), false);
     getBanlists((v) => setBanlists(prev => typeof v === 'function' ? (v as (p: Banlist[]) => Banlist[])(prev) : v));
     setRefresh(false);
   }, [refresh]);

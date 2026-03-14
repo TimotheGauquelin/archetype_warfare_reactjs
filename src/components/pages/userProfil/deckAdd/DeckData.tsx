@@ -16,6 +16,13 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
             <span className="font-bold text-lg mb-2">
                 Informations du deck
             </span>
+            {
+                myDeck.archetype.is_active === false && (
+                    <p className="p-2 bg-yellow-100 text-yellow-800 rounded-md text-sm font-semibold">
+                        ⚠️ Attention: L'archetype du deck que vous avez selectionné n'est plus actif. Ce deck n'est donc plus jouable en tournoi.
+                    </p>
+                )
+            }
             <div className="grid grid-cols-2 gap-4">
                 <Input
                     label="Nom du deck"

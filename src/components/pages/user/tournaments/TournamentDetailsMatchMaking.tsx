@@ -4,7 +4,7 @@ import { TournamentDropDown } from "./TournamentDropDown";
 import { TOURNAMENT_MATCH_STATUS } from "@/utils/trad/tournamentStatus";
 
 interface Props {
-  tournamentId: number;
+  tournamentId: string;
 }
 
 // Données renvoyées par GET /api/tournaments/:id

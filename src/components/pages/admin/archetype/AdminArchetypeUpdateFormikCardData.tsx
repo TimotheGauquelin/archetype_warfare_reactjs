@@ -1,10 +1,9 @@
 import { useEffect, useState, useMemo } from "react";
-import { FaTrashAlt } from "react-icons/fa";
 import AddCardModule from "../../../generic/AddCardModule";
 import { getCardStatus } from "../../../../services/cardStatus";
 import { getCardTypes } from "../../../../services/cardtype";
-import { cardStatusToFrench } from "../../../../utils/trad/cardStatus";
 import type { Archetype } from "../../../../types";
+import BanlistCardComponent from "../../../generic/BanlistCard";
 
 interface CardStatus {
   id: number;
@@ -87,46 +86,46 @@ const AdminArchetypeUpdateFormikCardData: React.FC<AdminArchetypeUpdateFormikCar
       <div className="bg-gray-300 grid grid-cols-12 gap-1">
         <div className="bg-gray-400 col-span-8 mt-2 p-3 rounded">
           <div
-            className={`overflow-y-auto h-full grid gap-1 ${sortedCards.length > 0 && "grid-cols-12"
+            className={`overflow-y-auto h-full grid gap-1 ${sortedCards.length > 0 && "grid-cols-3"
               } bg-white p-2 rounded`}
           >
             {sortedCards.length > 0
-              ? sortedCards.map((card, index) => {
+              ? sortedCards.map((card) => {
                 const cardIndex = newArchetype?.cards?.findIndex(
                   (archCard: { card: { id: number } }) => archCard.card.id === card.card.id
                 );
                 return (
-                  <div
-                    key={index}
-                    className="lscreen:col-span-3 sscreen:col-span-3 col-span-4"
-                  >
-                    <div className="relative">
-                      <img
-                        className="hover:saturate-150 pointer-cursor"
-                        src={`${card?.card?.img_url}`}
-                        alt={(card?.card as { name?: string; card_name?: string } | undefined)?.name ?? (card?.card as { card_name?: string })?.card_name ?? ''}
-                      />
-                      <div
-                        style={{ width: `30px`, height: "30px" }}
-                        className="absolute top-0 shadow-md shadow-gray-800 left-0 bg-red-500 cursor-pointer border border-red-800 border-2 flex justify-center items-center rounded-full text-white p-2"
-                        onClick={() => {
-                          deleteCard(card.card.id);
-                        }}
-                      >
-                        <FaTrashAlt />
-                      </div>
-                    </div>
-                    <input
-                      type="text"
-                        value={(card.explanation_text as string | undefined) ?? ''}
-                      onChange={(e) => {
+                    <BanlistCardComponent
+                      key={card.card.id}
+                      card={card as any}
+                      cardStatus={cardStatus}
+                      deleteCard={deleteCard}
+                      canBeUnlimited={true}
+                      updateCardStatus={(_, statusId) => {
                         if (cardIndex !== undefined && cardIndex >= 0) {
                           setNewArchetype((prevState: Archetype) => {
                             const updatedCards = [...(prevState.cards || [])];
                             if (updatedCards[cardIndex]) {
                               updatedCards[cardIndex] = {
                                 ...updatedCards[cardIndex],
-                                explanation_text: e.target.value
+                                card_status: {
+                                  id: Number(statusId),
+                                  label: '',
+                                },
+                              };
+                            }
+                            return { ...prevState, cards: updatedCards };
+                          });
+                        }
+                      }}
+                      updateCardExplanation={(_, explanation) => {
+                        if (cardIndex !== undefined && cardIndex >= 0) {
+                          setNewArchetype((prevState: Archetype) => {
+                            const updatedCards = [...(prevState.cards || [])];
+                            if (updatedCards[cardIndex]) {
+                              updatedCards[cardIndex] = {
+                                ...updatedCards[cardIndex],
+                                explanation_text: explanation,
                               };
                             }
                             return { ...prevState, cards: updatedCards };
@@ -134,41 +133,6 @@ const AdminArchetypeUpdateFormikCardData: React.FC<AdminArchetypeUpdateFormikCar
                         }
                       }}
                     />
-                    <div>
-                      <select
-                        className="w-full mt-2 p-1"
-                        value={card.card_status.id}
-                        onChange={(e) => {
-                          if (cardIndex !== undefined && cardIndex >= 0) {
-                            setNewArchetype((prevState: Archetype) => {
-                              const updatedCards = [...(prevState.cards || [])];
-                              if (updatedCards[cardIndex]) {
-                                updatedCards[cardIndex] = {
-                                  ...updatedCards[cardIndex],
-                                  card_status: {
-                                    id: Number(e.target.value),
-                                    label: ''
-                                  }
-                                };
-                              }
-                              return { ...prevState, cards: updatedCards };
-                            });
-                          }
-                        }}
-                      >
-                        <option value="" disabled>
-                          ------
-                        </option>
-                        {cardStatus?.map((option: CardStatus, index: number) => {
-                          return (
-                            <option key={index} value={option.id}>
-                              {cardStatusToFrench(option.label)}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  </div>
                 );
               })
               : "Cet archétype ne possède aucune carte"}

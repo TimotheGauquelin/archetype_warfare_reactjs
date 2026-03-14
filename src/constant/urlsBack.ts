@@ -40,7 +40,7 @@ export const URL_BACK_REGISTER = "/authenticate/register";
 
 //ARCHETYPE
 
-export const URL_BACK_SEARCH_ARCHETYPES = (size?: number, page?: number, name?: string, era?: string, type?: string, attribute?: string, summonmecanic?: string): string => {
+export const URL_BACK_SEARCH_ARCHETYPES = (size?: number, page?: number, name?: string, era?: string, type?: string, attribute?: string, summonmecanic?: string, is_active?: boolean): string => {
   const params = new URLSearchParams();
 
   if (size) params.append('size', String(size));
@@ -50,7 +50,7 @@ export const URL_BACK_SEARCH_ARCHETYPES = (size?: number, page?: number, name?: 
   if (type) params.append('type', type);
   if (attribute) params.append('attribute', attribute);
   if (summonmecanic) params.append('summonmechanic', summonmecanic);
-
+  if (is_active) params.append('is_active', String(is_active));
   return `/archetypes/search?${params.toString()}`;
 };
 
@@ -103,7 +103,7 @@ export const URL_BACK_GET_ALL_CARD_STATUS = '/card-statuses'
 
 export const URL_BACK_GET_ALL_MY_DECKS = (userId: number | string) => `/decks/all/user/${userId}`;
 export const URL_BACK_GET_PLAYABLE_DECKS = (userId: number | string) =>
-  `/decks/all/user/${userId}?is_playable=true`;
+  `/decks/all/user/${userId}?is_playable=true&is_active=true`;
 export const URL_BACK_GET_DECK_BY_ID = (deckId: number | string) => `/decks/${deckId}`
 export const URL_BACK_CREATE_DECK = `/decks/create`
 export const URL_BACK_UPDATE_DECK = (deckId: number | string) => `/decks/updateMyDeck/${deckId}`

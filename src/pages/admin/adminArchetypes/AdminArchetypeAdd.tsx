@@ -22,7 +22,7 @@ const AdminArchetypeAdd = () => {
     is_highlighted: false,
     is_active: false,
     era: undefined,
-    popularity_poll: 0,
+    popularity_poll: 100,
     in_tcg_date: "2002-01-01",
     in_aw_date: new Date().toISOString().split('T')[0], // today
     attributes: [],

@@ -51,8 +51,7 @@ const ArchetypePage = () => {
 
       await getArchetypeById(id, setArchetypeWrapper);
     } catch (err) {
-      const errorMessage = "Erreur lors du chargement de l'archétype. Veuillez réessayer plus tard.";
-      setErrorMessage(errorMessage);
+      setErrorMessage("Erreur lors du chargement de l'archétype. Veuillez réessayer plus tard.");
       console.error("Erreur lors du chargement de l'archétype:", err);
     } finally {
       setIsFetching(false);
@@ -68,20 +67,21 @@ const ArchetypePage = () => {
     loadArchetypeData();
   }, [loadArchetypeData]);
 
+  const hasLoadFailed = !isFetching && (!!errorMessage || !archetype?.id);
+
   useEffect(() => {
-    if (errorMessage || (!isFetching && (!archetype || !archetype.id))) {
-      const timer = setTimeout(() => {
-        navigate(URL_FRONT_HOME);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [errorMessage, archetype, isFetching, navigate]);
+    if (!hasLoadFailed) return;
+    const timer = setTimeout(() => {
+      navigate(URL_FRONT_HOME);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [hasLoadFailed, navigate]);
 
   if (isFetching) {
     return <SkeletonArchetypePage />;
   }
 
-  if (errorMessage || !archetype || !archetype.id) {
+  if (hasLoadFailed || !archetype) {
     return (
       <UserHeroLayout
         mainTitle="Erreur:Archétype introuvable"

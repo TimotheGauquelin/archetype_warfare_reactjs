@@ -1,7 +1,23 @@
 import { useEffect, useState } from "react";
 import { searchCards } from "../../services/card";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import type { Archetype, Card, BanlistCard } from "../../types";
+import type { Archetype, Card, BanlistCard, CardSearchCriteria } from "../../types";
+import AdminCardsFilter from "../pages/admin/cards/AdminCardsFilter";
+import { useCardTypes } from "@/hooks/useCardTypes";
+import { useAttributes } from "@/hooks/useAttributes";
+
+const defaultFilters: CardSearchCriteria = {
+  name: "",
+  page: 1,
+  size: 30,
+  card_type: "",
+  attribute: "",
+  level: undefined,
+  min_atk: undefined,
+  max_atk: undefined,
+  min_def: undefined,
+  max_def: undefined,
+};
 
 interface AddCardModuleProps {
   newArchetype: Archetype;
@@ -16,17 +32,16 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
     currentPage: 1,
     pageSize: 30,
   });
-  const [filters, setFilters] = useState({
-    name: "",
-    page: 1,
-    size: 30,
-  });
+  const [filters, setFilters] = useState<CardSearchCriteria>({ ...defaultFilters });
+
+  const { cardTypes } = useCardTypes();
+  const { attributes } = useAttributes();
 
   const increasePage = () => {
     if (pagination.currentPage < pagination.totalPages) {
       setFilters(prev => ({
         ...prev,
-        page: prev.page + 1
+        page: (prev.page ?? 1) + 1
       }));
     }
   };
@@ -35,7 +50,7 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
     if (pagination.currentPage > 1) {
       setFilters(prev => ({
         ...prev,
-        page: prev.page - 1
+        page: (prev.page ?? 1) - 1
       }));
     }
   };
@@ -114,34 +129,40 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
   };
 
   useEffect(() => {
-    searchCards(setCards, setPagination, filters.size, filters.page, filters.name);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    searchCards(
+      setCards,
+      setPagination,
+      filters.size ?? 30,
+      filters.page ?? 1,
+      filters.name,
+      filters.card_type,
+      filters.level,
+      filters.min_atk,
+      filters.max_atk,
+      filters.min_def,
+      filters.max_def,
+      filters.attribute,
+    );
   }, [filters]);
 
   return (
     <div className="col-span-4 grid grid-cols-12 mt-2">
       <div className="bg-gray-400 col-span-12 ml-1 p-2 rounded">
-        <div className="grid grid-cols-12 gap-1 mb-2">
-          <input
-            className={`w-full p-1 col-span-8`}
-            value={filters.name}
-            type="text"
-            placeholder="Quelle carte recherchez-vous ?"
-            onChange={(e) => {
-              setFilters(prev => ({
-                ...prev,
-                name: e.target.value,
-                page: 1
-              }));
-            }}
-          />
+        <div className="flex justify-end mb-2">
           <div
-            className="text-sm bg-yellow-300 hover:bg-yellow-400 shadow-md col-span-4 rounded text-white font-bold text-center cursor-pointer"
+            className="text-sm bg-yellow-300 hover:bg-yellow-400 shadow-md px-3 py-1 rounded text-white font-bold text-center cursor-pointer"
             onClick={addAllCardsToArchetype}
           >
             Ajouter tout
           </div>
         </div>
+        <AdminCardsFilter
+          cardTypes={cardTypes}
+          criteria={filters}
+          setCriteria={setFilters}
+          resetAllFilters={() => setFilters({ ...defaultFilters })}
+          attributes={attributes}
+        />
         <div
           className="overflow-y-auto bg-white grid grid-cols-12 gap-1 p-1"
           style={{ maxHeight: "400px" }}
@@ -159,6 +180,7 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
                     }`}
                   src={`${card?.img_url}`}
                   alt=""
+                  loading="lazy"
                   onClick={() => !isCardAlreadyInArchetype && addCardToArchetype(card)}
                 />
                 {isCardAlreadyInArchetype && (

@@ -41,7 +41,6 @@ const MyProfile = () => {
               <p className="font-semibold text-black">Rôle(s):</p>
               <div className="flex flex-wrap gap-1">
                 {roles?.map((role: any, index: number) => {
-                  console.log(role);
                   return (
                     <div
                       key={index}

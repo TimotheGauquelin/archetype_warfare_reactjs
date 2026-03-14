@@ -318,7 +318,7 @@ const MyTournamentDetail: React.FC = () => {
                                                 <span className="text-green-700 font-semibold"> et avez choisi votre deck</span>
                                             )
                                             : (
-                                                <span className="text-red-600">mais vous n'avez pas encore sélectionné de deck</span>
+                                                <span className="text-red-600">mais vous n'avez pas encore sélectionné de deck. {!isRegistrationOpen && "Si vous n'avez sélectionné de deck et que les inscriptions sont closes, contactez l'organisateur du tournoi."}</span>
                                             )
                                         }
                                     </p>

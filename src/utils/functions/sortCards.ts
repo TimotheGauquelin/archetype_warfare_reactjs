@@ -36,7 +36,7 @@ export const sortArchetypeCards = <T extends CardWithType>(
   if (!cards.length || !cardTypes.length) {
     return cards;
   }
-
+  
   const cardTypeMap = new Map<string, number>();
   cardTypes.forEach((type) => {
     if (type.num_order !== undefined) {

@@ -32,6 +32,7 @@ const AdminUserPaginationTableBody: React.FC<AdminUserPaginationTableBodyProps> 
               <div className="flex flex-row gap-1">
                 {item?.roles && item.roles.length > 0
                   ? [...item.roles]
+                    .map((role) => typeof role === 'string' ? role : (role as { label?: string }).label ?? '')
                     .sort((a, b) => a.localeCompare(b))
                     .map((role) => (
                       <span

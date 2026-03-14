@@ -24,7 +24,8 @@ export const getArchetypesWithCriteria = async (
         criteria.era,
         criteria.type,
         criteria.attribute,
-        criteria.summonmechanic
+        criteria.summonmechanic,
+        criteria.is_active
       )
     );
 
