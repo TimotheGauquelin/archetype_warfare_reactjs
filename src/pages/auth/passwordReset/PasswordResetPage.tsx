@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 import ErrorMultipleText from "../../../components/generic/ErrorMultipleText";
 import type { User, PasswordUpdateForm } from "../../../types";
 import OnLoadingButton from "../../../components/generic/buttons/onLoadingButton/OnLoadingButton";
-import { URL_FRONT_LOGIN } from "../../../constant/urlsFront";
+import { URL_FRONT_LOGIN, URL_FRONT_TERMS_AND_CONDITIONS } from "../../../constant/urlsFront";
 
 const initialState: PasswordResetResult = {};
 
@@ -19,6 +19,7 @@ const PasswordResetPage = () => {
   const [form, setForm] = useState<PasswordUpdateForm>({
     password: "",
     confirmPassword: "",
+    has_accepted_terms_and_conditions: false,
   });
   const [errorMessageFromURLToken, setErrorMessageFromURLToken] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +31,7 @@ const PasswordResetPage = () => {
     async (_prevState: PasswordResetResult, formData: FormData): Promise<PasswordResetResult> => {
       const password = (formData.get("password") as string) ?? "";
       const confirmPassword = (formData.get("confirmPassword") as string) ?? "";
+      const hasAcceptedTerms = formData.get("has_accepted_terms_and_conditions") === "on";
 
       if (!password || !confirmPassword) {
         return { error: "Veuillez remplir les deux champs." };
@@ -37,11 +39,18 @@ const PasswordResetPage = () => {
       if (password !== confirmPassword) {
         return { error: "Les mots de passe ne sont pas identiques" };
       }
+      if (!hasAcceptedTerms) {
+        return { error: "Veuillez accepter les termes et conditions." };
+      }
       if (!user?.id) {
         return { error: "Session invalide. Veuillez utiliser à nouveau le lien reçu par email." };
       }
 
-      const result = await updatePasswordWithResult(user.id, { password, confirmPassword });
+      const result = await updatePasswordWithResult(user.id, {
+        password,
+        confirmPassword,
+        has_accepted_terms_and_conditions: true,
+      });
 
       if (result.success) {
         toast.success("Mot de passe modifié avec succès !");
@@ -114,6 +123,39 @@ const PasswordResetPage = () => {
                     disabled={isFormBusy}
                     name="confirmPassword"
                   />
+                </div>
+
+                <div
+                  data-testid="checkbox-container"
+                  className="mt-2 mb-4 flex items-start"
+                >
+                  <input
+                    data-testid="checkbox-input"
+                    type="checkbox"
+                    id="acceptTerms"
+                    name="has_accepted_terms_and_conditions"
+                    checked={Boolean(form.has_accepted_terms_and_conditions)}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        has_accepted_terms_and_conditions: e.target.checked,
+                      })
+                    }
+                    className="mt-1 mr-2"
+                    disabled={isFormBusy}
+                  />
+                  <label htmlFor="acceptTerms" className="text-sm">
+                    J'accepte les{" "}
+                    <button
+                      type="button"
+                      onClick={() => navigate(URL_FRONT_TERMS_AND_CONDITIONS)}
+                      className="text-blue-600 hover:underline"
+                      disabled={isFormBusy}
+                    >
+                      termes et conditions
+                    </button>{" "}
+                    du site
+                  </label>
                 </div>
 
                 {state?.error && (

@@ -87,6 +87,16 @@ describe("PasswordResetPage (integration)", () => {
   });
 
   describe("form validation", () => {
+    it("display the terms and conditions checkbox", async () => {
+      renderPasswordResetPage();
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: /Valider/i })).toBeInTheDocument();
+      });
+
+      expect(screen.getByTestId("checkbox-input")).toBeInTheDocument();
+      expect(screen.getByText(/termes et conditions/i)).toBeInTheDocument();
+    });
+
     it("display an error if the passwords are not identical", async () => {
       renderPasswordResetPage();
       await act(async () => {
@@ -103,6 +113,7 @@ describe("PasswordResetPage (integration)", () => {
 
       await userEvent.type(passwordInput, "password123");
       await userEvent.type(confirmInput, "different");
+      await userEvent.click(screen.getByTestId("checkbox-input"));
       await act(async () => {
         fireEvent.submit(form);
         await new Promise((r) => setTimeout(r, 0));
@@ -139,6 +150,29 @@ describe("PasswordResetPage (integration)", () => {
         { timeout: 2000 }
       );
     });
+
+    it("display an error if the terms and conditions are not accepted", async () => {
+      renderPasswordResetPage();
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: /Valider/i })).toBeInTheDocument();
+      });
+
+      const passwordInput = document.querySelector('input[name="password"]') as HTMLInputElement;
+      const confirmInput = document.querySelector('input[name="confirmPassword"]') as HTMLInputElement;
+      const form = passwordInput.closest("form");
+      if (!form) throw new Error("Form not found");
+
+      await userEvent.type(passwordInput, "newPassword123");
+      await userEvent.type(confirmInput, "newPassword123");
+      await act(async () => {
+        fireEvent.submit(form);
+        await new Promise((r) => setTimeout(r, 0));
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Veuillez accepter les termes et conditions/i)).toBeInTheDocument();
+      });
+    });
   });
 
   describe("updating the password", () => {
@@ -157,6 +191,7 @@ describe("PasswordResetPage (integration)", () => {
 
       await userEvent.type(passwordInput, "newPassword123");
       await userEvent.type(confirmInput, "newPassword123");
+      await userEvent.click(screen.getByTestId("checkbox-input"));
       await act(async () => {
         await userEvent.click(submitButton);
         await new Promise((r) => setTimeout(r, 300));
@@ -191,6 +226,7 @@ describe("PasswordResetPage (integration)", () => {
 
       await userEvent.type(passwordInput, "short");
       await userEvent.type(confirmInput, "short");
+      await userEvent.click(screen.getByTestId("checkbox-input"));
       await act(async () => {
         await userEvent.click(submitButton);
         await new Promise((r) => setTimeout(r, 300));

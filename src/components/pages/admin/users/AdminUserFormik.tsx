@@ -19,7 +19,7 @@ const AdminUserFormik = () => {
   ];
 
   return (
-    <div id="form" className="">
+    <div>
       <div className="bg-gray-300 rounded p-2">
         <div className="flex flex-row justify-between items-center">
           <h2 className="font-bold text-xl">Informations Principales :</h2>
@@ -49,11 +49,11 @@ const AdminUserFormik = () => {
           />
           <MultiSelectInput colSpanWidth="6" label="Roles" required array={roles} data={user as { roles?: string[] }} setAction={setUser as React.Dispatch<React.SetStateAction<{ roles: string[] }>>} />
         </div>
-      </div>
 
+      </div>
       <button
-        id="form"
-        className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded"
+        type="button"
+        className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded transition-all duration-200 cursor-pointer hover:opacity-90"
         onClick={() => {
           createUserByAdmin(user, navigate);
         }}

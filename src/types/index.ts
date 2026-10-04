@@ -37,6 +37,7 @@ export interface UserUpdateForm {
 export interface PasswordUpdateForm {
   password: string;
   confirmPassword: string;
+  has_accepted_terms_and_conditions?: boolean;
   [key: string]: unknown;
 }
 
