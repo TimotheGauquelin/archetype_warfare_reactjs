@@ -117,14 +117,17 @@ const AdminCards = () => {
     api_aw
       .post(`/cards`, cardsSchema)
       .then((response) => {
-        if (response.status === 201) {
+        if (response.status === 201 || response.status === 207) {
           setRefresh(true);
-          toast.success("Base de données des cartes mise à jour");
-          setDatabaseUpdateLoader(false);
+          toast.success(
+            response.data?.message ?? "Base de données des cartes mise à jour"
+          );
         }
       })
       .catch(() => {
         toast.error("Erreur de la mise à jour");
+      })
+      .finally(() => {
         setDatabaseUpdateLoader(false);
       });
   };

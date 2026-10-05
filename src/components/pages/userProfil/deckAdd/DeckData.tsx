@@ -11,6 +11,30 @@ interface DeckDataProps {
 }
 
 const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) => {
+    const handleArchetypeSelect: React.Dispatch<React.SetStateAction<Deck>> = (value) => {
+        setMyDeck((prev) => {
+            const next = typeof value === "function" ? value(prev) : value;
+            const selectedId = next.archetype_id != null
+                ? Number(next.archetype_id)
+                : 0;
+            const selectedArchetype = archetypes.find(
+                (archetype) => Number(archetype.id) === selectedId
+            );
+
+            return {
+                ...next,
+                archetype_id: selectedId || undefined,
+                archetype: {
+                    ...next.archetype,
+                    id: selectedId,
+                    label: selectedArchetype?.name ?? "",
+                    card_img_url: selectedArchetype?.card_img_url ?? next.archetype.card_img_url,
+                    is_active: selectedArchetype?.is_active ?? next.archetype.is_active,
+                },
+            };
+        });
+    };
+
     return (
         <div data-testid="deck-data" className="p-4 bg-gray-300 rounded-lg">
             <span className="font-bold text-lg mb-2">
@@ -41,7 +65,7 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
                     options={archetypes.map((archetype) => ({ id: archetype.id, label: archetype.name }))}
                     data={myDeck}
                     attribute="archetype_id"
-                    setAction={setMyDeck}
+                    setAction={handleArchetypeSelect}
                     disabled={(myDeck?.deck_cards?.length ?? 0) > 0}
                 />
             </div>

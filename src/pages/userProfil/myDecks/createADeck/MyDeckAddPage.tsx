@@ -34,6 +34,7 @@ const MyDeckAddPage = () => {
 
   const { token } = useSelector((state: RootState) => state.user);
 
+  console.log(myDeck);
   useEffect(() => {
     getArchetypesNames(setArchetypes);
   }, []);
