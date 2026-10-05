@@ -1,4 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import Header from "../components/generic/header/Header";
 import Slider from "../components/generic/Slider";
 
@@ -11,9 +13,11 @@ import {
   getFiveRandomHighlightedArchetypes,
 } from "../services/archetype";
 import Footer from "../components/generic/footer/Footer";
-import type { Archetype } from "../types";
+import type { Archetype, RootState } from "../types";
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
   const [fiveMostFamousArchetypes, setFiveMostFamousArchetypes] = useState<Archetype[]>([]);
   const [eightMostRecentArchetypes, setEightMostRecentArchetypes] = useState<Archetype[]>([]);
   const [archetypesForSlider, setArchetypesForSlider] = useState<Archetype[]>([]);
@@ -22,8 +26,8 @@ const Home: React.FC = () => {
 
   const welcomeArchetypeBase: Archetype = {
     id: 0,
-    name: "Bienvenue sur",
-    nameSubtitle: "Archetype Battle",
+    name: t("home.welcomeTitle"),
+    nameSubtitle: t("home.welcomeSubtitle"),
     isWelcome: true,
     slider_img_url: import.meta.env.BASE_URL + "assets/yugi.png",
   };
@@ -31,8 +35,8 @@ const Home: React.FC = () => {
   const welcomeArchetype: Archetype = {
     ...welcomeArchetypeBase,
     slider_info: isLoading
-      ? "Chargement des données, veuillez patienter..."
-      : "Faites des duels avec vos cartes préférées !",
+      ? t("home.loading")
+      : t("home.welcomeMessage"),
   };
 
   const loadData = useCallback(async () => {
@@ -52,7 +56,7 @@ const Home: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     loadData();
@@ -71,14 +75,14 @@ const Home: React.FC = () => {
       <PageContentBlock>
         <ArchetypeList
           dataArray={fiveMostFamousArchetypes}
-          subTitleDividerText="Archétypes Populaires"
+          subTitleDividerText={t("home.popularArchetypes")}
           haveMedal
           isFetching={isLoading}
           skeletonItemCount={8}
         />
         <ArchetypeList
           dataArray={eightMostRecentArchetypes}
-          subTitleDividerText="Nouveaux Archétypes"
+          subTitleDividerText={t("home.newArchetypes")}
           isFetching={isLoading}
           skeletonItemCount={8}
           displayDate

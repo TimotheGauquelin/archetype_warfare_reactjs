@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/generic/form/input/Input";
 import { useSelector } from "react-redux";
 import { ToastContainer} from "react-toastify";
@@ -9,6 +10,7 @@ import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle"
 import { UserUpdateForm } from "@/types";
 
 const UpdateMyProfilePage = () => {
+    const { t } = useTranslation();
     const {username: initialUsername, email: initialEmail,lovedArchetype: initialBelovedArchetype } = useSelector((state: RootState) => state.user);
 
     const [user, setUser] = useState<UserUpdateForm>({
@@ -25,69 +27,14 @@ const UpdateMyProfilePage = () => {
         });
     }, [initialUsername, initialEmail, initialBelovedArchetype]);
 
-    // const handleUpdate = () => {
-    //     setError("");
-
-    //     if (!user.username || !user.username.trim()) {
-    //         setError("Le nom d'utilisateur est requis");
-    //         return;
-    //     }
-
-    //     if (!user.email || !user.email.includes("@")) {
-    //         setError("Veuillez saisir une adresse email valide");
-    //         return;
-    //     }
-
-    //     setIsLoading(true);
-
-    //     api_aw
-    //         .put(`/users/${id}`, user, {
-    //             headers: { Authorization: `Bearer ${token}` },
-    //         })
-    //         .then((response) => {
-    //             if (response.status === 200) {
-    //                 setIsLoading(false);
-
-    //                 dispatch(updateUser({
-    //                     username: user.username,
-    //                     email: user.email,
-    //                     belovedArchetype: user.belovedArchetype,
-    //                     roles: roles.map((role) => typeof role === 'string' ? role : role.label),
-    //                 }));
-
-    //                 toast.success("Profil modifié avec succès !", {
-    //                     position: "top-right",
-    //                     autoClose: 3000,
-    //                     hideProgressBar: false,
-    //                     closeOnClick: true,
-    //                     pauseOnHover: true,
-    //                     draggable: true,
-    //                     theme: "light",
-    //                 });
-
-    //                 setTimeout(() => {
-    //                     navigate(URL_FRONT_MY_PROFILE);
-    //                 }, 2000);
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             setIsLoading(false);
-    //             if (error.response && error.response.data && error.response.data.message) {
-    //                 setError(error.response.data.message);
-    //             } else {
-    //                 setError("Une erreur est survenue lors de la modification du profil");
-    //             }
-    //         });
-    // };
-
     return (
         <UserProfilLayout>
             <div className="bg-white rounded-lg shadow-sm p-4">
-                <UserProfileLayoutTitle title="Modifier mon profil" returnButton={true} />
+                <UserProfileLayoutTitle title={t("profile.editProfile")} returnButton={true} />
                 
                 <div className="grid grid-cols-12 gap-4">
                     <Input
-                        label="Nom d'utilisateur"
+                        label={t("profile.usernameLabel")}
                         required
                         inputType="text"
                         inputName="username"
@@ -95,12 +42,12 @@ const UpdateMyProfilePage = () => {
                         attribute="username"
                         data={user}
                         setAction={setUser}
-                        placeholder="Entrez votre nom d'utilisateur"
+                        placeholder={t("profile.usernamePlaceholder")}
                         disabled
                     />
 
                     <Input
-                        label="Email"
+                        label={t("profile.emailLabel")}
                         required
                         inputType="email"
                         inputName="email"
@@ -108,7 +55,7 @@ const UpdateMyProfilePage = () => {
                         attribute="email"
                         data={user}
                         setAction={setUser}
-                        placeholder="Entrez votre email"
+                        placeholder={t("profile.emailPlaceholder")}
                         disabled
                     />
                 </div>

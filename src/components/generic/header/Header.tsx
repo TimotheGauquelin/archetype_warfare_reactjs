@@ -1,38 +1,38 @@
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { BsPerson } from "react-icons/bs";
 import { Link, useLocation } from "react-router-dom";
 import { FaTimes, FaBars } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { URL_FRONT_ABOUT, URL_FRONT_ARCHETYPES, URL_FRONT_BANLIST,URL_FRONT_ROAD_MAP, URL_FRONT_HOME, URL_FRONT_LOGIN, URL_FRONT_MY_PROFILE, URL_FRONT_TOURNAMENTS} from "../../../constant/urlsFront";
+import { useTranslation } from "react-i18next";
+import {
+  URL_FRONT_ABOUT,
+  URL_FRONT_ARCHETYPES,
+  URL_FRONT_BANLIST,
+  URL_FRONT_ROAD_MAP,
+  URL_FRONT_HOME,
+  URL_FRONT_LOGIN,
+  URL_FRONT_MY_PROFILE,
+  URL_FRONT_TOURNAMENTS,
+} from "../../../constant/urlsFront";
 import type { RootState } from "../../../types";
+import LanguageSwitch from "./LanguageSwitch";
 
 const HeaderMemo = memo(function Header() {
   const [displayNav, setDisplayNav] = useState<boolean>(false);
   const location = useLocation();
   const authUser = useSelector((state: RootState) => state.user);
+  const { t } = useTranslation();
 
-  const navBarComponent = [
-    {
-      title: "Concept",
-      url: URL_FRONT_ABOUT,
-    },
-    {
-      title: "Archetypes",
-      url: URL_FRONT_ARCHETYPES,
-    },
-    {
-      title: "Banlist",
-      url: URL_FRONT_BANLIST,
-    },
-    {
-      title: "Tournois",
-      url: URL_FRONT_TOURNAMENTS,
-    },
-    {
-      title: "RoadMap",
-      url: URL_FRONT_ROAD_MAP,
-    },
-  ];
+  const navBarComponent = useMemo(
+    () => [
+      { titleKey: "nav.concept", url: URL_FRONT_ABOUT },
+      { titleKey: "nav.archetypes", url: URL_FRONT_ARCHETYPES },
+      { titleKey: "nav.banlist", url: URL_FRONT_BANLIST },
+      { titleKey: "nav.tournaments", url: URL_FRONT_TOURNAMENTS },
+      { titleKey: "nav.roadmap", url: URL_FRONT_ROAD_MAP },
+    ],
+    []
+  );
 
   const url = location.pathname;
 
@@ -62,13 +62,14 @@ const HeaderMemo = memo(function Header() {
                   style={{ paddingRight: "2rem" }}
                   to={component.url}
                 >
-                  <li>{component.title}</li>{" "}
+                  <li>{t(component.titleKey)}</li>{" "}
                 </Link>
               );
             })}
           </ul>
         </div>
-        <div className="hidden lscreen:flex lscreen:justify-end">
+        <div className="hidden lscreen:flex lscreen:items-center lscreen:gap-3 lscreen:justify-end">
+          <LanguageSwitch />
           <Link
             to={
               authUser.isAuthenticated ? URL_FRONT_MY_PROFILE : URL_FRONT_LOGIN
@@ -77,18 +78,22 @@ const HeaderMemo = memo(function Header() {
             <button className="flex justify-center items-center lscreen:shadow p-2 lscreen:p-3 lscreen:rounded-lg lscreen:bg-white font-medium">
               <BsPerson className="h-4 w-auto flex-shrink-0 text-red-400" />
               <p className="lscreen:pl-2">
-                {authUser.isAuthenticated ? `${authUser.username}` : "Connexion"}
+                {authUser.isAuthenticated
+                  ? `${authUser.username}`
+                  : t("nav.login")}
               </p>
             </button>
           </Link>
         </div>
-        <div
-          className="flex lscreen:hidden"
-          onClick={() => {
-            setDisplayNav(!displayNav);
-          }}
-        >
-          {displayNav ? <FaTimes /> : <FaBars />}
+        <div className="flex items-center gap-3 lscreen:hidden">
+          <LanguageSwitch />
+          <div
+            onClick={() => {
+              setDisplayNav(!displayNav);
+            }}
+          >
+            {displayNav ? <FaTimes /> : <FaBars />}
+          </div>
         </div>
       </div>
       {displayNav && (
@@ -106,7 +111,7 @@ const HeaderMemo = memo(function Header() {
                   style={{ paddingRight: "2rem" }}
                   to={component.url}
                 >
-                  <li>{component.title}</li>{" "}
+                  <li>{t(component.titleKey)}</li>{" "}
                 </Link>
               );
             })}

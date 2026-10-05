@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { MyTournamentRound } from "@/services/tournament";
 import { TOURNAMENT_ROUND_STATUS } from "@/utils/trad/tournamentStatus";
 import { useSelector } from "react-redux";
@@ -13,7 +14,7 @@ interface MatchMakingCardProps {
 }
 
 export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({ round, maxWinningDuelPerPlayer, onSubmitScore }) => {
-
+    const { t } = useTranslation();
     const [playersScore, setPlayersScore] = useState<MatchScoreProps>({
         player1_games_won: 0,
         player2_games_won: 0,
@@ -34,13 +35,13 @@ export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({ round, maxWinn
     }
 
     const canEdit = isUserOfTheMatch() && roundMatch.status !== "completed" && !isBye;
-    const player1Username = roundMatch?.player1?.username ? String(roundMatch?.player1?.username) : 'Inconnu';
-    const player2Username = roundMatch?.player2?.username ? String(roundMatch?.player2?.username) : 'Inconnu';
+    const player1Username = roundMatch?.player1?.username ? String(roundMatch?.player1?.username) : t("matchmaking.unknown");
+    const player2Username = roundMatch?.player2?.username ? String(roundMatch?.player2?.username) : t("matchmaking.unknown");
 
     return (
         <div className="bg-white rounded-md p-3">
             <h3 className="font-semibold mb-2">
-                Ronde {round.round_number} ({TOURNAMENT_ROUND_STATUS(round.status)})
+                {t("matchmaking.round", { number: round.round_number })} ({TOURNAMENT_ROUND_STATUS(round.status)})
             </h3>
 
             <ul className="space-y-2">
@@ -97,18 +98,18 @@ export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({ round, maxWinn
                                     type="submit"
                                     className="ml-auto inline-flex items-center px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
                                 >
-                                    Enregistrer le score
+                                    {t("matchmaking.saveScore")}
                                 </button>
                             </form>
                         ) : (
                             <>
                                 {isBye ? (
-                                    <p className="text-gray-600 mt-1">Victoire par BYE</p>
+                                    <p className="text-gray-600 mt-1">{t("matchmaking.byeWin")}</p>
                                 ) : roundMatch.player1.gamesWon === roundMatch.player2.gamesWon ? (
-                                    <p className="text-gray-600 mt-1">Égalité</p>
+                                    <p className="text-gray-600 mt-1">{t("matchmaking.draw")}</p>
                                 ) : (
                                     <p className="text-gray-600 mt-1">
-                                        Match gagné par{" "}
+                                        {t("matchmaking.wonBy")}{" "}
                                         <span className="font-bold">
                                             {roundMatch.player1.gamesWon > roundMatch.player2.gamesWon ? player1Username : player2Username}
                                         </span>
@@ -116,7 +117,7 @@ export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({ round, maxWinn
                                 )}
                                 {!isBye && (
                                     <p className="text-gray-600 mt-1">
-                                        Score : {player1Username} {roundMatch.player1.gamesWon} - {roundMatch.player2.gamesWon}{" "}
+                                        {t("matchmaking.score")} {player1Username} {roundMatch.player1.gamesWon} - {roundMatch.player2.gamesWon}{" "}
                                         {player2Username}
                                     </p>
                                 )}

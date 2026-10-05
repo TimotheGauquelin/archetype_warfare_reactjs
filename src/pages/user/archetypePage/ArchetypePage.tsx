@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import Header from "../../../components/generic/header/Header";
 import SubtitleDivider from "../../../components/generic/SubtitleDivider";
@@ -12,7 +14,7 @@ import Card from "../../../components/generic/Card";
 import SkeletonArchetypePage from "../../../components/skeletons/SkeletonArchetypePage";
 import Footer from "../../../components/generic/footer/Footer";
 import "../../../styles/Home.scss";
-import type { Archetype } from "../../../types";
+import type { Archetype, RootState } from "../../../types";
 import NoItemMessage from "@/components/generic/NoItemMessage";
 import { sortArchetypeCards } from "../../../utils/functions/sortCards";
 import UserHeroLayout from "../layout";
@@ -20,6 +22,8 @@ import { URL_FRONT_HOME } from "@/constant/urlsFront";
 import { useCardTypes } from "../../../hooks/useCardTypes";
 
 const ArchetypePage = () => {
+  const { t } = useTranslation();
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
   const [archetype, setArchetype] = useState<Archetype | null>(null);
   const [isFetching, setIsFetching] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -31,7 +35,7 @@ const ArchetypePage = () => {
 
   const loadArchetypeData = useCallback(async () => {
     if (!id) {
-      setErrorMessage("ID d'archétype manquant");
+      setErrorMessage(t("archetypePage.missingId"));
       setIsFetching(false);
       return;
     }
@@ -40,7 +44,6 @@ const ArchetypePage = () => {
     setErrorMessage(null);
 
     try {
-      // Wrapper pour adapter le type SetStateCallback<Archetype> à setArchetype qui accepte Archetype | null
       const setArchetypeWrapper = (value: Archetype | ((prev: Archetype) => Archetype)) => {
         if (typeof value === 'function') {
           setArchetype((prev) => prev ? value(prev) : null);
@@ -51,12 +54,12 @@ const ArchetypePage = () => {
 
       await getArchetypeById(id, setArchetypeWrapper);
     } catch (err) {
-      setErrorMessage("Erreur lors du chargement de l'archétype. Veuillez réessayer plus tard.");
+      setErrorMessage(t("archetypePage.loadError"));
       console.error("Erreur lors du chargement de l'archétype:", err);
     } finally {
       setIsFetching(false);
     }
-  }, [id]);
+  }, [id, t, locale]);
 
   const sortedCards = useMemo(() => {
     if (!archetype?.cards) return [];
@@ -84,8 +87,8 @@ const ArchetypePage = () => {
   if (hasLoadFailed || !archetype) {
     return (
       <UserHeroLayout
-        mainTitle="Erreur:Archétype introuvable"
-        subTitle="Vous allez être redirigé vers la page d'accueil dans 3 secondes..."
+        mainTitle={t("archetypePage.notFoundTitle")}
+        subTitle={t("archetypePage.notFoundRedirect")}
       >
         <></>
       </UserHeroLayout>
@@ -112,13 +115,13 @@ const ArchetypePage = () => {
         <div className={`flex flex-col w-full justify-center max-w-containerSize m-auto ${archetype.comment && 'pt-8'}`}>
           {archetype.comment != null && String(archetype.comment) && (
             <div className="bg-blue-100 flex-col text-blue-500 p-3 font-medium rounded-lg flex mb-4">
-              <span data-testid="archetype-comment">{`Information : ${String(archetype.comment)}`}</span>
-              <p className="text-right text-sm">Le Staff AW</p>
+              <span data-testid="archetype-comment">{t("archetypePage.infoPrefix", { comment: String(archetype.comment) })}</span>
+              <p className="text-right text-sm">{t("archetypePage.staffSignature")}</p>
             </div>
           )}
           <div className="pt-5">
             <SubtitleDivider
-              label={`Toutes les cartes (${sortedCards.length})`}
+              label={t("archetypePage.allCards", { count: sortedCards.length })}
               displayDivider
             />
           </div>
@@ -131,7 +134,7 @@ const ArchetypePage = () => {
               </div>
             ) : (
               <NoItemMessage
-                message="Il n'y a pas de carte dans cet archétype."
+                message={t("archetypePage.noCards")}
                 textPosition="center"
               />
             )

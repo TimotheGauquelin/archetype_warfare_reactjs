@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { searchCards } from "../../services/card";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import type { Archetype, Card, BanlistCard, CardSearchCriteria } from "../../types";
+import type { Archetype, Card, BanlistCard, CardSearchCriteria, RootState } from "../../types";
 import AdminCardsFilter from "../pages/admin/cards/AdminCardsFilter";
 import { useCardTypes } from "@/hooks/useCardTypes";
 import { useAttributes } from "@/hooks/useAttributes";
@@ -26,6 +27,7 @@ interface AddCardModuleProps {
 
 const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArchetype }) => {
   const [cards, setCards] = useState<Card[]>([]);
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
   const [pagination, setPagination] = useState({
     total: 0,
     totalPages: 0,
@@ -143,7 +145,7 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
       filters.max_def,
       filters.attribute,
     );
-  }, [filters]);
+  }, [filters, locale]);
 
   return (
     <div className="col-span-4 grid grid-cols-12 mt-2">

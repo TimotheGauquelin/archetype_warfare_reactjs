@@ -6,13 +6,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import userReducer from "../redux/slice/userSlice";
+import localeReducer from "../redux/slice/localeSlice";
 import Home from "./Home";
 import type { Archetype } from "../types";
 import { URL_BACK_GET_EIGHT_MOST_FAMOUS_ARCHETYPES, URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES, URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES } from "../constant/urlsBack";
 
 function createTestStore() {
   return configureStore({
-    reducer: { user: userReducer },
+    reducer: { user: userReducer, locale: localeReducer },
   });
 }
 

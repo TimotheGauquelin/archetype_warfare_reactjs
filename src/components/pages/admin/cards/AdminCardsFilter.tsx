@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { attributeToFrench } from "../../../../utils/trad/attribute";
 import { cardTypeToFrench } from "../../../../utils/trad/cardType";
 import type { CardSearchCriteria } from "../../../../types";
@@ -18,23 +19,26 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
   setCriteria,
   resetAllFilters,
 }) => {
+  const { t, i18n } = useTranslation();
+  const isFrench = i18n.language?.startsWith("fr");
+
   return (
     <div className="bg-slate-200 rounded p-2 mb-2">
       <div className="flex justify-between mb-2">
-        <p className="font-bold text-base">Filtres : </p>
+        <p className="font-bold text-base">{t("filters.title")}</p>
         <p
           className="text-sm hover:text-red-500 cursor-pointer"
           onClick={() => {
             resetAllFilters();
           }}
         >
-          Reset les filtres
+          {t("filters.reset")}
         </p>{" "}
       </div>
       <div className="grid grid-cols-12 gap-1">
         <input
           className="lscreen:col-span-4 col-span-6 p-2 rounded"
-          placeholder="Quelle carte recherchez-vous ?"
+          placeholder={t("common.searchCard")}
           type="text"
           value={criteria.name}
           onChange={(e) => {
@@ -139,12 +143,12 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
           }}
         >
           <option value="" defaultChecked>
-            -- Aucun Type --
+            {t("filters.noType")}
           </option>
           {cardTypes.map((cardType, index) => {
             return (
               <option key={index} value={cardType.label}>
-                {cardTypeToFrench(cardType.label)}
+                {isFrench ? cardTypeToFrench(cardType.label) : cardType.label}
               </option>
             );
           })}
@@ -161,12 +165,12 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
           }}
         >
           <option value="" defaultChecked>
-            -- Aucun Attribut --
+            {t("filters.noAttribute")}
           </option>
           {attributes.map((attribute, index) => {
             return (
               <option key={index} value={attribute.label}>
-                {attributeToFrench(attribute.label)}
+                {isFrench ? attributeToFrench(attribute.label) : attribute.label}
               </option>
             );
           })}

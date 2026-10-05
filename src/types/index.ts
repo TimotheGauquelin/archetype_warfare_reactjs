@@ -76,8 +76,15 @@ export interface DecodedToken {
 }
 
 // Types pour Redux
+export type CardLocale = "fr" | "en";
+
+export interface LocaleState {
+  value: CardLocale;
+}
+
 export interface RootState {
   user: User;
+  locale: LocaleState;
 }
 
 // Types pour les réponses API
@@ -112,11 +119,22 @@ export interface SiteConfig {
 }
 
 // Types pour les archétypes
+export interface ArchetypeTranslation {
+  archetype_id?: number;
+  locale: string;
+  name: string;
+  main_info?: string | null;
+  slider_info?: string | null;
+  comment?: string | null;
+}
+
 export interface Archetype {
   id: number;
   name: string;
   nameSubtitle?: string;
+  main_info?: string;
   slider_info?: string;
+  comment?: string | null;
   isWelcome?: boolean;
   slider_img_url?: string;
   card_img_url?: string;
@@ -129,6 +147,7 @@ export interface Archetype {
   summon_mechanics?: Array<{ id: number; label: string }>;
   era?: { id: number; label: string };
   cards?: BanlistCard[];
+  translations?: ArchetypeTranslation[];
   created_at?: string;
   updated_at?: string;
   [key: string]: unknown;

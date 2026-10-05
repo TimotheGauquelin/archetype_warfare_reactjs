@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { URL_FRONT_MY_PROFILE } from "../../../constant/urlsFront";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../types";
+import LanguageSwitch from "../../generic/header/LanguageSwitch";
 
 interface AdminHeaderProps {
   displayedNavbar: boolean;
@@ -35,7 +36,8 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ displayedNavbar, setDisplayed
           />
         </svg>
       </div>
-      <div className="flex flex-shrink-0 items-center ml-auto">
+      <div className="flex flex-shrink-0 items-center ml-auto gap-3">
+        <LanguageSwitch />
         <button className="relative inline-flex items-center p-2 hover:bg-gray-100 focus:bg-gray-100 rounded-lg">
           <div className="hidden sscreen:flex sscreen:flex-col sscreen:items-end sscreen:leading-tight">
             <span className="font-semibold">{authUser.username}</span>

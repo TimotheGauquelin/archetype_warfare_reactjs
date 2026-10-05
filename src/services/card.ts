@@ -125,6 +125,12 @@ export const searchCardsWithoutArchetypeAndByOneArchetypeId = async (
   }
 };
 
+export interface CardArchetypeLink {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 /** Réponse API pour une carte détail (id en string, attribute/card_type en string) */
 export interface CardDetailResponse {
   id: string;
@@ -136,12 +142,41 @@ export interface CardDetailResponse {
   def?: number;
   attribute?: string;
   card_type?: string;
+  archetypes?: CardArchetypeLink[];
+  is_generic?: boolean;
 }
 
-export const getCardById = async (cardId: string): Promise<CardDetailResponse> => {
-  const response = await api_aw.get<CardDetailResponse>(`/cards/${cardId}`);
+export const getCardById = async (
+  cardId: string,
+  locale?: "fr" | "en"
+): Promise<CardDetailResponse> => {
+  const suffix = locale ? `?locale=${locale}` : "";
+  const response = await api_aw.get<CardDetailResponse>(`/cards/${cardId}${suffix}`);
   if (response.status !== 200 || !response.data) {
     throw new Error("Carte introuvable");
+  }
+  return response.data;
+};
+
+export type CardUpdatePayload = {
+  name?: string;
+  description?: string | null;
+  img_url?: string | null;
+  level?: number | null;
+  atk?: number | null;
+  def?: number | null;
+  attribute?: string | null;
+  card_type?: string | null;
+  locale?: string;
+};
+
+export const updateCardById = async (
+  cardId: string,
+  payload: CardUpdatePayload
+): Promise<CardDetailResponse> => {
+  const response = await api_aw.put<CardDetailResponse>(`/cards/${cardId}`, payload);
+  if (response.status !== 200 || !response.data) {
+    throw new Error("Impossible de mettre à jour la carte");
   }
   return response.data;
 };

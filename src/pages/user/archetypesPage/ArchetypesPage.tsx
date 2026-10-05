@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import "../../../styles/Archetypes.scss";
 import { FaRandom } from "react-icons/fa";
 import AbsoluteInput from "../../../components/generic/AbsoluteInput";
@@ -13,12 +14,15 @@ import SelectInput from "../../../components/generic/form/SelectInput";
 import { Input } from "../../../components/generic/form/input/Input";
 import Button from "../../../components/generic/buttons/classicButton/Button";
 import { laborIllusion } from "../../../utils/functions/laborIllusion/laborIllusion";
-import type { Archetype } from "../../../types";
+import type { Archetype, RootState } from "../../../types";
 import UserHeroLayout from "../layout";
 import { useEras } from "../../../hooks/useEras";
 import { useDebounce } from "@/utils/functions/debounce/useDebounce";
+import { useTranslation } from "react-i18next";
 
 const ArchetypesPage = () => {
+  const { t } = useTranslation();
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
   const [archetypes, setArchetypes] = useState<Archetype[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
@@ -69,7 +73,7 @@ const ArchetypesPage = () => {
     } finally {
       setIsFetching(false);
     }
-  }, [debouncedName, filters.era, filters.size, filters.page]);
+  }, [debouncedName, filters.era, filters.size, filters.page, filters.is_active, locale]);
 
 
   useEffect(() => {
@@ -89,8 +93,8 @@ const ArchetypesPage = () => {
 
   return (
     <UserHeroLayout
-      mainTitle="Trouvez votre archétype"
-      subTitle={`Parmi plus d'une centaine de familles de cartes`}
+      mainTitle={t("hero.archetypes.title")}
+      subTitle={t("hero.archetypes.subtitle")}
     >
       <AbsoluteInput>
         <Input
@@ -100,7 +104,7 @@ const ArchetypesPage = () => {
           attribute="name"
           data={filters}
           setAction={setFilters}
-          placeholder="Quel archetype recherchez-vous ?"
+          placeholder={t("archetypesPage.searchPlaceholder")}
         />
         <SelectInput
           options={eraOptions}
@@ -108,7 +112,7 @@ const ArchetypesPage = () => {
           colSpanWidth="4"
           attribute="era"
           data={filters as Record<string, unknown>}
-          defaultOptionLabel="De quelle ère est votre archetype ?"
+          defaultOptionLabel={t("archetypesPage.eraPlaceholder")}
           setAction={setFilters as React.Dispatch<React.SetStateAction<Record<string, unknown>>>}
         />
         <div className="col-span-2">

@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { searchCardsWithoutArchetypeAndByOneArchetypeId } from "../../../../services/card";
 import { debounce } from "../../../../utils/functions/debounce";
 import { toast } from "react-toastify";
 import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
 import { STATUS_FORBIDDEN, STATUS_UNLIMITED } from "../../../../utils/const/banlistConst";
-import type { Deck, Card, Pagination, CardSearchCriteria } from "../../../../types";
+import type { Deck, Card, Pagination, CardSearchCriteria, RootState } from "../../../../types";
 
 interface DeckCardsSearcherProps {
   myDeck: Deck;
@@ -17,9 +19,10 @@ interface DeckCardsSearcherProps {
 }
 
 const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck, filters, setFilters, pagination, setPagination }) => {
-
+  const { t } = useTranslation();
   const [researchedCards, setResearchedCards] = useState<Card[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
 
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -96,6 +99,7 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
     filters.min_def, 
     filters.max_def, 
     filters.attribute,
+    locale,
     debouncedSearch, 
     performSearch
   ]);
@@ -146,12 +150,12 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
 
     // Vérifier les limites du deck
     if (isExtraDeck && extraDeckTotal >= 15) {
-      toast.error("L'ExtraDeck ne peut contenir que maximum 15 cartes.");
+      toast.error(t("profile.extraDeckFull"));
       return;
     }
 
     if (!isExtraDeck && mainDeckTotal >= 60) {
-      toast.error("Le MainDeck ne peut contenir que maximum 60 cartes.");
+      toast.error(t("profile.mainDeckFull"));
       return;
     }
 
@@ -172,7 +176,7 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
       .reduce((acc, deckCard) => acc + deckCard.quantity, 0);
 
     if (totalQuantityInDeck >= cardLimit) {
-      toast.error(`Limite de ${cardLimit} exemplaire(s) atteinte pour cette carte.`);
+      toast.error(t("profile.cardLimitReached", { limit: cardLimit }));
       return;
     }
 
@@ -188,12 +192,12 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
       const wouldAddToExtraDeck = isExtraDeck;
 
       if (wouldAddToExtraDeck && extraDeckTotal >= 15) {
-        toast.error("L'ExtraDeck ne peut contenir que maximum 15 cartes.");
+        toast.error(t("profile.extraDeckFull"));
         return;
       }
 
       if (wouldAddToMainDeck && mainDeckTotal >= 60) {
-        toast.error("Le MainDeck ne peut contenir que maximum 60 cartes.");
+        toast.error(t("profile.mainDeckFull"));
         return;
       }
 
@@ -209,7 +213,7 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
       }));
     } else {
       if (totalQuantityInDeck >= cardLimit) {
-        toast.error(`Limite de ${cardLimit} exemplaire(s) atteinte pour cette carte.`);
+        toast.error(t("profile.cardLimitReached", { limit: cardLimit }));
         return;
       }
 
@@ -218,14 +222,14 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
         deck_cards: [...(prev.deck_cards ?? []), { card: card, img_url: card.img_url, quantity: 1 }],
       }));
     }
-  }, [myDeck, setMyDeck, EXTRA_DECK_LABELS]);
+  }, [myDeck, setMyDeck, EXTRA_DECK_LABELS, t]);
 
   // Mémoriser le rendu des cartes pour éviter les re-rendus inutiles
   const renderedCards = useMemo(() => {
     if (!researchedCards || researchedCards.length === 0) {
       return (
         <div className="col-span-12 text-center py-8 text-gray-500">
-          {isLoading ? "Chargement..." : "Aucune carte trouvée"}
+          {isLoading ? t("common.loading") : t("profile.noCardsFound")}
         </div>
       );
     }
@@ -257,12 +261,12 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
             }}
             title={
               isForbidden
-                ? "Cette carte est interdite"
+                ? t("profile.cardForbidden")
                 : hasReachedLimit
-                  ? `Limite de ${cardLimit} exemplaire(s) atteinte`
+                  ? t("profile.cardLimitReachedShort", { limit: cardLimit })
                   : totalQuantityInDeck > 0
-                    ? `${totalQuantityInDeck}/${cardLimit} exemplaire(s) dans le deck`
-                    : "Cliquez pour ajouter au deck"
+                    ? t("profile.copiesInDeck", { count: totalQuantityInDeck, limit: cardLimit })
+                    : t("profile.clickToAdd")
             }
           >
             <img
@@ -292,7 +296,7 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
         </div>
       );
     });
-  }, [researchedCards, isLoading, myDeck, addCardsIntoDeck]);
+  }, [researchedCards, isLoading, myDeck, addCardsIntoDeck, t]);
 
   return (
     <div className="bg-gray-200 col-span-3 p-2 rounded">
@@ -319,7 +323,7 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
             : "cursor-pointer hover:opacity-70"
             }`}
           onClick={decreasePage}
-          aria-label="Page précédente"
+          aria-label={t("common.previousPage")}
         />
         <p className="font-medium">
           {pagination.currentPage} / {pagination.totalPages || 1}
@@ -330,7 +334,7 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
             : "cursor-pointer hover:opacity-70"
             }`}
           onClick={increasePage}
-          aria-label="Page suivante"
+          aria-label={t("common.nextPage")}
         />
       </div>
     </div>

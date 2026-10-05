@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { afterEach, beforeAll } from 'vitest';
 import { cleanup } from '@testing-library/react';
+import '../i18n';
 
 // Suppress known deprecation warning from @testing-library/react (uses react-dom/test-utils.act)
 const suppressActDeprecation = (args: unknown[]): boolean => {

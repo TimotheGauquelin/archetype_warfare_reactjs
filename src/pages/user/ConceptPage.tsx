@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { URL_FRONT_ARCHETYPES } from "../../constant/urlsFront";
 import RevealOnScroll from "../../components/generic/RevealOnScroll";
 import "../../styles/Archetypes.scss";
@@ -6,34 +8,49 @@ import UserHeroLayout from "./layout";
 import PageContentBlock from "@/components/generic/PageContentBlock";
 
 const ConceptPage = () => {
-  const archetypeSample = [
-    { name: "Magicien Sombre", imgUrl: "darkmagician_sample" },
-    { name: "Poussière d'Etoile", imgUrl: "stardust_sample" },
-    { name: "Inzektor", imgUrl: "inzektor_sample" },
-  ];
+  const { t } = useTranslation();
 
-  const rules = [
-    { emoji: "🎴", title: "Règle N°1 : Jouez avec un seul archétype", desc: "Affirmez votre identité de jeu et perfectionnez votre style de combat. Archetype Battle vous impose de choisir un seul archétype par deck. Vous ne pouvez pas mélanger les cartes de plusieurs séries de monstres dans le même deck. Certaines cartes de l'archetype peuvent être interdites" },
-    { emoji: "🚫", title: "Règle N°2 : Jouez avec une banlist dédiée", desc: "Conçue pour couper court aux abus et aux coûts astronomiques de certaines cartes, la banlist Archetype Battle bannit les cartes trop puissantes ou trop chères" },
-    { emoji: "🔥", title: "Règle N°3 : Jouez avec un limite d’invocations", desc: "Un tempo repensé pour des interactions plus fluides et une lecture plus calme du jeu. Le premier tour est limité à 5 invocations puis chaque tour suivant est incréménté de 1 invocation" },
-  ]
+  const archetypeSample = useMemo(
+    () => [
+      { nameKey: "concept.samples.darkMagician", imgUrl: "darkmagician_sample" },
+      { nameKey: "concept.samples.stardust", imgUrl: "stardust_sample" },
+      { nameKey: "concept.samples.inzektor", imgUrl: "inzektor_sample" },
+    ],
+    []
+  );
+
+  const rules = useMemo(
+    () => [
+      { emoji: "🎴", titleKey: "concept.rules.1.title", descKey: "concept.rules.1.desc" },
+      { emoji: "🚫", titleKey: "concept.rules.2.title", descKey: "concept.rules.2.desc" },
+      { emoji: "🔥", titleKey: "concept.rules.3.title", descKey: "concept.rules.3.desc" },
+    ],
+    []
+  );
 
   return (
     <UserHeroLayout
-      mainTitle="Rejoignez le champ de bataille des archétypes"
-      subTitle="Une expérience Yu-Gi-Oh! réinventée : plus d'équilibre, plus de stratégie, plus de fun."
+      mainTitle={t("hero.concept.title")}
+      subTitle={t("hero.concept.subtitle")}
     >
       <div className="max-w-containerSize mx-auto w-full px-2">
         <PageContentBlock>
         <RevealOnScroll as="section" className="rounded-xl bg-blue-100 shadow-sm">
           <h2 className="text-center text-2xl tablet:text-3xl font-extrabold text-indigo-700">
-            Un jeu légendaire devenu un phénomène mondial
+            {t("concept.legendaryTitle")}
           </h2>
           <p className="mt-4 text-gray-800 leading-relaxed text-justify">
-            Depuis plus de <span className="font-semibold text-indigo-600">25 ans</span>, Yu-Gi-Oh! fait vibrer les duellistes
-            du monde entier. Né d’un manga culte, le jeu de cartes Yu-Gi-Oh! s’est imposé comme un <span className="font-semibold">monument stratégique</span>
-            où chaque duel raconte une histoire. Des mécaniques d'invocation iconiques ont façonné son identité — <span className="font-semibold text-purple-500">Fusion</span>, <span className="text-gray-500 font-semibold">Synchro</span>, <span className="text-black font-semibold">Xyz</span>, <span className="text-green-500 font-semibold">Pendule</span>, <span className="text-blue-500 font-semibold">Lien</span> —
-            enrichissant sans cesse le gameplay.
+            {t("concept.legendaryP1Before")}{" "}
+            <span className="font-semibold text-indigo-600">{t("concept.legendaryYears")}</span>
+            {t("concept.legendaryP1After")}{" "}
+            <span className="font-semibold">{t("concept.legendaryMonument")}</span>{" "}
+            {t("concept.legendaryP2")}{" "}
+            <span className="font-semibold text-purple-500">Fusion</span>,{" "}
+            <span className="text-gray-500 font-semibold">Synchro</span>,{" "}
+            <span className="text-black font-semibold">Xyz</span>,{" "}
+            <span className="text-green-500 font-semibold">{t("concept.summonPendulum")}</span>,{" "}
+            <span className="text-blue-500 font-semibold">{t("concept.summonLink")}</span>{" "}
+            {t("concept.legendaryP3")}
           </p>
 
           <div className="grid grid-cols-12 gap-4 mt-6">
@@ -43,12 +60,13 @@ const ConceptPage = () => {
                   <div className="overflow-hidden">
                     <img
                       src={`${import.meta.env.BASE_URL}assets/archetypeSample/${sample.imgUrl}.jpg`}
-                      alt={sample.name}
+                      alt={t(sample.nameKey)}
                       className="w-full transform hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <p className="text-center font-semibold p-3 text-gray-800">
-                    Archétype <span className="text-indigo-600">{sample.name}</span>
+                    {t("concept.archetypeLabel")}{" "}
+                    <span className="text-indigo-600">{t(sample.nameKey)}</span>
                   </p>
                 </div>
               </div>
@@ -57,25 +75,23 @@ const ConceptPage = () => {
         </RevealOnScroll>
         <RevealOnScroll as="section" className="rounded-xl p-6 bg-red-100 shadow-sm">
           <h2 className="text-center text-2xl tablet:text-3xl font-extrabold text-red-600">
-            Une meta devenue déséquilibrée
+            {t("concept.unbalancedTitle")}
           </h2>
           <p className="mt-4 text-gray-800 leading-relaxed text-justify">
-            Au fil du temps, le jeu s'est complexifié et l'aspect compétitif s’est transformé en un terrain inégal. Des cartes trop puissantes écourtent les duels,
-            des combos étouffent l’interaction entre les joueurs et les decks “meta” valent des fortunes.
+            {t("concept.unbalancedText")}
           </p>
           <div className="mt-4 text-center">
             <span className="inline-block px-4 py-2 rounded-full bg-red-200 shadow-sm text-red-700 font-bold">
-              Résultat: Yu-Gi-Oh! est un jeu injuste et qui coute cher, où l’équité et le plaisir de jeu en souffrent
+              {t("concept.unbalancedResult")}
             </span>
           </div>
         </RevealOnScroll>
         <RevealOnScroll as="section" className="rounded-xl p-6 bg-green-100 shadow-sm">
           <h2 className="text-center text-2xl tablet:text-3xl font-extrabold text-emerald-700">
-            Archetype Battle : un format alternatif, une nouvelle vision
+            {t("concept.visionTitle")}
           </h2>
           <p className="mt-4 text-gray-800 leading-relaxed text-justify">
-            Archetype Battle remet la stratégie au centre. Plus besoin de dépenser des fortunes : seul compte le talent, la créativité et la maîtrise de votre archétype.
-            Le format ralentit le rythme, favorise les choix tactiques et redonne à chaque duel son intensité.
+            {t("concept.visionText")}
           </p>
 
           <div className="flex flex-col gap-4 mt-6">
@@ -86,25 +102,24 @@ const ConceptPage = () => {
               >
                 <div className="h-full bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
                   <div className="text-2xl">{item.emoji}</div>
-                  <p className="font-bold text-gray-900 mt-2">{item.title}</p>
-                  <p className="text-gray-700">{item.desc}</p>
+                  <p className="font-bold text-gray-900 mt-2">{t(item.titleKey)}</p>
+                  <p className="text-gray-700">{t(item.descKey)}</p>
                 </div>
               </div>
             ))}
           </div>
           <div className="mt-4 text-center">
             <span className="inline-block px-4 py-2 rounded-full bg-green-200 shadow-sm text-green-700 font-bold">
-              Timing, ressources, lecture : le cerveau et l'amusementavant le portefeuille
+              {t("concept.visionResult")}
             </span>
           </div>
         </RevealOnScroll>
         <RevealOnScroll as="section" className="rounded-xl p-6 bg-blue-100 shadow-sm">
           <div className="grid grid-cols-12 gap-6 items-center">
             <div className="col-span-12 lscreen:col-span-8">
-              <h3 className="text-2xl font-bold text-gray-900">Prêts à rejoindre l’arène ?</h3>
+              <h3 className="text-2xl font-bold text-gray-900">{t("concept.ctaTitle")}</h3>
               <p className="text-gray-800 mt-2">
-                Explorez les archétypes, choisissez votre camp et imposez votre style. Ici, la victoire se gagne
-                par la maîtrise et la réflexion.
+                {t("concept.ctaText")}
               </p>
             </div>
             <div className="col-span-12 lscreen:col-span-4 flex lscreen:justify-end">
@@ -112,7 +127,7 @@ const ConceptPage = () => {
                 to={URL_FRONT_ARCHETYPES}
                 className="px-5 py-3 bg-black text-white rounded-md font-semibold hover:opacity-90 transition-opacity duration-150"
               >
-                Explorer les archétypes
+                {t("concept.ctaButton")}
               </Link>
             </div>
           </div>

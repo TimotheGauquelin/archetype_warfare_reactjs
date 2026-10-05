@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import DeckCreator from "../../../../components/pages/userProfil/deckAdd/DeckCreator";
 import { useSelector } from "react-redux";
 import DeckData from "../../../../components/pages/userProfil/deckAdd/DeckData";
@@ -13,7 +14,7 @@ import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle"
 import { getArchetypesNames } from "@/services/archetype";
 
 const MyDeckAddPage = () => {
-
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -33,24 +34,24 @@ const MyDeckAddPage = () => {
   });
 
   const { token } = useSelector((state: RootState) => state.user);
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
 
-  console.log(myDeck);
   useEffect(() => {
     getArchetypesNames(setArchetypes);
-  }, []);
+  }, [locale]);
 
   return (
     <UserProfilLayout>
       <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
-        <UserProfileLayoutTitle title="Création d'un deck" returnButton={true} />
+        <UserProfileLayoutTitle title={t("profile.createDeckTitle")} returnButton={true} />
         <DeckData myDeck={myDeck} setMyDeck={setMyDeck} archetypes={archetypes} />
         <DeckCreator myDeck={myDeck} setMyDeck={setMyDeck} />
         <Button
           className="bg-blue-500 mt-2 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
-          buttonText="Créer le deck"
+          buttonText={t("profile.createDeckButton")}
           action={() => { if (token) createDeck(token, myDeck, toast, navigate, setIsLoading) }}
           disabled={isLoading}
-          loadingText="Création en cours..."
+          loadingText={t("profile.creatingDeck")}
         />
       </div>
     </UserProfilLayout>

@@ -1,0 +1,310 @@
+{
+  "nav": {
+    "concept": "Concept",
+    "archetypes": "Archetypes",
+    "banlist": "Banlist",
+    "tournaments": "Tournois",
+    "roadmap": "RoadMap",
+    "login": "Connexion"
+  },
+  "language": {
+    "switchLabel": "Langue"
+  },
+  "auth": {
+    "loginTitle": "Connectez-vous",
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "submitLoading": "Connexion en cours...",
+    "forgotPassword": "Mot de passe oublié ?",
+    "createAccount": "Créer un compte",
+    "invalidEmail": "Veuillez saisir une adresse email valide",
+    "passwordRequired": "Veuillez saisir votre mot de passe"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "logout": "Déconnexion",
+    "confirmLogout": "Se déconnecter",
+    "loading": "Chargement...",
+    "searchCard": "Quelle carte recherchez-vous ?",
+    "searchCardAria": "Rechercher une carte",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante"
+  },
+  "banlist": {
+    "showArchetypeCards": "Afficher les cartes d'archétypes",
+    "forbidden": "Cartes Interdites",
+    "limited": "Cartes Limitées",
+    "semiLimited": "Cartes Semi-Limitées",
+    "noCards": "Aucune carte {{title}} trouvée."
+  },
+  "archetypesPage": {
+    "searchPlaceholder": "Quel archetype recherchez-vous ?",
+    "eraPlaceholder": "De quelle ère est votre archetype ?"
+  },
+  "profile": {
+    "myProfile": "Mon Profil",
+    "myDecks": "Mes Decks",
+    "myTournaments": "Mes Tournois",
+    "adminPanel": "Panneau Admin",
+    "logoutConfirmTitle": "Déconnexion",
+    "logoutConfirmMessage": "Êtes-vous sûr de vouloir vous déconnecter ?",
+    "accountInfo": "Informations du compte",
+    "username": "Nom d'utilisateur :",
+    "roles": "Rôle(s):",
+    "dangerZone": "Zone de danger",
+    "dangerZoneDesc": "La suppression de votre compte entraînera la perte définitive de toutes vos données",
+    "deleteAccount": "Supprimer mon compte",
+    "deleteAccountTitle": "Supprimer votre compte",
+    "deleteAccountConfirm": "Cette action est irréversible. Êtes-vous sûr de vouloir supprimer votre compte ?",
+    "allMyDecks": "Tous mes decks",
+    "createDeck": "Créer un deck",
+    "addDeck": "Ajouter un deck",
+    "noDecks": "Vous n'avez aucun deck pour le moment",
+    "playable": "Jouable",
+    "notPlayable": "Non jouable",
+    "allMyTournaments": "Tous mes tournois",
+    "pastTournaments": "Mes tournois passés:",
+    "createDeckTitle": "Création d'un deck",
+    "createDeckButton": "Créer le deck",
+    "viewDeck": "Voir mon deck",
+    "editDeck": "Modifier mon deck",
+    "deleteDeck": "Supprimer mon deck",
+    "deleteDeckTitle": "Supprimer le deck",
+    "delete": "Supprimer",
+    "testHand": "Tester une main",
+    "exportCm": "Exporter pour CM",
+    "noCardsInDeck": "Aucune carte dans le deck.",
+    "editProfile": "Modifier mon profil",
+    "usernameLabel": "Nom d'utilisateur",
+    "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Entrez votre email",
+    "deckName": "Nom du deck",
+    "selectedArchetype": "Archetype selectionné",
+    "deckDescription": "Description du deck",
+    "deckInfo": "Informations du deck",
+    "selectArchetype": "Sélectionnez un archétype",
+    "archetypeInactiveWarning": "⚠️ Attention: L'archetype du deck que vous avez selectionné n'est plus actif. Ce deck n'est donc plus jouable en tournoi.",
+    "selectArchetypeToAddCards": "Veuillez sélectionner un archetype pour ajouter des cartes au deck",
+    "addCardsToDeck": "Ajout de cartes au deck",
+    "deckNotPlayable": "⚠️ Attention : Le deck n'est pas jouable. Le MainDeck doit contenir au minimum 40 cartes.",
+    "creatingDeck": "Création en cours...",
+    "deletingDeck": "Suppression en cours...",
+    "updatingDeck": "Modification en cours...",
+    "deleteDeckConfirm": "Êtes-vous sûr de vouloir supprimer ce deck ? Cette action est irréversible.",
+    "cardLimitReached": "Limite de {{limit}} exemplaire(s) atteinte pour cette carte.",
+    "cardLimitReachedShort": "Limite de {{limit}} exemplaire(s) atteinte",
+    "extraDeckFull": "L'ExtraDeck ne peut contenir que maximum 15 cartes.",
+    "mainDeckFull": "Le MainDeck ne peut contenir que maximum 60 cartes.",
+    "cardForbidden": "Cette carte est interdite",
+    "copiesInDeck": "{{count}}/{{limit}} exemplaire(s) dans le deck",
+    "clickToAdd": "Cliquez pour ajouter au deck",
+    "clickToRemove": "Cliquez pour retirer un exemplaire",
+    "noCardsFound": "Aucune carte trouvée",
+    "mainDeckCards": "Cartes du MainDeck",
+    "extraDeckCards": "Cartes de l'ExtraDeck",
+    "monster": "Monstre",
+    "spell": "Magie",
+    "trap": "Piège",
+    "totalMainDeck": "Total MainDeck",
+    "totalExtraDeck": "Total ExtraDeck",
+    "loadingTournaments": "Chargement de vos tournois…",
+    "noTournaments": "Vous n'êtes inscrit à aucun tournoi pour le moment",
+    "tournamentInProgress": "Tournoi en cours:",
+    "upcomingTournament": "Tournoi à venir:",
+    "loadTournamentsError": "Impossible de charger vos tournois.",
+    "tournamentDetails": "Détails: {{name}}",
+    "loadingTournamentInfo": "Chargement des informations du tournoi…",
+    "noTournamentFound": "Aucun tournoi trouvé.",
+    "status": "Statut :",
+    "ranking": "Classement: ",
+    "finishedRank": "Vous avez fini {{rank}}{{suffix}}",
+    "rankFirst": "er",
+    "rankOther": "ème",
+    "startDate": "Date de début :",
+    "roundsCount": "Nombre de rondes :",
+    "myDeckSection": "Mon deck",
+    "registeredToTournament": "Vous êtes inscrit à ce tournoi ",
+    "deckChosen": " et avez choisi votre deck",
+    "deckNotSelected": "mais vous n'avez pas encore sélectionné de deck. ",
+    "contactOrganizer": "Si vous n'avez sélectionné de deck et que les inscriptions sont closes, contactez l'organisateur du tournoi.",
+    "loadingPlayableDecks": "Chargement des decks jouables…",
+    "selectYourDeck": "Sélectionner votre deck",
+    "noPlayableDeck": "Aucun deck jouable. Créez un deck d'au moins 40 cartes et selectionnez-le !",
+    "changeDeck": "Changer de deck",
+    "validateDeck": "Valider mon deck",
+    "loadingDeck": "Chargement du deck…",
+    "noDeckDetails": "Aucun détail de deck disponible pour ce tournoi.",
+    "noDeckSelectedForTournament": "Aucun deck sélectionné pour ce tournoi.",
+    "dropping": "Abandon en cours…",
+    "dropTournament": "Drop du tournoi",
+    "tournamentNotStarted": "Ce tournoi n'a pas encore commencé, merci de patienter.",
+    "myMatchmakings": "Mes matchmakings",
+    "noRoundsGenerated": "Aucune ronde n'a encore été générée pour ce tournoi.",
+    "droppedAtRound": "Vous avez abandonné le tournoi à la ronde {{round}}",
+    "droppedTournament": "Vous avez abandonné le tournoi",
+    "loadTournamentError": "Impossible de charger les détails du tournoi.",
+    "myPenalties": "Mes pénalités",
+    "penalty": "Pénalité",
+    "reason": "Raison :",
+    "appliedAt": "Appliquée le",
+    "noPenalties": "Vous n'avez pas encore de pénalités."
+  },
+  "filters": {
+    "title": "Filtres : ",
+    "reset": "Reset les filtres",
+    "noType": "-- Aucun Type --",
+    "noAttribute": "-- Aucun Attribut --"
+  },
+  "matchmaking": {
+    "round": "Ronde {{number}}",
+    "unknown": "Inconnu",
+    "saveScore": "Enregistrer le score",
+    "byeWin": "Victoire par BYE",
+    "draw": "Égalité",
+    "wonBy": "Match gagné par",
+    "score": "Score :"
+  },
+  "archetypePage": {
+    "mainType": "Type Principal",
+    "mainTypes": "Types Principaux",
+    "mainAttribute": "Attribut Principal",
+    "mainAttributes": "Attributs Principaux :",
+    "summonMethod": "Méthode d'invocation",
+    "summonMethods": "Méthodes d'invocation",
+    "missingId": "ID d'archétype manquant",
+    "loadError": "Erreur lors du chargement de l'archétype. Veuillez réessayer plus tard.",
+    "notFoundTitle": "Erreur:Archétype introuvable",
+    "notFoundRedirect": "Vous allez être redirigé vers la page d'accueil dans 3 secondes...",
+    "infoPrefix": "Information : {{comment}}",
+    "staffSignature": "Le Staff AW",
+    "allCards": "Toutes les cartes ({{count}})",
+    "noCards": "Il n'y a pas de carte dans cet archétype."
+  },
+  "concept": {
+    "legendaryTitle": "Un jeu légendaire devenu un phénomène mondial",
+    "legendaryP1Before": "Depuis plus de",
+    "legendaryYears": "25 ans",
+    "legendaryP1After": ", Yu-Gi-Oh! fait vibrer les duellistes du monde entier. Né d'un manga culte, le jeu de cartes Yu-Gi-Oh! s'est imposé comme un",
+    "legendaryMonument": "monument stratégique",
+    "legendaryP2": "où chaque duel raconte une histoire. Des mécaniques d'invocation iconiques ont façonné son identité —",
+    "legendaryP3": "— enrichissant sans cesse le gameplay.",
+    "summonPendulum": "Pendule",
+    "summonLink": "Lien",
+    "archetypeLabel": "Archétype",
+    "samples": {
+      "darkMagician": "Magicien Sombre",
+      "stardust": "Poussière d'Etoile",
+      "inzektor": "Inzektor"
+    },
+    "unbalancedTitle": "Une meta devenue déséquilibrée",
+    "unbalancedText": "Au fil du temps, le jeu s'est complexifié et l'aspect compétitif s'est transformé en un terrain inégal. Des cartes trop puissantes écourtent les duels, des combos étouffent l'interaction entre les joueurs et les decks \"meta\" valent des fortunes.",
+    "unbalancedResult": "Résultat: Yu-Gi-Oh! est un jeu injuste et qui coute cher, où l'équité et le plaisir de jeu en souffrent",
+    "visionTitle": "Archetype Battle : un format alternatif, une nouvelle vision",
+    "visionText": "Archetype Battle remet la stratégie au centre. Plus besoin de dépenser des fortunes : seul compte le talent, la créativité et la maîtrise de votre archétype. Le format ralentit le rythme, favorise les choix tactiques et redonne à chaque duel son intensité.",
+    "rules": {
+      "1": {
+        "title": "Règle N°1 : Jouez avec un seul archétype",
+        "desc": "Affirmez votre identité de jeu et perfectionnez votre style de combat. Archetype Battle vous impose de choisir un seul archétype par deck. Vous ne pouvez pas mélanger les cartes de plusieurs séries de monstres dans le même deck. Certaines cartes de l'archetype peuvent être interdites"
+      },
+      "2": {
+        "title": "Règle N°2 : Jouez avec une banlist dédiée",
+        "desc": "Conçue pour couper court aux abus et aux coûts astronomiques de certaines cartes, la banlist Archetype Battle bannit les cartes trop puissantes ou trop chères"
+      },
+      "3": {
+        "title": "Règle N°3 : Jouez avec une limite d'invocations",
+        "desc": "Un tempo repensé pour des interactions plus fluides et une lecture plus calme du jeu. Le premier tour est limité à 5 invocations puis chaque tour suivant est incrémenté de 1 invocation"
+      }
+    },
+    "visionResult": "Timing, ressources, lecture : le cerveau et l'amusement avant le portefeuille",
+    "ctaTitle": "Prêts à rejoindre l'arène ?",
+    "ctaText": "Explorez les archétypes, choisissez votre camp et imposez votre style. Ici, la victoire se gagne par la maîtrise et la réflexion.",
+    "ctaButton": "Explorer les archétypes"
+  },
+  "footer": {
+    "legal": "Les informations textuelles et graphiques présentées sur ce site concernant Yu-Gi-Oh! tout comme les images des cartes, les icônes d'attribut, de niveau/rang et de type ainsi que le texte des cartes sont la propriété de 4K Media Inc., une filiale de Konami Digital Entertainment, Inc. Ce site web n'est ni produit, ni approuvé, ni soutenu, ni affilié à 4K Media ou Konami Digital Entertainment.",
+    "copyright": "Le contenu restant - © 2025 -{{year}} Archetype Battle",
+    "tagline": "Conçu avec passion pour les duellistes"
+  },
+  "hero": {
+    "concept": {
+      "title": "Rejoignez le champ de bataille des archétypes",
+      "subtitle": "Une expérience Yu-Gi-Oh! réinventée : plus d'équilibre, plus de stratégie, plus de fun."
+    },
+    "archetypes": {
+      "title": "Trouvez votre archétype",
+      "subtitle": "Parmi plus d'une centaine de familles de cartes"
+    },
+    "banlist": {
+      "title": "Faîtes attention aux cartes interdites !",
+      "subtitle": "Archetype Warfare propose une toute nouvelle banlist de cartes génériques, en plus de celles des archétypes"
+    },
+    "tournaments": {
+      "title": "Tournois",
+      "subtitle": "Consultez les tournois en cours et à venir"
+    },
+    "roadmap": {
+      "title": "RoadMap",
+      "subtitle": "Evolution du projet Archetype Battle"
+    }
+  },
+  "home": {
+    "welcomeTitle": "Bienvenue sur",
+    "welcomeSubtitle": "Archetype Battle",
+    "loading": "Chargement des données, veuillez patienter...",
+    "welcomeMessage": "Faites des duels avec vos cartes préférées !",
+    "popularArchetypes": "Archétypes Populaires",
+    "newArchetypes": "Nouveaux Archétypes"
+  },
+  "roadmap": {
+    "pageTitle": "RoadMap 2025-2026",
+    "q0": {
+      "period": "T0 2025",
+      "dates": "Juillet - Décembre 2025",
+      "items": [
+        "Développement des fonctionnalités principales (Fonctionnalités Dashboard Admin, Dashboard User, Système de Deck Builder, Système de Banlist)",
+        "Tests et optimisations (Tests unitaires, Tests d'intégration, Tests de performance)",
+        "Préparation du lancement (Lancement de la version 0, Collecte des retours utilisateurs, Améliorations basées sur les retours)",
+        "Creation d'une communauté avec le lancement de la chaine Twitch, d'un canal Discord"
+      ]
+    },
+    "q1": {
+      "period": "T1 2026",
+      "dates": "Janvier - Mars 2026",
+      "items": [
+        "Développement des fonctionnalités Tournoi (Création de tournoi par l'admin, Inscription à un tournoi, Résultats de tournoi)",
+        "Développement des fonctionnalités Classement (Classement des joueurs, Classement des meilleurs archétypes, Maître des Archétypes)"
+      ]
+    },
+    "q2": {
+      "period": "T2 2026",
+      "dates": "Avril - Juin 2026",
+      "items": [
+        "Premiers tournois en ligne",
+        "Développement des fonctionnalités Quizz (Quizz de connaissances sur l'univers Yu-Gi-Oh! - Manga/Anime, JdC, produits dérivés, etc.)",
+        "Développement d'un système d'Utilisateur Premium (Creation de plus de decks, Personnalisation du profil, Accès à des tournois privés)"
+      ]
+    },
+    "q3": {
+      "period": "T3 2026",
+      "dates": "Juillet - Septembre 2026",
+      "items": [
+        "Refonte UX/UI du site web",
+        "Lancement de la V1"
+      ]
+    },
+    "q4": {
+      "period": "T4 2026 et plus loin",
+      "dates": "Octobre 2026 - Proche dans le futur",
+      "items": [
+        "Internationalisation du site web (Anglais, Japonais)",
+        "Tournois avec Cash Prize",
+        "Tournoi physique à 64 joueurs sur Lille (France)"
+      ]
+    }
+  }
+}

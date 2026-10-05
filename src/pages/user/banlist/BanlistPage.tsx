@@ -11,9 +11,11 @@ import "../../../styles/Archetypes.scss";
 import type { Banlist as BanlistType, BanlistCard, SetStateCallback } from "../../../types";
 import UserHeroLayout from "../layout";
 import { SwitchInput } from "@/components/generic/form/SwitchInput";
+import { useTranslation } from "react-i18next";
 
 
 const BanlistPage = () => {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState({
     banlistSearchInput: "",
     showArchetypeCards: false,
@@ -81,20 +83,20 @@ const BanlistPage = () => {
 
   return (
     <UserHeroLayout
-      mainTitle="Faîtes attention aux cartes interdites !"
-      subTitle="Archetype Warfare propose une toute nouvelle banlist de cartes génériques, en plus de celles des archétypes"
+      mainTitle={t("hero.banlist.title")}
+      subTitle={t("hero.banlist.subtitle")}
     >
       <AbsoluteInput>
         <input
           type="text"
           className="col-span-8 bg-gray-100 rounded-md p-2"
-          placeholder="Quelle carte recherchez-vous ?"
+          placeholder={t("common.searchCard")}
           value={filters.banlistSearchInput}
           onChange={handleSearchChange}
-          aria-label="Rechercher une carte"
+          aria-label={t("common.searchCardAria")}
         />
         <SwitchInput
-          label="Afficher les cartes d'archétypes"
+          label={t("banlist.showArchetypeCards")}
           attribute="showArchetypeCards"
           data={filters}
           setAction={setFilters}
@@ -103,19 +105,19 @@ const BanlistPage = () => {
       </AbsoluteInput>
       <PageContentBlock>
           <CardsSection
-            title="Cartes Interdites"
+            title={t("banlist.forbidden")}
             cards={cardsByStatus.forbidden}
             isFetching={isFetching}
           />
 
           <CardsSection
-            title="Cartes Limitées"
+            title={t("banlist.limited")}
             cards={cardsByStatus.limited}
             isFetching={isFetching}
           />
 
           <CardsSection
-            title="Cartes Semi-Limitées"
+            title={t("banlist.semiLimited")}
             cards={cardsByStatus.semiLimited}
             isFetching={isFetching}
           />

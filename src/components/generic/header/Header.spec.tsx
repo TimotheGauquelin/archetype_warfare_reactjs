@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import Header from "./Header";
 import userReducer from "../../../redux/slice/userSlice";
+import localeReducer from "../../../redux/slice/localeSlice";
 import type { User } from "../../../types";
 import {
   URL_FRONT_HOME,
@@ -19,7 +20,7 @@ import userEvent from "@testing-library/user-event";
 
 function createTestStore(preloadedState?: { user?: User }) {
   return configureStore({
-    reducer: { user: userReducer },
+    reducer: { user: userReducer, locale: localeReducer },
     preloadedState: preloadedState as { user?: User } | undefined,
   });
 }

@@ -15,6 +15,7 @@ import eraSlice from "./slice/eraSlice";
 import cardTypeSlice from "./slice/cardTypeSlice";
 import attributeSlice from "./slice/attributeSlice";
 import archetypeSlice from "./slice/archetypeSlice";
+import localeSlice from "./slice/localeSlice";
 
 const persistConfig = {
   key: "root",
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   cardType: cardTypeSlice,
   attribute: attributeSlice,
   archetype: archetypeSlice,
+  locale: localeSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

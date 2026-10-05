@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { DeckCard } from "@/types";
 
 interface DeckCardsGridProps {
@@ -7,6 +8,8 @@ interface DeckCardsGridProps {
 }
 
 const DeckCardsGrid: React.FC<DeckCardsGridProps> = ({ cards, onCardClick }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="grid grid-cols-12 lscreen:grid-cols-10 gap-1 p-1 mt-2 bg-white">
       {cards.map((deckCard, cardIndex) => {
@@ -23,7 +26,7 @@ const DeckCardsGrid: React.FC<DeckCardsGridProps> = ({ cards, onCardClick }) => 
             key={copy.uniqueKey}
             className="col-span-6 lscreen:col-span-1 relative cursor-pointer hover:opacity-80 transition-opacity group"
             onClick={() => onCardClick?.(deckCard)}
-            title="Cliquez pour retirer un exemplaire"
+            title={t("profile.clickToRemove")}
           >
             <img
               src={copy.img_url || copy.card?.img_url}
@@ -37,9 +40,6 @@ const DeckCardsGrid: React.FC<DeckCardsGridProps> = ({ cards, onCardClick }) => 
               </div>
             )}
             <div className="absolute inset-0 bg-red-500 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center">
-              {/* <span className="text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                -
-              </span> */}
             </div>
           </div>
         ));
@@ -49,4 +49,3 @@ const DeckCardsGrid: React.FC<DeckCardsGridProps> = ({ cards, onCardClick }) => 
 };
 
 export default DeckCardsGrid;
-

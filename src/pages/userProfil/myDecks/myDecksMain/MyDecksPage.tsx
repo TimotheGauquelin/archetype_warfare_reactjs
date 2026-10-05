@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { getMyDecks } from "../../../../services/deck";
 import { URL_FRONT_MY_DECK_ADD, getMyDeckUpdatePath } from "../../../../constant/urlsFront";
 import type { DeckWithArchetypeDetails, RootState } from "../../../../types";
@@ -11,6 +12,7 @@ import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle"
 import MyDecksDivSkeleton from "@/components/skeletons/MyDecksDivSkeleton";
 
 const MyDecksPage = () => {
+  const { t } = useTranslation();
   const [myDecks, setMyDecks] = useState<DeckWithArchetypeDetails[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,8 +28,8 @@ const MyDecksPage = () => {
     <UserProfilLayout>
       <div className="bg-white rounded-lg shadow-sm p-4 mb-4 relative">
         <UserProfileLayoutTitle
-          title="Tous mes decks"
-          buttonText="Créer un deck"
+          title={t("profile.allMyDecks")}
+          buttonText={t("profile.createDeck")}
           buttonUrl={URL_FRONT_MY_DECK_ADD}
           buttonClassName="bg-blue-500 hover:bg-blue-600"
         />
@@ -54,19 +56,21 @@ const MyDecksPage = () => {
                     </div>
                     <p className="flex flex-col justify-between items-center">
                       <span className="font-bold line-clamp-1">{deck.label}</span>
-                      <span className={`text-white text-sm p-1 rounded-sm ${deck.is_playable && deck.archetype.is_active === true ? "bg-green-500" : "bg-red-500"}`}>{deck.is_playable && deck.archetype.is_active ? "Jouable" : "Non jouable"}</span>
+                      <span className={`text-white text-sm p-1 rounded-sm ${deck.is_playable && deck.archetype.is_active === true ? "bg-green-500" : "bg-red-500"}`}>
+                        {deck.is_playable && deck.archetype.is_active ? t("profile.playable") : t("profile.notPlayable")}
+                      </span>
                     </p>
                   </Link>
                 ))
             ) : (
-              <NoItemMessage message="Vous n'avez aucun deck pour le moment" textPosition="left" />
+              <NoItemMessage message={t("profile.noDecks")} textPosition="left" />
             )}
           </div>
         )}
         <Link
           to={URL_FRONT_MY_DECK_ADD}
           className="block bg-blue-200 absolute right-0 p-5 shadow rounded-full sscreen:hidden"
-          aria-label="Ajouter un deck"
+          aria-label={t("profile.addDeck")}
         >
           <FaPlus />
         </Link>

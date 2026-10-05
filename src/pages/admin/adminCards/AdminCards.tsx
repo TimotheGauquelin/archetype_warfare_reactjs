@@ -12,6 +12,8 @@ import { getAttributes } from "../../../services/attribute";
 import { searchCards } from "../../../services/card";
 import type { Card, CardSearchCriteria, Pagination } from "../../../types";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../types";
 
 interface ApiCard {
   id: number;
@@ -61,75 +63,102 @@ const AdminCards = () => {
   const [size] = useState(30);
   const [page, setPage] = useState(1);
 
-  const [apiCards, setApiCards] = useState<ApiCard[]>([]);
   const [cardTypes, setCardTypes] = useState<CardType[]>([]);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
   const [databaseUpdateLoader, setDatabaseUpdateLoader] = useState(false);
   const [refresh, setRefresh] = useState(false);
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
 
   const navigate = useNavigate();
 
-  const getApiCards = () => {
-    axios
-      .get(`https://db.ygoprodeck.com/api/v7/cardinfo.php`)
-      .then((response) => {
-        if (response.status === 200) {
-          setApiCards(response?.data.data || []);
-        }
+  const mapApiCardToPayload = (
+    card: ApiCard,
+    frCard?: ApiCard
+  ) => {
+    const translations = [
+      {
+        locale: "en",
+        name: card.name,
+        description: card.desc ?? null,
+      },
+    ];
+
+    if (frCard?.name) {
+      translations.push({
+        locale: "fr",
+        name: frCard.name,
+        description: frCard.desc ?? null,
       });
+    }
+
+    return {
+      id: card.id,
+      name: card.name,
+      level: card.level ? card.level : null,
+      atk: card.atk === 0 ? 0 : card.atk && card.atk > 0 ? card.atk : null,
+      def: card.def === 0 ? 0 : card.def && card.def > 0 ? card.def : null,
+      attribute: card.attribute ? card.attribute : null,
+      description: card.desc ? card.desc : null,
+      img_url: card?.card_images?.[0]?.image_url,
+      card_type: card.type.includes("Monster")
+        ? card.type
+        : card.type.includes("Spell") || card.type.includes("Trap")
+          ? `${card.race || ""} ${card.type.replace(" Card", "")}`
+          : null,
+      translations,
+    };
   };
 
-  const updateDatabase = () => {
+  const updateDatabase = async () => {
     setDatabaseUpdateLoader(true);
-    const cardsSchema: Array<{
-      id: number;
-      name: string;
-      level: number | null;
-      atk: number | null;
-      def: number | null;
-      attribute: string | null;
-      description: string | null;
-      img_url: string | undefined;
-      card_type: string | null;
-    }> = [];
 
-    apiCards.forEach((card) => {
-      if (card.frameType !== "skill" && card.frameType !== "token") {
-        const selectedCard = {
-          id: card.id,
-          name: card.name,
-          level: card.level ? card.level : null,
-          atk: card.atk === 0 ? 0 : card.atk && card.atk > 0 ? card.atk : null,
-          def: card.def === 0 ? 0 : card.def && card.def > 0 ? card.def : null,
-          attribute: card.attribute ? card.attribute : null,
-          description: card.desc ? card.desc : null,
-          img_url: card?.card_images?.[0]?.image_url,
-          card_type: card.type.includes("Monster")
-            ? card.type
-            : card.type.includes("Spell") || card.type.includes("Trap")
-              ? `${card.race || ""} ${card.type.replace(" Card", "")}`
-              : null,
-        };
-        cardsSchema.push(selectedCard);
-      }
-    });
+    try {
+      const [enResponse, frResponse] = await Promise.all([
+        axios.get(`https://db.ygoprodeck.com/api/v7/cardinfo.php`),
+        axios.get(`https://db.ygoprodeck.com/api/v7/cardinfo.php?language=fr`),
+      ]);
 
-    api_aw
-      .post(`/cards`, cardsSchema)
-      .then((response) => {
-        if (response.status === 201 || response.status === 207) {
-          setRefresh(true);
-          toast.success(
-            response.data?.message ?? "Base de données des cartes mise à jour"
+      const enCards: ApiCard[] = enResponse?.data?.data || [];
+      const frCards: ApiCard[] = frResponse?.data?.data || [];
+      const frById = new Map<number, ApiCard>(
+        frCards.map((card) => [card.id, card])
+      );
+
+      const cardsSchema = enCards
+        .filter(
+          (card) => card.frameType !== "skill" && card.frameType !== "token"
+        )
+        .map((card) => mapApiCardToPayload(card, frById.get(card.id)));
+
+      const response = await api_aw.post(`/cards`, cardsSchema);
+
+      if (response.status === 201 || response.status === 207) {
+        setRefresh(true);
+        toast.success(
+          response.data?.message ?? "Base de données des cartes mise à jour"
+        );
+        if (response.data?.errors?.length) {
+          toast.warn(
+            `${response.data.errors.length} erreur(s) — détail dans la console`
           );
+          console.table(response.data.errors);
         }
-      })
-      .catch(() => {
-        toast.error("Erreur de la mise à jour");
-      })
-      .finally(() => {
-        setDatabaseUpdateLoader(false);
-      });
+      }
+    } catch (err: unknown) {
+      const axiosError = err as {
+        response?: { data?: { message?: string; errors?: unknown[] } };
+      };
+      const message =
+        axiosError.response?.data?.message ?? "Erreur de la mise à jour";
+      const errors = axiosError.response?.data?.errors;
+      toast.error(message);
+      if (errors?.length) {
+        toast.warn(`${errors.length} erreur(s) — détail dans la console`);
+        console.table(errors);
+      }
+    } finally {
+      setDatabaseUpdateLoader(false);
+    }
   };
 
   const resetAllFilters = () => {
@@ -164,10 +193,9 @@ const AdminCards = () => {
     );
     getCardTypes(setCardTypes);
     getAttributes(setAttributes);
-    getApiCards();
     setRefresh(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [criteria, page, refresh]);
+  }, [criteria, page, refresh, locale]);
 
   return (
     <AdminStructure>

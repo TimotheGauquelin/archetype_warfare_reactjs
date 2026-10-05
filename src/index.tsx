@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import "./i18n";
 import "./index.scss";
 import { persistor, store } from "./redux/store";
 import App from "./App";

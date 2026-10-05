@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 import UserProfilLayout from "../../layout";
 import type { RootState, Deck, DeckCard } from "@/types";
@@ -31,6 +32,7 @@ import type { MatchScoreProps } from "@/types/match";
 import Section from "@/components/generic/Section";
 
 const MyTournamentDetail: React.FC = () => {
+    const { t, i18n } = useTranslation();
     const { tournamentId } = useParams<{ tournamentId: string }>();
     const [tournament, setTournament] = useState<MyTournamentDetailType | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -67,11 +69,11 @@ const MyTournamentDetail: React.FC = () => {
             const data = await getMyTournamentDetail(tournamentId, user.token);
             setTournament(data);
         } catch (e) {
-            setError(e instanceof Error ? e.message : "Impossible de charger les détails du tournoi.");
+            setError(e instanceof Error ? e.message : t("profile.loadTournamentError"));
         } finally {
             setIsLoading(false);
         }
-    }, [tournamentId, user.token]);
+    }, [tournamentId, user.token, t]);
 
     const handleSubmitScore = async (matchId: number, playersScore: MatchScoreProps) => {
         try {
@@ -267,10 +269,10 @@ const MyTournamentDetail: React.FC = () => {
     return (
         <UserProfilLayout>
             <div className="bg-white rounded-lg sh p-4 mb-2">
-                <UserProfileLayoutTitle title={`Détails: ${tournament?.name ?? ""}`} returnButton={true} />
+                <UserProfileLayoutTitle title={t("profile.tournamentDetails", { name: tournament?.name ?? "" })} returnButton={true} />
 
                 {isLoading && (
-                    <p className="text-gray-500 mb-3">Chargement des informations du tournoi…</p>
+                    <p className="text-gray-500 mb-3">{t("profile.loadingTournamentInfo")}</p>
                 )}
 
                 {error && (
@@ -280,7 +282,7 @@ const MyTournamentDetail: React.FC = () => {
                 )}
 
                 {!isLoading && !tournament && !error && (
-                    <NoItemMessage message="Aucun tournoi trouvé." />
+                    <NoItemMessage message={t("profile.noTournamentFound")} />
                 )}
 
                 {tournament && (
@@ -288,43 +290,46 @@ const MyTournamentDetail: React.FC = () => {
                         <section className="p-2 bg-gray-100 rounded-md">
                             <div className="text-gray-700 space-y-1">
                                 <p>
-                                    <span className="font-semibold">Statut :</span> <span className="text-red-500 font-semibold">{TOURNAMENT_STATUS(tournament.status)}</span>
+                                    <span className="font-semibold">{t("profile.status")}</span> <span className="text-red-500 font-semibold">{TOURNAMENT_STATUS(tournament.status)}</span>
                                 </p>
                                 {tournament?.status?.includes("finished") && myStanding != null && (
                                     <p>
-                                        <span className="font-semibold">Classement: </span>
+                                        <span className="font-semibold">{t("profile.ranking")}</span>
                                         <span className="font-semibold text-green-700">
-                                            Vous avez fini {myStanding.rank}{myStanding.rank === 1 ? "er" : "ème"}
+                                            {t("profile.finishedRank", {
+                                                rank: myStanding.rank,
+                                                suffix: myStanding.rank === 1 ? t("profile.rankFirst") : t("profile.rankOther"),
+                                            })}
                                         </span>
                                     </p>
                                 )}
                                 <p>
-                                    <span className="font-semibold">Date de début :</span>{" "}
-                                    {new Date(tournament.event_date).toLocaleString("fr-FR")}
+                                    <span className="font-semibold">{t("profile.startDate")}</span>{" "}
+                                    {new Date(tournament.event_date).toLocaleString(i18n.language)}
                                 </p>
                                 <p>
-                                    <span className="font-semibold">Nombre de rondes :</span> {tournament.max_number_of_rounds}
+                                    <span className="font-semibold">{t("profile.roundsCount")}</span> {tournament.max_number_of_rounds}
                                 </p>
                             </div>
                         </section>
 
                         {
                             tournament.require_deck_list && (
-                                <Section title="Mon deck">
+                                <Section title={t("profile.myDeckSection")}>
                                     <p>
-                                        <span >Vous êtes inscrit à ce tournoi </span>
+                                        <span >{t("profile.registeredToTournament")}</span>
                                         {tournament.tournament_player.deck_id
                                             ? (
-                                                <span className="text-green-700 font-semibold"> et avez choisi votre deck</span>
+                                                <span className="text-green-700 font-semibold">{t("profile.deckChosen")}</span>
                                             )
                                             : (
-                                                <span className="text-red-600">mais vous n'avez pas encore sélectionné de deck. {!isRegistrationOpen && "Si vous n'avez sélectionné de deck et que les inscriptions sont closes, contactez l'organisateur du tournoi."}</span>
+                                                <span className="text-red-600">{t("profile.deckNotSelected")}{!isRegistrationOpen && t("profile.contactOrganizer")}</span>
                                             )
                                         }
                                     </p>
                                     <div>
                                         {playableDecksLoading ? (
-                                            <p className="text-gray-500 text-sm">Chargement des decks jouables…</p>
+                                            <p className="text-gray-500 text-sm">{t("profile.loadingPlayableDecks")}</p>
                                         ) : (
                                             <div className="grid grid-cols-12 gap-2">
                                                 <div className="md:col-span-2 col-span-12">
@@ -335,7 +340,7 @@ const MyTournamentDetail: React.FC = () => {
                                                         className="w-full max-w-md rounded border border-gray-300 bg-white py-2 px-3 text-gray-700 focus:border-blue-500 focus:outline-none"
                                                         disabled={!isRegistrationOpen || playableDecks.length === 0 || playableDecksLoading}
                                                     >
-                                                        <option value="" disabled>Sélectionner votre deck</option>
+                                                        <option value="" disabled>{t("profile.selectYourDeck")}</option>
                                                         {playableDecks
                                                             .filter((d): d is Deck & { id: string } => d.id != null && d.id !== "")
                                                             .map((deck) => (
@@ -346,7 +351,7 @@ const MyTournamentDetail: React.FC = () => {
                                                     </select>
                                                     {playableDecks.length === 0 && !playableDecksLoading && (
                                                         <p className="text-amber-700 text-sm mt-1">
-                                                            Aucun deck jouable. Créez un deck d'au moins 40 cartes et selectionnez-le !
+                                                            {t("profile.noPlayableDeck")}
                                                         </p>
                                                     )}
                                                     {isRegistrationOpen && <button
@@ -362,46 +367,46 @@ const MyTournamentDetail: React.FC = () => {
                                                         className="mt-2 inline-flex items-center px-3 py-1.5 rounded bg-green-600 text-white text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                                                     >
                                                         {isSubmittingDeck
-                                                            ? "Enregistrement…"
+                                                            ? t("common.saving")
                                                             : registeredDeckId != null &&
                                                                 selectedDeckId !== "" &&
                                                                 selectedDeckId !== registeredDeckId
-                                                                ? "Changer de deck"
-                                                                : "Valider mon deck"}
+                                                                ? t("profile.changeDeck")
+                                                                : t("profile.validateDeck")}
                                                     </button>}
                                                 </div>
                                                 <div className="p-2 md:col-span-10 col-span-12 bg-white">
                                                     {deckSnapshotLoading || selectedDeckPreviewLoading ? (
-                                                        <p className="text-gray-500 text-sm">Chargement du deck…</p>
+                                                        <p className="text-gray-500 text-sm">{t("profile.loadingDeck")}</p>
                                                     ) : deckCardsForDisplay ? (
                                                         <div className="space-y-3">
                                                             {mainDisplayCards.length > 0 && (
                                                                 <DeckSection
-                                                                    title="Cartes du Main Deck"
+                                                                    title={t("profile.mainDeckCards")}
                                                                     badges={[
                                                                         {
-                                                                            label: "Monstre",
+                                                                            label: t("profile.monster"),
                                                                             value: mainDisplayCards
                                                                                 .filter((card) => card.card?.card_type?.includes("Monster"))
                                                                                 .reduce((acc, card) => acc + card.quantity, 0),
                                                                             className: "bg-orange-200 text-orange-700 p-1 rounded-md",
                                                                         },
                                                                         {
-                                                                            label: "Magie",
+                                                                            label: t("profile.spell"),
                                                                             value: mainDisplayCards
                                                                                 .filter((card) => card.card?.card_type?.includes("Spell"))
                                                                                 .reduce((acc, card) => acc + card.quantity, 0),
                                                                             className: "bg-green-200 text-green-700 p-1 rounded-md",
                                                                         },
                                                                         {
-                                                                            label: "Piège",
+                                                                            label: t("profile.trap"),
                                                                             value: mainDisplayCards
                                                                                 .filter((card) => card.card?.card_type?.includes("Trap"))
                                                                                 .reduce((acc, card) => acc + card.quantity, 0),
                                                                             className: "bg-purple-200 text-purple-700 p-1 rounded-md",
                                                                         },
                                                                         {
-                                                                            label: "Total MainDeck",
+                                                                            label: t("profile.totalMainDeck"),
                                                                             value: `${mainDisplayCards.reduce((acc, card) => acc + card.quantity, 0)}/60`,
                                                                             className: `p-1 rounded-md ${mainDisplayCards.reduce((acc, card) => acc + card.quantity, 0) >= 60 ? "bg-red-200 text-red-700" : "bg-red-200 text-red-700"}`,
                                                                         },
@@ -412,10 +417,10 @@ const MyTournamentDetail: React.FC = () => {
                                                             )}
                                                             {extraDisplayCards.length > 0 && (
                                                                 <DeckSection
-                                                                    title="Cartes de l'ExtraDeck"
+                                                                    title={t("profile.extraDeckCards")}
                                                                     badges={[
                                                                         {
-                                                                            label: "Total ExtraDeck",
+                                                                            label: t("profile.totalExtraDeck"),
                                                                             value: `${extraDisplayCards.reduce((acc, card) => acc + card.quantity, 0)}/15`,
                                                                             className: `p-1 rounded-md ${extraDisplayCards.reduce((acc, card) => acc + card.quantity, 0) >= 15 ? "bg-red-200 text-red-700" : "bg-gray-300 text-gray-700"}`,
                                                                         },
@@ -427,11 +432,11 @@ const MyTournamentDetail: React.FC = () => {
                                                         </div>
                                                     ) : registeredDeckId ? (
                                                         <p className="text-gray-500 text-sm">
-                                                            Aucun détail de deck disponible pour ce tournoi.
+                                                            {t("profile.noDeckDetails")}
                                                         </p>
                                                     ) : (
                                                         <p className="text-gray-500 text-sm">
-                                                            Aucun deck sélectionné pour ce tournoi.
+                                                            {t("profile.noDeckSelectedForTournament")}
                                                         </p>
                                                     )}
                                                 </div>
@@ -449,25 +454,28 @@ const MyTournamentDetail: React.FC = () => {
                                     disabled={!haveCompletedAllMatches}
                                     className="cursor-pointer mt-2 inline-block w-fit items-center px-3 py-1.5 rounded bg-red-600 text-white text-sm hover:bg-red-700 disabled:opacity-60"
                                 >
-                                    {isDropping ? "Abandon en cours…" : "Drop du tournoi"}
+                                    {isDropping ? t("profile.dropping") : t("profile.dropTournament")}
                                 </button>
                             </section>
                         )}
 
 
                         {!isTournamentPhase && (
-                            <NoItemMessage message="Ce tournoi n'a pas encore commencé, merci de patienter." />
+                            <NoItemMessage message={t("profile.tournamentNotStarted")} />
                         )}
 
                         {isTournamentPhase && (
-                            <Section title="Mes matchmakings">
+                            <Section title={t("profile.myMatchmakings")}>
                                 {tournament.rounds.length === 0 ? (
-                                    <NoItemMessage message="Aucune ronde n'a encore été générée pour ce tournoi." />
+                                    <NoItemMessage message={t("profile.noRoundsGenerated")} />
                                 ) : (
                                     <div className="space-y-2">
                                         {tournament.tournament_player.dropped && (
                                             <p className="bg-red-100 p-2 rounded-md text-base font-bold text-red-600">
-                                                Vous avez abandonné le tournoi {tournament.rounds.length != null ? `à la ronde ${tournament.rounds.length}` : ""}</p>
+                                                {tournament.rounds.length != null
+                                                    ? t("profile.droppedAtRound", { round: tournament.rounds.length })
+                                                    : t("profile.droppedTournament")}
+                                            </p>
                                         )}
                                         {tournament.rounds
                                             .sort((a, b) => b.round_number - a.round_number)
@@ -491,7 +499,7 @@ const MyTournamentDetail: React.FC = () => {
                         )}
 
                         {tournament.allow_penalities && (
-                            <Section title="Mes pénalités">
+                            <Section title={t("profile.myPenalties")}>
                             {tournament?.tournament_player?.penalties &&
                                 tournament.tournament_player.penalties.length > 0 ? (
                                 <ul className="space-y-3 list-none p-0 m-0">
@@ -501,11 +509,11 @@ const MyTournamentDetail: React.FC = () => {
                                             className="border border-gray-200 rounded-md p-3 bg-gray-50 text-sm"
                                         >
                                             <div className="font-semibold text-gray-800">
-                                                {penalty.penalty_type?.label ?? "Pénalité"}
+                                                {penalty.penalty_type?.label ?? t("profile.penalty")}
                                             </div>
                                             {penalty.reason && (
                                                 <p className="mt-1 text-gray-700">
-                                                    Raison : {penalty.reason}
+                                                    {t("profile.reason")} {penalty.reason}
                                                 </p>
                                             )}
                                             {penalty.notes && (
@@ -515,17 +523,17 @@ const MyTournamentDetail: React.FC = () => {
                                             )}
                                             {penalty.applied_at && (
                                                 <p className="mt-1 text-gray-500 text-xs">
-                                                    Appliquée le{" "}
+                                                    {t("profile.appliedAt")}{" "}
                                                     {new Date(
                                                         penalty.applied_at
-                                                    ).toLocaleString("fr-FR")}
+                                                    ).toLocaleString(i18n.language)}
                                                 </p>
                                             )}
                                         </li>
                                     ))}
                                 </ul>
                             ) : (
-                                <p>Vous n'avez pas encore de pénalités.</p>
+                                <p>{t("profile.noPenalties")}</p>
                             )}
                         </Section>
                         )}

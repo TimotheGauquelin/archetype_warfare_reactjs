@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next';
 import type { Deck, Archetype } from '../../../../types';
 import { Input } from '@/components/generic/form/input/Input';
 import TextArea from '@/components/generic/form/textArea/TextArea';
@@ -11,6 +12,8 @@ interface DeckDataProps {
 }
 
 const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) => {
+    const { t } = useTranslation();
+
     const handleArchetypeSelect: React.Dispatch<React.SetStateAction<Deck>> = (value) => {
         setMyDeck((prev) => {
             const next = typeof value === "function" ? value(prev) : value;
@@ -38,18 +41,18 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
     return (
         <div data-testid="deck-data" className="p-4 bg-gray-300 rounded-lg">
             <span className="font-bold text-lg mb-2">
-                Informations du deck
+                {t("profile.deckInfo")}
             </span>
             {
                 myDeck.archetype.is_active === false && (
                     <p className="p-2 bg-yellow-100 text-yellow-800 rounded-md text-sm font-semibold">
-                        ⚠️ Attention: L'archetype du deck que vous avez selectionné n'est plus actif. Ce deck n'est donc plus jouable en tournoi.
+                        {t("profile.archetypeInactiveWarning")}
                     </p>
                 )
             }
             <div className="grid grid-cols-2 gap-4">
                 <Input
-                    label="Nom du deck"
+                    label={t("profile.deckName")}
                     inputName="label"
                     inputType="text"
                     data={myDeck}
@@ -58,9 +61,9 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
                     required={true}
                 />
                 <SelectInput
-                    defaultOptionLabel="Sélectionnez un archétype"
+                    defaultOptionLabel={t("profile.selectArchetype")}
                     className="mt-2"
-                    label="Archetype selectionné"
+                    label={t("profile.selectedArchetype")}
                     required={true}
                     options={archetypes.map((archetype) => ({ id: archetype.id, label: archetype.name }))}
                     data={myDeck}
@@ -72,7 +75,7 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
             <div className="grid grid-cols-2 gap-4">
                 <TextArea
                     className="col-span-2"
-                    label="Description du deck"
+                    label={t("profile.deckDescription")}
                     required={true}
                     value={myDeck?.comment ?? ""}
                     onChange={(e) => setMyDeck({ ...myDeck, comment: e.target.value })}

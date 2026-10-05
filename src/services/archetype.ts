@@ -46,16 +46,37 @@ export const getArchetypesWithCriteria = async (
 };
 
 /**
- * Retrieve an archetype by its ID
+ * Retrieve an archetype by its ID.
+ * - Par défaut: laisse l'intercepteur injecter la locale Redux (pages user).
+ * - Admin: passer `{ locale: "fr", withAdminTranslations: true }`.
  */
 export const getArchetypeById = async (
   archetypeId: number | string,
-  setArchetype: SetStateCallback<Archetype>
+  setArchetype: SetStateCallback<Archetype>,
+  options?: { locale?: "fr" | "en"; withAdminTranslations?: boolean }
 ): Promise<void> => {
   try {
-    const response = await api_aw.get(URL_BACK_GET_ARCHETYPE_BY_ID(archetypeId));
+    const query = options?.locale ? `?locale=${options.locale}` : "";
+    const response = await api_aw.get(`${URL_BACK_GET_ARCHETYPE_BY_ID(archetypeId)}${query}`);
     if (response.data) {
-      setArchetype(response.data);
+      const data = response.data as Archetype;
+
+      if (options?.withAdminTranslations) {
+        const en = Array.isArray(data.translations)
+          ? data.translations.find((translation) => translation.locale === "en")
+          : undefined;
+
+        setArchetype({
+          ...data,
+          name_en: en?.name ?? "",
+          main_info_en: en?.main_info ?? "",
+          slider_info_en: en?.slider_info ?? "",
+          comment_en: en?.comment ?? "",
+        } as Archetype);
+        return;
+      }
+
+      setArchetype(data);
     }
   } catch (error) {
     const appError = handleApiError(error);
@@ -166,7 +187,35 @@ export const addArchetype = async (
   toast: ToastFunction
 ): Promise<void> => {
   try {
-    const response = await api_aw.post(URL_BACK_ADD_ARCHETYPE, newArchetype);
+    const {
+      name_en,
+      main_info_en,
+      slider_info_en,
+      comment_en,
+      translations: _existingTranslations,
+      ...rest
+    } = newArchetype as Partial<Archetype> & {
+      name_en?: string;
+      main_info_en?: string;
+      slider_info_en?: string;
+      comment_en?: string;
+    };
+
+    const translations = [];
+    if (typeof name_en === "string" && name_en.trim()) {
+      translations.push({
+        locale: "en",
+        name: name_en.trim(),
+        main_info: typeof main_info_en === "string" ? main_info_en : null,
+        slider_info: typeof slider_info_en === "string" ? slider_info_en : null,
+        comment: typeof comment_en === "string" ? comment_en : null,
+      });
+    }
+
+    const response = await api_aw.post(URL_BACK_ADD_ARCHETYPE, {
+      ...rest,
+      translations,
+    });
     if (response.status === 201) {
       navigate(URL_FRONT_ADMIN_ARCHETYPES);
     }
@@ -191,7 +240,36 @@ export const updateArchetype = async (
 ): Promise<void> => {
   try {
     setIsLoading(true);
-    const response = await api_aw.put(URL_BACK_UPDATE_ARCHETYPE(archetypeId), archetype);
+    const {
+      name_en,
+      main_info_en,
+      slider_info_en,
+      comment_en,
+      translations: _existingTranslations,
+      ...rest
+    } = archetype as Partial<Archetype> & {
+      name_en?: string;
+      main_info_en?: string;
+      slider_info_en?: string;
+      comment_en?: string;
+    };
+
+    const translations = [];
+    if (typeof name_en === "string" && name_en.trim()) {
+      translations.push({
+        locale: "en",
+        name: name_en.trim(),
+        main_info: typeof main_info_en === "string" ? main_info_en : null,
+        slider_info: typeof slider_info_en === "string" ? slider_info_en : null,
+        comment: typeof comment_en === "string" ? comment_en : null,
+      });
+    }
+
+    const response = await api_aw.put(URL_BACK_UPDATE_ARCHETYPE(archetypeId), {
+      ...rest,
+      id: archetypeId,
+      translations,
+    });
     if (response.status === 200) {
       setIsLoading(false);
       navigate(URL_FRONT_ADMIN_ARCHETYPES);

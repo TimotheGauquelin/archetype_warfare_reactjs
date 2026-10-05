@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import { searchCards } from '../../../../services/card';
-import type { Banlist, Card, Pagination, BanlistCard } from '../../../../types';
+import type { Banlist, Card, Pagination, BanlistCard, RootState } from '../../../../types';
 
 export type BanlistFormLike = { banlist_archetype_cards?: BanlistCard[] } & Record<string, unknown>;
 
@@ -13,6 +14,7 @@ interface AdminBanlistAddCardProps {
 const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setBanlist }) => {
 
     const [cards, setCards] = useState<Card[]>([]);
+    const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
 
     const [pagination, setPagination] = useState<Pagination>({
         total: 0,
@@ -77,7 +79,7 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
 
     useEffect(() => {
         searchCards(setCards, setPagination, filters.size, filters.page, filters.name);
-    }, [filters]);
+    }, [filters, locale]);
 
     return (
         <div className="col-span-4 grid grid-cols-12 mt-2">

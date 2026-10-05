@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import DeckCardsSearcher from "./DeckCardsSearcher";
 import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
 import { useAttributes } from "../../../../hooks/useAttributes";
@@ -18,6 +19,7 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
   myDeck,
   setMyDeck,
 }) => {
+  const { t } = useTranslation();
 
   const [pagination, setPagination] = useState({
     total: 0,
@@ -129,7 +131,7 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
     return (
       <div className="mt-2 p-4 bg-gray-300 rounded-lg">
         <p className="text-center py-4 text-gray-500">
-          Veuillez sélectionner un archetype pour ajouter des cartes au deck
+          {t("profile.selectArchetypeToAddCards")}
         </p>
       </div>
     )
@@ -137,12 +139,12 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
     return (
       <div className="mt-2 p-4 bg-gray-300 rounded-lg">
         <p className="font-bold text-lg mb-2">
-          Ajout de cartes au deck
+          {t("profile.addCardsToDeck")}
         </p>
         {mainDeckTotal < 40 && (
           <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 rounded-md">
             <p className="font-semibold">
-              ⚠️ Attention : Le deck n'est pas jouable. Le MainDeck doit contenir au minimum 40 cartes.
+              {t("profile.deckNotPlayable")}
             </p>
           </div>
         )}
@@ -158,31 +160,31 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
         <div className="grid grid-cols-12 gap-1 mt-2">
           <div className="col-span-9">
             <DeckSection
-              title="Cartes du MainDeck"
+              title={t("profile.mainDeckCards")}
               badges={[
                 {
-                  label: "Monstre",
+                  label: t("profile.monster"),
                   value: mainDeckCards
                     .filter((card) => card.card?.card_type?.includes("Monster"))
                     .reduce((acc, card) => acc + card.quantity, 0),
                   className: "bg-orange-200 text-orange-700 p-1 rounded-md",
                 },
                 {
-                  label: "Magie",
+                  label: t("profile.spell"),
                   value: mainDeckCards
                     .filter((card) => card.card?.card_type?.includes("Spell"))
                     .reduce((acc, card) => acc + card.quantity, 0),
                   className: "bg-green-200 text-green-700 p-1 rounded-md",
                 },
                 {
-                  label: "Piège",
+                  label: t("profile.trap"),
                   value: mainDeckCards
                     .filter((card) => card.card?.card_type?.includes("Trap"))
                     .reduce((acc, card) => acc + card.quantity, 0),
                   className: "bg-purple-200 text-purple-700 p-1 rounded-md",
                 },
                 {
-                  label: "Total MainDeck",
+                  label: t("profile.totalMainDeck"),
                   value: `${mainDeckTotal}/60`,
                   className: `p-1 rounded-md ${mainDeckTotal >= 60 ? "bg-red-200 text-red-700" : "bg-red-200 text-red-700"}`,
                 },
@@ -192,10 +194,10 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
             </DeckSection>
             <div className="mt-2">
               <DeckSection
-                title="Cartes de l'ExtraDeck"
+                title={t("profile.extraDeckCards")}
                 badges={[
                   {
-                    label: "Total ExtraDeck",
+                    label: t("profile.totalExtraDeck"),
                     value: `${extraDeckTotal}/15`,
                     className: `p-1 rounded-md ${extraDeckTotal >= 15 ? "bg-red-200 text-red-700" : "bg-gray-300 text-gray-700"}`,
                   },

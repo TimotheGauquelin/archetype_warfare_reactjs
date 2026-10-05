@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useActionState } from "../../../hooks/useActionState";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -17,10 +18,11 @@ import { laborIllusion } from "../../../utils/functions/laborIllusion/laborIllus
 const initialState: LoginResult = {};
 
 const LoginPage = () => {
+  const { t } = useTranslation();
 
   const [config, setConfig] = useState<{ registration_enabled?: boolean }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -35,10 +37,10 @@ const LoginPage = () => {
       const password = (formData.get("password") as string) ?? "";
 
       if (!email || !email.includes("@")) {
-        return { error: "Veuillez saisir une adresse email valide" };
+        return { error: t("auth.invalidEmail") };
       }
       if (!password) {
-        return { error: "Veuillez saisir votre mot de passe" };
+        return { error: t("auth.passwordRequired") };
       }
 
       return logIn(
@@ -71,13 +73,13 @@ const LoginPage = () => {
       <div className="bg-white w-full max-w-[400px] cardShadow rounded-xl flex flex-col p-4 sm:p-6">
         <div>
           <h3 className="text-xl sm:text-2xl text-center mb-4 font-semibold">
-            Connectez-vous
+            {t("auth.loginTitle")}
           </h3>
 
           <form className="flex flex-col" onSubmit={handleSubmit}>
             <div className="mb-4">
               <Input
-                label="Email"
+                label={t("auth.email")}
                 required
                 inputType="email"
                 inputName="email"
@@ -91,7 +93,7 @@ const LoginPage = () => {
 
             <div className="mb-4">
               <InputPassword
-                label="Mot de passe"
+                label={t("auth.password")}
                 required
                 colSpanWidth="12"
                 attribute="password"
@@ -106,11 +108,11 @@ const LoginPage = () => {
 
             <OnLoadingButton
               submit
-              buttonText="Se connecter"
+              buttonText={t("auth.submit")}
               className="bg-black text-white w-full mt-2 p-3 rounded font-medium transition-all duration-200"
               disabled={isFormBusy}
               loading={isFormBusy}
-              loadingText="Connexion en cours..."
+              loadingText={t("auth.submitLoading")}
               action={() => { }}
             />
           </form>
@@ -120,7 +122,7 @@ const LoginPage = () => {
 
         <div className="text-center space-y-2">
           <OnLoadingButton
-            buttonText="Mot de passe oublié ?"
+            buttonText={t("auth.forgotPassword")}
             className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200"
             action={() => navigate(URL_FRONT_PASSWORD_LOST)}
           />
@@ -130,7 +132,7 @@ const LoginPage = () => {
                 to={URL_FRONT_REGISTER}
                 className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200"
               >
-                Créer un compte
+                {t("auth.createAccount")}
               </Link>
             </div>
           )}

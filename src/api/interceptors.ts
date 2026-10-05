@@ -24,6 +24,17 @@ const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    const method = (config.method || "get").toLowerCase();
+    const url = config.url || "";
+    const isCardGet = method === "get" && /\/cards(\/|\?|$)/.test(url);
+    const isArchetypeGet = method === "get" && /\/archetypes(\/|\?|$)/.test(url);
+
+    if ((isCardGet || isArchetypeGet) && !/[?&]locale=/.test(url)) {
+      const locale = state.locale?.value || "fr";
+      const separator = url.includes("?") ? "&" : "?";
+      config.url = `${url}${separator}locale=${locale}`;
+    }
   }
 
   return config;

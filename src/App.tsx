@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-route
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import I18nLocaleSync from "./components/I18nLocaleSync";
 import Home from "./pages/Home";
 import MyProfilePage from "./pages/userProfil/myProfile/myProfileMain/MyProfilePage";
 import LoginPage from "./pages/auth/login/LoginPage";
@@ -142,6 +143,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="relative text-base">
+      <I18nLocaleSync />
       {
         config?.stream_banner_enabled && config?.stream_banner_enabled === true && <StreamBar />
       }

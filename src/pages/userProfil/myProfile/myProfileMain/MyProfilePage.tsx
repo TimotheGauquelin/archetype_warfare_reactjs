@@ -1,6 +1,7 @@
 import Button from "../../../../components/generic/buttons/classicButton/Button";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import usePopup from "../../../../hooks/usePopup";
 import PopUp from "../../../../components/generic/PopUp";
 import { deleteUser } from "../../../../services/user";
@@ -10,6 +11,7 @@ import UserProfilLayout from "../../layout";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 
 const MyProfile = () => {
+  const { t } = useTranslation();
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -18,8 +20,8 @@ const MyProfile = () => {
   const handleDeleteUser = () => {
     if (!id) return;
     showConfirmDialog({
-      title: "Supprimer votre compte",
-      message: "Cette action est irréversible. Êtes-vous sûr de vouloir supprimer votre compte ?",
+      title: t("profile.deleteAccountTitle"),
+      message: t("profile.deleteAccountConfirm"),
       onConfirm: () => { deleteUser(id, dispatch, navigate) }
     });
   };
@@ -28,17 +30,17 @@ const MyProfile = () => {
     <UserProfilLayout>
       <div className="bg-white rounded-lg shadow-sm p-4 mb-2">
         <UserProfileLayoutTitle
-          title="Informations du compte"
+          title={t("profile.accountInfo")}
         />
 
         <div className="space-y-2 mb-2">
           <div className="grid grid-cols-12 space-y-2">
             <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-              <p className="font-semibold text-black mb-1">Nom d'utilisateur :</p>
+              <p className="font-semibold text-black mb-1">{t("profile.username")}</p>
               <p className="text-black">{username}</p>
             </div>
             <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-              <p className="font-semibold text-black">Rôle(s):</p>
+              <p className="font-semibold text-black">{t("profile.roles")}</p>
               <div className="flex flex-wrap gap-1">
                 {roles?.map((role: any, index: number) => {
                   return (
@@ -57,14 +59,14 @@ const MyProfile = () => {
         </div>
         <div className="bg-red-200 rounded-lg p-4 space-y-2">
           <h3 className="text-lg font-bold text-red-500 flex items-center gap-1">
-            Zone de danger
+            {t("profile.dangerZone")}
           </h3>
           <p className="text-base">
-            La suppression de votre compte entraînera la perte définitive de toutes vos données
+            {t("profile.dangerZoneDesc")}
           </p>
           <Button
             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
-            buttonText="Supprimer mon compte"
+            buttonText={t("profile.deleteAccount")}
             action={handleDeleteUser}
           />
         </div>

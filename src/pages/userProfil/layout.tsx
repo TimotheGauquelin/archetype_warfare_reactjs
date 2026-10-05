@@ -1,5 +1,6 @@
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useMemo } from "react";
 import { FaEllipsisH } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import NavSideItem from "../../components/pages/userProfil/NavSideItem";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,6 +22,7 @@ interface UserProfilLayoutProps {
 }
 
 const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
+  const { t } = useTranslation();
   const [displayedNavBar, setDisplayedNavBar] = useState<boolean>(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState<boolean>(false);
   const [userProfilLayoutHeight, setUserProfilLayoutHeight] = useState<number>(0);
@@ -71,20 +73,14 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
     setShowLogoutConfirm(false);
   };
 
-  const navSideItems = [
-    {
-      url: URL_FRONT_MY_PROFILE,
-      label: "Mon Profil",
-    },
-    {
-      url: URL_FRONT_MY_DECKS,
-      label: "Mes Decks",
-    },
-    {
-      url: URL_FRONT_MY_TOURNAMENTS,
-      label: "Mes Tournois",
-    },
-  ];
+  const navSideItems = useMemo(
+    () => [
+      { url: URL_FRONT_MY_PROFILE, label: t("profile.myProfile") },
+      { url: URL_FRONT_MY_DECKS, label: t("profile.myDecks") },
+      { url: URL_FRONT_MY_TOURNAMENTS, label: t("profile.myTournaments") },
+    ],
+    [t]
+  );
 
   return (
     <>
@@ -127,9 +123,9 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
                       );
                     })}
                   </ul>
-                  { (authUser?.roles ?? []).includes(ROLE_ADMIN) && (
+                  {(authUser?.roles ?? []).includes(ROLE_ADMIN) && (
                     <ul>
-                      <NavSideItem url={URL_FRONT_ADMIN_HOME} label="Panneau Admin" />
+                      <NavSideItem url={URL_FRONT_ADMIN_HOME} label={t("profile.adminPanel")} />
                     </ul>
                   )}
                 </div>
@@ -137,7 +133,7 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
                   className="block w-full p-2 hover:bg-blue-200 cursor-pointer border-l-4 border-transparent"
                   onClick={confirmLogout}
                 >
-                  Déconnexion
+                  {t("common.logout")}
                 </span>
               </div>
 
@@ -152,12 +148,12 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
       <PopUp
         isOpen={showLogoutConfirm}
         onClose={handleCancelLogout}
-        title="Déconnexion"
+        title={t("profile.logoutConfirmTitle")}
         showCloseButton={true}
       >
         <div className="space-y-4">
           <p className="text-center text-gray-700">
-            Êtes-vous sûr de vouloir vous déconnecter ?
+            {t("profile.logoutConfirmMessage")}
           </p>
 
           <div className="flex justify-end space-x-3 mt-6">
@@ -165,13 +161,13 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
               onClick={handleCancelLogout}
               className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors duration-200 font-medium"
             >
-              Annuler
+              {t("common.cancel")}
             </button>
             <button
               onClick={handleConfirmLogout}
               className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200 font-medium"
             >
-              Se déconnecter
+              {t("common.confirmLogout")}
             </button>
           </div>
         </div>

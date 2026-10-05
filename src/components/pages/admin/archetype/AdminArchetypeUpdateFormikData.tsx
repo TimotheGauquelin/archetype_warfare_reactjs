@@ -161,6 +161,59 @@ const AdminArchetypeUpdateFormikData: React.FC<AdminArchetypeUpdateFormikDataPro
           condition="put"
         />
       </div>
+
+      <div className="mt-4 border-t border-gray-400 pt-3">
+        <h3 className="font-bold text-lg mb-2">Traduction EN</h3>
+        <div className="flex flex-col">
+          <Input
+            label="Nom (EN)"
+            inputType="text"
+            inputName="nameEn"
+            colSpanWidth="12"
+            attribute="name_en"
+            data={archetype}
+            setAction={setArchetype}
+            condition="put"
+          />
+        </div>
+        <div className="flex flex-col">
+          <Input
+            label="Information principale (EN)"
+            inputType="text"
+            inputName="mainInfoEn"
+            colSpanWidth="12"
+            attribute="main_info_en"
+            data={archetype}
+            setAction={setArchetype}
+            condition="put"
+          />
+        </div>
+        <div className="flex flex-col">
+          <Input
+            label="Information slider (EN)"
+            inputType="text"
+            inputName="sliderInfoEn"
+            colSpanWidth="12"
+            attribute="slider_info_en"
+            data={archetype}
+            setAction={setArchetype}
+            condition="put"
+          />
+        </div>
+        <div className="flex flex-col">
+          <Input
+            label="Commentaire (EN)"
+            inputType="text"
+            inputName="commentEn"
+            colSpanWidth="12"
+            attribute="comment_en"
+            data={archetype}
+            setAction={setArchetype}
+            condition="put"
+          />
+        </div>
+      </div>
+
       {/* */}
 
       <CheckboxInput

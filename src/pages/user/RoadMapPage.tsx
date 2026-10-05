@@ -1,73 +1,58 @@
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import PageContentBlock from '../../components/generic/PageContentBlock'
 import RevealOnScroll from '../../components/generic/RevealOnScroll'
 import UserHeroLayout from './layout'
 
 const RoadMapPage = () => {
-    const quarters = [
+    const { t } = useTranslation()
+
+    const quarters = useMemo(() => [
         {
-            period: "T0 2025",
-            dates: "Juillet - Decembre 2025",
+            period: t("roadmap.q0.period"),
+            dates: t("roadmap.q0.dates"),
             color: "from-gray-200 via-gray-100 to-purple-200 bg-gradient-to-b",
             titleColor: "text-gray-700",
-            items: [
-                "Développement des fonctionnalités principales (Fonctionnalités Dashboard Admin, Dashboard User, Système de Deck Builder, Système de Banlist)",
-                "Tests et optimisations (Tests unitaires, Tests d'intégration, Tests de performance)",
-                "Préparation du lancement (Lancement de la version 0, Collecte des retours utilisateurs, Améliorations basées sur les retours)",
-                "Creation d'une communauté avec le lancement de la chaine Twitch, d'un canal Discord"
-            ]
+            items: t("roadmap.q0.items", { returnObjects: true }) as string[],
         },
         {
-            period: "T1 2026",
-            dates: "Janvier - Mars 2026",
+            period: t("roadmap.q1.period"),
+            dates: t("roadmap.q1.dates"),
             color: "bg-blue-100",
             titleColor: "text-blue-700",
-            items: [
-                "Développement des fonctionnalités Tournoi (Création de tournoi par l'admin, Inscription à un tournoi, Résultats de tournoi)",
-                "Développement des fonctionnalités Classement (Classement des joueurs, Classement des meilleurs archétypes, Maître des Archétypes)",
-            ]
+            items: t("roadmap.q1.items", { returnObjects: true }) as string[],
         },
         {
-            period: "T2 2026",
-            dates: "Avril - Juin 2026",
+            period: t("roadmap.q2.period"),
+            dates: t("roadmap.q2.dates"),
             color: "bg-green-100",
             titleColor: "text-green-700",
-            items: [
-                "Premiers tournois en ligne",
-                "Développement des fonctionnalités Quizz (Quizz de connaissances sur l'univers Yu-Gi-Oh! - Manga/Anime, JdC, produits dérivés, etc.)",
-                "Développement d'un système d'Utilisateur Premium (Creation de plus de decks, Personnalisation du profil, Accès à des tournois privés)"
-            ]
+            items: t("roadmap.q2.items", { returnObjects: true }) as string[],
         },
         {
-            period: "T3 2026",
-            dates: "Juillet - Septembre 2026",
+            period: t("roadmap.q3.period"),
+            dates: t("roadmap.q3.dates"),
             color: "bg-yellow-100",
             titleColor: "text-yellow-700",
-            items: [
-                "Refonte UX/UI du site web",
-                "Lancement de la V1",
-            ]
+            items: t("roadmap.q3.items", { returnObjects: true }) as string[],
         },
         {
-            period: "T4 2026 et plus loin",
-            dates: "Octobre 2026 - Proche dans le futur",
+            period: t("roadmap.q4.period"),
+            dates: t("roadmap.q4.dates"),
             color: "bg-purple-100",
             titleColor: "text-purple-700",
-            items: [
-                "Internationalisation du site web (Anglais, Japonais)",
-                "Tournois avec Cash Prize",
-                "Tournoi physique à 64 joueurs sur Lille (France)"
-            ]
-        }
-    ]
+            items: t("roadmap.q4.items", { returnObjects: true }) as string[],
+        },
+    ], [t])
 
     return (
         <UserHeroLayout
-            mainTitle="RoadMap"
-            subTitle="Evolution du projet Archetype Battle"
+            mainTitle={t("hero.roadmap.title")}
+            subTitle={t("hero.roadmap.subtitle")}
         >
             <PageContentBlock>
                 <div className="flex flex-col w-full justify-center max-w-containerSize m-auto">
-                    <h1 className="text-2xl font-bold mb-8 text-center">RoadMap 2025-2026</h1>
+                    <h1 className="text-2xl font-bold mb-8 text-center">{t("roadmap.pageTitle")}</h1>
 
                     <div className="space-y-6">
                         {quarters.map((quarter, index) => (

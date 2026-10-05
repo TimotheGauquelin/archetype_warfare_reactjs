@@ -1,0 +1,310 @@
+{
+  "nav": {
+    "concept": "About",
+    "archetypes": "Archetypes",
+    "banlist": "Banlist",
+    "tournaments": "Tournaments",
+    "roadmap": "Roadmap",
+    "login": "Log in"
+  },
+  "language": {
+    "switchLabel": "Language"
+  },
+  "auth": {
+    "loginTitle": "Log in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "submitLoading": "Signing in...",
+    "forgotPassword": "Forgot password?",
+    "createAccount": "Create an account",
+    "invalidEmail": "Please enter a valid email address",
+    "passwordRequired": "Please enter your password"
+  },
+  "common": {
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "logout": "Log out",
+    "confirmLogout": "Log out",
+    "loading": "Loading...",
+    "searchCard": "Which card are you looking for?",
+    "searchCardAria": "Search for a card",
+    "previousPage": "Previous page",
+    "nextPage": "Next page"
+  },
+  "banlist": {
+    "showArchetypeCards": "Show archetype cards",
+    "forbidden": "Forbidden Cards",
+    "limited": "Limited Cards",
+    "semiLimited": "Semi-Limited Cards",
+    "noCards": "No {{title}} found."
+  },
+  "archetypesPage": {
+    "searchPlaceholder": "Which archetype are you looking for?",
+    "eraPlaceholder": "Which era is your archetype from?"
+  },
+  "profile": {
+    "myProfile": "My Profile",
+    "myDecks": "My Decks",
+    "myTournaments": "My Tournaments",
+    "adminPanel": "Admin Panel",
+    "logoutConfirmTitle": "Log out",
+    "logoutConfirmMessage": "Are you sure you want to log out?",
+    "accountInfo": "Account information",
+    "username": "Username:",
+    "roles": "Role(s):",
+    "dangerZone": "Danger zone",
+    "dangerZoneDesc": "Deleting your account will permanently erase all your data",
+    "deleteAccount": "Delete my account",
+    "deleteAccountTitle": "Delete your account",
+    "deleteAccountConfirm": "This action is irreversible. Are you sure you want to delete your account?",
+    "allMyDecks": "All my decks",
+    "createDeck": "Create a deck",
+    "addDeck": "Add a deck",
+    "noDecks": "You don't have any decks yet",
+    "playable": "Playable",
+    "notPlayable": "Not playable",
+    "allMyTournaments": "All my tournaments",
+    "pastTournaments": "My past tournaments:",
+    "createDeckTitle": "Create a deck",
+    "createDeckButton": "Create deck",
+    "viewDeck": "View my deck",
+    "editDeck": "Edit my deck",
+    "deleteDeck": "Delete my deck",
+    "deleteDeckTitle": "Delete deck",
+    "delete": "Delete",
+    "testHand": "Test a hand",
+    "exportCm": "Export for CM",
+    "noCardsInDeck": "No cards in the deck.",
+    "editProfile": "Edit my profile",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter your email",
+    "deckName": "Deck name",
+    "selectedArchetype": "Selected archetype",
+    "deckDescription": "Deck description",
+    "deckInfo": "Deck information",
+    "selectArchetype": "Select an archetype",
+    "archetypeInactiveWarning": "⚠️ Warning: The selected deck archetype is no longer active. This deck is therefore no longer playable in tournaments.",
+    "selectArchetypeToAddCards": "Please select an archetype to add cards to the deck",
+    "addCardsToDeck": "Add cards to the deck",
+    "deckNotPlayable": "⚠️ Warning: The deck is not playable. The Main Deck must contain at least 40 cards.",
+    "creatingDeck": "Creating...",
+    "deletingDeck": "Deleting...",
+    "updatingDeck": "Updating...",
+    "deleteDeckConfirm": "Are you sure you want to delete this deck? This action is irreversible.",
+    "cardLimitReached": "Limit of {{limit}} copy(ies) reached for this card.",
+    "cardLimitReachedShort": "Limit of {{limit}} copy(ies) reached",
+    "extraDeckFull": "The Extra Deck can contain a maximum of 15 cards.",
+    "mainDeckFull": "The Main Deck can contain a maximum of 60 cards.",
+    "cardForbidden": "This card is forbidden",
+    "copiesInDeck": "{{count}}/{{limit}} copy(ies) in the deck",
+    "clickToAdd": "Click to add to the deck",
+    "clickToRemove": "Click to remove one copy",
+    "noCardsFound": "No cards found",
+    "mainDeckCards": "Main Deck cards",
+    "extraDeckCards": "Extra Deck cards",
+    "monster": "Monster",
+    "spell": "Spell",
+    "trap": "Trap",
+    "totalMainDeck": "Main Deck total",
+    "totalExtraDeck": "Extra Deck total",
+    "loadingTournaments": "Loading your tournaments…",
+    "noTournaments": "You are not registered for any tournament yet",
+    "tournamentInProgress": "Tournament in progress:",
+    "upcomingTournament": "Upcoming tournament:",
+    "loadTournamentsError": "Unable to load your tournaments.",
+    "tournamentDetails": "Details: {{name}}",
+    "loadingTournamentInfo": "Loading tournament information…",
+    "noTournamentFound": "No tournament found.",
+    "status": "Status:",
+    "ranking": "Ranking: ",
+    "finishedRank": "You finished {{rank}}{{suffix}}",
+    "rankFirst": "st",
+    "rankOther": "th",
+    "startDate": "Start date:",
+    "roundsCount": "Number of rounds:",
+    "myDeckSection": "My deck",
+    "registeredToTournament": "You are registered for this tournament ",
+    "deckChosen": " and have chosen your deck",
+    "deckNotSelected": "but you have not selected a deck yet. ",
+    "contactOrganizer": "If you have not selected a deck and registration is closed, contact the tournament organizer.",
+    "loadingPlayableDecks": "Loading playable decks…",
+    "selectYourDeck": "Select your deck",
+    "noPlayableDeck": "No playable deck. Create a deck with at least 40 cards and select it!",
+    "changeDeck": "Change deck",
+    "validateDeck": "Confirm my deck",
+    "loadingDeck": "Loading deck…",
+    "noDeckDetails": "No deck details available for this tournament.",
+    "noDeckSelectedForTournament": "No deck selected for this tournament.",
+    "dropping": "Dropping…",
+    "dropTournament": "Drop tournament",
+    "tournamentNotStarted": "This tournament has not started yet, please wait.",
+    "myMatchmakings": "My matchmakings",
+    "noRoundsGenerated": "No rounds have been generated for this tournament yet.",
+    "droppedAtRound": "You dropped from the tournament at round {{round}}",
+    "droppedTournament": "You dropped from the tournament",
+    "loadTournamentError": "Unable to load tournament details.",
+    "myPenalties": "My penalties",
+    "penalty": "Penalty",
+    "reason": "Reason:",
+    "appliedAt": "Applied on",
+    "noPenalties": "You have no penalties yet."
+  },
+  "filters": {
+    "title": "Filters: ",
+    "reset": "Reset filters",
+    "noType": "-- No Type --",
+    "noAttribute": "-- No Attribute --"
+  },
+  "matchmaking": {
+    "round": "Round {{number}}",
+    "unknown": "Unknown",
+    "saveScore": "Save score",
+    "byeWin": "BYE win",
+    "draw": "Draw",
+    "wonBy": "Match won by",
+    "score": "Score:"
+  },
+  "archetypePage": {
+    "mainType": "Main Type",
+    "mainTypes": "Main Types",
+    "mainAttribute": "Main Attribute",
+    "mainAttributes": "Main Attributes:",
+    "summonMethod": "Summon method",
+    "summonMethods": "Summon methods",
+    "missingId": "Missing archetype ID",
+    "loadError": "Error loading the archetype. Please try again later.",
+    "notFoundTitle": "Error: Archetype not found",
+    "notFoundRedirect": "You will be redirected to the home page in 3 seconds...",
+    "infoPrefix": "Information: {{comment}}",
+    "staffSignature": "The AW Staff",
+    "allCards": "All cards ({{count}})",
+    "noCards": "There are no cards in this archetype."
+  },
+  "concept": {
+    "legendaryTitle": "A legendary game turned global phenomenon",
+    "legendaryP1Before": "For more than",
+    "legendaryYears": "25 years",
+    "legendaryP1After": ", Yu-Gi-Oh! has thrilled duelists around the world. Born from a cult manga, the Yu-Gi-Oh! card game has become a",
+    "legendaryMonument": "strategic monument",
+    "legendaryP2": "where every duel tells a story. Iconic summoning mechanics have shaped its identity —",
+    "legendaryP3": "— constantly enriching the gameplay.",
+    "summonPendulum": "Pendulum",
+    "summonLink": "Link",
+    "archetypeLabel": "Archetype",
+    "samples": {
+      "darkMagician": "Dark Magician",
+      "stardust": "Stardust",
+      "inzektor": "Inzektor"
+    },
+    "unbalancedTitle": "A meta that became unbalanced",
+    "unbalancedText": "Over time, the game grew more complex and the competitive scene turned uneven. Overpowered cards shorten duels, combos smother interaction, and \"meta\" decks cost a fortune.",
+    "unbalancedResult": "Result: Yu-Gi-Oh! is an unfair and expensive game, where fairness and fun both suffer",
+    "visionTitle": "Archetype Battle: an alternative format, a new vision",
+    "visionText": "Archetype Battle puts strategy back at the center. No need to spend a fortune: what matters is talent, creativity, and mastery of your archetype. The format slows the pace, favors tactical choices, and restores intensity to every duel.",
+    "rules": {
+      "1": {
+        "title": "Rule #1: Play with a single archetype",
+        "desc": "Assert your playstyle identity and refine your combat style. Archetype Battle requires one archetype per deck. You cannot mix cards from multiple monster series in the same deck. Some archetype cards may be forbidden."
+      },
+      "2": {
+        "title": "Rule #2: Play with a dedicated banlist",
+        "desc": "Built to cut short abuses and astronomical card prices, the Archetype Battle banlist bans cards that are too powerful or too expensive"
+      },
+      "3": {
+        "title": "Rule #3: Play with a summon limit",
+        "desc": "A redesigned tempo for smoother interactions and a calmer game read. The first turn is limited to 5 summons, then each following turn increases by 1 summon"
+      }
+    },
+    "visionResult": "Timing, resources, reading: brain and fun before the wallet",
+    "ctaTitle": "Ready to join the arena?",
+    "ctaText": "Explore archetypes, choose your side, and impose your style. Here, victory is earned through mastery and thinking.",
+    "ctaButton": "Explore archetypes"
+  },
+  "footer": {
+    "legal": "The textual and graphical information presented on this website regarding Yu-Gi-Oh!, as well as card images, attribute, level/rank and type icons, and card text, are the property of 4K Media Inc., a subsidiary of Konami Digital Entertainment, Inc. This website is not produced, endorsed, supported, or affiliated with 4K Media or Konami Digital Entertainment.",
+    "copyright": "Remaining content - © 2025 -{{year}} Archetype Battle",
+    "tagline": "Made with passion for duelists"
+  },
+  "hero": {
+    "concept": {
+      "title": "Join the archetype battlefield",
+      "subtitle": "A reinvented Yu-Gi-Oh! experience: more balance, more strategy, more fun."
+    },
+    "archetypes": {
+      "title": "Find your archetype",
+      "subtitle": "Among more than a hundred card families"
+    },
+    "banlist": {
+      "title": "Watch out for forbidden cards!",
+      "subtitle": "Archetype Warfare offers a brand-new generic card banlist, on top of archetype-specific ones"
+    },
+    "tournaments": {
+      "title": "Tournaments",
+      "subtitle": "Browse current and upcoming tournaments"
+    },
+    "roadmap": {
+      "title": "Roadmap",
+      "subtitle": "Evolution of the Archetype Battle project"
+    }
+  },
+  "home": {
+    "welcomeTitle": "Welcome to",
+    "welcomeSubtitle": "Archetype Battle",
+    "loading": "Loading data, please wait...",
+    "welcomeMessage": "Duel with your favorite cards!",
+    "popularArchetypes": "Popular Archetypes",
+    "newArchetypes": "New Archetypes"
+  },
+  "roadmap": {
+    "pageTitle": "Roadmap 2025-2026",
+    "q0": {
+      "period": "Q0 2025",
+      "dates": "July - December 2025",
+      "items": [
+        "Core feature development (Admin Dashboard, User Dashboard, Deck Builder, Banlist system)",
+        "Testing and optimizations (Unit tests, Integration tests, Performance tests)",
+        "Launch preparation (Version 0 release, User feedback collection, Feedback-driven improvements)",
+        "Community building with the launch of a Twitch channel and a Discord server"
+      ]
+    },
+    "q1": {
+      "period": "Q1 2026",
+      "dates": "January - March 2026",
+      "items": [
+        "Tournament features (Admin tournament creation, Tournament registration, Tournament results)",
+        "Ranking features (Player rankings, Best archetype rankings, Master of Archetypes)"
+      ]
+    },
+    "q2": {
+      "period": "Q2 2026",
+      "dates": "April - June 2026",
+      "items": [
+        "First online tournaments",
+        "Quiz features (Yu-Gi-Oh! universe quizzes - Manga/Anime, TCG, merchandise, etc.)",
+        "Premium user system (Create more decks, Profile customization, Access to private tournaments)"
+      ]
+    },
+    "q3": {
+      "period": "Q3 2026",
+      "dates": "July - September 2026",
+      "items": [
+        "Website UX/UI redesign",
+        "V1 launch"
+      ]
+    },
+    "q4": {
+      "period": "Q4 2026 and beyond",
+      "dates": "October 2026 - Near future",
+      "items": [
+        "Website internationalization (English, Japanese)",
+        "Cash prize tournaments",
+        "In-person 64-player tournament in Lille (France)"
+      ]
+    }
+  }
+}
