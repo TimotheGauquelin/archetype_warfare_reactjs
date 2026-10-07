@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { TestingLibraryMatchers } from "testing-library__jest-dom/matchers";
 import { render, screen, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -13,10 +14,16 @@ import {
   URL_FRONT_ARCHETYPES,
   URL_FRONT_BANLIST,
   URL_FRONT_ROAD_MAP,
+  URL_FRONT_TOURNAMENTS,
   URL_FRONT_LOGIN,
   URL_FRONT_MY_PROFILE,
 } from "../../../constant/urlsFront";
 import userEvent from "@testing-library/user-event";
+
+declare module "vitest" {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  interface Assertion<T = any> extends TestingLibraryMatchers<any, T> {}
+}
 
 function createTestStore(preloadedState?: { user?: User }) {
   return configureStore({
@@ -67,16 +74,19 @@ describe("Header", () => {
   describe("rendering", () => {
     it("renders the logo link to home", () => {
       renderHeader();
-      const homeLinks = screen.getAllByRole("link");
-      const homeLink = homeLinks.find((el) => el.getAttribute("href") === URL_FRONT_HOME);
-      expect(homeLink).toBeInTheDocument();
+      const homeLink = screen
+        .getAllByRole("link")
+        .find((el) => el.getAttribute("href") === URL_FRONT_HOME);
+      expect(homeLink).toBeDefined();
+      expect(homeLink!).toBeInTheDocument();
     });
 
-    it("renders navigation links: Concept, Archetypes, Banlist, RoadMap", () => {
+    it("renders navigation links: Concept, Archetypes, Banlist, Tournaments, RoadMap", () => {
       renderHeader();
       expect(screen.getByRole("link", { name: /Concept/i })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: /Archetypes/i })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: /Banlist/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /Tournois/i })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: /RoadMap/i })).toBeInTheDocument();
     });
 
@@ -85,7 +95,15 @@ describe("Header", () => {
       expect(screen.getByRole("link", { name: /Concept/i })).toHaveAttribute("href", URL_FRONT_ABOUT);
       expect(screen.getByRole("link", { name: /Archetypes/i })).toHaveAttribute("href", URL_FRONT_ARCHETYPES);
       expect(screen.getByRole("link", { name: /Banlist/i })).toHaveAttribute("href", URL_FRONT_BANLIST);
+      expect(screen.getByRole("link", { name: /Tournois/i })).toHaveAttribute("href", URL_FRONT_TOURNAMENTS);
       expect(screen.getByRole("link", { name: /RoadMap/i })).toHaveAttribute("href", URL_FRONT_ROAD_MAP);
+    });
+
+    it("renders the language select", () => {
+      renderHeader();
+      const languageSelects = screen.getAllByLabelText(/Langue/i);
+      expect(languageSelects.length).toBeGreaterThanOrEqual(1);
+      expect(languageSelects[0]).toBeInTheDocument();
     });
   });
 
@@ -121,12 +139,15 @@ describe("Header", () => {
 
   describe("mobile menu", () => {
     it("toggles mobile nav when hamburger is clicked", async () => {
-      renderHeader();
+      const { container } = renderHeader();
 
-      const toggle = document.querySelector(".flex.lscreen\\:hidden");
-      expect(toggle).toBeInTheDocument();
+      const mobileBar = container.querySelector(".flex.items-center.gap-3.lscreen\\:hidden");
+      expect(mobileBar).toBeTruthy();
+      const hamburger = mobileBar?.querySelector("div:last-child");
+      expect(hamburger).toBeTruthy();
+
       await act(async () => {
-        await userEvent.click(toggle as HTMLElement);
+        await userEvent.click(hamburger as HTMLElement);
       });
 
       const conceptLinks = screen.getAllByRole("link", { name: /Concept/i });

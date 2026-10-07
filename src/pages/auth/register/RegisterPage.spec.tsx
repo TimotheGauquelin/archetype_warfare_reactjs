@@ -2,9 +2,13 @@ import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } 
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import RegisterPage from "./RegisterPage";
+import userReducer from "../../../redux/slice/userSlice";
+import localeReducer from "../../../redux/slice/localeSlice";
 import { URL_BACK_REGISTER } from "../../../constant/urlsBack";
 import { URL_FRONT_LOGIN, URL_FRONT_TERMS_AND_CONDITIONS } from "../../../constant/urlsFront";
 
@@ -21,10 +25,15 @@ vi.mock("react-router-dom", async () => {
 const API_BASE_URL = "http://localhost:8889/api";
 
 function renderRegisterPage() {
+  const store = configureStore({
+    reducer: { user: userReducer, locale: localeReducer },
+  });
   return render(
-    <MemoryRouter>
-      <RegisterPage />
-    </MemoryRouter>
+    <Provider store={store}>
+      <MemoryRouter>
+        <RegisterPage />
+      </MemoryRouter>
+    </Provider>
   );
 }
 

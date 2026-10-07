@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { useActionState } from "../../../hooks/useActionState";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -10,24 +12,29 @@ import { URL_FRONT_LOGIN } from "../../../constant/urlsFront";
 import { requestNewPasswordWithResult, type PasswordRequestResult } from "../../../services/auth";
 import OnLoadingButton from "../../../components/generic/buttons/onLoadingButton/OnLoadingButton";
 import { laborIllusion } from "../../../utils/functions/laborIllusion/laborIllusion";
+import type { RootState } from "../../../types";
 
 const initialState: PasswordRequestResult = {};
 
 const PasswordLostPage = () => {
+  const { t } = useTranslation();
   const [log, setLog] = useState<{ email: string }>({ email: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
 
   const navigate = useNavigate();
 
   const [state, formAction, isPending] = useActionState(
     async (_prevState: PasswordRequestResult, formData: FormData): Promise<PasswordRequestResult> => {
       const email = (formData.get("email") as string)?.trim() ?? "";
+      const formLocale = (formData.get("locale") as string)?.trim();
+      const mailLocale = formLocale === "en" || formLocale === "fr" ? formLocale : "fr";
 
       if (!email || !email.includes("@")) {
-        return { error: "Veuillez saisir une adresse email valide" };
+        return { error: t("auth.invalidEmail") };
       }
 
-      return requestNewPasswordWithResult({ email });
+      return requestNewPasswordWithResult({ email, locale: mailLocale });
     },
     initialState
   );
@@ -53,36 +60,35 @@ const PasswordLostPage = () => {
           <>
             <div className="text-center mb-4">
               <h3 className="text-xl sm:text-2xl font-semibold">
-                Email envoyé !
+                {t("auth.passwordLostSuccessTitle")}
               </h3>
             </div>
             <div className="bg-green-100 rounded p-4 mb-4">
               <p className="text-sm sm:text-base text-green-700">
-                Un e-mail vient de vous être envoyé. Il contient un lien valable 24 heures
-                pour réinitialiser votre mot de passe.
+                {t("auth.passwordLostSuccessBody")}
               </p>
             </div>
             <Button
               className="bg-black text-white w-full mt-2 p-3 rounded font-medium transition-all duration-200"
-              buttonText="Revenir à la page de connexion"
+              buttonText={t("auth.backToLogin")}
               action={() => navigate(URL_FRONT_LOGIN)}
             />
           </>
         ) : (
           <>
             <h3 className="text-xl sm:text-2xl text-center mb-4 font-semibold">
-              Mot de passe oublié ?
+              {t("auth.passwordLostTitle")}
             </h3>
             <div>
               <p className="text-base text-gray-600 mb-4">
-                Indiquez l'adresse e-mail associée à votre compte. Vous allez recevoir
-                un lien pour réinitialiser votre mot de passe.
+                {t("auth.passwordLostIntro")}
               </p>
 
               <form onSubmit={handleSubmit}>
+                <input type="hidden" name="locale" value={locale} />
                 <div className="mb-4">
                   <Input
-                    label="Email"
+                    label={t("auth.email")}
                     required
                     inputType="email"
                     inputName="email"
@@ -100,11 +106,11 @@ const PasswordLostPage = () => {
 
                 <OnLoadingButton
                   submit
-                  buttonText="Envoyer le lien"
+                  buttonText={t("auth.passwordLostSubmit")}
                   className="bg-black text-white w-full mt-2 p-3 rounded font-medium transition-all duration-200"
                   disabled={isFormBusy}
                   loading={isFormBusy}
-                  loadingText="Envoi en cours..."
+                  loadingText={t("auth.passwordLostLoading")}
                   action={() => {}}
                 />
               </form>

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { URL_FRONT_LOGIN, URL_FRONT_TERMS_AND_CONDITIONS } from "../../../constant/urlsFront";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,6 +12,7 @@ import { registerUser } from "../../../services/auth";
 import ErrorText from "../../../components/generic/ErrorText";
 import ErrorMultipleText from "../../../components/generic/ErrorMultipleText";
 import OnLoadingButton from "../../../components/generic/buttons/onLoadingButton/OnLoadingButton";
+import type { RootState } from "../../../types";
 
 interface RegisterFormData extends Record<string, unknown> {
   username: string;
@@ -26,6 +29,8 @@ interface ErrorState {
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
   const [registerData, setRegisterData] = useState<RegisterFormData>({
     username: "",
     email: "",
@@ -44,11 +49,11 @@ const RegisterPage = () => {
     setError({ message: null, multipleErrors: null });
 
     if (registerData.password !== registerData.passwordConfirmation) {
-      setError({ message: "Les mots de passe ne correspondent pas", multipleErrors: null });
+      setError({ message: t("auth.passwordsMismatch"), multipleErrors: null });
       return;
     }
     if (!registerData.has_accepted_terms_and_conditions) {
-      setError({ message: "Veuillez accepter les termes et conditions.", multipleErrors: null });
+      setError({ message: t("auth.acceptTermsRequired"), multipleErrors: null });
       return;
     }
 
@@ -58,14 +63,15 @@ const RegisterPage = () => {
       email: registerData.email,
       password: registerData.password,
       hasAcceptedTermsAndConditions: registerData.has_accepted_terms_and_conditions,
+      locale,
     })
       .then((result) => {
         if (result.success) {
-          toast.success("Inscription réussie ! Vous recevrez un email lorsque votre compte sera activé.");
+          toast.success(t("auth.registerSuccess"));
           navigate(URL_FRONT_LOGIN);
         } else {
           setError({
-            message: result.message ?? "Une erreur s'est produite.",
+            message: result.message ?? t("auth.genericError"),
             multipleErrors: result.multipleErrors ?? null,
           });
           setIsLoading(false);
@@ -73,7 +79,7 @@ const RegisterPage = () => {
       })
       .catch(() => {
         setError({
-          message: "Une erreur s'est produite lors de l'inscription. Veuillez réessayer.",
+          message: t("auth.registerError"),
           multipleErrors: null,
         });
         setIsLoading(false);
@@ -86,12 +92,12 @@ const RegisterPage = () => {
         className={`bg-white w-full max-w-[400px] cardShadow rounded-xl flex flex-col p-4 sm:p-6 overflow-y-auto max-h-[95vh]`}
       >
         <div>
-          <h3 className="text-xl sm:text-2xl text-center mb-4">Créer mon compte</h3>
+          <h3 className="text-xl sm:text-2xl text-center mb-4">{t("auth.createAccountTitle")}</h3>
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <Input
-                label="Nom d'utilisateur"
+                label={t("auth.username")}
                 required
                 inputType="text"
                 inputName="username"
@@ -105,7 +111,7 @@ const RegisterPage = () => {
 
             <div className="mb-4">
               <Input
-                label="Email"
+                label={t("auth.email")}
                 required
                 inputType="email"
                 inputName="email"
@@ -119,7 +125,7 @@ const RegisterPage = () => {
 
             <div className="mb-4">
               <InputPassword
-                label="Mot de passe"
+                label={t("auth.password")}
                 required
                 colSpanWidth={12}
                 attribute="password"
@@ -132,7 +138,7 @@ const RegisterPage = () => {
 
             <div className="mb-4">
               <InputPassword
-                label="Confirmation du mot de passe"
+                label={t("auth.passwordConfirm")}
                 required
                 colSpanWidth={12}
                 attribute="passwordConfirmation"
@@ -160,16 +166,16 @@ const RegisterPage = () => {
                 disabled={isLoading}
               />
               <label htmlFor="acceptTerms" className="text-sm">
-                J'accepte les{" "}
+                {t("auth.acceptTermsPrefix")}{" "}
                 <button
                   type="button"
                   onClick={() => navigate(URL_FRONT_TERMS_AND_CONDITIONS)}
                   className="text-blue-600 hover:underline"
                   disabled={isLoading}
                 >
-                  termes et conditions
+                  {t("auth.acceptTermsLink")}
                 </button>{" "}
-                du site
+                {t("auth.acceptTermsSuffix")}
               </label>
             </div>
 
@@ -182,20 +188,20 @@ const RegisterPage = () => {
 
             <OnLoadingButton
               submit
-              buttonText="Créer mon compte"
+              buttonText={t("auth.createAccountSubmit")}
               className="bg-black text-white w-full p-2 my-2 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed"
               disabled={isLoading}
               loading={isLoading}
-              loadingText="Inscription en cours.."
+              loadingText={t("auth.createAccountLoading")}
               action={() => {}}
             />
           </form>
         </div>
 
         <div className="text-center">
-          <span className="text-sm text-gray-600">Déjà un compte ? </span>
+          <span className="text-sm text-gray-600">{t("auth.alreadyHaveAccount")} </span>
           <Button
-            buttonText="Se connecter"
+            buttonText={t("auth.goToLogin")}
             className="text-sm text-blue-900 cursor-pointer hover:underline"
             action={() => navigate(URL_FRONT_LOGIN)}
             disabled={isLoading}

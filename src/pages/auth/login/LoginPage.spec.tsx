@@ -8,6 +8,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import userReducer from "../../../redux/slice/userSlice";
+import localeReducer from "../../../redux/slice/localeSlice";
 import LoginPage from "./LoginPage";
 import { URL_BACK_LOGIN, URL_BACK_GET_CONFIG } from "../../../constant/urlsBack";
 import { URL_FRONT_PASSWORD_LOST, URL_FRONT_REGISTER } from "../../../constant/urlsFront";
@@ -35,7 +36,7 @@ const API_BASE_URL = "http://localhost:8889/api";
 
 function createTestStore() {
   return configureStore({
-    reducer: { user: userReducer },
+    reducer: { user: userReducer, locale: localeReducer },
   });
 }
 

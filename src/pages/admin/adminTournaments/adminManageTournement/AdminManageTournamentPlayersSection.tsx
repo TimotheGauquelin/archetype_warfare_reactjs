@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import CompletionListInput from "@/components/generic/form/CompletionListInput";
 import NoItemMessage from "@/components/generic/NoItemMessage";
 import PaginationTableHead from "@/components/generic/pagination/PaginationTableHead";
@@ -42,7 +43,7 @@ const AdminManageTournamentPlayersSection = ({
   token,
   onDeckAssigned,
 }: AdminManageTournamentPlayersSectionProps) => {
-
+  const { t } = useTranslation();
   const [deckSnapshotPlayer, setDeckSnapshotPlayer] = useState<TournamentPlayerAdmin | null>(null);
   const [assignDeckPlayer, setAssignDeckPlayer] = useState<TournamentPlayerAdmin | null>(null);
   const [playableDecks, setPlayableDecks] = useState<Deck[]>([]);
@@ -227,7 +228,7 @@ const AdminManageTournamentPlayersSection = ({
                     {player.user?.username ?? `#${player.id}`}
                   </div>
                   <div className="col-span-3 lscreen:col-span-2 p-1">
-                    {player.dropped ? "Oui" : "Non"}
+                    {player.dropped ? t("common.yes") : t("common.no")}
                   </div>
                   <div className="col-span-3 lscreen:col-span-2 p-1">
                     {player.deck_snapshot ? (

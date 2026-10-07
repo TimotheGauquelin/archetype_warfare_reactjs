@@ -8,18 +8,51 @@
     "login": "Connexion"
   },
   "language": {
-    "switchLabel": "Langue"
+    "switchLabel": "Langue",
+    "fr": "Français",
+    "en": "English"
   },
   "auth": {
     "loginTitle": "Connectez-vous",
     "email": "Email",
     "password": "Mot de passe",
+    "passwordConfirm": "Confirmation du mot de passe",
+    "username": "Nom d'utilisateur",
     "submit": "Se connecter",
     "submitLoading": "Connexion en cours...",
     "forgotPassword": "Mot de passe oublié ?",
     "createAccount": "Créer un compte",
+    "createAccountTitle": "Créer mon compte",
+    "createAccountSubmit": "Créer mon compte",
+    "createAccountLoading": "Inscription en cours..",
+    "alreadyHaveAccount": "Déjà un compte ?",
+    "goToLogin": "Se connecter",
     "invalidEmail": "Veuillez saisir une adresse email valide",
-    "passwordRequired": "Veuillez saisir votre mot de passe"
+    "passwordRequired": "Veuillez saisir votre mot de passe",
+    "passwordsMismatch": "Les mots de passe ne correspondent pas",
+    "acceptTermsRequired": "Veuillez accepter les termes et conditions.",
+    "acceptTermsPrefix": "J'accepte les",
+    "acceptTermsLink": "termes et conditions",
+    "acceptTermsSuffix": "du site",
+    "registerSuccess": "Inscription réussie ! Vous recevrez un email lorsque votre compte sera activé.",
+    "registerError": "Une erreur s'est produite lors de l'inscription. Veuillez réessayer.",
+    "genericError": "Une erreur s'est produite.",
+    "passwordLostTitle": "Mot de passe oublié ?",
+    "passwordLostIntro": "Indiquez l'adresse e-mail associée à votre compte. Vous allez recevoir un lien pour réinitialiser votre mot de passe.",
+    "passwordLostSubmit": "Envoyer le lien",
+    "passwordLostLoading": "Envoi en cours...",
+    "passwordLostSuccessTitle": "Email envoyé !",
+    "passwordLostSuccessBody": "Un e-mail vient de vous être envoyé. Il contient un lien valable 24 heures pour réinitialiser votre mot de passe.",
+    "backToLogin": "Revenir à la page de connexion",
+    "passwordResetTitle": "Réinitialiser le mot de passe",
+    "passwordResetIntro": "Créez un nouveau mot de passe pour votre compte.",
+    "passwordResetSubmit": "Valider",
+    "passwordResetLoading": "Modification en cours...",
+    "passwordResetSuccess": "Mot de passe modifié avec succès !",
+    "passwordResetBothRequired": "Veuillez remplir les deux champs.",
+    "passwordResetMismatch": "Les mots de passe ne sont pas identiques",
+    "passwordResetInvalidSession": "Session invalide. Veuillez utiliser à nouveau le lien reçu par email.",
+    "passwordResetRedirect": "Vous allez être redirigé vers la page d'accueil dans quelques secondes..."
   },
   "common": {
     "save": "Enregistrer",
@@ -32,7 +65,9 @@
     "searchCard": "Quelle carte recherchez-vous ?",
     "searchCardAria": "Rechercher une carte",
     "previousPage": "Page précédente",
-    "nextPage": "Page suivante"
+    "nextPage": "Page suivante",
+    "yes": "Oui",
+    "no": "Non"
   },
   "banlist": {
     "showArchetypeCards": "Afficher les cartes d'archétypes",
@@ -258,7 +293,44 @@
     "loading": "Chargement des données, veuillez patienter...",
     "welcomeMessage": "Faites des duels avec vos cartes préférées !",
     "popularArchetypes": "Archétypes Populaires",
-    "newArchetypes": "Nouveaux Archétypes"
+    "newArchetypes": "Nouveaux Archétypes",
+    "discover": "Découvrir"
+  },
+  "terms": {
+    "title": "Termes et Conditions",
+    "back": "Retour",
+    "lastUpdated": "Dernière mise à jour :",
+    "s1Title": "1. Acceptation des termes",
+    "s1Body": "En accédant et en utilisant Archetype Warfare, vous acceptez d'être lié par ces termes et conditions d'utilisation. Si vous n'acceptez pas ces termes, veuillez ne pas utiliser notre service.",
+    "s2Title": "2. Description du service",
+    "s2Body": "Archetype Warfare est une plateforme dédiée aux joueurs de Yu-Gi-Oh! qui permet de découvrir, analyser et partager des informations sur les archétypes de cartes. Notre service inclut des bases de données de cartes, des listes de ban, et des outils de gestion de deck.",
+    "s3Title": "3. Compte utilisateur",
+    "s3Intro": "Pour utiliser certaines fonctionnalités, vous devez créer un compte. Vous êtes responsable de :",
+    "s3Items": [
+      "Maintenir la confidentialité de vos informations de connexion",
+      "Toutes les activités qui se produisent sous votre compte",
+      "Nous informer immédiatement de toute utilisation non autorisée",
+      "Fournir des informations exactes et à jour"
+    ],
+    "s4Title": "4. Utilisation acceptable",
+    "s4Intro": "Vous acceptez de ne pas :",
+    "s4Items": [
+      "Utiliser le service à des fins illégales ou non autorisées",
+      "Violer les droits de propriété intellectuelle",
+      "Publier du contenu offensant, abusif ou inapproprié",
+      "Tenter de perturber ou de compromettre la sécurité du service",
+      "Utiliser des bots ou des scripts automatisés sans autorisation"
+    ],
+    "s5Title": "5. Propriété intellectuelle",
+    "s5Body": "Le contenu d'Archetype Warfare, y compris mais sans s'y limiter, les textes, graphiques, logos, et logiciels, est protégé par les droits d'auteur et autres lois sur la propriété intellectuelle. Yu-Gi-Oh! et ses éléments associés sont des marques déposées de Konami Digital Entertainment.",
+    "s6Title": "6. Confidentialité",
+    "s6Body": "Votre vie privée est importante pour nous. Veuillez consulter notre politique de confidentialité pour comprendre comment nous collectons, utilisons et protégeons vos informations personnelles.",
+    "s7Title": "7. Limitation de responsabilité",
+    "s7Body": "Archetype Warfare est fourni \"tel quel\" sans garantie d'aucune sorte. Nous ne serons pas responsables des dommages directs, indirects, accessoires ou consécutifs résultant de l'utilisation de notre service.",
+    "s8Title": "8. Modifications des termes",
+    "s8Body": "Nous nous réservons le droit de modifier ces termes à tout moment. Les modifications prendront effet immédiatement après leur publication sur le site. Il est de votre responsabilité de consulter régulièrement ces termes.",
+    "s9Title": "9. Contact",
+    "s9Body": "Si vous avez des questions concernant ces termes et conditions, veuillez nous contacter via notre page de contact ou par email."
   },
   "roadmap": {
     "pageTitle": "RoadMap 2025-2026",

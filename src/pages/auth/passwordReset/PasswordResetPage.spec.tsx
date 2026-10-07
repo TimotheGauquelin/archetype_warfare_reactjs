@@ -3,9 +3,13 @@ import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { fireEvent } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import PasswordResetPage from "./PasswordResetPage";
+import userReducer from "../../../redux/slice/userSlice";
+import localeReducer from "../../../redux/slice/localeSlice";
 import {
   URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN,
   URL_BACK_UPDATE_PASSWORD,
@@ -27,12 +31,17 @@ const API_BASE_URL = "http://localhost:8889/api";
 const mockUser = { id: 1, username: "test", email: "test@example.com", roles: [], token: null, isAuthenticated: false };
 
 function renderPasswordResetPage(resetToken = "fake-token-123") {
+  const store = configureStore({
+    reducer: { user: userReducer, locale: localeReducer },
+  });
   return render(
-    <MemoryRouter initialEntries={[`/password-reset/${resetToken}`]}>
-      <Routes>
-        <Route path="/password-reset/:resetToken" element={<PasswordResetPage />} />
-      </Routes>
-    </MemoryRouter>
+    <Provider store={store}>
+      <MemoryRouter initialEntries={[`/password-reset/${resetToken}`]}>
+        <Routes>
+          <Route path="/password-reset/:resetToken" element={<PasswordResetPage />} />
+        </Routes>
+      </MemoryRouter>
+    </Provider>
   );
 }
 

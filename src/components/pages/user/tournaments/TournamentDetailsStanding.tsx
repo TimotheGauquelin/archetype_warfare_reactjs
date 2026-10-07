@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import PopUp from "@/components/generic/PopUp";
 import type { TournamentStanding, TournamentPlayerDeckSnapshot } from "@/services/tournament";
 import type { DeckCard } from "@/types";
@@ -15,6 +16,7 @@ interface TournamentDetailsStandingProps {
 export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps> = ({
   standings,
 }) => {
+  const { t } = useTranslation();
   const [selectedDeck, setSelectedDeck] = useState<TournamentPlayerDeckSnapshot | null>(null);
   const { cardTypes } = useCardTypes();
 
@@ -107,7 +109,7 @@ export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps>
                 <td className="px-2 py-2 border-b text-center">{standing.matches_breakdown.wins.count}</td>
                 <td className="px-2 py-2 border-b text-center">{standing.matches_breakdown.losses.count}</td>
                 <td className="px-2 py-2 border-b text-center">{standing.matches_breakdown.draws.count}</td>
-                <td className="px-1 py-2 border-b text-center">{standing.matches_breakdown.hasDropped ? "Oui" : "Non"}</td>
+                <td className="px-1 py-2 border-b text-center">{standing.matches_breakdown.hasDropped ? t("common.yes") : t("common.no")}</td>
                 <td className="px-1 py-2 border-b text-center">
                   {standing.deck ? (
                     <button

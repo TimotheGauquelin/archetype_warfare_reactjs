@@ -1,8 +1,8 @@
 import api_aw from "../api/api_aw";
-import { URL_BACK_ADD_USER, URL_BACK_CREATE_USER_BY_ADMIN, URL_BACK_DELETE_USER, URL_BACK_GET_ALL_USERS, URL_BACK_GET_USER_BY_ID, URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN, URL_BACK_SEARCH_USERS, URL_BACK_SWITCH_USER_IS_ACTIVE, URL_BACK_SWITCH_USER_IS_BANNED, URL_BACK_UPDATE_PASSWORD, URL_BACK_UPDATE_USER_BY_ADMIN } from "../constant/urlsBack";
+import { URL_BACK_ADD_USER, URL_BACK_CREATE_USER_BY_ADMIN, URL_BACK_DELETE_USER, URL_BACK_GET_ALL_USERS, URL_BACK_GET_USER_BY_ID, URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN, URL_BACK_SEARCH_USERS, URL_BACK_SWITCH_USER_IS_ACTIVE, URL_BACK_SWITCH_USER_IS_BANNED, URL_BACK_UPDATE_MY_PROFILE, URL_BACK_UPDATE_PASSWORD, URL_BACK_UPDATE_USER_BY_ADMIN } from "../constant/urlsBack";
 import { URL_FRONT_ADMIN_USERS, URL_FRONT_HOME, URL_FRONT_LOGIN } from "../constant/urlsFront";
 import { logOut } from "./auth";
-import type { User, UserForm, PasswordUpdateForm, UserSearchCriteria, Pagination, PaginatedResponse, SetStateCallback, SetErrorMessageCallback } from "../types";
+import type { CardLocale, User, UserForm, PasswordUpdateForm, UserSearchCriteria, Pagination, PaginatedResponse, SetStateCallback, SetErrorMessageCallback } from "../types";
 import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
 import type { NavigateFunction } from "react-router-dom";
 import type { AppDispatch } from "../redux/store";
@@ -244,6 +244,26 @@ export const updatePassword = async (
       }
     }
     setMultipleErrors("Une erreur est survenue lors de la modification du mot de passe. Veuillez réessayer.");
+  }
+};
+
+/**
+ * Persiste la langue préférée de l'utilisateur connecté (mails + UI).
+ */
+export const updateMyLocale = async (
+  userId: number | string,
+  locale: CardLocale,
+  token: string
+): Promise<void> => {
+  try {
+    await api_aw.patch(
+      URL_BACK_UPDATE_MY_PROFILE(userId),
+      { locale },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "updateMyLocale");
   }
 };
 

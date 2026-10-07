@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useActionState } from "../../../hooks/useActionState";
 import { useNavigate, useParams } from "react-router-dom";
 import { getUserByResetPasswordToken, updatePasswordWithResult, type PasswordResetResult } from "../../../services/user";
@@ -15,6 +16,7 @@ import { URL_FRONT_LOGIN, URL_FRONT_TERMS_AND_CONDITIONS } from "../../../consta
 const initialState: PasswordResetResult = {};
 
 const PasswordResetPage = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [form, setForm] = useState<PasswordUpdateForm>({
     password: "",
@@ -34,16 +36,16 @@ const PasswordResetPage = () => {
       const hasAcceptedTerms = formData.get("has_accepted_terms_and_conditions") === "on";
 
       if (!password || !confirmPassword) {
-        return { error: "Veuillez remplir les deux champs." };
+        return { error: t("auth.passwordResetBothRequired") };
       }
       if (password !== confirmPassword) {
-        return { error: "Les mots de passe ne sont pas identiques" };
+        return { error: t("auth.passwordResetMismatch") };
       }
       if (!hasAcceptedTerms) {
-        return { error: "Veuillez accepter les termes et conditions." };
+        return { error: t("auth.acceptTermsRequired") };
       }
       if (!user?.id) {
-        return { error: "Session invalide. Veuillez utiliser à nouveau le lien reçu par email." };
+        return { error: t("auth.passwordResetInvalidSession") };
       }
 
       const result = await updatePasswordWithResult(user.id, {
@@ -53,7 +55,7 @@ const PasswordResetPage = () => {
       });
 
       if (result.success) {
-        toast.success("Mot de passe modifié avec succès !");
+        toast.success(t("auth.passwordResetSuccess"));
         setTimeout(() => {
           navigate(URL_FRONT_LOGIN);
         }, 2000);
@@ -91,17 +93,17 @@ const PasswordResetPage = () => {
         {user && !errorMessageFromURLToken ? (
           <>
             <h3 className="text-xl sm:text-2xl text-center mb-4 font-semibold">
-              Réinitialiser le mot de passe
+              {t("auth.passwordResetTitle")}
             </h3>
             <div>
               <p className="text-base text-gray-600 mb-4">
-                Créez un nouveau mot de passe pour votre compte.
+                {t("auth.passwordResetIntro")}
               </p>
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <InputPassword
-                    label="Mot de passe"
+                    label={t("auth.password")}
                     required
                     colSpanWidth="12"
                     attribute="password"
@@ -114,7 +116,7 @@ const PasswordResetPage = () => {
 
                 <div className="mb-4">
                   <InputPassword
-                    label="Confirmation du mot de passe"
+                    label={t("auth.passwordConfirm")}
                     required
                     colSpanWidth="12"
                     attribute="confirmPassword"
@@ -145,16 +147,16 @@ const PasswordResetPage = () => {
                     disabled={isFormBusy}
                   />
                   <label htmlFor="acceptTerms" className="text-sm">
-                    J'accepte les{" "}
+                    {t("auth.acceptTermsPrefix")}{" "}
                     <button
                       type="button"
                       onClick={() => navigate(URL_FRONT_TERMS_AND_CONDITIONS)}
                       className="text-blue-600 hover:underline"
                       disabled={isFormBusy}
                     >
-                      termes et conditions
+                      {t("auth.acceptTermsLink")}
                     </button>{" "}
-                    du site
+                    {t("auth.acceptTermsSuffix")}
                   </label>
                 </div>
 
@@ -168,11 +170,11 @@ const PasswordResetPage = () => {
 
                 <OnLoadingButton
                   submit
-                  buttonText="Valider"
+                  buttonText={t("auth.passwordResetSubmit")}
                   className="bg-black text-white w-full mt-2 p-3 rounded font-medium transition-all duration-200"
                   disabled={isFormBusy}
                   loading={isFormBusy}
-                  loadingText="Modification en cours..."
+                  loadingText={t("auth.passwordResetLoading")}
                   action={() => {}}
                 />
               </form>
@@ -183,7 +185,7 @@ const PasswordResetPage = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
             <p className="text-sm sm:text-base text-gray-700">{errorMessageFromURLToken}</p>
             <p className="mt-2 text-sm text-gray-500">
-              Vous allez être redirigé vers la page d'accueil dans quelques secondes...
+              {t("auth.passwordResetRedirect")}
             </p>
           </div>
         )}

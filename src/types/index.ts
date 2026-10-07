@@ -58,10 +58,12 @@ export interface RegisterForm {
   password: string;
   confirmPassword?: string;
   hasAcceptedTermsAndConditions: boolean;
+  locale?: "fr" | "en";
 }
 
 export interface PasswordRequestForm {
   email: string;
+  locale?: "fr" | "en";
 }
 
 export interface DecodedToken {

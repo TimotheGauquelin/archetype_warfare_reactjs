@@ -122,6 +122,7 @@ export const URL_BACK_SWITCH_USER_IS_ACTIVE = (userId: number | string) => `/use
 export const URL_BACK_SWITCH_USER_IS_BANNED = (userId: number | string) => `/users/${userId}/switchIsBanned`
 export const URL_BACK_UPDATE_USER_BY_ADMIN = (userId: number | string) => `/users/${userId}/updateUserByAdmin`
 export const URL_BACK_DELETE_USER = (userId: number | string) => `/users/${userId}`
+export const URL_BACK_UPDATE_MY_PROFILE = (userId: number | string) => `/users/${userId}`
 
 ///// PASSWORD
 export const URL_BACK_UPDATE_PASSWORD = (userId: number | string) => `/authenticate/user/${userId}/update-password`

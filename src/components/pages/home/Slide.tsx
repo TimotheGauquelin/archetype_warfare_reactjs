@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { Archetype } from "../../../types";
 
 interface SlideProps {
@@ -9,6 +10,7 @@ interface SlideProps {
 }
 
 const Slide: React.FC<SlideProps> = ({ archetype, imageVisible = true, showText = true }) => {
+  const { t } = useTranslation();
   const isWelcomeSlide = archetype?.isWelcome || !archetype?.id;
 
   return (
@@ -61,7 +63,7 @@ const Slide: React.FC<SlideProps> = ({ archetype, imageVisible = true, showText 
               }}
               to={`/archetype/${archetype.id}`}
             >
-              <span className="relative z-10">Découvrir</span>
+              <span className="relative z-10">{t("home.discover")}</span>
               <span className="relative z-10 inline-block transition-transform duration-300 group-hover:translate-x-1">
                 ➜
               </span>
