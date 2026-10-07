@@ -12,6 +12,9 @@
     "fr": "Français",
     "en": "English"
   },
+  "banner": {
+    "freeHosting": "L'API est hébergée gratuitement : merci de patienter jusqu'à 20 secondes pour le chargement des données."
+  },
   "auth": {
     "loginTitle": "Connectez-vous",
     "email": "Email",

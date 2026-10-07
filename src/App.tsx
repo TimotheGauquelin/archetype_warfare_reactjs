@@ -76,6 +76,7 @@ import RoadMapPage from "./pages/user/RoadMapPage";
 import AdminFilesIntroductionCard from "./pages/admin/adminFiles/ArchetypeFileIntroductionCard";
 import ScrollToTop from "./utils/scroll/ScrollToTop";
 import StreamBar from "./components/generic/header/StreamBar";
+import FreeHostingBanner from "./components/generic/header/FreeHostingBanner";
 import { getConfig } from "./services/websiteactions";
 import type { SiteConfig } from "./types";
 import ArchetypesPage from "./pages/user/archetypesPage/ArchetypesPage";
@@ -144,6 +145,7 @@ const AppContent: React.FC = () => {
   return (
     <div className="relative text-base">
       <I18nLocaleSync />
+      <FreeHostingBanner />
       {
         config?.stream_banner_enabled && config?.stream_banner_enabled === true && <StreamBar />
       }

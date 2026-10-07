@@ -12,6 +12,9 @@
     "fr": "Français",
     "en": "English"
   },
+  "banner": {
+    "freeHosting": "The API runs on free hosting: please allow up to 20 seconds for data to load."
+  },
   "auth": {
     "loginTitle": "Log in",
     "email": "Email",
