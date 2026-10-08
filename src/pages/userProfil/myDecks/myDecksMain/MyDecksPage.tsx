@@ -10,6 +10,7 @@ import UserProfilLayout from "../../layout";
 import NoItemMessage from "@/components/generic/NoItemMessage";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 import MyDecksDivSkeleton from "@/components/skeletons/MyDecksDivSkeleton";
+import { optimizeImageUrl } from "../../../../utils/image/optimizeImageUrl";
 
 const MyDecksPage = () => {
   const { t } = useTranslation();
@@ -52,7 +53,15 @@ const MyDecksPage = () => {
                     to={getMyDeckUpdatePath(deck.id)}
                   >
                     <div className="rounded-md">
-                      <img className="rounded-md" src={deck.archetype.card_img_url} alt={deck.archetype.label} />
+                      <img
+                        className="rounded-md"
+                        src={optimizeImageUrl(deck.archetype.card_img_url, "card")}
+                        alt={deck.archetype.label}
+                        width={400}
+                        height={400}
+                        loading="lazy"
+                        decoding="async"
+                      />
                     </div>
                     <p className="flex flex-col justify-between items-center">
                       <span className="font-bold line-clamp-1">{deck.label}</span>

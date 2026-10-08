@@ -45,6 +45,9 @@ const HeaderMemo = memo(function Header() {
               <img
                 src={`${import.meta.env.BASE_URL}assets/archetype_battle.png`}
                 alt=""
+                width={180}
+                height={48}
+                decoding="async"
                 className="w-1/2"
               />
             </div>

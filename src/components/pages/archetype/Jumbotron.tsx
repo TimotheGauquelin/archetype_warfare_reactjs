@@ -1,4 +1,5 @@
 import React from "react";
+import { optimizeImageUrl } from "../../../utils/image/optimizeImageUrl";
 
 interface JumbotronProps {
   itemMainTitle: string;
@@ -7,6 +8,10 @@ interface JumbotronProps {
 }
 
 const Jumbotron: React.FC<JumbotronProps> = ({ itemMainTitle, itemSubTitle, itemImg }) => {
+  const src = itemImg
+    ? optimizeImageUrl(itemImg, "jumbotron")
+    : import.meta.env.BASE_URL + "assets/yugi.png";
+
   return (
     <div
       className="flex h-full p-5 bg-cover sscreen:bg-contain bg-no-repeat	bg-center sscreen:bg-right-bottom"
@@ -24,7 +29,15 @@ const Jumbotron: React.FC<JumbotronProps> = ({ itemMainTitle, itemSubTitle, item
           <div className="hidden md:flex flex-col h-full md:w-1/2"></div>
         </div>
         <div className="w-1/2">
-          <img data-testid="jumbotron-img" src={itemImg ? itemImg : import.meta.env.BASE_URL + "assets/yugi.png"} alt="yugi" className="w-full h-full object-cover" />
+          <img
+            data-testid="jumbotron-img"
+            src={src}
+            alt="yugi"
+            width={800}
+            height={520}
+            decoding="async"
+            className="w-full h-full object-cover"
+          />
         </div>
       </div>
     </div >

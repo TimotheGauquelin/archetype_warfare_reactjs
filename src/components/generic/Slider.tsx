@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Slide from "../pages/home/Slide";
 import type { Archetype } from "../../types";
+import { optimizeImageUrl } from "../../utils/image/optimizeImageUrl";
 
 interface SliderProps {
   array: Archetype[];
@@ -13,26 +14,51 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
   const [isPaused, setIsPaused] = useState(false);
   const [imageVisible, setImageVisible] = useState(true);
   const [showText, setShowText] = useState(true);
+  /** Slides dont l'image a déjà été demandée (actif + suivant préchargé). */
+  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(() => new Set([0]));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const childrenArray = array || [];
   const totalSlides = childrenArray.length;
 
+  const nextIndex = useMemo(() => {
+    if (totalSlides === 0) return 0;
+    return (currentIndex + slidesPerView) % totalSlides;
+  }, [currentIndex, slidesPerView, totalSlides]);
+
+  useEffect(() => {
+    setLoadedIndices((prev) => {
+      const merged = new Set(prev);
+      merged.add(currentIndex);
+      return merged;
+    });
+
+    // Précharge uniquement le slide suivant (hors DOM jusqu'à activation)
+    const url = optimizeImageUrl(childrenArray[nextIndex]?.slider_img_url, "slider");
+    if (!url || nextIndex === currentIndex) return;
+
+    const img = new Image();
+    img.onload = () => {
+      setLoadedIndices((prev) => new Set(prev).add(nextIndex));
+    };
+    img.src = url;
+  }, [currentIndex, nextIndex, childrenArray]);
+
   const goToNext = () => {
     setImageVisible(false);
     setShowText(false);
-    
+
     setTimeout(() => {
       setCurrentIndex((prevIndex) => {
-        const nextIndex = prevIndex + slidesPerView;
-        if (nextIndex >= totalSlides) {
+        const next = prevIndex + slidesPerView;
+        if (next >= totalSlides) {
           return 0;
         }
-        return nextIndex;
+        return next;
       });
-      
+
       setTimeout(() => {
         setImageVisible(true);
-        
+
         setTimeout(() => {
           setShowText(true);
         }, 300);
@@ -43,13 +69,13 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
   const goToSlide = (slideIndex: number) => {
     setImageVisible(false);
     setShowText(false);
-    
+
     setTimeout(() => {
       setCurrentIndex(slideIndex);
-      
+
       setTimeout(() => {
         setImageVisible(true);
-        
+
         setTimeout(() => {
           setShowText(true);
         }, 300);
@@ -86,8 +112,6 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
     return null;
   }
 
-  const visibleSlides = childrenArray.slice(currentIndex, currentIndex + slidesPerView);
-
   return (
     <div
       className="relative w-full overflow-visible"
@@ -95,15 +119,26 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
       onMouseLeave={handleMouseLeave}
     >
       <div className="relative w-full">
-        {visibleSlides.map((archetype, index) => (
-          <div key={archetype.id || currentIndex + index} className="w-full">
-            <Slide 
-              archetype={archetype} 
-              imageVisible={imageVisible}
-              showText={showText}
-            />
-          </div>
-        ))}
+        {childrenArray.map((archetype, index) => {
+          const isActive = index === currentIndex;
+          const shouldLoad = isActive || loadedIndices.has(index);
+
+          return (
+            <div
+              key={archetype.id ?? index}
+              className={isActive ? "w-full" : "hidden"}
+              aria-hidden={!isActive}
+            >
+              <Slide
+                archetype={archetype}
+                imageVisible={isActive ? imageVisible : false}
+                showText={isActive ? showText : false}
+                loadImage={shouldLoad}
+                isActive={isActive}
+              />
+            </div>
+          );
+        })}
       </div>
 
       {totalSlides > slidesPerView && (

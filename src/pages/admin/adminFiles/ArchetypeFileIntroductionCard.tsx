@@ -7,6 +7,7 @@ import PopUp from "../../../components/generic/PopUp";
 import { FaTrash } from "react-icons/fa";
 import { api_aw_token } from "../../../api/api_aw_token";
 import type { RootState } from "../../../types";
+import { optimizeImageUrl } from "../../../utils/image/optimizeImageUrl";
 
 const AdminFilesIntroductionCard = () => {
   const [archetypeIntroductionCardImages, setArchetypeIntroductionCardImages] = useState<CloudinaryImage[]>([]);
@@ -62,8 +63,12 @@ const AdminFilesIntroductionCard = () => {
             >
               <img
                 className="w-full h-full object-cover"
-                src={imageUrl}
+                src={optimizeImageUrl(imageUrl, "thumb")}
                 alt={String(index)}
+                width={200}
+                height={200}
+                loading="lazy"
+                decoding="async"
               />
               <button
                 type="button"

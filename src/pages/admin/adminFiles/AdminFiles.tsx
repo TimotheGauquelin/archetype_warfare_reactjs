@@ -11,6 +11,7 @@ import PopUp from "../../../components/generic/PopUp";
 import { FaTrash } from "react-icons/fa";
 import { api_aw_token } from "../../../api/api_aw_token";
 import type { RootState } from "../../../types";
+import { optimizeImageUrl } from "../../../utils/image/optimizeImageUrl";
 
 const AdminFiles = () => {
   const [archetypeJumbotronsImages, setArchetypeJumbotronsImages] = useState<CloudinaryImage[]>([]);
@@ -82,7 +83,15 @@ const AdminFiles = () => {
                     key={header.public_id}
                     className="relative col-span-3 border-2 border-black rounded group"
                   >
-                    <img src={imageUrl} alt="" className="w-full h-full object-cover" />
+                    <img
+                      src={optimizeImageUrl(imageUrl, "thumb")}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      width={200}
+                      height={200}
+                      loading="lazy"
+                      decoding="async"
+                    />
                     <button
                       type="button"
                       className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-600 text-white p-1 rounded-full shadow"
@@ -123,7 +132,15 @@ const AdminFiles = () => {
                       key={jumbotron.public_id}
                       className="relative col-span-6 border-2 border-black rounded group"
                     >
-                      <img src={imageUrl} alt="" className="w-full h-full object-cover" />
+                      <img
+                        src={optimizeImageUrl(imageUrl, "thumb")}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        width={200}
+                        height={130}
+                        loading="lazy"
+                        decoding="async"
+                      />
                       <button
                         type="button"
                         className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-600 text-white p-1 rounded-full shadow"

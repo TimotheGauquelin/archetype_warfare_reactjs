@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { databaseDateToCalendarDate } from "../../utils/date/databaseDateToCalendarDate";
 import type { Archetype } from "../../types";
+import { optimizeImageUrl } from "../../utils/image/optimizeImageUrl";
 
 interface ArchetypeCardProps {
   archetype: Archetype;
@@ -12,13 +13,11 @@ interface ArchetypeCardProps {
 const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMedal, displayDate = false }) => {
 
   const imageUrl = useMemo(() => {
-    if (
-      archetype?.card_img_url
-    ) {
-      return archetype.card_img_url;
+    if (archetype?.card_img_url) {
+      return optimizeImageUrl(archetype.card_img_url, "card");
     }
     return import.meta.env.BASE_URL + "assets/waiting_archetype_image.jpg";
-  }, [archetype?.headerImg]);
+  }, [archetype?.card_img_url]);
 
   const medalPath = useMemo(() => {
     if (!haveAMedal || index >= 3) return null;
@@ -34,12 +33,16 @@ const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMe
           className="bg-cover bg-center h-full w-full rounded-lg"
           src={imageUrl}
           alt=""
+          width={400}
+          height={400}
+          loading="lazy"
+          decoding="async"
         />
       </div>
       <div className="font-bold pt-3 text-center ellipsisText flex justify-center items-center">
         {medalPath && (
           <div style={{ width: "30px" }}>
-            <img src={medalPath} alt="" />
+            <img src={medalPath} alt="" width={30} height={30} loading="lazy" decoding="async" />
           </div>
         )}
         <p className={`${index < 3 && "pl-2"} flex flex-col`}>
