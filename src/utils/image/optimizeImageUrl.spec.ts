@@ -13,17 +13,17 @@ describe("optimizeImageUrl", () => {
     expect(optimizeImageUrl(url, "card")).toBe(url);
   });
 
-  it("injects f_auto,q_auto and width for cloudinary URLs", () => {
+  it("injects f_auto,q_auto:eco and width for cloudinary URLs", () => {
     const url =
       "https://res.cloudinary.com/dqfuwqmql/image/upload/v1763767085/jumbotron_archetypes/abc.png";
     expect(optimizeImageUrl(url, "slider")).toBe(
-      "https://res.cloudinary.com/dqfuwqmql/image/upload/f_auto,q_auto,c_limit,w_1200/v1763767085/jumbotron_archetypes/abc.png"
+      "https://res.cloudinary.com/dqfuwqmql/image/upload/f_auto,q_auto:eco,c_limit,w_800/v1763767085/jumbotron_archetypes/abc.png"
     );
   });
 
   it("does not double-apply transforms", () => {
     const url =
-      "https://res.cloudinary.com/dqfuwqmql/image/upload/f_auto,q_auto,c_limit,w_400/v1/folder/x.png";
+      "https://res.cloudinary.com/dqfuwqmql/image/upload/f_auto,q_auto:eco,c_limit,w_360/v1/folder/x.png";
     expect(optimizeImageUrl(url, "card")).toBe(url);
   });
 });

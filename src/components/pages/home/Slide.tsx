@@ -8,9 +8,7 @@ interface SlideProps {
   archetype: Archetype;
   imageVisible?: boolean;
   showText?: boolean;
-  /** Si false, l'image n'est pas demandée au réseau (slide hors viewport). */
   loadImage?: boolean;
-  /** Priorité haute pour le slide actif (LCP). */
   isActive?: boolean;
 }
 
@@ -95,8 +93,11 @@ const Slide: React.FC<SlideProps> = ({
             alt={archetype.name}
             width={800}
             height={520}
-            decoding="async"
+            decoding={isActive ? "sync" : "async"}
             loading={isActive ? "eager" : "lazy"}
+            {...(isActive
+              ? ({ fetchpriority: "high" } as React.ImgHTMLAttributes<HTMLImageElement>)
+              : {})}
             className="w-full h-full object-cover object-left"
           />
         ) : (

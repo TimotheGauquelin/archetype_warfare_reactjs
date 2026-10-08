@@ -7,15 +7,19 @@ interface SliderProps {
   array: Archetype[];
   slidesPerView?: number;
   autoplayDelay?: number;
+  autoplayStartDelay?: number;
 }
 
-const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay = 5000 }) => {
+const Slider: React.FC<SliderProps> = ({
+  array,
+  slidesPerView = 1,
+  autoplayDelay = 5000,
+  autoplayStartDelay = 8000,
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [imageVisible, setImageVisible] = useState(true);
   const [showText, setShowText] = useState(true);
-  /** Slides dont l'image a déjà été demandée (actif + suivant préchargé). */
-  const [loadedIndices, setLoadedIndices] = useState<Set<number>>(() => new Set([0]));
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const childrenArray = array || [];
   const totalSlides = childrenArray.length;
@@ -26,20 +30,10 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
   }, [currentIndex, slidesPerView, totalSlides]);
 
   useEffect(() => {
-    setLoadedIndices((prev) => {
-      const merged = new Set(prev);
-      merged.add(currentIndex);
-      return merged;
-    });
-
-    // Précharge uniquement le slide suivant (hors DOM jusqu'à activation)
+    // Précharge en cache navigateur sans monter d'<img> hors viewport
     const url = optimizeImageUrl(childrenArray[nextIndex]?.slider_img_url, "slider");
     if (!url || nextIndex === currentIndex) return;
-
     const img = new Image();
-    img.onload = () => {
-      setLoadedIndices((prev) => new Set(prev).add(nextIndex));
-    };
     img.src = url;
   }, [currentIndex, nextIndex, childrenArray]);
 
@@ -84,18 +78,23 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
   };
 
   useEffect(() => {
-    if (!isPaused && totalSlides > slidesPerView) {
+    if (isPaused || totalSlides <= slidesPerView) {
+      return;
+    }
+
+    const startTimer = setTimeout(() => {
       intervalRef.current = setInterval(() => {
         goToNext();
       }, autoplayDelay);
+    }, autoplayStartDelay);
 
-      return () => {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-      };
-    }
-  }, [isPaused, currentIndex, totalSlides, slidesPerView, autoplayDelay]);
+    return () => {
+      clearTimeout(startTimer);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isPaused, currentIndex, totalSlides, slidesPerView, autoplayDelay, autoplayStartDelay]);
 
   const handleMouseEnter = () => {
     setIsPaused(true);
@@ -121,7 +120,6 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
       <div className="relative w-full">
         {childrenArray.map((archetype, index) => {
           const isActive = index === currentIndex;
-          const shouldLoad = isActive || loadedIndices.has(index);
 
           return (
             <div
@@ -133,7 +131,7 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
                 archetype={archetype}
                 imageVisible={isActive ? imageVisible : false}
                 showText={isActive ? showText : false}
-                loadImage={shouldLoad}
+                loadImage={isActive}
                 isActive={isActive}
               />
             </div>
@@ -146,7 +144,7 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
           {Array.from({ length: Math.ceil(totalSlides / slidesPerView) }).map(
             (_, index) => {
               const slideIndex = index * slidesPerView;
-              const isActive =
+              const isActiveDot =
                 currentIndex >= slideIndex &&
                 currentIndex < slideIndex + slidesPerView;
               return (
@@ -154,7 +152,7 @@ const Slider: React.FC<SliderProps> = ({ array, slidesPerView = 1, autoplayDelay
                   key={index}
                   onClick={() => goToSlide(slideIndex)}
                   className={`h-2 rounded-full transition-all mx-1 ${
-                    isActive
+                    isActiveDot
                       ? "bg-white w-8"
                       : "bg-white bg-opacity-50 w-2 hover:bg-opacity-75"
                   }`}

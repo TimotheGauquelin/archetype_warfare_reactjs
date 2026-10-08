@@ -23,7 +23,7 @@ const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMe
     if (!haveAMedal || index >= 3) return null;
 
     const medalType = index === 0 ? "gold" : index === 1 ? "silver" : "bronze";
-    return import.meta.env.BASE_URL + `assets/medalIcon/${medalType}_medal.png`;
+    return import.meta.env.BASE_URL + `assets/medalIcon/${medalType}_medal.webp`;
   }, [haveAMedal, index]);
 
   return (
@@ -33,8 +33,9 @@ const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMe
           className="bg-cover bg-center h-full w-full rounded-lg"
           src={imageUrl}
           alt=""
-          width={400}
-          height={400}
+          width={360}
+          height={360}
+          sizes="(max-width: 768px) 45vw, 360px"
           loading="lazy"
           decoding="async"
         />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { useAuthAutoLogout } from "./hooks/useAuthAutoLogout";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -6,20 +6,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 import I18nLocaleSync from "./components/I18nLocaleSync";
 import Home from "./pages/Home";
-import MyProfilePage from "./pages/userProfil/myProfile/myProfileMain/MyProfilePage";
-import LoginPage from "./pages/auth/login/LoginPage";
-import RegisterPage from "./pages/auth/register/RegisterPage";
-import TermsAndConditions from "./pages/TermsAndConditions";
-import AdminHome from "./pages/admin/AdminHome";
-import ConceptPage from "./pages/user/ConceptPage";
-import BanlistPage from "./pages/user/banlist/BanlistPage";
-import AdminArchetype from "./pages/admin/adminArchetypes/AdminArchetype";
-import AdminBanlist from "./pages/admin/adminBanlists/AdminBanlist";
-import PasswordLostPage from "./pages/auth/passwordLost/PasswordLostPage";
-import AdminUsers from "./pages/admin/adminUsers/AdminUsers";
-import AdminCards from "./pages/admin/adminCards/AdminCards";
-import AdminFiles from "./pages/admin/adminFiles/AdminFiles";
-import AdminFilesJumbotron from "./pages/admin/adminFiles/AdminFilesJumbotron";
 import {
   URL_FRONT_ABOUT,
   URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM,
@@ -59,42 +45,59 @@ import {
   URL_FRONT_ADMIN_TOURNAMENT_MANAGE,
   URL_FRONT_ADMIN_CARD_DETAIL,
 } from "./constant/urlsFront";
-import AdminOptions from "./pages/admin/adminOptions/AdminOptions";
-import AdminArchetypeUpdatePage from "./pages/admin/adminArchetypes/AdminArchetypeUpdatePage";
-import AdminArchetypeAdd from "./pages/admin/adminArchetypes/AdminArchetypeAdd";
-import AdminUserAdd from "./pages/admin/adminUsers/AdminUserAdd";
-import PasswordReset from "./pages/auth/passwordReset/PasswordResetPage";
 import PrivateRoute from "./components/generic/PrivateRoute";
 import { ROLE_ADMIN } from "./utils/const/rolesConst";
-import AdminUserUpdate from "./pages/admin/adminUsers/AdminUserUpdate";
-import AdminUpdateBanlist from "./pages/admin/adminBanlists/AdminUpdateBanlist";
-import UpdateMyProfilePage from "./pages/userProfil/myProfile/updateMyProfile/UpdateMyProfilePage";
-import MyDecksPage from "./pages/userProfil/myDecks/myDecksMain/MyDecksPage";
-import MyDeckAdd from "./pages/userProfil/myDecks/createADeck/MyDeckAddPage";
-import AdminAddBanlist from "./pages/admin/adminBanlists/AdminAddBanlist";
-import RoadMapPage from "./pages/user/RoadMapPage";
-import AdminFilesIntroductionCard from "./pages/admin/adminFiles/ArchetypeFileIntroductionCard";
 import ScrollToTop from "./utils/scroll/ScrollToTop";
 import StreamBar from "./components/generic/header/StreamBar";
 import FreeHostingBanner from "./components/generic/header/FreeHostingBanner";
 import { getConfig } from "./services/websiteactions";
 import type { SiteConfig } from "./types";
-import ArchetypesPage from "./pages/user/archetypesPage/ArchetypesPage";
-import ArchetypePage from "./pages/user/archetypePage/ArchetypePage";
-import UpdateMyDeckPage from "./pages/userProfil/myDecks/updateADeck/UpdateMyDeckPage";
-import TournamentsPage from "./pages/user/tournaments/TournamentsPage";
-import TournamentDetailPage from "./pages/user/tournamentDetail/TournamentDetailPage";
-import AllMyTournamentsPage from "./pages/userProfil/myTournaments/myTournamentsMain/AllMyTournamentsPage";
-import MyTournamentDetail from "./pages/userProfil/myTournaments/myTournamentDetail/MyTournamentDetail";
-import AdminTournaments from "./pages/admin/adminTournaments/adminAllTournaments/AdminTournaments";
-import AdminAddTournament from "./pages/admin/adminTournaments/adminAddTournament/AdminAddTournament";
-import AdminUpdateTournament from "./pages/admin/adminTournaments/adminUpdateTournament/AdminUpdateTournament";
-import AdminManageTournament from "./pages/admin/adminTournaments/adminManageTournement/AdminManageTournament";
-import AdminCardDetail from "./pages/admin/adminCards/AdminCardDetail";
 import PopUp from "./components/generic/PopUp";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "./redux/store";
 import { logOut } from "./services/auth";
+
+const LoginPage = lazy(() => import("./pages/auth/login/LoginPage"));
+const RegisterPage = lazy(() => import("./pages/auth/register/RegisterPage"));
+const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
+const PasswordLostPage = lazy(() => import("./pages/auth/passwordLost/PasswordLostPage"));
+const PasswordReset = lazy(() => import("./pages/auth/passwordReset/PasswordResetPage"));
+const ConceptPage = lazy(() => import("./pages/user/ConceptPage"));
+const BanlistPage = lazy(() => import("./pages/user/banlist/BanlistPage"));
+const RoadMapPage = lazy(() => import("./pages/user/RoadMapPage"));
+const ArchetypesPage = lazy(() => import("./pages/user/archetypesPage/ArchetypesPage"));
+const ArchetypePage = lazy(() => import("./pages/user/archetypePage/ArchetypePage"));
+const TournamentsPage = lazy(() => import("./pages/user/tournaments/TournamentsPage"));
+const TournamentDetailPage = lazy(() => import("./pages/user/tournamentDetail/TournamentDetailPage"));
+
+const MyProfilePage = lazy(() => import("./pages/userProfil/myProfile/myProfileMain/MyProfilePage"));
+const UpdateMyProfilePage = lazy(() => import("./pages/userProfil/myProfile/updateMyProfile/UpdateMyProfilePage"));
+const MyDecksPage = lazy(() => import("./pages/userProfil/myDecks/myDecksMain/MyDecksPage"));
+const MyDeckAdd = lazy(() => import("./pages/userProfil/myDecks/createADeck/MyDeckAddPage"));
+const UpdateMyDeckPage = lazy(() => import("./pages/userProfil/myDecks/updateADeck/UpdateMyDeckPage"));
+const AllMyTournamentsPage = lazy(() => import("./pages/userProfil/myTournaments/myTournamentsMain/AllMyTournamentsPage"));
+const MyTournamentDetail = lazy(() => import("./pages/userProfil/myTournaments/myTournamentDetail/MyTournamentDetail"));
+
+const AdminHome = lazy(() => import("./pages/admin/AdminHome"));
+const AdminArchetype = lazy(() => import("./pages/admin/adminArchetypes/AdminArchetype"));
+const AdminArchetypeAdd = lazy(() => import("./pages/admin/adminArchetypes/AdminArchetypeAdd"));
+const AdminArchetypeUpdatePage = lazy(() => import("./pages/admin/adminArchetypes/AdminArchetypeUpdatePage"));
+const AdminBanlist = lazy(() => import("./pages/admin/adminBanlists/AdminBanlist"));
+const AdminAddBanlist = lazy(() => import("./pages/admin/adminBanlists/AdminAddBanlist"));
+const AdminUpdateBanlist = lazy(() => import("./pages/admin/adminBanlists/AdminUpdateBanlist"));
+const AdminUsers = lazy(() => import("./pages/admin/adminUsers/AdminUsers"));
+const AdminUserAdd = lazy(() => import("./pages/admin/adminUsers/AdminUserAdd"));
+const AdminUserUpdate = lazy(() => import("./pages/admin/adminUsers/AdminUserUpdate"));
+const AdminFiles = lazy(() => import("./pages/admin/adminFiles/AdminFiles"));
+const AdminFilesJumbotron = lazy(() => import("./pages/admin/adminFiles/AdminFilesJumbotron"));
+const AdminFilesIntroductionCard = lazy(() => import("./pages/admin/adminFiles/ArchetypeFileIntroductionCard"));
+const AdminCards = lazy(() => import("./pages/admin/adminCards/AdminCards"));
+const AdminCardDetail = lazy(() => import("./pages/admin/adminCards/AdminCardDetail"));
+const AdminOptions = lazy(() => import("./pages/admin/adminOptions/AdminOptions"));
+const AdminTournaments = lazy(() => import("./pages/admin/adminTournaments/adminAllTournaments/AdminTournaments"));
+const AdminAddTournament = lazy(() => import("./pages/admin/adminTournaments/adminAddTournament/AdminAddTournament"));
+const AdminUpdateTournament = lazy(() => import("./pages/admin/adminTournaments/adminUpdateTournament/AdminUpdateTournament"));
+const AdminManageTournament = lazy(() => import("./pages/admin/adminTournaments/adminManageTournement/AdminManageTournament"));
 
 const AuthAutoLogout: React.FC = () => {
   const isExpired = useAuthAutoLogout();
@@ -135,20 +138,26 @@ const AuthAutoLogout: React.FC = () => {
   );
 };
 
+const RouteFallback = () => (
+  <div className="min-h-[40vh] flex items-center justify-center text-gray-600 text-sm" aria-busy="true">
+    Chargement…
+  </div>
+);
+
 const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SiteConfig>({});
 
   useEffect(() => {
-    getConfig(setConfig);
+    // Hors chemin critique LCP (banner stream / registration)
+    const t = window.setTimeout(() => getConfig(setConfig), 4000);
+    return () => window.clearTimeout(t);
   }, []);
 
   return (
     <div className="relative text-base">
       <I18nLocaleSync />
       <FreeHostingBanner />
-      {
-        config?.stream_banner_enabled && config?.stream_banner_enabled === true && <StreamBar />
-      }
+      {config?.stream_banner_enabled === true && <StreamBar />}
       <BrowserRouter
         future={{
           v7_startTransition: true,
@@ -157,130 +166,100 @@ const AppContent: React.FC = () => {
       >
         <AuthAutoLogout />
         <ScrollToTop />
-        <Routes>
-          <Route
-            path={URL_FRONT_HOME}
-            element={
-              <Home />
-            }
-          />
-          <Route path={URL_FRONT_ROAD_MAP} element={<RoadMapPage />} />
-          <Route path={URL_FRONT_LOGIN} element={<LoginPage />} />
-          <Route path={URL_FRONT_REGISTER} element={config?.registration_enabled ? <RegisterPage /> : <Navigate to={URL_FRONT_HOME} />} />
-          <Route path={URL_FRONT_TERMS_AND_CONDITIONS} element={<TermsAndConditions />} />
-          <Route
-            path={URL_FRONT_ARCHETYPES}
-            element={
-              <ArchetypesPage />
-            }
-          />
-          <Route
-            path="/archetype/:id"
-            element={
-              <ArchetypePage />
-            }
-          />
-          <Route path={URL_FRONT_ABOUT} element={<ConceptPage />} />
-          <Route path={URL_FRONT_BANLIST} element={<BanlistPage />} />
-          <Route path={URL_FRONT_TOURNAMENTS} element={<TournamentsPage />} />
-          <Route path="/tournaments/:id" element={<TournamentDetailPage />} />
-          <Route path={URL_FRONT_PASSWORD_LOST} element={<PasswordLostPage />} />
-          <Route
-            path={URL_FRONT_PASSWORD_RESET}
-            element={<PasswordReset />}
-          />
-          <Route path="*" element={<Navigate to={URL_FRONT_HOME} />} />
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path={URL_FRONT_HOME} element={<Home />} />
+            <Route path={URL_FRONT_ROAD_MAP} element={<RoadMapPage />} />
+            <Route path={URL_FRONT_LOGIN} element={<LoginPage />} />
+            <Route
+              path={URL_FRONT_REGISTER}
+              element={
+                config?.registration_enabled ? (
+                  <RegisterPage />
+                ) : (
+                  <Navigate to={URL_FRONT_HOME} />
+                )
+              }
+            />
+            <Route path={URL_FRONT_TERMS_AND_CONDITIONS} element={<TermsAndConditions />} />
+            <Route path={URL_FRONT_ARCHETYPES} element={<ArchetypesPage />} />
+            <Route path="/archetype/:id" element={<ArchetypePage />} />
+            <Route path={URL_FRONT_ABOUT} element={<ConceptPage />} />
+            <Route path={URL_FRONT_BANLIST} element={<BanlistPage />} />
+            <Route path={URL_FRONT_TOURNAMENTS} element={<TournamentsPage />} />
+            <Route path="/tournaments/:id" element={<TournamentDetailPage />} />
+            <Route path={URL_FRONT_PASSWORD_LOST} element={<PasswordLostPage />} />
+            <Route path={URL_FRONT_PASSWORD_RESET} element={<PasswordReset />} />
 
-          {/* User Profil*/}
-          <Route path={URL_FRONT_MY_PROFILE} element={<MyProfilePage />} />
-          <Route path={URL_FRONT_MY_PROFILE_EDIT} element={<UpdateMyProfilePage />} />
-          <Route path={URL_FRONT_MY_DECKS} element={<MyDecksPage />} />
-          <Route path={URL_FRONT_MY_DECK_ADD} element={<MyDeckAdd />} />
-          <Route path={URL_FRONT_MY_DECK_UPDATE} element={<UpdateMyDeckPage />} />
-          <Route path={URL_FRONT_MY_TOURNAMENTS} element={<AllMyTournamentsPage />} />
-          <Route path="/my-tournaments/:tournamentId" element={<MyTournamentDetail />} />
+            <Route path={URL_FRONT_MY_PROFILE} element={<MyProfilePage />} />
+            <Route path={URL_FRONT_MY_PROFILE_EDIT} element={<UpdateMyProfilePage />} />
+            <Route path={URL_FRONT_MY_DECKS} element={<MyDecksPage />} />
+            <Route path={URL_FRONT_MY_DECK_ADD} element={<MyDeckAdd />} />
+            <Route path={URL_FRONT_MY_DECK_UPDATE} element={<UpdateMyDeckPage />} />
+            <Route path={URL_FRONT_MY_TOURNAMENTS} element={<AllMyTournamentsPage />} />
+            <Route path="/my-tournaments/:tournamentId" element={<MyTournamentDetail />} />
 
-          {/* Admin */}
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_HOME} element={<AdminHome />} />
-          </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_HOME} element={<AdminHome />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_ARCHETYPES} element={<AdminArchetype />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM} element={<AdminArchetypeAdd />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_ARCHETYPE_UPDATE_FORM} element={<AdminArchetypeUpdatePage />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_BANLISTS} element={<AdminBanlist />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_BANLIST_ADD} element={<AdminAddBanlist />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_BANLIST_UPDATE} element={<AdminUpdateBanlist />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_USERS} element={<AdminUsers />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_USER_ADD} element={<AdminUserAdd />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_USER_UPDATE} element={<AdminUserUpdate />} />
+            </Route>
+            <Route path={URL_FRONT_ADMIN_FILES} element={<AdminFiles />} />
+            <Route path={URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON} element={<AdminFilesJumbotron />} />
+            <Route
+              path={URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD}
+              element={<AdminFilesIntroductionCard />}
+            />
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_CARDS} element={<AdminCards />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_CARD_DETAIL} element={<AdminCardDetail />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_OPTIONS} element={<AdminOptions />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_TOURNAMENTS} element={<AdminTournaments />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_TOURNAMENT_ADD} element={<AdminAddTournament />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_TOURNAMENT_UPDATE} element={<AdminUpdateTournament />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_TOURNAMENT_MANAGE} element={<AdminManageTournament />} />
+            </Route>
 
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route
-              path={URL_FRONT_ADMIN_ARCHETYPES}
-              element={<AdminArchetype />}
-            />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route
-              path={URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM}
-              element={<AdminArchetypeAdd />}
-            />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route
-              path={URL_FRONT_ADMIN_ARCHETYPE_UPDATE_FORM}
-              element={<AdminArchetypeUpdatePage />}
-            />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route
-              path={URL_FRONT_ADMIN_BANLISTS}
-              element={<AdminBanlist />}
-            />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route
-              path={URL_FRONT_ADMIN_BANLIST_ADD}
-              element={<AdminAddBanlist />}
-            />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route
-              path={URL_FRONT_ADMIN_BANLIST_UPDATE}
-              element={<AdminUpdateBanlist />}
-            />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_USERS} element={<AdminUsers />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_USER_ADD} element={<AdminUserAdd />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_USER_UPDATE} element={<AdminUserUpdate />} />
-          </Route>
-          <Route path={URL_FRONT_ADMIN_FILES} element={<AdminFiles />} />
-          <Route
-            path={URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON}
-            element={<AdminFilesJumbotron />}
-          />
-          <Route
-            path={URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD}
-            element={<AdminFilesIntroductionCard />}
-          />
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_CARDS} element={<AdminCards />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_CARD_DETAIL} element={<AdminCardDetail />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_OPTIONS} element={<AdminOptions />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_TOURNAMENTS} element={<AdminTournaments />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_TOURNAMENT_ADD} element={<AdminAddTournament />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_TOURNAMENT_UPDATE} element={<AdminUpdateTournament />} />
-          </Route>
-          <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-            <Route path={URL_FRONT_ADMIN_TOURNAMENT_MANAGE} element={<AdminManageTournament />} />
-          </Route>
-        </Routes>
+            <Route path="*" element={<Navigate to={URL_FRONT_HOME} />} />
+          </Routes>
+        </Suspense>
         <ToastContainer
           position="top-right"
           autoClose={3000}

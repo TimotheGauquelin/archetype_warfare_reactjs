@@ -40,33 +40,43 @@ const HeaderMemo = memo(function Header() {
     <div className="flex flex-col justify-center">
       <div className="flex flex-row justify-between items-center h-[50px] lscreen:h-[60px] px-2 w-full lscreen:m-auto lscreen:max-w-containerSize">
         <div className="flex flex-row items-center">
-          <Link className="block lscreen:pr-5" to={URL_FRONT_HOME}>
+          <Link
+            className="block lscreen:pr-5"
+            to={URL_FRONT_HOME}
+            aria-label={t("nav.home")}
+          >
             <div>
-              <img
-                src={`${import.meta.env.BASE_URL}assets/archetype_battle.png`}
-                alt=""
-                width={180}
-                height={48}
-                decoding="async"
-                className="w-1/2"
-              />
+              <picture>
+                <source
+                  srcSet={`${import.meta.env.BASE_URL}assets/archetype_battle.webp`}
+                  type="image/webp"
+                />
+                <img
+                  src={`${import.meta.env.BASE_URL}assets/archetype_battle.png`}
+                  alt="Archetype Battle"
+                  width={130}
+                  height={21}
+                  decoding="async"
+                  className="w-1/2"
+                />
+              </picture>
             </div>
           </Link>
           <ul className="hidden lscreen:flex flex-row justify-start px-3 font-bold text-md">
             {navBarComponent.map((component, index) => {
               return (
-                <Link
-                  key={index}
-                  className={`${
-                    url.includes(component.url)
-                      ? "text-red-400"
-                      : "text-gray-600"
-                  }`}
-                  style={{ paddingRight: "2rem" }}
-                  to={component.url}
-                >
-                  <li>{t(component.titleKey)}</li>{" "}
-                </Link>
+                <li key={index} style={{ paddingRight: "2rem" }}>
+                  <Link
+                    className={
+                      url.includes(component.url)
+                        ? "text-red-400"
+                        : "text-gray-600"
+                    }
+                    to={component.url}
+                  >
+                    {t(component.titleKey)}
+                  </Link>
+                </li>
               );
             })}
           </ul>
@@ -104,18 +114,18 @@ const HeaderMemo = memo(function Header() {
           <ul className="flex flex-col">
             {navBarComponent.map((component) => {
               return (
-                <Link
-                  key={component.url}
-                  className={`${
-                    url.includes(component.url)
-                      ? "text-red-400"
-                      : "text-gray-600"
-                  } my-2 px-2`}
-                  style={{ paddingRight: "2rem" }}
-                  to={component.url}
-                >
-                  <li>{t(component.titleKey)}</li>{" "}
-                </Link>
+                <li key={component.url} className="my-2 px-2" style={{ paddingRight: "2rem" }}>
+                  <Link
+                    className={
+                      url.includes(component.url)
+                        ? "text-red-400"
+                        : "text-gray-600"
+                    }
+                    to={component.url}
+                  >
+                    {t(component.titleKey)}
+                  </Link>
+                </li>
               );
             })}
           </ul>

@@ -10,7 +10,7 @@ interface JumbotronProps {
 const Jumbotron: React.FC<JumbotronProps> = ({ itemMainTitle, itemSubTitle, itemImg }) => {
   const src = itemImg
     ? optimizeImageUrl(itemImg, "jumbotron")
-    : import.meta.env.BASE_URL + "assets/yugi.png";
+    : import.meta.env.BASE_URL + "assets/yugi.webp";
 
   return (
     <div

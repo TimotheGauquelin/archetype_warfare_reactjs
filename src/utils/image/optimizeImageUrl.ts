@@ -1,14 +1,14 @@
 export type ImagePreset = "slider" | "jumbotron" | "card" | "thumb";
 
 const PRESET_WIDTH: Record<ImagePreset, number> = {
-  slider: 1200,
-  jumbotron: 1200,
-  card: 400,
-  thumb: 200,
+  slider: 800,
+  jumbotron: 800,
+  card: 360,
+  thumb: 160,
 };
 
 /**
- * Injecte f_auto,q_auto et une largeur adaptée dans une URL Cloudinary.
+ * Injecte f_auto,q_auto:eco et une largeur adaptée dans une URL Cloudinary.
  * Laisse intactes les URLs non-Cloudinary (ex. ygoprodeck, assets locaux).
  */
 export const optimizeImageUrl = (
@@ -27,6 +27,6 @@ export const optimizeImageUrl = (
   }
 
   const width = PRESET_WIDTH[preset];
-  const transform = `f_auto,q_auto,c_limit,w_${width}`;
+  const transform = `f_auto,q_auto:eco,c_limit,w_${width}`;
   return url.replace("/upload/", `/upload/${transform}/`);
 };

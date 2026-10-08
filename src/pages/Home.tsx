@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import Header from "../components/generic/header/Header";
@@ -22,49 +22,54 @@ const Home: React.FC = () => {
   const [eightMostRecentArchetypes, setEightMostRecentArchetypes] = useState<Archetype[]>([]);
   const [archetypesForSlider, setArchetypesForSlider] = useState<Archetype[]>([]);
   const [, setHasError] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isListsLoading, setIsListsLoading] = useState<boolean>(true);
 
-  const welcomeArchetypeBase: Archetype = {
-    id: 0,
-    name: t("home.welcomeTitle"),
-    nameSubtitle: t("home.welcomeSubtitle"),
-    isWelcome: true,
-    slider_img_url: import.meta.env.BASE_URL + "assets/yugi.png",
-  };
-
-  const welcomeArchetype: Archetype = {
-    ...welcomeArchetypeBase,
-    slider_info: isLoading
-      ? t("home.loading")
-      : t("home.welcomeMessage"),
-  };
+  const welcomeArchetype: Archetype = useMemo(
+    () => ({
+      id: 0,
+      name: t("home.welcomeTitle"),
+      nameSubtitle: t("home.welcomeSubtitle"),
+      isWelcome: true,
+      slider_img_url: `${import.meta.env.BASE_URL}assets/yugi.webp`,
+      slider_info: t("home.welcomeMessage"),
+    }),
+    [t]
+  );
 
   const loadData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setHasError(false);
+    setHasError(false);
+    setIsListsLoading(true);
 
-      await Promise.all([
-        getEightMostFamousArchetypes(setFiveMostFamousArchetypes, () => { }),
-        getEightMostRecentArchetypes(setEightMostRecentArchetypes, () => { }),
-        getFiveRandomHighlightedArchetypes(setArchetypesForSlider, () => { })
-      ]).catch(() => {
-        setHasError(true);
-      });
-    } catch (error) {
+    const sliderPromise = getFiveRandomHighlightedArchetypes(setArchetypesForSlider, () => {});
+    const listsPromise = Promise.all([
+      getEightMostFamousArchetypes(setFiveMostFamousArchetypes, () => {}),
+      getEightMostRecentArchetypes(setEightMostRecentArchetypes, () => {}),
+    ]);
+
+    try {
+      await Promise.all([sliderPromise, listsPromise]);
+    } catch {
       setHasError(true);
     } finally {
-      setIsLoading(false);
+      setIsListsLoading(false);
     }
   }, [locale]);
 
   useEffect(() => {
-    loadData();
+    // Laisse peindre le LCP (yugi.webp) avant les appels API
+    const t = window.setTimeout(() => {
+      loadData();
+    }, 100);
+    return () => window.clearTimeout(t);
   }, [loadData]);
 
-  const slidesToDisplay = archetypesForSlider.length > 0
-    ? archetypesForSlider.filter((archetype) => archetype.is_highlighted)
-    : [welcomeArchetype];
+  const slidesToDisplay = useMemo(() => {
+    const highlighted = archetypesForSlider.filter((a) => a.is_highlighted);
+    if (highlighted.length === 0) {
+      return [welcomeArchetype];
+    }
+    return [welcomeArchetype, ...highlighted];
+  }, [archetypesForSlider, welcomeArchetype]);
 
   return (
     <div>
@@ -77,13 +82,13 @@ const Home: React.FC = () => {
           dataArray={fiveMostFamousArchetypes}
           subTitleDividerText={t("home.popularArchetypes")}
           haveMedal
-          isFetching={isLoading}
+          isFetching={isListsLoading}
           skeletonItemCount={8}
         />
         <ArchetypeList
           dataArray={eightMostRecentArchetypes}
           subTitleDividerText={t("home.newArchetypes")}
-          isFetching={isLoading}
+          isFetching={isListsLoading}
           skeletonItemCount={8}
           displayDate
         />
