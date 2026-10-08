@@ -8,14 +8,14 @@ const Footer: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <footer className="p-4 bg-gray-200 text-gray-500 border-t border-gray-300">
+    <footer className="p-4 bg-gray-200 text-gray-700 border-t border-gray-300">
       <div className="flex flex-col border-b w-full lscreen:m-auto lscreen:max-w-containerSize">
-        <p className="text-gray-500 pb-4">
+        <p className="text-gray-700 pb-4">
           {t("footer.legal")}
         </p>
         <div className="border-t border-gray-300 pt-4 flex flex-row justify-between items-center">
-          <p className="text-gray-500">{t("footer.copyright", { year: currentYear })}</p>
-          <p className="text-gray-500">
+          <p className="text-gray-700">{t("footer.copyright", { year: currentYear })}</p>
+          <p className="text-gray-700">
             {t("footer.tagline")}
           </p>
           <div className="flex flex-row justify-center items-center gap-1">
