@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useId } from "react";
 
 interface Option {
   id: number | string;
@@ -17,6 +17,8 @@ interface SelectInputProps<T extends Record<string, unknown> = Record<string, un
   attribute: string;
   setAction: React.Dispatch<React.SetStateAction<T>>;
   data: T;
+  /** Nom accessible si pas de label visible (lecteurs d’écran / Lighthouse). */
+  ariaLabel?: string;
 }
 
 const SelectInput = <T extends Record<string, unknown>>({
@@ -31,7 +33,12 @@ const SelectInput = <T extends Record<string, unknown>>({
   attribute,
   setAction,
   data,
+  ariaLabel,
 }: SelectInputProps<T>) => {
+  const generatedId = useId();
+  const selectId = inputName ? `select-${inputName}` : generatedId;
+  const accessibleName = ariaLabel || label || defaultOptionLabel;
+
   const handleChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     setAction((prevState: T) => {
       return {
@@ -43,19 +50,23 @@ const SelectInput = <T extends Record<string, unknown>>({
 
   return (
     <div className={`flex flex-col col-span-${colSpanWidth} rounded-md space-y-2 mt-2`}>
-      {label && <label className="font-medium">
-        {label}: {required && <span className="text-red-500 font-bold">*</span>}
-      </label>}
-      <select 
-        className={`h-full p-2 bg-gray-100 rounded-md ${className} ${disabled && "opacity-50 hover:outline-none"}`} 
-        name={inputName} 
+      {label && (
+        <label htmlFor={selectId} className="font-medium">
+          {label}: {required && <span className="text-red-500 font-bold">*</span>}
+        </label>
+      )}
+      <select
+        id={selectId}
+        className={`h-full p-2 bg-gray-100 rounded-md ${className ?? ""} ${disabled ? "opacity-50 hover:outline-none" : ""}`}
+        name={inputName}
+        aria-label={label ? undefined : accessibleName}
         value={
-          data[attribute] 
-            ? (typeof data[attribute] === 'object' && data[attribute] !== null && 'id' in data[attribute] 
-              ? String((data[attribute] as Option).id) 
+          data[attribute]
+            ? (typeof data[attribute] === "object" && data[attribute] !== null && "id" in data[attribute]
+              ? String((data[attribute] as Option).id)
               : String(data[attribute]))
-            : ''
-        } 
+            : ""
+        }
         onChange={handleChange}
         disabled={disabled ? true : false}
       >

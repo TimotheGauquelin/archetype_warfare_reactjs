@@ -18,14 +18,14 @@ describe("ArchetypeCard", () => {
 
     it("renders image with card_img_url when provided", () => {
       render(<ArchetypeCard archetype={baseArchetype} index={0} />);
-      const img = screen.getByRole("img", { name: "" });
+      const img = screen.getByRole("img", { name: "Dark Magician" });
       expect(img).toHaveAttribute("src", baseArchetype.card_img_url);
     });
 
     it("renders fallback image when card_img_url is missing", () => {
       const archetypeWithoutImg: Archetype = { ...baseArchetype, card_img_url: undefined };
       render(<ArchetypeCard archetype={archetypeWithoutImg} index={0} />);
-      const img = screen.getByRole("img", { name: "" });
+      const img = screen.getByRole("img", { name: "Dark Magician" });
       expect(img).toHaveAttribute("src", expect.stringContaining("waiting_archetype_image"));
     });
   });

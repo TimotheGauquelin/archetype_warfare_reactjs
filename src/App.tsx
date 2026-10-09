@@ -148,7 +148,6 @@ const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SiteConfig>({});
 
   useEffect(() => {
-    // Hors chemin critique LCP (banner stream / registration)
     const t = window.setTimeout(() => getConfig(setConfig), 4000);
     return () => window.clearTimeout(t);
   }, []);

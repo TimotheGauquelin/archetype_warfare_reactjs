@@ -82,7 +82,9 @@
   },
   "archetypesPage": {
     "searchPlaceholder": "Which archetype are you looking for?",
-    "eraPlaceholder": "Which era is your archetype from?"
+    "eraPlaceholder": "Which era is your archetype from?",
+    "eraLabel": "Archetype era",
+    "randomArchetype": "Random archetype"
   },
   "profile": {
     "myProfile": "My Profile",

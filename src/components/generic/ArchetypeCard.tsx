@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { databaseDateToCalendarDate } from "../../utils/date/databaseDateToCalendarDate";
 import type { Archetype } from "../../types";
 import { optimizeImageUrl } from "../../utils/image/optimizeImageUrl";
+import { useFetchPriorityHigh } from "../../utils/image/useFetchPriorityHigh";
 
 interface ArchetypeCardProps {
   archetype: Archetype;
@@ -11,6 +12,8 @@ interface ArchetypeCardProps {
 }
 
 const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMedal, displayDate = false }) => {
+  const isLcpCandidate = index === 0;
+  const fetchPriorityRef = useFetchPriorityHigh(isLcpCandidate);
 
   const imageUrl = useMemo(() => {
     if (archetype?.card_img_url) {
@@ -30,14 +33,15 @@ const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMe
     <div>
       <div className="aspect-square bg-cover bg-center rounded-lg">
         <img
+          ref={fetchPriorityRef}
           className="bg-cover bg-center h-full w-full rounded-lg"
           src={imageUrl}
-          alt=""
-          width={360}
-          height={360}
-          sizes="(max-width: 768px) 45vw, 360px"
-          loading="lazy"
-          decoding="async"
+          alt={archetype?.name ?? ""}
+          width={280}
+          height={280}
+          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 30vw, 280px"
+          loading={isLcpCandidate ? "eager" : "lazy"}
+          decoding={isLcpCandidate ? "sync" : "async"}
         />
       </div>
       <div className="font-bold pt-3 text-center ellipsisText flex justify-center items-center">

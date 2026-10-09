@@ -19,6 +19,7 @@ import UserHeroLayout from "../layout";
 import { useEras } from "../../../hooks/useEras";
 import { useDebounce } from "@/utils/functions/debounce/useDebounce";
 import { useTranslation } from "react-i18next";
+import { optimizeImageUrl } from "@/utils/image/optimizeImageUrl";
 
 const ArchetypesPage = () => {
   const { t } = useTranslation();
@@ -80,6 +81,30 @@ const ArchetypesPage = () => {
     loadData();
   }, [loadData]);
 
+  // Précharge l’image LCP (1ʳᵉ carte) dès qu’on a l’URL — fetchpriority natif sur le <link>
+  useEffect(() => {
+    const raw = archetypes[0]?.card_img_url;
+    if (!raw) return;
+    const href = optimizeImageUrl(raw, "card");
+    if (!href) return;
+
+    const existing = document.head.querySelector<HTMLLinkElement>('link[data-lcp-preload="archetypes"]');
+    if (existing?.href === href) return;
+
+    existing?.remove();
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = href;
+    link.setAttribute("fetchpriority", "high");
+    link.dataset.lcpPreload = "archetypes";
+    document.head.appendChild(link);
+
+    return () => {
+      link.remove();
+    };
+  }, [archetypes]);
+
   const eraOptions = useMemo(() => eras, [eras]);
 
   const isRandomButtonDisabled = useMemo(() => {
@@ -113,6 +138,7 @@ const ArchetypesPage = () => {
           attribute="era"
           data={filters as Record<string, unknown>}
           defaultOptionLabel={t("archetypesPage.eraPlaceholder")}
+          ariaLabel={t("archetypesPage.eraLabel")}
           setAction={setFilters as React.Dispatch<React.SetStateAction<Record<string, unknown>>>}
         />
         <div className="col-span-2">
@@ -121,8 +147,9 @@ const ArchetypesPage = () => {
             className="h-full w-full p-2 rounded-md flex justify-center items-center text-white"
             action={handleRandomArchetype}
             disabled={isLoading || isRandomButtonDisabled}
+            ariaLabel={t("archetypesPage.randomArchetype")}
           >
-            <FaRandom />
+            <FaRandom aria-hidden />
           </Button>
         </div>
       </AbsoluteInput>

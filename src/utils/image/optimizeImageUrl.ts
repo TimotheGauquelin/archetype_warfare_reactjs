@@ -3,7 +3,7 @@ export type ImagePreset = "slider" | "jumbotron" | "card" | "thumb";
 const PRESET_WIDTH: Record<ImagePreset, number> = {
   slider: 800,
   jumbotron: 800,
-  card: 360,
+  card: 280,
   thumb: 160,
 };
 
@@ -27,6 +27,7 @@ export const optimizeImageUrl = (
   }
 
   const width = PRESET_WIDTH[preset];
-  const transform = `f_auto,q_auto:eco,c_limit,w_${width}`;
+  const quality = preset === "card" || preset === "thumb" ? "q_auto:low" : "q_auto:eco";
+  const transform = `f_auto,${quality},c_limit,w_${width}`;
   return url.replace("/upload/", `/upload/${transform}/`);
 };

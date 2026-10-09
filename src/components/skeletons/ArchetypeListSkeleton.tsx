@@ -8,7 +8,7 @@ interface ArchetypeListSkeletonProps {
 
 const ArchetypeListSkeleton: React.FC<ArchetypeListSkeletonProps> = ({ itemCount = 8, subTitleDividerText }) => {
   return (
-    <div data-testid="archetype-list-skeleton" className="w-full m-auto mb-5">
+    <div data-testid="archetype-list-skeleton" className="w-full m-auto mb-5 min-h-[640px]">
       {subTitleDividerText && (
         <SubtitleDivider displayDivider label={subTitleDividerText} />
       )}
@@ -16,7 +16,7 @@ const ArchetypeListSkeleton: React.FC<ArchetypeListSkeletonProps> = ({ itemCount
         {[...Array(itemCount)].map((_, index) => (
           <div
             key={index}
-            className="col-span-6 sscreen:col-span-4 lscreen:col-span-3 bg-white p-3 rounded-lg aspect-square cardShadow"
+            className="col-span-12 sscreen:col-span-4 lscreen:col-span-3 bg-white p-3 rounded-lg aspect-square cardShadow"
             style={{ animationDelay: `${index * 60}ms` }}
           >
             <div className="aspect-square bg-gray-200 rounded-lg animate-pulse" />

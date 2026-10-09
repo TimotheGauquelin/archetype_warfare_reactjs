@@ -12,9 +12,9 @@ const UserBasicLayout = ({ mainTitle, subTitle, children }: { mainTitle: string;
                     subTitle={subTitle}
                 />
             </div>
-            <div className="relative w-full max-w-containerSize mx-auto">
+            <main className="relative w-full max-w-containerSize mx-auto">
                 {children && children}
-            </div>
+            </main>
             <Footer />
         </div >
     );

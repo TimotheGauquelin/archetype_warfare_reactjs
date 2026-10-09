@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { Archetype } from "../../../types";
 import { optimizeImageUrl } from "../../../utils/image/optimizeImageUrl";
+import { useFetchPriorityHigh } from "../../../utils/image/useFetchPriorityHigh";
 
 interface SlideProps {
   archetype: Archetype;
@@ -21,6 +22,7 @@ const Slide: React.FC<SlideProps> = ({
 }) => {
   const { t } = useTranslation();
   const isWelcomeSlide = archetype?.isWelcome || !archetype?.id;
+  const fetchPriorityRef = useFetchPriorityHigh(isActive);
   const imageSrc = loadImage
     ? optimizeImageUrl(archetype.slider_img_url, "slider")
     : undefined;
@@ -89,15 +91,13 @@ const Slide: React.FC<SlideProps> = ({
       >
         {imageSrc ? (
           <img
+            ref={fetchPriorityRef}
             src={imageSrc}
             alt={archetype.name}
             width={800}
             height={520}
             decoding={isActive ? "sync" : "async"}
             loading={isActive ? "eager" : "lazy"}
-            {...(isActive
-              ? ({ fetchpriority: "high" } as React.ImgHTMLAttributes<HTMLImageElement>)
-              : {})}
             className="w-full h-full object-cover object-left"
           />
         ) : (
