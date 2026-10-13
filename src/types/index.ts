@@ -237,22 +237,22 @@ export interface Deck {
   deck_cards?: DeckCard[];
   created_at?: string;
   updated_at?: string;
-  archetype: {
-    id: number;
-    label: string;
-    card_img_url: string;
-    is_active: boolean;
-  };
+  archetype?: {
+    id?: number;
+    label?: string;
+    card_img_url?: string | null;
+    is_active?: boolean;
+  } | null;
   [key: string]: unknown;
 }
 
 export interface DeckWithArchetypeDetails extends Deck {
-  archetype: {
-    id:number;
-    label: string;
-    card_img_url: string
-    is_active: boolean
-  }
+  archetype?: {
+    id?: number;
+    label?: string;
+    card_img_url?: string | null;
+    is_active?: boolean;
+  } | null;
 }
 
 // Types pour les cartes de banlist

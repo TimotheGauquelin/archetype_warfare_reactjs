@@ -106,6 +106,7 @@
     "allMyDecks": "All my decks",
     "createDeck": "Create a deck",
     "addDeck": "Add a deck",
+    "deckWithoutArchetype": "Deck without archetype",
     "noDecks": "You don't have any decks yet",
     "playable": "Playable",
     "notPlayable": "Not playable",

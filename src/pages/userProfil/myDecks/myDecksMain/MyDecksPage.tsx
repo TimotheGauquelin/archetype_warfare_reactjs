@@ -46,31 +46,47 @@ const MyDecksPage = () => {
             {myDecks.length > 0 ? (
               myDecks
                 .filter((deck): deck is DeckWithArchetypeDetails & { id: string } => deck.id != null && deck.id !== "")
-                .map((deck) => (
-                  <Link
-                    key={deck.id}
-                    className="p-4 space-y-2 bg-white cardShadow rounded-lg col-span-6 lscreen:col-span-2"
-                    to={getMyDeckUpdatePath(deck.id)}
-                  >
-                    <div className="rounded-md">
-                      <img
-                        className="rounded-md"
-                        src={optimizeImageUrl(deck.archetype.card_img_url, "card")}
-                        alt={deck.archetype.label}
-                        width={400}
-                        height={400}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                    <p className="flex flex-col justify-between items-center">
-                      <span className="font-bold line-clamp-1">{deck.label}</span>
-                      <span className={`text-white text-sm p-1 rounded-sm ${deck.is_playable && deck.archetype.is_active === true ? "bg-green-500" : "bg-red-500"}`}>
-                        {deck.is_playable && deck.archetype.is_active ? t("profile.playable") : t("profile.notPlayable")}
-                      </span>
-                    </p>
-                  </Link>
-                ))
+                .map((deck) => {
+                  const archetypeImg = deck.archetype?.card_img_url;
+                  const isPlayable =
+                    Boolean(deck.is_playable) && deck.archetype?.is_active === true;
+
+                  return (
+                    <Link
+                      key={deck.id}
+                      className="p-4 space-y-2 bg-white cardShadow rounded-lg col-span-6 lscreen:col-span-2"
+                      to={getMyDeckUpdatePath(deck.id)}
+                    >
+                      <div className="rounded-md aspect-square overflow-hidden bg-gray-300">
+                        {archetypeImg ? (
+                          <img
+                            className="rounded-md w-full h-full object-cover"
+                            src={optimizeImageUrl(archetypeImg, "card")}
+                            alt={deck.archetype?.label || deck.label || t("profile.deckWithoutArchetype")}
+                            width={400}
+                            height={400}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          <div
+                            className="w-full h-full bg-gray-300"
+                            aria-label={t("profile.deckWithoutArchetype")}
+                            role="img"
+                          />
+                        )}
+                      </div>
+                      <p className="flex flex-col justify-between items-center">
+                        <span className="font-bold line-clamp-1">{deck.label}</span>
+                        <span
+                          className={`text-white text-sm p-1 rounded-sm ${isPlayable ? "bg-green-500" : "bg-red-500"}`}
+                        >
+                          {isPlayable ? t("profile.playable") : t("profile.notPlayable")}
+                        </span>
+                      </p>
+                    </Link>
+                  );
+                })
             ) : (
               <NoItemMessage message={t("profile.noDecks")} textPosition="left" />
             )}
