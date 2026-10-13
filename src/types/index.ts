@@ -12,6 +12,15 @@ export interface User {
   isAuthenticated: boolean;
   is_active?: boolean;
   is_banned?: boolean;
+  biography?: string | null;
+  loved_archetype_id?: number | string | null;
+  loved_archetype?: {
+    id: number;
+    name: string;
+    slug?: string | null;
+    card_img_url?: string | null;
+    is_active?: boolean;
+  } | null;
   created_at?: string;
   updated_at?: string;
   [key: string]: unknown;
@@ -30,7 +39,8 @@ export interface UserForm {
 export interface UserUpdateForm {
   username: string;
   email: string;
-  belovedArchetype: string;
+  biography: string;
+  loved_archetype_id: string;
   [key: string]: unknown;
 }
 
@@ -38,6 +48,13 @@ export interface PasswordUpdateForm {
   password: string;
   confirmPassword: string;
   has_accepted_terms_and_conditions?: boolean;
+  [key: string]: unknown;
+}
+
+export interface ChangePasswordForm {
+  currentPassword: string;
+  password: string;
+  confirmPassword: string;
   [key: string]: unknown;
 }
 

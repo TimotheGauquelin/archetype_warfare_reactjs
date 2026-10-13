@@ -14,7 +14,7 @@
     "en": "English"
   },
   "banner": {
-    "freeHosting": "The API runs on free hosting: please allow up to 20 seconds for data to load."
+    "freeHosting": "The API runs on free hosting: please allow up to 20 seconds for data to load"
   },
   "auth": {
     "loginTitle": "Log in",
@@ -129,6 +129,20 @@
     "usernamePlaceholder": "Enter your username",
     "emailLabel": "Email",
     "emailPlaceholder": "Enter your email",
+    "biographyLabel": "Biography",
+    "noBiography": "No biography provided",
+    "favoriteArchetypeLabel": "Favorite archetype",
+    "selectFavoriteArchetype": "Select a favorite archetype",
+    "noFavoriteArchetype": "No favorite archetype",
+    "saveProfile": "Save profile",
+    "savingProfile": "Saving...",
+    "passwordSectionTitle": "Password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "savePassword": "Update password",
+    "savingPassword": "Updating...",
+    "passwordAllFieldsRequired": "Please fill in all password fields",
     "deckName": "Deck name",
     "selectedArchetype": "Selected archetype",
     "deckDescription": "Deck description",

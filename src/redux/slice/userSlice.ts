@@ -8,7 +8,9 @@ const initialState: User = {
   email: null,
   roles: [],
   token: null,
-  belovedArchetype: null
+  biography: null,
+  loved_archetype_id: null,
+  loved_archetype: null,
 };
 
 interface SetUserPayload {
@@ -21,10 +23,9 @@ interface SetUserPayload {
 }
 
 interface UpdateUserPayload {
-  username: string;
-  email: string;
-  belovedArchetype: string;
-  roles: string[];
+  biography?: string | null;
+  loved_archetype_id?: number | string | null;
+  loved_archetype?: User["loved_archetype"];
 }
 
 const userSlice = createSlice({
@@ -46,12 +47,20 @@ const userSlice = createSlice({
       state.email = null;
       state.roles = [];
       state.token = null;
+      state.biography = null;
+      state.loved_archetype_id = null;
+      state.loved_archetype = null;
     },
     updateUser: (state, action: PayloadAction<UpdateUserPayload>) => {
-      state.username = action.payload.username;
-      state.email = action.payload.email;
-      state.roles = action.payload.roles;
-      state.belovedArchetype = action.payload.belovedArchetype;
+      if (action.payload.biography !== undefined) {
+        state.biography = action.payload.biography;
+      }
+      if (action.payload.loved_archetype_id !== undefined) {
+        state.loved_archetype_id = action.payload.loved_archetype_id;
+      }
+      if (action.payload.loved_archetype !== undefined) {
+        state.loved_archetype = action.payload.loved_archetype;
+      }
     }
   }
 });

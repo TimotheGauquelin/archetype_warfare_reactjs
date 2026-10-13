@@ -6,7 +6,6 @@ import { useFetchPriorityHigh } from "../../utils/image/useFetchPriorityHigh";
 
 interface CardProps {
   card: CardWithBanlistStatus;
-  /** Index grille : 0 = candidat LCP (eager + fetchpriority). */
   index?: number;
 }
 

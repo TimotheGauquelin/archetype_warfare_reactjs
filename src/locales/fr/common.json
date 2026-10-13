@@ -14,7 +14,7 @@
     "en": "English"
   },
   "banner": {
-    "freeHosting": "L'API est hébergée gratuitement : merci de patienter jusqu'à 20 secondes pour le chargement des données."
+    "freeHosting": "L'API est hébergée gratuitement : merci de patienter jusqu'à 20 secondes pour le chargement des données"
   },
   "auth": {
     "loginTitle": "Connectez-vous",
@@ -129,6 +129,20 @@
     "usernamePlaceholder": "Entrez votre nom d'utilisateur",
     "emailLabel": "Email",
     "emailPlaceholder": "Entrez votre email",
+    "biographyLabel": "Biographie",
+    "noBiography": "Aucune biographie renseignée",
+    "favoriteArchetypeLabel": "Archétype préféré",
+    "selectFavoriteArchetype": "Sélectionnez un archétype préféré",
+    "noFavoriteArchetype": "Aucun archétype préféré",
+    "saveProfile": "Enregistrer le profil",
+    "savingProfile": "Enregistrement...",
+    "passwordSectionTitle": "Mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmation du nouveau mot de passe",
+    "savePassword": "Modifier le mot de passe",
+    "savingPassword": "Modification...",
+    "passwordAllFieldsRequired": "Veuillez remplir tous les champs du mot de passe",
     "deckName": "Nom du deck",
     "selectedArchetype": "Archetype selectionné",
     "deckDescription": "Description du deck",

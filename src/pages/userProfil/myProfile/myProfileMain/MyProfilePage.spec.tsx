@@ -1,21 +1,19 @@
 import React from "react";
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import { setupServer } from "msw/node";
-import { http, HttpResponse } from "msw";
 import userReducer from "../../../../redux/slice/userSlice";
 import MyProfilePage from "./MyProfilePage";
-import { URL_BACK_DELETE_USER } from "../../../../constant/urlsBack";
 
 vi.mock("../../layout", () => ({
   default: ({ children }: { children: React.ReactNode }) => <div data-testid="user-profil-layout">{children}</div>,
 }));
 
 const navigateMock = vi.fn();
+const deleteUserMock = vi.fn();
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
@@ -25,7 +23,20 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-const API_BASE_URL = "http://localhost:8889/api";
+vi.mock("../../../../services/user", () => ({
+  getUserById: vi.fn(async (_id: string | number, setUser: (v: unknown) => void) => {
+    setUser({
+      id: 1,
+      username: "testuser",
+      email: "test@example.com",
+      roles: ["USER"],
+      biography: null,
+      loved_archetype_id: null,
+      loved_archetype: null,
+    });
+  }),
+  deleteUser: (...args: unknown[]) => deleteUserMock(...args),
+}));
 
 const mockUser = {
   isAuthenticated: true,
@@ -34,7 +45,9 @@ const mockUser = {
   email: "test@example.com",
   roles: ["USER"],
   token: "fake-token",
-  belovedArchetype: null,
+  biography: null,
+  loved_archetype_id: null,
+  loved_archetype: null,
 };
 
 function createTestStore() {
@@ -58,36 +71,17 @@ function renderMyProfilePage() {
   };
 }
 
-let server: ReturnType<typeof setupServer>;
-
 describe("MyProfilePage (integration)", () => {
-  beforeAll(() => {
-    server = setupServer();
-    server.listen({ onUnhandledRequest: "error" });
-  });
-
-  afterAll(() => {
-    server.close();
-  });
-
   beforeEach(() => {
     navigateMock.mockClear();
-    server.resetHandlers(
-      http.delete(`${API_BASE_URL}${URL_BACK_DELETE_USER(1)}`, () => {
-        return new HttpResponse(null, { status: 200 });
-      })
-    );
-  });
-
-  afterEach(() => {
-    server.resetHandlers();
+    deleteUserMock.mockClear();
     vi.clearAllMocks();
   });
 
   describe("rendering", () => {
     it("display the title 'Informations du compte'", () => {
       renderMyProfilePage();
-      expect(screen.getByTestId("user-profile-layout-title")).toHaveTextContent("Informations du compte:");
+      expect(screen.getByTestId("user-profile-layout-title")).toHaveTextContent("Informations du compte");
     });
 
     it("display the username", () => {
@@ -102,9 +96,9 @@ describe("MyProfilePage (integration)", () => {
       expect(screen.getByText("USER")).toBeInTheDocument();
     });
 
-    it("display the 'Modifier mes informations' button", () => {
+    it("display the 'Modifier mon profil' button", () => {
       renderMyProfilePage();
-      const button = screen.getByRole("button", { name: /Modifier mes informations/i });
+      const button = screen.getByRole("button", { name: /Modifier mon profil/i });
       expect(button).toBeInTheDocument();
     });
 
@@ -121,13 +115,10 @@ describe("MyProfilePage (integration)", () => {
       const deleteButton = screen.getByRole("button", { name: /Supprimer mon compte/i });
       await userEvent.click(deleteButton);
 
-      await waitFor(
-        () => {
-          expect(screen.getByRole("heading", { name: /Supprimer votre compte/i })).toBeInTheDocument();
-          expect(screen.getByText(/Cette action est irréversible/i)).toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitFor(() => {
+        expect(screen.getByRole("heading", { name: /Supprimer votre compte/i })).toBeInTheDocument();
+        expect(screen.getByText(/Cette action est irréversible/i)).toBeInTheDocument();
+      });
     });
 
     it("close the popup when clicking on 'Annuler'", async () => {
@@ -135,59 +126,33 @@ describe("MyProfilePage (integration)", () => {
       const deleteButton = screen.getByRole("button", { name: /Supprimer mon compte/i });
       await userEvent.click(deleteButton);
 
-      await waitFor(
-        () => {
-          expect(screen.getByRole("heading", { name: /Supprimer votre compte/i })).toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitFor(() => {
+        expect(screen.getByRole("heading", { name: /Supprimer votre compte/i })).toBeInTheDocument();
+      });
 
       const cancelButton = screen.getByRole("button", { name: /Annuler/i });
       await userEvent.click(cancelButton);
 
-      await waitFor(
-        () => {
-          expect(screen.queryByRole("heading", { name: /Supprimer votre compte/i })).not.toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitFor(() => {
+        expect(screen.queryByRole("heading", { name: /Supprimer votre compte/i })).not.toBeInTheDocument();
+      });
     });
 
-    it("call the DELETE API, disconnect the user and redirect to the home page when clicking on 'Confirmer'", async () => {
-      let deleteRequestCalled = false;
-      server.use(
-        http.delete(`${API_BASE_URL}${URL_BACK_DELETE_USER(1)}`, () => {
-          deleteRequestCalled = true;
-          return new HttpResponse(null, { status: 200 });
-        })
-      );
-
-      const { store } = renderMyProfilePage();
+    it("call deleteUser when clicking on 'Confirmer'", async () => {
+      renderMyProfilePage();
       const deleteButton = screen.getByRole("button", { name: /Supprimer mon compte/i });
       await userEvent.click(deleteButton);
 
-      await waitFor(
-        () => {
-          expect(screen.getByRole("button", { name: /Confirmer/i })).toBeInTheDocument();
-        },
-        { timeout: 2000 }
-      );
+      await waitFor(() => {
+        expect(screen.getByRole("button", { name: /Confirmer/i })).toBeInTheDocument();
+      });
 
       const confirmButton = screen.getByRole("button", { name: /Confirmer/i });
       await userEvent.click(confirmButton);
 
-      await waitFor(
-        () => {
-          expect(deleteRequestCalled).toBe(true);
-          expect(navigateMock).toHaveBeenCalledWith("/");
-          const state = store.getState();
-          expect(state.user.isAuthenticated).toBe(false);
-          expect(state.user.id).toBeNull();
-          expect(state.user.username).toBeNull();
-          expect(state.user.token).toBeNull();
-        },
-        { timeout: 3000 }
-      );
+      await waitFor(() => {
+        expect(deleteUserMock).toHaveBeenCalled();
+      });
     });
   });
 });

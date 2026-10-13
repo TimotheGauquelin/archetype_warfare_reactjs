@@ -1,8 +1,8 @@
 import api_aw from "../api/api_aw";
-import { URL_BACK_ADD_USER, URL_BACK_CREATE_USER_BY_ADMIN, URL_BACK_DELETE_USER, URL_BACK_GET_ALL_USERS, URL_BACK_GET_USER_BY_ID, URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN, URL_BACK_SEARCH_USERS, URL_BACK_SWITCH_USER_IS_ACTIVE, URL_BACK_SWITCH_USER_IS_BANNED, URL_BACK_UPDATE_MY_PROFILE, URL_BACK_UPDATE_PASSWORD, URL_BACK_UPDATE_USER_BY_ADMIN } from "../constant/urlsBack";
+import { URL_BACK_ADD_USER, URL_BACK_CHANGE_MY_PASSWORD, URL_BACK_CREATE_USER_BY_ADMIN, URL_BACK_DELETE_USER, URL_BACK_GET_ALL_USERS, URL_BACK_GET_USER_BY_ID, URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN, URL_BACK_SEARCH_USERS, URL_BACK_SWITCH_USER_IS_ACTIVE, URL_BACK_SWITCH_USER_IS_BANNED, URL_BACK_UPDATE_MY_PROFILE, URL_BACK_UPDATE_PASSWORD, URL_BACK_UPDATE_USER_BY_ADMIN } from "../constant/urlsBack";
 import { URL_FRONT_ADMIN_USERS, URL_FRONT_HOME, URL_FRONT_LOGIN } from "../constant/urlsFront";
 import { logOut } from "./auth";
-import type { CardLocale, User, UserForm, PasswordUpdateForm, UserSearchCriteria, Pagination, PaginatedResponse, SetStateCallback, SetErrorMessageCallback } from "../types";
+import type { CardLocale, ChangePasswordForm, User, UserForm, PasswordUpdateForm, UserSearchCriteria, Pagination, PaginatedResponse, SetStateCallback, SetErrorMessageCallback } from "../types";
 import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
 import type { NavigateFunction } from "react-router-dom";
 import type { AppDispatch } from "../redux/store";
@@ -264,6 +264,68 @@ export const updateMyLocale = async (
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "updateMyLocale");
+  }
+};
+
+/**
+ * Met à jour le profil (biographie, archétype préféré, locale).
+ */
+export const updateMyProfile = async (
+  userId: number | string,
+  payload: {
+    biography?: string | null;
+    loved_archetype_id?: number | string | null;
+    locale?: CardLocale;
+  },
+  token: string,
+  toast: ToastFunction
+): Promise<User | null> => {
+  try {
+    const response = await api_aw.patch(
+      URL_BACK_UPDATE_MY_PROFILE(userId),
+      payload,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (response.status === 200) {
+      toast.success("Profil mis à jour");
+      return (response.data?.user as User) ?? null;
+    }
+    toast.error("Une erreur inattendue s'est produite.");
+    return null;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "updateMyProfile");
+    toast.error(getErrorMessage(appError));
+    return null;
+  }
+};
+
+/**
+ * Change le mot de passe depuis le profil (vérifie le mot de passe actuel).
+ */
+export const changeMyPassword = async (
+  userId: number | string,
+  form: ChangePasswordForm,
+  token: string,
+  toast: ToastFunction
+): Promise<boolean> => {
+  try {
+    const response = await api_aw.put(
+      URL_BACK_CHANGE_MY_PASSWORD(userId),
+      form,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (response.status === 200) {
+      toast.success("Mot de passe mis à jour");
+      return true;
+    }
+    toast.error("Une erreur inattendue s'est produite.");
+    return false;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "changeMyPassword");
+    toast.error(getErrorMessage(appError));
+    return false;
   }
 };
 

@@ -71,7 +71,6 @@ const ArchetypePage = () => {
     loadArchetypeData();
   }, [loadArchetypeData]);
 
-  // Précharge l’image LCP (jumbotron) dès que l’URL API est connue
   useEffect(() => {
     const raw = archetype?.slider_img_url;
     if (!raw) return;
