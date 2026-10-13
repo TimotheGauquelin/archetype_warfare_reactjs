@@ -8,8 +8,15 @@ describe("optimizeImageUrl", () => {
     expect(optimizeImageUrl(undefined)).toBe("");
   });
 
-  it("leaves non-cloudinary URLs unchanged", () => {
+  it("rewrites ygoprodeck full cards to cards_small for card preset", () => {
     const url = "https://images.ygoprodeck.com/images/cards/123.jpg";
+    expect(optimizeImageUrl(url, "card")).toBe(
+      "https://images.ygoprodeck.com/images/cards_small/123.jpg"
+    );
+  });
+
+  it("leaves non-cloudinary non-ygoprodeck URLs unchanged", () => {
+    const url = "https://example.com/card.jpg";
     expect(optimizeImageUrl(url, "card")).toBe(url);
   });
 

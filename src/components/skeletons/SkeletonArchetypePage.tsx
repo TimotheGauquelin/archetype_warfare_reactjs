@@ -80,7 +80,7 @@ const SkeletonArchetypePage: React.FC = () => {
                         {[...Array(12)].map((_, index) => (
                             <div
                                 key={index}
-                                className="relative lscreen:col-span-2 sscreen:col-span-3 col-span-4"
+                                className="relative lscreen:col-span-2 sscreen:col-span-3 col-span-6"
                                 style={{ animationDelay: `${index * 50}ms` }}
                             >
                                 <div className="aspect-[63/88] bg-gray-200 animate-pulse shadow-md"></div>

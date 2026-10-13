@@ -8,8 +8,9 @@ const PRESET_WIDTH: Record<ImagePreset, number> = {
 };
 
 /**
- * Injecte f_auto,q_auto:eco et une largeur adaptée dans une URL Cloudinary.
- * Laisse intactes les URLs non-Cloudinary (ex. ygoprodeck, assets locaux).
+ * Optimise une URL image :
+ * - Cloudinary : f_auto, q_auto, w_*
+ * - YGOProDeck : variante cards_small (beaucoup plus légère que /cards/)
  */
 export const optimizeImageUrl = (
   url?: string | null,
@@ -17,11 +18,19 @@ export const optimizeImageUrl = (
 ): string => {
   if (!url) return "";
 
+  if (url.includes("images.ygoprodeck.com")) {
+    if (preset === "card" || preset === "thumb") {
+      return url
+        .replace("/images/cards/", "/images/cards_small/")
+        .replace("/images/cards_cropped/", "/images/cards_small/");
+    }
+    return url;
+  }
+
   if (!url.includes("res.cloudinary.com") || !url.includes("/upload/")) {
     return url;
   }
 
-  // Déjà transformée
   if (/\/upload\/(?:[^/]+,)?f_auto/.test(url)) {
     return url;
   }

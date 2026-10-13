@@ -27,7 +27,7 @@ const CardsSection: React.FC<CardsSectionProps> = ({ title, cards, isFetching, s
           <div className="bg-gray-100 p-4 grid grid-cols-12 gap-4 border border-gray-200 rounded-lg">
             {
               cards.map((card, index) => (
-                <Card key={`${card.card.id}-${index}`} card={card} />
+                <Card key={`${card.card.id}-${index}`} card={card} index={index} />
               ))
             }
           </div>

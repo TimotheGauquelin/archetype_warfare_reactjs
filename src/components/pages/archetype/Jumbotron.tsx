@@ -1,5 +1,6 @@
 import React from "react";
 import { optimizeImageUrl } from "../../../utils/image/optimizeImageUrl";
+import { useFetchPriorityHigh } from "../../../utils/image/useFetchPriorityHigh";
 
 interface JumbotronProps {
   itemMainTitle: string;
@@ -11,6 +12,7 @@ const Jumbotron: React.FC<JumbotronProps> = ({ itemMainTitle, itemSubTitle, item
   const src = itemImg
     ? optimizeImageUrl(itemImg, "jumbotron")
     : import.meta.env.BASE_URL + "assets/yugi.webp";
+  const fetchPriorityRef = useFetchPriorityHigh(true);
 
   return (
     <div
@@ -30,12 +32,14 @@ const Jumbotron: React.FC<JumbotronProps> = ({ itemMainTitle, itemSubTitle, item
         </div>
         <div className="w-1/2">
           <img
+            ref={fetchPriorityRef}
             data-testid="jumbotron-img"
             src={src}
             alt="yugi"
             width={800}
             height={520}
-            decoding="async"
+            loading="eager"
+            decoding="sync"
             className="w-full h-full object-cover"
           />
         </div>

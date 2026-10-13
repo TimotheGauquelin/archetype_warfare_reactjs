@@ -37,11 +37,15 @@ const MainInformationsBlock: React.FC<MainInformationsBlockProps> = ({ archetype
                 key={index}
                 className="col-span-2 text-center"
               >
-                <div>
+                <div className="aspect-square w-full">
                   <img
-                    className="w-full"
+                    className="w-full h-full object-contain"
                     src={`${import.meta.env.BASE_URL}assets/cardTypeIcon/${type.label.toLowerCase()}.png`}
                     alt=""
+                    width={64}
+                    height={64}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <p className="pt-1 font-medium">
@@ -68,11 +72,15 @@ const MainInformationsBlock: React.FC<MainInformationsBlockProps> = ({ archetype
                 key={index}
                 className="col-span-2 text-center"
               >
-                <div>
+                <div className="aspect-square w-full">
                   <img
-                    className="w-full"
+                    className="w-full h-full object-contain"
                     src={`${import.meta.env.BASE_URL}assets/cardAttributeIcon/${attribute.label.toLowerCase()}.png`}
                     alt=""
+                    width={64}
+                    height={64}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <p className="pt-1 font-medium">
@@ -99,11 +107,15 @@ const MainInformationsBlock: React.FC<MainInformationsBlockProps> = ({ archetype
                 key={index}
                 className="col-span-2 text-center"
               >
-                <div>
+                <div className="aspect-square w-full">
                   <img
-                    className="w-full"
+                    className="w-full h-full object-contain"
                     src={`${import.meta.env.BASE_URL}assets/cardAttributeIcon/${sm.label}.png`}
                     alt=""
+                    width={64}
+                    height={64}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <p className="pt-1 font-medium">

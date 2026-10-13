@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { cardStatusToFrench } from "../../utils/trad/cardStatus";
 import type { CardWithBanlistStatus } from "../../types";
+import { optimizeImageUrl } from "../../utils/image/optimizeImageUrl";
+import { useFetchPriorityHigh } from "../../utils/image/useFetchPriorityHigh";
 
 interface CardProps {
   card: CardWithBanlistStatus;
+  /** Index grille : 0 = candidat LCP (eager + fetchpriority). */
+  index?: number;
 }
 
-const Card: React.FC<CardProps> = ({ card }) => {
+const Card: React.FC<CardProps> = ({ card, index = 0 }) => {
   const [cardPopUp, setCardPopUp] = useState(false);
   const isUnlimited = card.card_status?.label.toLowerCase() === "unlimited";
+  const isLcpCandidate = index === 0;
+  const isAboveFold = index < 4;
+  const fetchPriorityRef = useFetchPriorityHigh(isLcpCandidate);
+
+  const imageSrc = useMemo(
+    () => optimizeImageUrl(card.card.img_url, "card"),
+    [card.card.img_url]
+  );
 
   return (
     <div
@@ -16,22 +28,32 @@ const Card: React.FC<CardProps> = ({ card }) => {
       onMouseOver={!isUnlimited ? () => setCardPopUp(true) : undefined}
       onMouseOut={!isUnlimited ? () => setCardPopUp(false) : undefined}
     >
-      <div className="relative border-text">
+      {/* Place réservée avant chargement → CLS */}
+      <div className="relative border-text aspect-[59/86] w-full bg-gray-200 rounded-sm overflow-hidden">
         <img
-          src={card.card.img_url}
+          ref={fetchPriorityRef}
+          src={imageSrc}
           alt={card?.card.name}
-          loading="lazy"
+          width={280}
+          height={410}
+          loading={isAboveFold ? "eager" : "lazy"}
+          decoding={isLcpCandidate ? "sync" : "async"}
+          className="absolute inset-0 w-full h-full object-cover"
           style={{ boxShadow: "rgba(0, 0, 0, 0.75) 1.95px 1.95px 2.6px" }}
         />
         {card.card_status && (
           <img
-            className="absolute"
+            className="absolute z-10"
             style={{
-              top: "-13px",
-              right: "-10px",
+              top: "4px",
+              right: "4px",
               width: "30px",
+              height: "30px",
             }}
+            width={30}
+            height={30}
             loading="lazy"
+            decoding="async"
             src={
               import.meta.env.BASE_URL +
               `assets/banlistCardStatusIcon/${card.card_status.label.toLowerCase()}.png`
@@ -51,7 +73,7 @@ const Card: React.FC<CardProps> = ({ card }) => {
               <p className="text-red-400 font-bold mb-1">
                 Pourquoi cette carte est {cardStatusToFrench(card.card_status.label).toLowerCase()} :
               </p>
-              <p className="text-gray-200">{card.explanation_text || ''}</p>
+              <p className="text-gray-200">{card.explanation_text || ""}</p>
             </div>
             <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-[6px] border-x-transparent border-t-[6px] border-t-gray-900" />
           </div>
