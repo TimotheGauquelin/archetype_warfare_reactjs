@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import ArchetypeCard from "./ArchetypeCard";
 import type { Archetype } from "../../types";
 
@@ -27,6 +27,20 @@ describe("ArchetypeCard", () => {
       render(<ArchetypeCard archetype={archetypeWithoutImg} index={0} />);
       const img = screen.getByRole("img", { name: "Dark Magician" });
       expect(img).toHaveAttribute("src", expect.stringContaining("waiting_archetype_image"));
+    });
+
+    it("renders fallback image when card_img_url is empty", () => {
+      const archetypeWithoutImg: Archetype = { ...baseArchetype, card_img_url: "   " };
+      render(<ArchetypeCard archetype={archetypeWithoutImg} index={0} />);
+      const img = screen.getByRole("img", { name: "Dark Magician" });
+      expect(img).toHaveAttribute("src", expect.stringContaining("waiting_archetype_image"));
+    });
+
+    it("falls back to waiting image when the remote image fails to load", () => {
+      render(<ArchetypeCard archetype={baseArchetype} index={0} />);
+      const img = screen.getByRole("img", { name: "Dark Magician" }) as HTMLImageElement;
+      fireEvent.error(img);
+      expect(img.src).toContain("waiting_archetype_image");
     });
   });
 

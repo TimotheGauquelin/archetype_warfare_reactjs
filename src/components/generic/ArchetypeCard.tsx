@@ -1,8 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { databaseDateToCalendarDate } from "../../utils/date/databaseDateToCalendarDate";
 import type { Archetype } from "../../types";
 import { optimizeImageUrl } from "../../utils/image/optimizeImageUrl";
 import { useFetchPriorityHigh } from "../../utils/image/useFetchPriorityHigh";
+
+const WAITING_ARCHETYPE_IMAGE =
+  import.meta.env.BASE_URL + "assets/waiting_archetype_image.jpg";
 
 interface ArchetypeCardProps {
   archetype: Archetype;
@@ -16,11 +19,20 @@ const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMe
   const fetchPriorityRef = useFetchPriorityHigh(isLcpCandidate);
 
   const imageUrl = useMemo(() => {
-    if (archetype?.card_img_url) {
-      return optimizeImageUrl(archetype.card_img_url, "card");
+    const raw = archetype?.card_img_url?.trim();
+    if (raw) {
+      return optimizeImageUrl(raw, "card");
     }
-    return import.meta.env.BASE_URL + "assets/waiting_archetype_image.jpg";
+    return WAITING_ARCHETYPE_IMAGE;
   }, [archetype?.card_img_url]);
+
+  const handleImageError = useCallback((event: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = event.currentTarget;
+    if (img.src.endsWith("waiting_archetype_image.jpg")) {
+      return;
+    }
+    img.src = WAITING_ARCHETYPE_IMAGE;
+  }, []);
 
   const medalPath = useMemo(() => {
     if (!haveAMedal || index >= 3) return null;
@@ -34,7 +46,7 @@ const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMe
       <div className="aspect-square bg-cover bg-center rounded-lg">
         <img
           ref={fetchPriorityRef}
-          className="bg-cover bg-center h-full w-full rounded-lg"
+          className="bg-cover bg-center h-full w-full rounded-lg object-cover"
           src={imageUrl}
           alt={archetype?.name ?? ""}
           width={280}
@@ -42,6 +54,7 @@ const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMe
           sizes="(max-width: 640px) 90vw, (max-width: 1024px) 30vw, 280px"
           loading={isLcpCandidate ? "eager" : "lazy"}
           decoding={isLcpCandidate ? "sync" : "async"}
+          onError={handleImageError}
         />
       </div>
       <div className="font-bold pt-3 text-center ellipsisText flex justify-center items-center">
