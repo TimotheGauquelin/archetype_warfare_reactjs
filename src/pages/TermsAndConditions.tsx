@@ -1,11 +1,8 @@
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import Button from "../components/generic/buttons/classicButton/Button";
 import Header from "../components/generic/header/Header";
 import Footer from "../components/generic/footer/Footer";
 
 const TermsAndConditions = () => {
-  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
   const s3Items = t("terms.s3Items", { returnObjects: true }) as string[];
