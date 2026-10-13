@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
 
 interface SwitchInputProps<T = Record<string, unknown>> {
@@ -20,32 +20,53 @@ function SwitchInput<T extends Record<string, unknown>>({
   displayRow = false,
 }: SwitchInputProps<T>): JSX.Element {
   const { t } = useTranslation();
-  const [toggle, setToggle] = useState(false);
+  const switchId = useId();
+  const labelId = `${switchId}-label`;
+  const checked = Boolean(data?.[attribute]);
 
   return (
-    <div className={`${displayRow ? "col-span-4 flex flex-row justify-center items-center px-2 space-x-2" : "flex flex-col justify-center items-end px-2 space-y-1"}`}>
-      {label && <label className="font-medium">{label}</label>}
-      {displayRow && <span>{t("common.no")}</span>}
-      <label className="inline-flex relative items-center cursor-pointer">
+    <div
+      className={`${
+        displayRow
+          ? "col-span-4 flex flex-row justify-center items-center px-2 space-x-2"
+          : "flex flex-col justify-center items-end px-2 space-y-1"
+      }`}
+    >
+      {label && (
+        <span id={labelId} className="font-medium">
+          {label}
+        </span>
+      )}
+      {displayRow && <span aria-hidden="true">{t("common.no")}</span>}
+      <label
+        htmlFor={switchId}
+        className={`inline-flex relative items-center ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+      >
         <input
           type="checkbox"
           className="sr-only peer"
-          id="input-form"
-          checked={data && typeof data[attribute] === 'boolean' ? data[attribute] : false}
+          id={switchId}
+          role="switch"
+          aria-checked={checked}
+          aria-labelledby={label ? labelId : undefined}
+          aria-label={label ? undefined : attribute}
+          checked={checked}
           onChange={() => {
             if (!disabled) {
-              setToggle(!toggle);
               setAction((prevState) => ({
                 ...prevState,
-                [attribute]: !toggle,
+                [attribute]: !checked,
               }));
             }
           }}
           disabled={disabled}
         />
-        <div className="w-11 h-6 bg-red-200 rounded-full peer dark:bg-red-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-red-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-red-600 peer-checked:bg-green-600"></div>
+        <span
+          aria-hidden="true"
+          className="relative w-11 h-6 bg-red-200 rounded-full peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-red-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"
+        />
       </label>
-      {displayRow && <span>{t("common.yes")}</span>}
+      {displayRow && <span aria-hidden="true">{t("common.yes")}</span>}
     </div>
   );
 }
