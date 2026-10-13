@@ -119,6 +119,7 @@
     "deleteDeckTitle": "Delete deck",
     "delete": "Delete",
     "testHand": "Test a hand",
+    "addCardToHand": "Draw a card",
     "exportCm": "Export for CM",
     "noCardsInDeck": "No cards in the deck.",
     "editProfile": "Edit my profile",

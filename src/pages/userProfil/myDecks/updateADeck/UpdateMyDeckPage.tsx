@@ -17,6 +17,7 @@ import type { Deck, DeckCard, Card } from "../../../../types";
 import UserProfilLayout from "../../layout";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 import { getArchetypesNames } from "@/services/archetype";
+import TestHandContent from "@/components/pages/userProfil/deckUpdate/TestHandContent";
 
 const UpdateMyDeckPage = () => {
     const { t } = useTranslation();
@@ -108,21 +109,9 @@ const UpdateMyDeckPage = () => {
             }
         }
 
-        const getFiveRandomCards = fullCardsMainDeck.sort(() => Math.random() - 0.5).slice(0, 5);
-
         openPopup({
             title: t("profile.testHand"),
-            content: (
-                <div>
-                    <div>
-                        <div className="grid grid-cols-10 gap-1 p-2">
-                            {getFiveRandomCards.map((card, index) => (
-                                <img key={card.id + index} className="col-span-2" src={card.img_url || card.img_url} alt={card.name} loading="lazy" />
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            ),
+            content: <TestHandContent key={Date.now()} deckCards={fullCardsMainDeck} />,
             showCloseButton: true,
         });
     }, [myDeck, openPopup, t]);
