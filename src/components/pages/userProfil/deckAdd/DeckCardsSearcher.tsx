@@ -145,33 +145,21 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
       }
     );
 
-    const mainDeckTotal = mainDeckCards.reduce((acc, card) => acc + card.quantity, 0);
-    const extraDeckTotal = extraDeckCards.reduce((acc, card) => acc + card.quantity, 0);
+    const mainDeckTotal = mainDeckCards.reduce((acc, c) => acc + c.quantity, 0);
+    const extraDeckTotal = extraDeckCards.reduce((acc, c) => acc + c.quantity, 0);
+    const deckCap = isExtraDeck ? 15 : 60;
+    const deckTotal = isExtraDeck ? extraDeckTotal : mainDeckTotal;
+    const remainingDeckSlots = deckCap - deckTotal;
 
-    // Vérifier les limites du deck
-    if (isExtraDeck && extraDeckTotal >= 15) {
-      toast.error(t("profile.extraDeckFull"));
+    if (remainingDeckSlots <= 0) {
+      toast.error(isExtraDeck ? t("profile.extraDeckFull") : t("profile.mainDeckFull"));
       return;
     }
 
-    if (!isExtraDeck && mainDeckTotal >= 60) {
-      toast.error(t("profile.mainDeckFull"));
-      return;
-    }
-
-    // Obtenir la limite depuis card_status.limit (par défaut 3 si non défini)
+    // Limite banlist (par défaut 3) — 1 exemplaire par clic
     const cardLimit = card?.card_status?.limit || 3;
 
-    // S'assurer que myDeck.cards existe
-    if (!myDeck?.deck_cards) {
-      setMyDeck((prev) => ({
-        ...prev,
-        deck_cards: [{ card: card, img_url: card.img_url, quantity: 1 }],
-      }));
-      return;
-    }
-
-    const totalQuantityInDeck = myDeck.deck_cards
+    const totalQuantityInDeck = currentCards
       .filter((deckCard) => deckCard.card.id === card.id)
       .reduce((acc, deckCard) => acc + deckCard.quantity, 0);
 
@@ -180,28 +168,23 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
       return;
     }
 
-    const cardIndex = myDeck.deck_cards.findIndex(
+    const cardIndex = currentCards.findIndex(
       (deckCard) =>
         deckCard.card.id === card.id && deckCard.img_url === card.img_url
     );
 
     if (cardIndex >= 0) {
-      const existingCard = myDeck.deck_cards[cardIndex];
+      const existingCard = currentCards[cardIndex];
+      const newQuantity = Math.min(
+        existingCard.quantity + 1,
+        cardLimit - (totalQuantityInDeck - existingCard.quantity),
+        existingCard.quantity + remainingDeckSlots
+      );
 
-      const wouldAddToMainDeck = !isExtraDeck;
-      const wouldAddToExtraDeck = isExtraDeck;
-
-      if (wouldAddToExtraDeck && extraDeckTotal >= 15) {
-        toast.error(t("profile.extraDeckFull"));
+      if (newQuantity <= existingCard.quantity) {
+        toast.error(isExtraDeck ? t("profile.extraDeckFull") : t("profile.mainDeckFull"));
         return;
       }
-
-      if (wouldAddToMainDeck && mainDeckTotal >= 60) {
-        toast.error(t("profile.mainDeckFull"));
-        return;
-      }
-
-      const newQuantity = Math.min(existingCard.quantity + 1, cardLimit - (totalQuantityInDeck - existingCard.quantity));
 
       setMyDeck((prev) => ({
         ...prev,
@@ -211,18 +194,38 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
             : deckCard
         ),
       }));
-    } else {
-      if (totalQuantityInDeck >= cardLimit) {
-        toast.error(t("profile.cardLimitReached", { limit: cardLimit }));
-        return;
-      }
-
-      setMyDeck((prev) => ({
-        ...prev,
-        deck_cards: [...(prev.deck_cards ?? []), { card: card, img_url: card.img_url, quantity: 1 }],
-      }));
+      return;
     }
-  }, [myDeck, setMyDeck, EXTRA_DECK_LABELS, t]);
+
+    const archetypeId = myDeck.archetype_id != null ? Number(myDeck.archetype_id) : null;
+    const linkedArchetypes =
+      card.is_archetype_card === true && archetypeId != null
+        ? [
+            {
+              id: archetypeId,
+              name:
+                myDeck.archetype?.label
+                || (myDeck.archetype as { name?: string } | null | undefined)?.name
+                || "",
+            },
+          ]
+        : [];
+
+    setMyDeck((prev) => ({
+      ...prev,
+      deck_cards: [
+        ...(prev.deck_cards ?? []),
+        {
+          card: card,
+          img_url: card.img_url,
+          quantity: 1,
+          linked_archetypes: linkedArchetypes,
+          is_legal_for_deck: true,
+          foreign_archetypes: [],
+        },
+      ],
+    }));
+  }, [myDeck, setMyDeck, t]);
 
   // Mémoriser le rendu des cartes pour éviter les re-rendus inutiles
   const renderedCards = useMemo(() => {

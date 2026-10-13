@@ -8,6 +8,7 @@ import AdminCardsFilter from "../../admin/cards/AdminCardsFilter";
 import DeckCardsGrid from "../deckCommon/DeckCardsGrid";
 import DeckSection from "../deckCommon/DeckSection";
 import { sortedDeck } from "../../../../utils/functions/sortedDeck";
+import { isDeckCardLegalForArchetype } from "../../../../utils/deck/deckCardLegality";
 import type { Deck, DeckCard, CardSearchCriteria } from "../../../../types";
 
 interface DeckCreatorProps {
@@ -66,6 +67,12 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
 
     return { mainDeckCards: main, extraDeckCards: extra, mainDeckTotal: mainTotal, extraDeckTotal: extraTotal };
   }, [myDeck?.deck_cards, EXTRA_DECK_LABELS]);
+
+  const illegalCardsCount = useMemo(() => {
+    return (myDeck.deck_cards ?? []).filter(
+      (deckCard) => !isDeckCardLegalForArchetype(deckCard, myDeck.archetype_id)
+    ).length;
+  }, [myDeck.deck_cards, myDeck.archetype_id]);
 
   const removeCardFromDeck = useCallback((deckCard: DeckCard) => {
     if (!myDeck?.deck_cards) return;
@@ -148,6 +155,13 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
             </p>
           </div>
         )}
+        {illegalCardsCount > 0 && (
+          <div className="mb-2 p-2 bg-orange-100 text-orange-900 rounded-md">
+            <p className="font-semibold">
+              {t("profile.illegalCardsWarning", { count: illegalCardsCount })}
+            </p>
+          </div>
+        )}
 
         <AdminCardsFilter
           cardTypes={cardTypes}
@@ -190,7 +204,11 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
                 },
               ]}
             >
-              <DeckCardsGrid cards={sortedMainDeckCards} onCardClick={removeCardFromDeck} />
+              <DeckCardsGrid
+                cards={sortedMainDeckCards}
+                archetypeId={myDeck.archetype_id}
+                onCardClick={removeCardFromDeck}
+              />
             </DeckSection>
             <div className="mt-2">
               <DeckSection
@@ -203,7 +221,11 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
                   },
                 ]}
               >
-                <DeckCardsGrid cards={sortedExtraDeckCards} onCardClick={removeCardFromDeck} />
+                <DeckCardsGrid
+                  cards={sortedExtraDeckCards}
+                  archetypeId={myDeck.archetype_id}
+                  onCardClick={removeCardFromDeck}
+                />
               </DeckSection>
             </div>
           </div>

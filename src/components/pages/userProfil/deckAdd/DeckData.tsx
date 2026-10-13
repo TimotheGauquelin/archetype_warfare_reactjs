@@ -4,6 +4,7 @@ import type { Deck, Archetype } from '../../../../types';
 import { Input } from '@/components/generic/form/input/Input';
 import TextArea from '@/components/generic/form/textArea/TextArea';
 import SelectInput from '@/components/generic/form/SelectInput';
+import { withRecomputedDeckCardLegality } from '@/utils/deck/deckCardLegality';
 
 interface DeckDataProps {
     myDeck: Deck;
@@ -31,9 +32,13 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
                     ...next.archetype,
                     id: selectedId,
                     label: selectedArchetype?.name ?? "",
-                    card_img_url: selectedArchetype?.card_img_url ?? next.archetype.card_img_url,
-                    is_active: selectedArchetype?.is_active ?? next.archetype.is_active,
+                    card_img_url: selectedArchetype?.card_img_url ?? next.archetype?.card_img_url,
+                    is_active: selectedArchetype?.is_active ?? next.archetype?.is_active,
                 },
+                deck_cards: withRecomputedDeckCardLegality(
+                    next.deck_cards,
+                    selectedId || undefined
+                ),
             };
         });
     };

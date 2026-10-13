@@ -200,6 +200,8 @@ export interface Card {
     label: string;
     limit?: number;
   };
+  /** true si la carte est liée à l'archétype du deck (BAC), false si générique / hors archétype */
+  is_archetype_card?: boolean;
   archetype_id?: number;
   created_at?: string;
   updated_at?: string;
@@ -221,10 +223,21 @@ export interface CardSearchCriteria {
 }
 
 // Types pour les decks
+export interface DeckCardLinkedArchetype {
+  id: number;
+  name: string;
+}
+
 export interface DeckCard {
   card: Card;
   img_url?: string;
   quantity: number;
+  /** Archétypes (BAC non null) auxquels la carte appartient */
+  linked_archetypes?: DeckCardLinkedArchetype[];
+  /** false si la carte appartient uniquement à un autre archétype que celui du deck */
+  is_legal_for_deck?: boolean;
+  /** Archétypes liés autres que celui du deck courant */
+  foreign_archetypes?: DeckCardLinkedArchetype[];
 }
 
 export interface Deck {

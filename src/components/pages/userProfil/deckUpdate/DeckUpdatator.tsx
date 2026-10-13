@@ -8,6 +8,7 @@ import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
 import { getAttributes } from "../../../../services/attribute";
 import { getCardTypes } from "../../../../services/cardtype";
 import { sortedDeck } from "../../../../utils/functions/sortedDeck";
+import { isDeckCardLegalForArchetype } from "../../../../utils/deck/deckCardLegality";
 import type { Deck, DeckCard, CardSearchCriteria } from "../../../../types";
 
 interface DeckUpdatatorProps {
@@ -63,6 +64,12 @@ const DeckUpdatator: React.FC<DeckUpdatatorProps> = ({ myDeck, setMyDeck }) => {
 
         return { mainDeckCards: main, extraDeckCards: extra, mainDeckTotal: mainTotal, extraDeckTotal: extraTotal };
     }, [myDeck?.deck_cards, EXTRA_DECK_LABELS]);
+
+    const illegalCardsCount = useMemo(() => {
+        return (myDeck.deck_cards ?? []).filter(
+            (deckCard) => !isDeckCardLegalForArchetype(deckCard, myDeck.archetype_id)
+        ).length;
+    }, [myDeck.deck_cards, myDeck.archetype_id]);
 
     const sortedMainDeckCards = useMemo(() => {
         return sortedDeck(mainDeckCards, cardTypes);
@@ -146,6 +153,11 @@ const DeckUpdatator: React.FC<DeckUpdatatorProps> = ({ myDeck, setMyDeck }) => {
                         {t("profile.deckNotPlayable")}
                     </p>
             )}
+            {illegalCardsCount > 0 && (
+                <p className="mb-2 p-2 bg-orange-100 text-orange-900 rounded-md text-sm font-semibold">
+                    {t("profile.illegalCardsWarning", { count: illegalCardsCount })}
+                </p>
+            )}
 
             <AdminCardsFilter
                 cardTypes={cardTypes}
@@ -188,7 +200,11 @@ const DeckUpdatator: React.FC<DeckUpdatatorProps> = ({ myDeck, setMyDeck }) => {
                             },
                         ]}
                     >
-                        <DeckCardsGrid cards={sortedMainDeckCards} onCardClick={removeCardFromDeck} />
+                        <DeckCardsGrid
+                            cards={sortedMainDeckCards}
+                            archetypeId={myDeck.archetype_id}
+                            onCardClick={removeCardFromDeck}
+                        />
                     </DeckSection>
                     <div className="mt-2">
                         <DeckSection
@@ -201,7 +217,11 @@ const DeckUpdatator: React.FC<DeckUpdatatorProps> = ({ myDeck, setMyDeck }) => {
                                 },
                             ]}
                         >
-                            <DeckCardsGrid cards={sortedExtraDeckCards} onCardClick={removeCardFromDeck} />
+                            <DeckCardsGrid
+                                cards={sortedExtraDeckCards}
+                                archetypeId={myDeck.archetype_id}
+                                onCardClick={removeCardFromDeck}
+                            />
                         </DeckSection>
                     </div>
                 </div>

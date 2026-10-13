@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -11,6 +11,7 @@ import { laborIllusion } from "../../../../utils/functions/laborIllusion/laborIl
 import usePopup from "../../../../hooks/usePopup";
 import PopUp from "../../../../components/generic/PopUp";
 import { MAIN_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
+import { isDeckCardLegalForArchetype } from "../../../../utils/deck/deckCardLegality";
 import type { Archetype, RootState } from "../../../../types";
 import type { Deck, DeckCard, Card } from "../../../../types";
 import UserProfilLayout from "../../layout";
@@ -82,8 +83,18 @@ const UpdateMyDeckPage = () => {
         });
     }, [showConfirmDialog, handleDelete, t]);
 
+    const hasIllegalCards = useMemo(() => {
+        return (myDeck.deck_cards ?? []).some(
+            (deckCard) => !isDeckCardLegalForArchetype(deckCard, myDeck.archetype_id)
+        );
+    }, [myDeck.deck_cards, myDeck.archetype_id]);
+
     const handleUpdate = useCallback(() => {
         if (!token || !deckId) return;
+        if (hasIllegalCards) {
+            toast.error(t("profile.cannotSaveIllegalCards"));
+            return;
+        }
         setIsLoading(true);
         updateDeck(
             token,
@@ -93,7 +104,7 @@ const UpdateMyDeckPage = () => {
             navigate,
             setIsLoading
         );
-    }, [deckId, myDeck, token, navigate]);
+    }, [deckId, hasIllegalCards, myDeck, token, navigate, t]);
 
     const handleTestHand = useCallback(() => {
         const mainDeckCards = (myDeck?.deck_cards || []).filter((deckCard: DeckCard) => {
@@ -160,9 +171,9 @@ const UpdateMyDeckPage = () => {
                         <DeckData myDeck={myDeck} setMyDeck={setMyDeck} archetypes={archetypes} />
                         <DeckUpdatator myDeck={myDeck} setMyDeck={setMyDeck} />
                         <Button
-                            className="bg-blue-800 mt-2 hover:bg-blue-900 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
+                            className="bg-blue-800 mt-2 hover:bg-blue-900 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             buttonText={t("profile.editDeck")}
-                            disabled={isLoading}
+                            disabled={isLoading || hasIllegalCards}
                             loadingText={t("profile.updatingDeck")}
                             action={handleUpdate}
                         />
