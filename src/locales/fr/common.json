@@ -121,6 +121,8 @@
     "testHand": "Tester une main",
     "addCardToHand": "Piocher une carte",
     "exportCm": "Exporter pour CM",
+    "copyToClipboard": "Copier dans le presse-papiers",
+    "copied": "Copié !",
     "noCardsInDeck": "Aucune carte dans le deck.",
     "editProfile": "Modifier mon profil",
     "usernameLabel": "Nom d'utilisateur",

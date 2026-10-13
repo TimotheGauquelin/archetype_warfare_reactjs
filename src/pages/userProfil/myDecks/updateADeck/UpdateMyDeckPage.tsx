@@ -10,7 +10,6 @@ import DeckUpdatator from "../../../../components/pages/userProfil/deckUpdate/De
 import { laborIllusion } from "../../../../utils/functions/laborIllusion/laborIllusion";
 import usePopup from "../../../../hooks/usePopup";
 import PopUp from "../../../../components/generic/PopUp";
-import { FaCopy } from "react-icons/fa";
 import { MAIN_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
 import type { Archetype, RootState } from "../../../../types";
 import type { Deck, DeckCard, Card } from "../../../../types";
@@ -18,6 +17,7 @@ import UserProfilLayout from "../../layout";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 import { getArchetypesNames } from "@/services/archetype";
 import TestHandContent from "@/components/pages/userProfil/deckUpdate/TestHandContent";
+import ExportCmContent from "@/components/pages/userProfil/deckUpdate/ExportCmContent";
 
 const UpdateMyDeckPage = () => {
     const { t } = useTranslation();
@@ -125,23 +125,7 @@ const UpdateMyDeckPage = () => {
 
         openPopup({
             title: t("profile.exportCm"),
-            content: (
-                <div>
-                    <div className="flex flex-row justify-end items-center gap-1 mb-2">
-                        <FaCopy
-                            className="text-blue-500 hover:text-blue-600 transition-colors duration-200 cursor-pointer"
-                            onClick={() => {
-                                navigator.clipboard.writeText(lines.join("\n"));
-                            }}
-                        />
-                    </div>
-                    <div className="space-y-2 bg-gray-100 p-2">
-                        <pre className="whitespace-pre-wrap text-sm">
-                            {lines.length ? lines.join("\n") : t("profile.noCardsInDeck")}
-                        </pre>
-                    </div>
-                </div>
-            ),
+            content: <ExportCmContent key={Date.now()} lines={lines} />,
             showCloseButton: true,
         });
     }, [myDeck, openPopup, t]);
