@@ -15,16 +15,9 @@ const TermsAndConditions = () => {
     <div>
       <Header />
       <div className="m-2 max-w-containerSize mx-auto bg-white p-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
-            {t("terms.title")}
-          </h1>
-          <Button
-            buttonText={t("terms.back")}
-            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-            action={() => navigate(-1)}
-          />
-        </div>
+        <h1 className="text-3xl font-bold text-gray-800">
+          {t("terms.title")}
+        </h1>
 
         <div className="prose prose-lg max-w-none">
           <section className="mb-4">

@@ -132,7 +132,7 @@ const DeckUpdatator: React.FC<DeckUpdatatorProps> = ({ myDeck, setMyDeck }) => {
     if (!myDeck.archetype_id) {
         return (
             <div className="mt-2 p-4 bg-gray-300 rounded-lg">
-                <p className="text-center py-4 text-gray-500">
+                <p className="text-center py-4 text-gray-800">
                     {t("profile.selectArchetypeToAddCards")}
                 </p>
             </div>

@@ -187,7 +187,7 @@ const UpdateMyDeckPage = () => {
                         <DeckData myDeck={myDeck} setMyDeck={setMyDeck} archetypes={archetypes} />
                         <DeckUpdatator myDeck={myDeck} setMyDeck={setMyDeck} />
                         <Button
-                            className="bg-blue-500 mt-2 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
+                            className="bg-blue-800 mt-2 hover:bg-blue-900 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
                             buttonText={t("profile.editDeck")}
                             disabled={isLoading}
                             loadingText={t("profile.updatingDeck")}
