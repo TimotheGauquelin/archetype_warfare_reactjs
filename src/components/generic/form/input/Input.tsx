@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useId } from "react";
 
 interface InputProps<T extends Record<string, unknown> = Record<string, unknown>> {
   label?: string;
@@ -30,6 +30,8 @@ function Input<T extends Record<string, unknown> = Record<string, unknown>>({
   max,
   disabled,
 }: InputProps<T>): JSX.Element {
+  const inputId = useId();
+
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setAction((prevState: T) => ({
       ...prevState,
@@ -44,12 +46,13 @@ function Input<T extends Record<string, unknown> = Record<string, unknown>>({
   return (
     <div data-testid="text-input-container" className={`flex flex-col col-span-${colSpanWidth}`}>
       {label && (
-        <label className="mt-2 font-medium">
+        <label htmlFor={inputId} className="mt-2 font-medium">
           {label}:{" "}
           {required && <span className="text-red-500 font-bold">*</span>}
         </label>
       )}
       <input
+        id={inputId}
         data-testid="text-input"
         required={required}
         placeholder={placeholder}
@@ -61,6 +64,7 @@ function Input<T extends Record<string, unknown> = Record<string, unknown>>({
         value={inputValue}
         onChange={handleChange}
         disabled={disabled ? true : false}
+        aria-label={label ? undefined : attribute}
       />
     </div>
   );

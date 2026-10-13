@@ -21,6 +21,8 @@
     "email": "Email",
     "password": "Password",
     "passwordConfirm": "Confirm password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "username": "Username",
     "submit": "Log in",
     "submitLoading": "Signing in...",
