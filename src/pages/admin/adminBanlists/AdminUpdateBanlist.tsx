@@ -10,11 +10,17 @@ import AdminBanlistAddCard, { type BanlistFormLike as AdminBanlistFormLike } fro
 import { getCardStatus } from '../../../services/cardStatus';
 import BanlistCardComponent from '../../../components/generic/BanlistCard';
 import Button from '../../../components/generic/buttons/classicButton/Button';
+import PopUp from '../../../components/generic/PopUp';
+import usePopup from '../../../hooks/usePopup';
 import { laborIllusion } from '../../../utils/functions/laborIllusion/laborIllusion';
 import { formatDateForInput } from '../../../utils/date/formatDateForInput';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import type { Banlist, BanlistCard } from '../../../types';
+import {
+    isGenericRestrictedBanlistCard,
+    isUnlimitedBanlistStatus,
+} from '../../../utils/banlist/genericBanlistCard';
 
 interface CardType { id: number; label: string; num_order?: number;[key: string]: unknown }
 interface CardStatus { id: number; label: string;[key: string]: unknown }
@@ -32,24 +38,39 @@ const AdminUpdateBanlist = () => {
     const [cardStatus, setCardStatus] = useState<CardStatus[]>([]);
     const [isFetching, setIsFetching] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [hasLoaded, setHasLoaded] = useState(false);
 
     const { token } = useSelector((state: RootState) => state.user);
     const { banlistId } = useParams<{ banlistId?: string }>();
     const navigate = useNavigate();
+    const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
 
     const loadBanlistData = useCallback(async () => {
         if (!banlistId) return;
 
         setIsFetching(true);
         setError(null);
+        setHasLoaded(false);
 
         try {
             await Promise.all([
-                getBanlistById(banlistId, (v) => setBanlist(prev => typeof v === 'function' ? (v as (p: Banlist | AdminBanlistFormLike) => Banlist | AdminBanlistFormLike)(prev) : v)),
+                getBanlistById(banlistId, (v) => setBanlist(prev => {
+                    const next = typeof v === 'function'
+                        ? (v as (p: Banlist | AdminBanlistFormLike) => Banlist | AdminBanlistFormLike)(prev)
+                        : v;
+                    return {
+                        ...next,
+                        // Règle métier : génériques = uniquement Forbidden / Limited / Semi-Limited
+                        banlist_archetype_cards: (next.banlist_archetype_cards || []).filter(
+                            isGenericRestrictedBanlistCard
+                        ),
+                    };
+                })),
                 getCardTypes((v) => setCardTypes(prev => typeof v === 'function' ? (v as (p: CardType[]) => CardType[])(prev) : v)),
                 getCardStatus((v) => setCardStatus(prev => typeof v === 'function' ? (v as (p: CardStatus[]) => CardStatus[])(prev) : v))
             ]);
+            setHasLoaded(true);
         } catch (err) {
             setError("Erreur lors du chargement de la banlist");
             console.error("Erreur:", err);
@@ -83,26 +104,41 @@ const AdminUpdateBanlist = () => {
     }, [banlist?.banlist_archetype_cards, cardTypes]);
 
     const genericCards = useMemo(() => {
-        return sortedCards.filter((card: BanlistCard) => card.card?.archetype_id == null);
+        return sortedCards.filter(isGenericRestrictedBanlistCard);
     }, [sortedCards]);
 
     const updateCardStatus = useCallback((cardId: number, statusId: string) => {
+        const statusIdNumber = parseInt(statusId, 10);
+        const selectedStatus = cardStatus.find((status) => status.id === statusIdNumber);
+
+        // Unlimited sur une générique = plus de ligne banlist
+        if (isUnlimitedBanlistStatus(selectedStatus?.label)) {
+            setBanlist((prevBanlist) => ({
+                ...prevBanlist,
+                banlist_archetype_cards: (prevBanlist.banlist_archetype_cards || []).filter(
+                    (banlistCard: BanlistCard) => banlistCard.card.id !== cardId
+                ),
+            }));
+            return;
+        }
+
         setBanlist(prevBanlist => ({
             ...prevBanlist,
             banlist_archetype_cards: (prevBanlist.banlist_archetype_cards || []).map((banlistCard: BanlistCard) =>
                 banlistCard.card.id === cardId
                     ? {
                         ...banlistCard,
-                        card_status_id: parseInt(statusId),
+                        card_status_id: statusIdNumber,
                         card_status: {
                             ...banlistCard.card_status,
-                            id: parseInt(statusId)
+                            id: statusIdNumber,
+                            label: selectedStatus?.label || banlistCard.card_status?.label,
                         }
                     }
                     : banlistCard
             )
         }));
-    }, []);
+    }, [cardStatus]);
 
     const updateCardExplanation = useCallback((cardId: number, explanation: string) => {
         setBanlist(prevBanlist => ({
@@ -127,14 +163,36 @@ const AdminUpdateBanlist = () => {
         }));
     }, []);
 
+    const deleteAllListedCards = useCallback(() => {
+        const visibleIds = new Set(genericCards.map((card) => card.card?.id));
+        setBanlist((prevBanlist) => ({
+            ...prevBanlist,
+            banlist_archetype_cards: (prevBanlist.banlist_archetype_cards || []).filter(
+                (card: BanlistCard) => !visibleIds.has(card.card?.id)
+            ),
+        }));
+    }, [genericCards]);
+
+    const handleDeleteAllListedCards = useCallback(() => {
+        if (genericCards.length === 0) return;
+        showConfirmDialog({
+            title: "Supprimer toutes les cartes",
+            message: `Supprimer les ${genericCards.length} carte(s) listée(s) de cette banlist ?`,
+            confirmText: "Supprimer",
+            cancelText: "Annuler",
+            onConfirm: deleteAllListedCards,
+        });
+    }, [genericCards.length, deleteAllListedCards, showConfirmDialog]);
+
     const handleUpdateBanlist = useCallback(() => {
-        if (!banlistId || !token) return;
+        if (!banlistId || !token || !hasLoaded) return;
         setIsLoading(true);
 
-        const mappedBanlistArchetypeCards = (banlist.banlist_archetype_cards || []).map((card: BanlistCard) => {
+        // Ne persister que les génériques restreintes ; le backend supprimera les Unlimited orphelines
+        const mappedBanlistArchetypeCards = (banlist.banlist_archetype_cards || [])
+            .filter(isGenericRestrictedBanlistCard)
+            .map((card: BanlistCard) => {
             const cardId = card?.card?.id;
-            const archetypeId = card?.card?.archetype_id ?? null;
-
             const rawCardStatusId = (card as unknown as { card_status_id?: string | number | null })?.card_status_id ?? card?.card_status?.id;
             const cardStatusIdNumber = typeof rawCardStatusId === "string" ? parseInt(rawCardStatusId, 10) : Number(rawCardStatusId);
 
@@ -142,7 +200,7 @@ const AdminUpdateBanlist = () => {
                 card_id: String(cardId),
                 card_status_id: cardStatusIdNumber,
                 explanation_text: card.explanation_text ?? null,
-                archetype_id: archetypeId,
+                archetype_id: null,
                 id: (card as unknown as { id?: number }).id,
             };
         });
@@ -159,7 +217,7 @@ const AdminUpdateBanlist = () => {
             navigate,
             setIsLoading
         ), 1);
-    }, [banlist, banlistId, navigate, token]);
+    }, [banlist, banlistId, hasLoaded, navigate, token]);
 
     useEffect(() => {
         loadBanlistData();
@@ -170,6 +228,21 @@ const AdminUpdateBanlist = () => {
             <AdminStructure>
                 <div className="flex justify-center items-center min-h-screen">
                     <div className="text-lg">Chargement de la banlist...</div>
+                </div>
+            </AdminStructure>
+        );
+    }
+
+    if (error || !hasLoaded) {
+        return (
+            <AdminStructure>
+                <AdminBodyHeader
+                    label="Modifier une banlist"
+                    catchphrase="Gérez les cartes et leurs statuts"
+                    returnButton
+                />
+                <div className="bg-red-100 border border-red-300 text-red-800 rounded p-4">
+                    {error || "Impossible de charger la banlist. La sauvegarde est bloquée pour éviter d'écraser les données."}
                 </div>
             </AdminStructure>
         );
@@ -236,9 +309,17 @@ const AdminUpdateBanlist = () => {
 
             {/* Section des cartes */}
             <div className="bg-gray-300 rounded p-4 mb-4">
-                <h2 className="font-bold text-xl mb-4">
-                    Cartes génériques de la banlist ({genericCards.length})
-                </h2>
+                <div className="flex flex-row flex-wrap items-center justify-between gap-2 mb-4">
+                    <h2 className="font-bold text-xl">
+                        Cartes génériques de la banlist ({genericCards.length})
+                    </h2>
+                    <Button
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-semibold shadow-sm"
+                        buttonText="Supprimer toutes les cartes"
+                        action={handleDeleteAllListedCards}
+                        disabled={genericCards.length === 0}
+                    />
+                </div>
 
                 <div className="grid grid-cols-12 gap-4">
                     {/* Liste des cartes */}
@@ -281,6 +362,17 @@ const AdminUpdateBanlist = () => {
                 disabled={isLoading}
                 loadingText="Modification en cours..."
             />
+
+            <PopUp
+                isOpen={isOpen}
+                onClose={closePopup}
+                title={popupConfig.title}
+                className={popupConfig.className}
+                showCloseButton={popupConfig.showCloseButton}
+                closeOnBackdropClick={popupConfig.closeOnBackdropClick}
+            >
+                {popupConfig.content}
+            </PopUp>
 
         </AdminStructure>
     );

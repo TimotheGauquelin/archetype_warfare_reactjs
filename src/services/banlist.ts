@@ -55,10 +55,13 @@ export const getBanlistById = async (
     const response = await api_aw.get(url);
     if (response.status === 200 && response.data) {
       setBanlist(response.data);
+      return;
     }
+    throw new Error("Banlist introuvable");
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, 'getBanlistById');
+    throw appError;
   }
 };
 

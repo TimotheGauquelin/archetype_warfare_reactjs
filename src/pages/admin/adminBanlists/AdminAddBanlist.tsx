@@ -15,6 +15,10 @@ import { formatDateForInput } from '../../../utils/date/formatDateForInput';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import type { Banlist, BanlistCard } from '../../../types';
+import {
+    isGenericRestrictedBanlistCard,
+    isUnlimitedBanlistStatus,
+} from '../../../utils/banlist/genericBanlistCard';
 
 interface CardStatus {
   id: number;
@@ -48,7 +52,9 @@ const AdminAddBanlist = () => {
     const handleAddBanlist = useCallback(() => {
         if (!token) return;
         // Le back attend un tableau DTO "plat" (pas de `card`, pas de `card_status` imbriqués).
-        const mappedBanlistArchetypeCards = (banlist.banlist_archetype_cards || []).map((item: BanlistCard) => {
+        const mappedBanlistArchetypeCards = (banlist.banlist_archetype_cards || [])
+            .filter(isGenericRestrictedBanlistCard)
+            .map((item: BanlistCard) => {
             const cardId = (item as unknown as { card_id?: string | number | null }).card_id ?? item?.card?.id;
             const rawCardStatusId =
                 (item as unknown as { card_status_id?: string | number | null }).card_status_id ?? item?.card_status?.id;
@@ -60,7 +66,7 @@ const AdminAddBanlist = () => {
                 card_id: String(cardId),
                 card_status_id: cardStatusIdNumber,
                 explanation_text: item.explanation_text ?? null,
-                archetype_id: (item as unknown as { archetype_id?: number | null }).archetype_id ?? item?.card?.archetype_id ?? null,
+                archetype_id: null,
                 id: (item as unknown as { id?: number }).id,
             };
         });
@@ -81,23 +87,36 @@ const AdminAddBanlist = () => {
     }, [banlist, navigate, toast, token]);
 
     const updateCardStatus = useCallback((cardId: number, statusId: string) => {
+        const statusIdNumber = parseInt(statusId, 10);
+        const selectedStatus = cardStatus.find((status) => status.id === statusIdNumber);
+
+        if (isUnlimitedBanlistStatus(selectedStatus?.label)) {
+            setBanlist((prevBanlist) => ({
+                ...prevBanlist,
+                banlist_archetype_cards: prevBanlist.banlist_archetype_cards.filter(
+                    (banlistCard) => banlistCard.card.id !== cardId
+                ),
+            }));
+            return;
+        }
+
         setBanlist(prevBanlist => ({
             ...prevBanlist,
             banlist_archetype_cards: prevBanlist.banlist_archetype_cards.map(banlistCard =>
                 banlistCard.card.id === cardId
                     ? {
                         ...banlistCard,
-                        card_status_id: parseInt(statusId),
-                        // Le composant `BanlistCard` lit `card.card_status.id` pour l'affichage du <select>.
+                        card_status_id: statusIdNumber,
                         card_status: {
                             ...banlistCard.card_status,
-                            id: parseInt(statusId),
+                            id: statusIdNumber,
+                            label: selectedStatus?.label || banlistCard.card_status?.label,
                         },
                     }
                     : banlistCard
                 )
             }));
-    }, []);
+    }, [cardStatus]);
 
     const updateCardExplanation = useCallback((cardId: number, explanation: string) => {
         setBanlist(prevBanlist => ({

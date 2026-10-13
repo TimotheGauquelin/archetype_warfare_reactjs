@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import { searchCards } from '../../../../services/card';
 import type { Banlist, Card, Pagination, BanlistCard, RootState } from '../../../../types';
+import { STATUS_FORBIDDEN } from '../../../../utils/const/banlistConst';
+import { isGenericRestrictedBanlistCard } from '../../../../utils/banlist/genericBanlistCard';
 
 export type BanlistFormLike = { banlist_archetype_cards?: BanlistCard[] } & Record<string, unknown>;
 
@@ -47,34 +49,74 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
         }
     };
 
-    const addCardToBanlist = (card: Card) => {
-        const isCardAlreadyInBanlist = banlist?.banlist_archetype_cards?.some(
-            (banlistCard) => banlistCard?.card?.id === card.id
+    const findExistingEntry = (cardId: number | string) =>
+        banlist?.banlist_archetype_cards?.find(
+            (banlistCard) => banlistCard?.card?.id === cardId
         );
 
-        if (!isCardAlreadyInBanlist) {
+    const isAlreadyListedAsGenericRestricted = (cardId: number | string) => {
+        const existing = findExistingEntry(cardId);
+        return existing ? isGenericRestrictedBanlistCard(existing) : false;
+    };
 
-            const newCard = {
-                card_id: card.id,
-                archetype_id: null,
-                card_status_id: 1,
-                explanation_text: "Trop Versatile",
-                card: card,
-                card_status: {
-                    id: 1,
-                    label: "Forbidden"
-                }
-            }
+    const addCardToBanlist = (card: Card) => {
+        const existing = findExistingEntry(card.id);
 
+        // Déjà listée comme générique restreinte → ne rien faire
+        if (existing && isGenericRestrictedBanlistCard(existing)) {
+            return;
+        }
+
+        // Existe mais masquée (Unlimited / autre) → réactiver en Forbidden générique
+        if (existing) {
             setBanlist((prevState) => ({
                 ...prevState,
-                banlist_archetype_cards: [...(prevState.banlist_archetype_cards || []), {
-                    ...newCard,
-                    id: Date.now() // Ajouter un ID temporaire
-                } as BanlistCard],
+                banlist_archetype_cards: (prevState.banlist_archetype_cards || []).map((banlistCard) =>
+                    banlistCard?.card?.id === card.id
+                        ? {
+                            ...banlistCard,
+                            archetype_id: null,
+                            card_status_id: 1,
+                            card_status: {
+                                id: 1,
+                                label: STATUS_FORBIDDEN,
+                            },
+                            explanation_text: banlistCard.explanation_text || "Trop Versatile",
+                            card: {
+                                ...banlistCard.card,
+                                ...card,
+                                archetype_id: null,
+                            },
+                        }
+                        : banlistCard
+                ),
             }));
+            return;
         }
-    }
+
+        const newCard = {
+            card_id: card.id,
+            archetype_id: null,
+            card_status_id: 1,
+            explanation_text: "Trop Versatile",
+            card: {
+                ...card,
+                archetype_id: null,
+            },
+            card_status: {
+                id: 1,
+                label: STATUS_FORBIDDEN,
+            },
+        };
+
+        setBanlist((prevState) => ({
+            ...prevState,
+            banlist_archetype_cards: [...(prevState.banlist_archetype_cards || []), {
+                ...newCard,
+                id: Date.now(),
+            } as BanlistCard],
+        }));
+    };
 
 
     useEffect(() => {
@@ -104,20 +146,18 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
                     style={{ height: "400px" }}
                 >
                     {cards?.map((card, index) => {
-                        const isCardAlreadyInBanlist = banlist?.banlist_archetype_cards?.some(
-                            (banlistCard) => banlistCard?.card?.id === card.id
-                        );
+                        const alreadyListed = isAlreadyListedAsGenericRestricted(card.id);
 
                         return (
                             <div className="col-span-3 p-1 relative" key={index}>
                                 <img
-                                    className={`hover:saturate-150 cursor-pointer ${isCardAlreadyInBanlist ? 'opacity-50' : ''
+                                    className={`hover:saturate-150 cursor-pointer ${alreadyListed ? 'opacity-50' : ''
                                         }`}
                                     src={`${card?.img_url}`}
                                     alt=""
-                                    onClick={() => !isCardAlreadyInBanlist && addCardToBanlist(card)}
+                                    onClick={() => !alreadyListed && addCardToBanlist(card)}
                                 />
-                                {isCardAlreadyInBanlist && (
+                                {alreadyListed && (
                                     <p
                                         style={{ fontSize: "8px", padding: "2px" }}
                                         className="absolute top-20 left-0 text-center w-full text-sm bg-yellow-500 text-white rounded"
