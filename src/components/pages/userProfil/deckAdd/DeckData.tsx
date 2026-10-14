@@ -49,7 +49,7 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
                 {t("profile.deckInfo")}
             </span>
             {
-                myDeck.archetype.is_active === false && (
+                myDeck.archetype?.is_active === false && (
                     <p className="p-2 bg-yellow-100 text-yellow-800 rounded-md text-sm font-semibold">
                         {t("profile.archetypeInactiveWarning")}
                     </p>

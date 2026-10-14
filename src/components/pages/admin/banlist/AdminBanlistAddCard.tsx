@@ -59,7 +59,13 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
         return existing ? isGenericRestrictedBanlistCard(existing) : false;
     };
 
+    const belongsToArchetype = (card: Card) => Boolean(card.is_archetype_card);
+
     const addCardToBanlist = (card: Card) => {
+        if (belongsToArchetype(card)) {
+            return;
+        }
+
         const existing = findExistingEntry(card.id);
 
         // Déjà listée comme générique restreinte → ne rien faire
@@ -69,52 +75,52 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
 
         // Existe mais masquée (Unlimited / autre) → réactiver en Forbidden générique
         if (existing) {
-            setBanlist((prevState) => ({
-                ...prevState,
-                banlist_archetype_cards: (prevState.banlist_archetype_cards || []).map((banlistCard) =>
-                    banlistCard?.card?.id === card.id
-                        ? {
-                            ...banlistCard,
-                            archetype_id: null,
-                            card_status_id: 1,
-                            card_status: {
-                                id: 1,
-                                label: STATUS_FORBIDDEN,
-                            },
-                            explanation_text: banlistCard.explanation_text || "Trop Versatile",
-                            card: {
-                                ...banlistCard.card,
-                                ...card,
-                                archetype_id: null,
-                            },
-                        }
-                        : banlistCard
-                ),
-            }));
+            setBanlist((prevState): Banlist | BanlistFormLike => {
+                const nextCards = (prevState.banlist_archetype_cards || []).map((banlistCard) => {
+                    if (banlistCard?.card?.id !== card.id) {
+                        return banlistCard;
+                    }
+                    const { archetype_id: _ignored, ...cardWithoutArchetype } = {
+                        ...banlistCard.card,
+                        ...card,
+                    };
+                    return {
+                        ...banlistCard,
+                        archetype_id: null,
+                        card_status_id: 1,
+                        card_status: {
+                            id: 1,
+                            label: STATUS_FORBIDDEN,
+                        },
+                        explanation_text: banlistCard.explanation_text || "Trop Versatile",
+                        card: cardWithoutArchetype,
+                    } as unknown as BanlistCard;
+                });
+                return {
+                    ...prevState,
+                    banlist_archetype_cards: nextCards,
+                };
+            });
             return;
         }
 
+        const { archetype_id: _ignored, ...cardWithoutArchetype } = card;
         const newCard = {
-            card_id: card.id,
-            archetype_id: null,
+            id: Date.now(),
             card_status_id: 1,
             explanation_text: "Trop Versatile",
-            card: {
-                ...card,
-                archetype_id: null,
-            },
+            card: cardWithoutArchetype,
             card_status: {
                 id: 1,
                 label: STATUS_FORBIDDEN,
             },
-        };
+            archetype_id: null,
+            card_id: card.id,
+        } as unknown as BanlistCard;
 
-        setBanlist((prevState) => ({
+        setBanlist((prevState): Banlist | BanlistFormLike => ({
             ...prevState,
-            banlist_archetype_cards: [...(prevState.banlist_archetype_cards || []), {
-                ...newCard,
-                id: Date.now(),
-            } as BanlistCard],
+            banlist_archetype_cards: [...(prevState.banlist_archetype_cards || []), newCard],
         }));
     };
 
@@ -147,15 +153,20 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
                 >
                     {cards?.map((card, index) => {
                         const alreadyListed = isAlreadyListedAsGenericRestricted(card.id);
+                        const isArchetypeCard = belongsToArchetype(card);
+                        const isDisabled = alreadyListed || isArchetypeCard;
 
                         return (
                             <div className="col-span-3 p-1 relative" key={index}>
                                 <img
-                                    className={`hover:saturate-150 cursor-pointer ${alreadyListed ? 'opacity-50' : ''
-                                        }`}
+                                    className={
+                                        isDisabled
+                                            ? "opacity-40 cursor-not-allowed"
+                                            : "hover:saturate-150 cursor-pointer"
+                                    }
                                     src={`${card?.img_url}`}
                                     alt=""
-                                    onClick={() => !alreadyListed && addCardToBanlist(card)}
+                                    onClick={() => !isDisabled && addCardToBanlist(card)}
                                 />
                                 {alreadyListed && (
                                     <p
@@ -163,6 +174,14 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
                                         className="absolute top-20 left-0 text-center w-full text-sm bg-yellow-500 text-white rounded"
                                     >
                                         Déjà ajoutée
+                                    </p>
+                                )}
+                                {!alreadyListed && isArchetypeCard && (
+                                    <p
+                                        style={{ fontSize: "8px", padding: "2px" }}
+                                        className="absolute top-20 left-0 text-center w-full text-sm bg-slate-600 text-white rounded"
+                                    >
+                                        Archétype
                                     </p>
                                 )}
                             </div>
