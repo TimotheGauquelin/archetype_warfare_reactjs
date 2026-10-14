@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { URL_FRONT_LOGIN, URL_FRONT_TERMS_AND_CONDITIONS } from "../../../constant/urlsFront";
+import { URL_BACK_DISCORD_AUTH } from "../../../constant/urlsBack";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { InputPassword } from "../../../components/generic/form/inputPassword/InputPassword";
@@ -43,6 +44,15 @@ const RegisterPage = () => {
     multipleErrors: null,
   });
   const [isLoading, setIsLoading] = useState(false);
+
+  const startDiscordRegister = () => {
+    if (!registerData.has_accepted_terms_and_conditions) {
+      setError({ message: t("auth.acceptTermsRequired"), multipleErrors: null });
+      return;
+    }
+    const backend = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") || "";
+    window.location.href = `${backend}${URL_BACK_DISCORD_AUTH({ locale, acceptedTerms: true })}`;
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -196,6 +206,22 @@ const RegisterPage = () => {
               action={() => {}}
             />
           </form>
+
+          <div className="flex items-center gap-2 my-3">
+            <div className="flex-grow h-[1px] bg-gray-300" />
+            <span className="text-xs text-gray-500 uppercase">{t("auth.or")}</span>
+            <div className="flex-grow h-[1px] bg-gray-300" />
+          </div>
+
+          <button
+            type="button"
+            onClick={startDiscordRegister}
+            disabled={isLoading}
+            className="w-full p-3 rounded font-medium bg-[#5865F2] text-white hover:opacity-90 transition-all duration-200 disabled:opacity-50"
+          >
+            {t("auth.registerWithDiscord")}
+          </button>
+          <p className="text-xs text-gray-500 mt-2 text-center">{t("auth.discordGuildRequired")}</p>
         </div>
 
         <div className="text-center">

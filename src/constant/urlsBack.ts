@@ -36,6 +36,13 @@ export const URL_BACK_CONFIRMATION_TOKEN = (token: string) =>
 //AUTHENTICATE
 export const URL_BACK_LOGIN = "/authenticate/login"
 export const URL_BACK_REGISTER = "/authenticate/register";
+export const URL_BACK_DISCORD_AUTH = (params?: { locale?: string; acceptedTerms?: boolean }) => {
+  const search = new URLSearchParams();
+  if (params?.locale) search.set("locale", params.locale);
+  if (params?.acceptedTerms) search.set("accepted_terms", "1");
+  const query = search.toString();
+  return `/authenticate/discord${query ? `?${query}` : ""}`;
+};
 
 
 //ARCHETYPE

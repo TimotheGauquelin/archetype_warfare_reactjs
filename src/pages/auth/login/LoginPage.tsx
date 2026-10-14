@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useActionState } from "../../../hooks/useActionState";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   URL_FRONT_PASSWORD_LOST,
   URL_FRONT_REGISTER,
 } from "../../../constant/urlsFront";
+import { URL_BACK_DISCORD_AUTH } from "../../../constant/urlsBack";
 import { InputPassword } from "../../../components/generic/form/inputPassword/InputPassword";
 import { Input } from "../../../components/generic/form/input/Input";
 import { logIn, type LoginResult } from "../../../services/auth";
@@ -14,6 +15,7 @@ import ErrorText from "../../../components/generic/ErrorText";
 import { getConfig } from "../../../services/websiteactions";
 import OnLoadingButton from "../../../components/generic/buttons/onLoadingButton/OnLoadingButton";
 import { laborIllusion } from "../../../utils/functions/laborIllusion/laborIllusion";
+import type { RootState } from "../../../types";
 
 const initialState: LoginResult = {};
 
@@ -25,11 +27,17 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
 
   const [log, setLog] = useState<{ email: string; password: string }>({
     email: "",
     password: "",
   });
+
+  const startDiscordLogin = () => {
+    const backend = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, "") || "";
+    window.location.href = `${backend}${URL_BACK_DISCORD_AUTH({ locale, acceptedTerms: false })}`;
+  };
 
   const [state, formAction, isPending] = useActionState(
     async (_prevState: LoginResult, formData: FormData) => {
@@ -116,27 +124,42 @@ const LoginPage = () => {
               action={() => { }}
             />
           </form>
+
+          <div className="text-center mt-2 space-y-2">
+            <OnLoadingButton
+              buttonText={t("auth.forgotPassword")}
+              className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200"
+              action={() => navigate(URL_FRONT_PASSWORD_LOST)}
+            />
+            {config?.registration_enabled === true && (
+              <div>
+                <Link
+                  to={URL_FRONT_REGISTER}
+                  className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200"
+                >
+                  {t("auth.createAccount")}
+                </Link>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 my-4">
+            <div className="flex-grow h-[1px] bg-gray-300" />
+            <span className="text-xs text-gray-500 uppercase">{t("auth.or")}</span>
+            <div className="flex-grow h-[1px] bg-gray-300" />
+          </div>
+
+          <button
+            type="button"
+            onClick={startDiscordLogin}
+            disabled={isFormBusy}
+            className="w-full p-3 rounded font-medium bg-[#5865F2] text-white hover:opacity-90 transition-all duration-200 disabled:opacity-50"
+          >
+            {t("auth.continueWithDiscord")}
+          </button>
         </div>
 
-        <div className="flex-grow h-[1px] m-2 bg-gray-300" />
 
-        <div className="text-center space-y-2">
-          <OnLoadingButton
-            buttonText={t("auth.forgotPassword")}
-            className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200"
-            action={() => navigate(URL_FRONT_PASSWORD_LOST)}
-          />
-          {config?.registration_enabled === true && (
-            <div>
-              <Link
-                to={URL_FRONT_REGISTER}
-                className="text-sm text-blue-900 cursor-pointer hover:underline transition-all duration-200"
-              >
-                {t("auth.createAccount")}
-              </Link>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );

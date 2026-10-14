@@ -21,6 +21,7 @@ import {
   URL_FRONT_BANLIST,
   URL_FRONT_HOME,
   URL_FRONT_LOGIN,
+  URL_FRONT_DISCORD_CALLBACK,
   URL_FRONT_REGISTER,
   URL_FRONT_TERMS_AND_CONDITIONS,
   URL_FRONT_MY_PROFILE,
@@ -58,6 +59,7 @@ import type { AppDispatch } from "./redux/store";
 import { logOut } from "./services/auth";
 
 const LoginPage = lazy(() => import("./pages/auth/login/LoginPage"));
+const DiscordCallbackPage = lazy(() => import("./pages/auth/login/DiscordCallbackPage"));
 const RegisterPage = lazy(() => import("./pages/auth/register/RegisterPage"));
 const TermsAndConditions = lazy(() => import("./pages/TermsAndConditions"));
 const PasswordLostPage = lazy(() => import("./pages/auth/passwordLost/PasswordLostPage"));
@@ -170,6 +172,7 @@ const AppContent: React.FC = () => {
             <Route path={URL_FRONT_HOME} element={<Home />} />
             <Route path={URL_FRONT_ROAD_MAP} element={<RoadMapPage />} />
             <Route path={URL_FRONT_LOGIN} element={<LoginPage />} />
+            <Route path={URL_FRONT_DISCORD_CALLBACK} element={<DiscordCallbackPage />} />
             <Route
               path={URL_FRONT_REGISTER}
               element={
