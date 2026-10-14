@@ -7,7 +7,20 @@ export const URL_FRONT_ABOUT = "/about";
 export const URL_FRONT_PASSWORD_LOST = "/password-lost";
 export const URL_FRONT_PASSWORD_RESET = "/password-reset/:resetToken";
 export const URL_FRONT_ARCHETYPES = "/archetypes";
-export const URL_FRONT_ARCHETYPE = (id: number | string): string => `/archetype/${id}`;
+export const URL_FRONT_ARCHETYPE = (slug: string): string =>
+  `/archetype/${encodeURIComponent(slug)}`;
+/** Préfère le slug public ; repli sur l'id si slug absent (données anciennes). */
+export const getArchetypePublicPath = (archetype: {
+  id?: number | string | null;
+  slug?: string | null;
+}): string | null => {
+  const slug = archetype.slug?.trim();
+  if (slug) return URL_FRONT_ARCHETYPE(slug);
+  if (archetype.id != null && String(archetype.id).trim() !== "") {
+    return URL_FRONT_ARCHETYPE(String(archetype.id));
+  }
+  return null;
+};
 export const URL_FRONT_BANLIST = "/banlist";
 export const URL_FRONT_ROAD_MAP = "/road-map";
 export const URL_FRONT_TOURNAMENTS = "/tournaments";

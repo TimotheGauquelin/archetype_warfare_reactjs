@@ -149,6 +149,7 @@ export interface ArchetypeTranslation {
 
 export interface Archetype {
   id: number;
+  slug?: string | null;
   name: string;
   nameSubtitle?: string;
   main_info?: string;

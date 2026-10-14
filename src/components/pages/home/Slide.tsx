@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { Archetype } from "../../../types";
+import { getArchetypePublicPath } from "../../../constant/urlsFront";
 import { optimizeImageUrl } from "../../../utils/image/optimizeImageUrl";
 import { useFetchPriorityHigh } from "../../../utils/image/useFetchPriorityHigh";
 
@@ -64,7 +65,7 @@ const Slide: React.FC<SlideProps> = ({
           >
             {archetype?.slider_info}
           </p>
-          {!isWelcomeSlide && archetype?.id && (
+          {!isWelcomeSlide && getArchetypePublicPath(archetype) && (
             <Link
               className={`group sliderButton inline-flex items-center gap-1 px-6 py-3 rounded-md font-semibold text-white transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-0.5 ${
                 showText
@@ -75,7 +76,7 @@ const Slide: React.FC<SlideProps> = ({
                 animation: showText ? "awGlow 2.4s ease-in-out infinite" : "none",
                 transitionDelay: showText ? "0.3s" : "0s",
               }}
-              to={`/archetype/${archetype.id}`}
+              to={getArchetypePublicPath(archetype)!}
             >
               <span className="relative z-10">{t("home.discover")}</span>
               <span className="relative z-10 inline-block transition-transform duration-300 group-hover:translate-x-1">

@@ -252,6 +252,7 @@
     "summonMethod": "Summon method",
     "summonMethods": "Summon methods",
     "missingId": "Missing archetype ID",
+    "missingSlug": "Missing archetype slug",
     "loadError": "Error loading the archetype. Please try again later.",
     "notFoundTitle": "Error: Archetype not found",
     "notFoundRedirect": "You will be redirected to the home page in 3 seconds...",

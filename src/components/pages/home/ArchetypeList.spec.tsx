@@ -5,8 +5,8 @@ import ArchetypeList from "./ArchetypeList";
 import type { Archetype } from "../../../types";
 
 const mockArchetypes: Archetype[] = [
-  { id: 1, name: "Dark Magician", card_img_url: "https://example.com/1.jpg" },
-  { id: 2, name: "Blue-Eyes", card_img_url: "https://example.com/2.jpg" },
+  { id: 1, slug: "dark-magician", name: "Dark Magician", card_img_url: "https://example.com/1.jpg" },
+  { id: 2, slug: "blue-eyes", name: "Blue-Eyes", card_img_url: "https://example.com/2.jpg" },
 ];
 
 function renderArchetypeList(props: Partial<React.ComponentProps<typeof ArchetypeList>> = {}) {
@@ -95,9 +95,9 @@ describe("ArchetypeList", () => {
         vi.advanceTimersByTime(1500);
       });
       const link1 = screen.getByRole("link", { name: /Dark Magician/i });
-      expect(link1).toHaveAttribute("href", "/archetype/1");
+      expect(link1).toHaveAttribute("href", "/archetype/dark-magician");
       const link2 = screen.getByRole("link", { name: /Blue-Eyes/i });
-      expect(link2).toHaveAttribute("href", "/archetype/2");
+      expect(link2).toHaveAttribute("href", "/archetype/blue-eyes");
     });
   });
 });

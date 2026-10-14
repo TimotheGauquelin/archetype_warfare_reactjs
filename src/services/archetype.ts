@@ -151,8 +151,9 @@ export const getRandomArchetype = async (
 ): Promise<void> => {
   try {
     const response = await api_aw.get(URL_BACK_GET_RANDOM_ARCHETYPE);
-    if (response.data?.id) {
-      navigate(URL_FRONT_ARCHETYPE(response.data.id));
+    const pathSlug = response.data?.slug?.trim() || (response.data?.id != null ? String(response.data.id) : "");
+    if (pathSlug) {
+      navigate(URL_FRONT_ARCHETYPE(pathSlug));
     }
   } catch (error) {
     const appError = handleApiError(error);

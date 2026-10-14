@@ -6,6 +6,7 @@ import type { Archetype } from "../../../types";
 
 const baseArchetype: Archetype = {
   id: 1,
+  slug: "dark-magician",
   name: "Dark Magician",
   slider_info: "The legendary spellcaster",
   slider_img_url: "https://example.com/slider.jpg",
@@ -40,10 +41,10 @@ describe("Slide", () => {
   });
 
   describe("link Découvrir", () => {
-    it("shows link to archetype when not welcome slide and id exists", () => {
+    it("shows link to archetype when not welcome slide and slug exists", () => {
       renderSlide();
       const link = screen.getByRole("link", { name: /Découvrir/i });
-      expect(link).toHaveAttribute("href", "/archetype/1");
+      expect(link).toHaveAttribute("href", "/archetype/dark-magician");
     });
 
     it("does not show link when isWelcome", () => {
@@ -51,8 +52,14 @@ describe("Slide", () => {
       expect(screen.queryByRole("link", { name: /Découvrir/i })).not.toBeInTheDocument();
     });
 
-    it("does not show link when archetype has no id", () => {
-      renderSlide({ archetype: { ...baseArchetype, id: undefined as unknown as number } });
+    it("does not show link when archetype has no slug nor id", () => {
+      renderSlide({
+        archetype: {
+          ...baseArchetype,
+          id: undefined as unknown as number,
+          slug: null,
+        },
+      });
       expect(screen.queryByRole("link", { name: /Découvrir/i })).not.toBeInTheDocument();
     });
   });

@@ -5,6 +5,7 @@ import SubtitleDivider from "../../generic/SubtitleDivider";
 import ArchetypeListSkeleton from "../../skeletons/ArchetypeListSkeleton";
 import NoItemMessage from "../../generic/NoItemMessage";
 import type { Archetype } from "../../../types";
+import { getArchetypePublicPath } from "../../../constant/urlsFront";
 
 interface ArchetypeListProps {
   dataArray: Archetype[];
@@ -42,13 +43,17 @@ const ArchetypeList: React.FC<ArchetypeListProps> = ({
 
       {dataArray.length > 0 ? (
         <div className="grid pb-5 grid-cols-12 gap-4">
-          {dataArray.map((archetype, index) => (
+          {dataArray.map((archetype, index) => {
+            const archetypePath = getArchetypePublicPath(archetype);
+            if (!archetypePath) return null;
+
+            return (
             <div
-              key={`${archetype?.id}-${index}`}
+              key={`${archetype?.slug ?? archetype?.id}-${index}`}
               className="col-span-12 sscreen:col-span-4 lscreen:col-span-3"
             >
               <Link
-                to={`/archetype/${archetype?.id}`}
+                to={archetypePath}
                 className="bg-white p-3 rounded-lg aspect-square cardShadow hover:shadow-lg transition-shadow duration-200 block"
               >
                 <ArchetypeCard
@@ -59,7 +64,8 @@ const ArchetypeList: React.FC<ArchetypeListProps> = ({
                 />
               </Link>
             </div>
-          ))}
+          );
+          })}
         </div>
       ) : (
         <NoItemMessage message={errorMessage || "Aucun archétype trouvé"} />

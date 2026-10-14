@@ -29,14 +29,14 @@ const ArchetypePage = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { id } = useParams();
+  const { slug } = useParams();
   const { cardTypes } = useCardTypes();
 
   const navigate = useNavigate();
 
   const loadArchetypeData = useCallback(async () => {
-    if (!id) {
-      setErrorMessage(t("archetypePage.missingId"));
+    if (!slug) {
+      setErrorMessage(t("archetypePage.missingSlug"));
       setIsFetching(false);
       return;
     }
@@ -53,14 +53,14 @@ const ArchetypePage = () => {
         }
       };
 
-      await getArchetypeById(id, setArchetypeWrapper);
+      await getArchetypeById(slug, setArchetypeWrapper);
     } catch (err) {
       setErrorMessage(t("archetypePage.loadError"));
       console.error("Erreur lors du chargement de l'archétype:", err);
     } finally {
       setIsFetching(false);
     }
-  }, [id, t, locale]);
+  }, [slug, t, locale]);
 
   const sortedCards = useMemo(() => {
     if (!archetype?.cards) return [];

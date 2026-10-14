@@ -51,7 +51,7 @@ export const monsterTypeToFrench = (monsterType: string): string => {
         case "rock":
             return "Rocher";
             break;
-        case "sea serpent":
+        case "sea-serpent":
             return "Serpent de Mer";
             break;
         case "thunder":

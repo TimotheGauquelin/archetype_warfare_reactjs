@@ -252,6 +252,7 @@
     "summonMethod": "Méthode d'invocation",
     "summonMethods": "Méthodes d'invocation",
     "missingId": "ID d'archétype manquant",
+    "missingSlug": "Slug d'archétype manquant",
     "loadError": "Erreur lors du chargement de l'archétype. Veuillez réessayer plus tard.",
     "notFoundTitle": "Erreur:Archétype introuvable",
     "notFoundRedirect": "Vous allez être redirigé vers la page d'accueil dans 3 secondes...",

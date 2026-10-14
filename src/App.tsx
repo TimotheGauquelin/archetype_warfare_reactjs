@@ -185,7 +185,7 @@ const AppContent: React.FC = () => {
             />
             <Route path={URL_FRONT_TERMS_AND_CONDITIONS} element={<TermsAndConditions />} />
             <Route path={URL_FRONT_ARCHETYPES} element={<ArchetypesPage />} />
-            <Route path="/archetype/:id" element={<ArchetypePage />} />
+            <Route path="/archetype/:slug" element={<ArchetypePage />} />
             <Route path={URL_FRONT_ABOUT} element={<ConceptPage />} />
             <Route path={URL_FRONT_BANLIST} element={<BanlistPage />} />
             <Route path={URL_FRONT_TOURNAMENTS} element={<TournamentsPage />} />

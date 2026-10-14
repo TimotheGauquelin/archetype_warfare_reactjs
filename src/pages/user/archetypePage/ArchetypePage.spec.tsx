@@ -83,6 +83,7 @@ const mockCards: BanlistCard[] = [
 
 const mockArchetype: Archetype = {
     id: 1,
+    slug: "dark-magician",
     name: "Dark Magician",
     slider_img_url: "https://example.com/slider.jpg",
     card_img_url: "https://example.com/card.jpg",
@@ -112,13 +113,13 @@ const mockArchetype: Archetype = {
 
 let server: ReturnType<typeof setupServer>;
 
-function renderArchetypePage(id: string = "1") {
+function renderArchetypePage(slug: string = "dark-magician") {
     const store = createTestStore();
     return render(
         <Provider store={store}>
-            <MemoryRouter initialEntries={[`/archetype/${id}`]}>
+            <MemoryRouter initialEntries={[`/archetype/${slug}`]}>
                 <Routes>
-                    <Route path="/archetype/:id" element={<ArchetypePage />} />
+                    <Route path="/archetype/:slug" element={<ArchetypePage />} />
                 </Routes>
             </MemoryRouter>
         </Provider>
@@ -140,7 +141,7 @@ describe("ArchetypePage (integration)", () => {
         navigateMock.mockClear();
 
         server.resetHandlers(
-            http.get(`${API_BASE_URL}${URL_BACK_GET_ARCHETYPE_BY_ID("1")}`, () => {
+            http.get(`${API_BASE_URL}${URL_BACK_GET_ARCHETYPE_BY_ID("dark-magician")}`, () => {
                 return HttpResponse.json(mockArchetype);
             }),
             http.get(`${API_BASE_URL}${URL_BACK_GET_ALL_CARD_TYPES}`, () => {
@@ -158,7 +159,7 @@ describe("ArchetypePage (integration)", () => {
     describe("on loading", () => {
         it("renders skeleton until APIs respond", () => {
             server.use(
-                http.get(`${API_BASE_URL}${URL_BACK_GET_ARCHETYPE_BY_ID("1")}`, async () => {
+                http.get(`${API_BASE_URL}${URL_BACK_GET_ARCHETYPE_BY_ID("dark-magician")}`, async () => {
                     await new Promise((resolve) => setTimeout(resolve, 100000));
                     return HttpResponse.json(mockArchetype);
                 }),
@@ -168,7 +169,7 @@ describe("ArchetypePage (integration)", () => {
                 })
             );
 
-            renderArchetypePage("1");
+            renderArchetypePage("dark-magician");
 
             expect(screen.queryByText("Dark Magician")).not.toBeInTheDocument();
         });
@@ -178,7 +179,7 @@ describe("ArchetypePage (integration)", () => {
         it("displays archetype data and cards", async () => {
             vi.useRealTimers();
 
-            renderArchetypePage("1");
+            renderArchetypePage();
 
             await waitFor(() => {
                 expect(screen.getByText("Dark Magician")).toBeInTheDocument();
@@ -200,7 +201,7 @@ describe("ArchetypePage (integration)", () => {
         it("displays archetype comment when present", async () => {
           vi.useRealTimers();
 
-          renderArchetypePage("1");
+          renderArchetypePage();
 
           await waitFor(() => {
             expect(screen.getByTestId("archetype-comment")).toHaveTextContent("Information : Cet archétype est très populaire");
@@ -210,7 +211,7 @@ describe("ArchetypePage (integration)", () => {
         it("displays card count in subtitle", async () => {
           vi.useRealTimers();
 
-          renderArchetypePage("1");
+          renderArchetypePage();
 
           await waitFor(() => {
             expect(screen.getByText(/Toutes les cartes \(3\)/)).toBeInTheDocument();
@@ -226,12 +227,12 @@ describe("ArchetypePage (integration)", () => {
           };
 
           server.use(
-            http.get(`${API_BASE_URL}${URL_BACK_GET_ARCHETYPE_BY_ID("1")}`, () => {
+            http.get(`${API_BASE_URL}${URL_BACK_GET_ARCHETYPE_BY_ID("dark-magician")}`, () => {
               return HttpResponse.json(archetypeWithoutCards);
             })
           );
 
-          renderArchetypePage("1");
+          renderArchetypePage();
 
           await waitFor(() => {
             expect(screen.getByText("Il n'y a pas de carte dans cet archétype.")).toBeInTheDocument();
