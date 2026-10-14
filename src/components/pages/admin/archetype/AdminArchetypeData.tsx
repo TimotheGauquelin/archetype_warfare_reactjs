@@ -32,6 +32,10 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
 }) => {
 
   const today = new Date().toISOString().split('T')[0];
+  const cardCount = newArchetype.cards?.length ?? 0;
+  const hasValidSlider = Boolean(newArchetype.slider_img_url?.trim());
+  const canHighlight = Boolean(newArchetype.is_highlighted) || hasValidSlider;
+  const canGoOnline = Boolean(newArchetype.is_active) || cardCount >= 5;
 
   return (
     <div className="bg-gray-300 rounded p-2">
@@ -43,12 +47,14 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
             attribute="is_highlighted"
             data={newArchetype}
             setAction={setNewArchetype}
+            disabled={!canHighlight}
           />
           <SwitchInput
             label="En ligne"
             attribute="is_active"
             data={newArchetype}
             setAction={setNewArchetype}
+            disabled={!canGoOnline}
           />
         </div>
       </div>

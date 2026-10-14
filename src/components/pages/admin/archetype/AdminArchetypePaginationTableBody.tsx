@@ -23,6 +23,11 @@ const AdminArchetypePaginationTableBody: React.FC<AdminArchetypePaginationTableB
   return (
     <div className="grid grid-cols-12">
       {arrayItems?.map((item: Archetype, index: number) => {
+        const cardCount = item?.cards?.length ?? 0;
+        const hasValidSlider = Boolean(item?.slider_img_url?.trim());
+        const canToggleHighlight = Boolean(item?.is_highlighted) || hasValidSlider;
+        const canToggleActive = Boolean(item?.is_active) || cardCount >= 5;
+
         return (
           <div
             className="grid grid-cols-12 col-span-12 flex items-center border-b border-l border-r hover:bg-slate-200 cursor-pointer"
@@ -56,13 +61,23 @@ const AdminArchetypePaginationTableBody: React.FC<AdminArchetypePaginationTableB
             </div>
             <div className={`col-span-1 p-1`}>
               <div className="flex justify-center">
-                <label className="inline-flex relative items-center mr-5 cursor-pointer">
+                <label
+                  className={`inline-flex relative items-center mr-5 ${canToggleHighlight ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
+                  title={
+                    canToggleHighlight
+                      ? undefined
+                      : "Image slider requise pour mettre en avant"
+                  }
+                >
                   <input
                     type="checkbox"
                     className="sr-only peer"
                     checked={item?.is_highlighted}
+                    disabled={!canToggleHighlight}
                     onChange={() => {
-                      switchIsHighlighted(item?.id, setRefresh);
+                      if (canToggleHighlight) {
+                        switchIsHighlighted(item?.id, setRefresh);
+                      }
                     }}
                   />
                   <CheckboxSlider />
@@ -71,13 +86,23 @@ const AdminArchetypePaginationTableBody: React.FC<AdminArchetypePaginationTableB
             </div>
             <div className={`col-span-1 p-1`}>
               <div className="flex justify-center">
-                <label className="inline-flex relative items-center mr-5 cursor-pointer">
+                <label
+                  className={`inline-flex relative items-center mr-5 ${canToggleActive ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
+                  title={
+                    canToggleActive
+                      ? undefined
+                      : "Au moins 5 cartes requises pour mettre en ligne"
+                  }
+                >
                   <input
                     type="checkbox"
                     className="sr-only peer"
                     checked={item?.is_active}
+                    disabled={!canToggleActive}
                     onChange={() => {
-                      switchIsActive(item?.id, setRefresh);
+                      if (canToggleActive) {
+                        switchIsActive(item?.id, setRefresh);
+                      }
                     }}
                   />
                   <CheckboxSlider />

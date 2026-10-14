@@ -4,6 +4,7 @@ import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ARCHETYPE } from "../constant/url
 import type { Archetype, SearchCriteria, Pagination, SetStateCallback, SetErrorMessageCallback } from "../types";
 import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
 import type { NavigateFunction } from "react-router-dom";
+import { toast as toastify } from "react-toastify";
 import type { ToastFunction } from "./websiteactions";
 
 /**
@@ -297,6 +298,7 @@ export const switchIsHighlighted = async (
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, 'switchIsHighlighted');
+    toastify.error(getErrorMessage(appError));
   }
 };
 
@@ -315,6 +317,7 @@ export const switchIsActive = async (
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, 'switchIsActive');
+    toastify.error(getErrorMessage(appError));
   }
 };
 

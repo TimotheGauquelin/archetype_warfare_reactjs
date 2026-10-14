@@ -35,6 +35,10 @@ const AdminArchetypeUpdateFormikData: React.FC<AdminArchetypeUpdateFormikDataPro
 }) => {
 
   const today = new Date().toISOString().split('T')[0];
+  const cardCount = archetype.cards?.length ?? 0;
+  const hasValidSlider = Boolean(archetype.slider_img_url?.trim());
+  const canHighlight = Boolean(archetype.is_highlighted) || hasValidSlider;
+  const canGoOnline = Boolean(archetype.is_active) || cardCount >= 5;
 
   return (
     <div className={`bg-gray-300 rounded p-2 ${activeTab === "informations" ? "" : "hidden"}`}>
@@ -47,6 +51,7 @@ const AdminArchetypeUpdateFormikData: React.FC<AdminArchetypeUpdateFormikDataPro
             data={archetype}
             setAction={setArchetype}
             condition="put"
+            disabled={!canHighlight}
           />
           <SwitchInput
             label="En ligne"
@@ -54,6 +59,7 @@ const AdminArchetypeUpdateFormikData: React.FC<AdminArchetypeUpdateFormikDataPro
             data={archetype}
             setAction={setArchetype}
             condition="put"
+            disabled={!canGoOnline}
           />
         </div>
       </div>

@@ -64,7 +64,14 @@ const Home: React.FC = () => {
   }, [loadData]);
 
   const slidesToDisplay = useMemo(() => {
-    const highlighted = archetypesForSlider.filter((a) => a.is_highlighted);
+    const highlighted = archetypesForSlider.filter((a) => {
+      const sliderUrl = a.slider_img_url?.trim() ?? "";
+      return (
+        a.is_highlighted
+        && Boolean(sliderUrl)
+        && /^https?:\/\//i.test(sliderUrl)
+      );
+    });
     if (highlighted.length === 0) {
       return [welcomeArchetype];
     }
