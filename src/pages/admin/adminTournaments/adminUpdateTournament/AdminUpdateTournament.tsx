@@ -46,6 +46,16 @@ const AdminUpdateTournament = () => {
     { id: "5 Duels", label: "5 Duels" },
   ];
 
+  const statusOptions = [
+    { id: "registration_open", label: "Inscriptions ouvertes" },
+    { id: "registration_closed", label: "Inscriptions closes" },
+    { id: "tournament_beginning", label: "Début du tournoi" },
+    { id: "tournament_in_progress", label: "Tournoi en cours" },
+    { id: "tournament_finished", label: "Tournoi terminé" },
+    { id: "tournament_cancelled", label: "Tournoi annulé" },
+    { id: "tournament_did_not_happen", label: "Pas eu lieu" },
+  ];
+
   
   const maxPlayersNumber = Number(tournament.max_players) || 0;
   const suggestedRounds =
@@ -170,6 +180,16 @@ const AdminUpdateTournament = () => {
               setAction={setTournament}
               placeholder="Ex: Championnat du printemps 2025"
               colSpanWidth="6"
+            />
+            <SelectInput
+              defaultOptionLabel="Choisir un statut"
+              colSpanWidth="6"
+              label="Statut"
+              required
+              attribute="status"
+              data={tournament as Record<string, unknown>}
+              setAction={setTournament as React.Dispatch<React.SetStateAction<Record<string, unknown>>>}
+              options={statusOptions}
             />
             <Input
               label="Lieu"

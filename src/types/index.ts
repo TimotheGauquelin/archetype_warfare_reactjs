@@ -328,7 +328,14 @@ export interface ComponentProps {
 export type SetStateCallback<T> = (value: T | ((prev: T) => T)) => void;
 export type SetErrorMessageCallback = SetStateCallback<string>;
 
-export type TournamentStatus = "registration_open" | "registration_closed" | "tournament_beginning" | "tournament_in_progress" | "tournament_finished" | "tournament_cancelled";
+export type TournamentStatus =
+  | "registration_open"
+  | "registration_closed"
+  | "tournament_beginning"
+  | "tournament_in_progress"
+  | "tournament_finished"
+  | "tournament_cancelled"
+  | "tournament_did_not_happen";
 
 export interface TournamentPlayerUser {
   id?: string;

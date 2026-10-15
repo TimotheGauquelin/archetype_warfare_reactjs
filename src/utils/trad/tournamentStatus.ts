@@ -13,6 +13,8 @@ export const TOURNAMENT_STATUS = (status: string): string => {
             return 'Tournoi terminé';
         case 'tournament_cancelled':
             return 'Tournoi annulé';
+        case 'tournament_did_not_happen':
+            return 'Pas eu lieu';
         default:
             return status;
     }

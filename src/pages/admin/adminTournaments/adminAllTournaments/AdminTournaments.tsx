@@ -17,8 +17,18 @@ const STATUS_IN_PROGRESS = [
   "tournament_is_beginning",
   "tournament_in_progress",
 ];
-const STATUS_FINISHED = ["tournament_finished", "tournament_cancelled"];
+const STATUS_FINISHED = [
+  "tournament_finished",
+  "tournament_cancelled",
+  "tournament_did_not_happen",
+];
 const STATUS_UPCOMING = ["registration_open", "registration_closed"];
+
+const isEventDatePast = (tournament: Tournament): boolean => {
+  const endOrStart = tournament.event_date_end || tournament.event_date;
+  if (!endOrStart) return false;
+  return new Date(endOrStart).getTime() < Date.now();
+};
 
 const AdminTournaments = () => {
   const { token } = useSelector((state: RootState) => state.user);
@@ -55,12 +65,16 @@ const AdminTournaments = () => {
     const inProgress = tournaments.filter((t) =>
       STATUS_IN_PROGRESS.includes(t.status as string)
     );
-    const finished = tournaments.filter((t) =>
-      STATUS_FINISHED.includes(t.status as string)
-    );
-    const upcoming = tournaments.filter((t) =>
-      STATUS_UPCOMING.includes(t.status as string)
-    );
+    const finished = tournaments.filter((t) => {
+      const status = t.status as string;
+      if (STATUS_FINISHED.includes(status)) return true;
+      // Date passée + jamais démarré → Passés (filet de sécurité côté UI)
+      return STATUS_UPCOMING.includes(status) && isEventDatePast(t);
+    });
+    const upcoming = tournaments.filter((t) => {
+      const status = t.status as string;
+      return STATUS_UPCOMING.includes(status) && !isEventDatePast(t);
+    });
     return { inProgress, finished, upcoming };
   }, [tournaments]);
 

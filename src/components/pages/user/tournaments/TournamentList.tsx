@@ -39,10 +39,10 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments, isLoading 
     tournaments.forEach((tournament) => {
       const status = (tournament.status as string | undefined)?.toLowerCase();
 
-      // Tournois annulés :
-      // - statut "tournament_cancelled"
-      // - event_date dans les 7 derniers jours
-      if (status === "tournament_cancelled" && tournament.event_date) {
+      if (
+        (status === "tournament_cancelled" || status === "tournament_did_not_happen")
+        && tournament.event_date
+      ) {
         const start = new Date(tournament.event_date).getTime();
         const diffDaysPast = (nowTime - start) / dayMs;
         if (diffDaysPast >= 0 && diffDaysPast <= 7) {

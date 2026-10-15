@@ -100,7 +100,7 @@ export interface MyTournamentRound {
 export interface MyTournamentDetail {
   id: string;
   name: string;
-  status: "tournament_in_progress" | "tournament_finished" | "tournament_cancelled" | "registration_open" | "registration_closed";
+  status: Tournament["status"];
   max_number_of_rounds: number;
   matches_per_round: number;
   current_round: number;

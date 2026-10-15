@@ -6,8 +6,12 @@ import { TOURNAMENT_STATUS } from "@/utils/trad/tournamentStatus";
 import { verbalDate } from "@/utils/date/verbalDate";
 
 function getCardColorClass(status: string | undefined): string {
-  if (status?.toLowerCase() === "tournament_cancelled" || status?.toLowerCase() === "cancelled") {
+  const normalized = status?.toLowerCase();
+  if (normalized === "tournament_cancelled" || normalized === "cancelled") {
     return "bg-red-50 hover:bg-red-100 border-red-200";
+  }
+  if (normalized === "tournament_did_not_happen") {
+    return "bg-amber-50 hover:bg-amber-100 border-amber-200";
   }
   return "bg-white hover:bg-gray-50 border-gray-200";
 }

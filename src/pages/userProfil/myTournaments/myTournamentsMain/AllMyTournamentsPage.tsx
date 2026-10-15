@@ -53,7 +53,11 @@ const AllMyTournamentsPage: React.FC = () => {
         return;
       }
 
-      if (status === "tournament_finished") {
+      if (
+        status === "tournament_finished"
+        || status === "tournament_cancelled"
+        || status === "tournament_did_not_happen"
+      ) {
         groups.pastTournaments.push(tournament);
         return;
       }
