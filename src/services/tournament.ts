@@ -2,6 +2,7 @@ import api_aw from "../api/api_aw";
 import { api_aw_token } from "../api/api_aw_token";
 import {
   URL_BACK_GET_CURRENT_TOURNAMENTS,
+  URL_BACK_GET_ALL_TOURNAMENTS,
   URL_BACK_GET_TOURNAMENT,
   URL_BACK_CREATE_TOURNAMENT,
   URL_BACK_UPDATE_TOURNAMENT,
@@ -234,7 +235,7 @@ export interface MatchResultPayload {
 }
 
 /**
- * Get all tournaments (all statuses). No client-side filter.
+ * Tournois "courants" (public) : event_date depuis J-7.
  */
 export const getTournaments = async (): Promise<Tournament[]> => {
   try {
@@ -245,6 +246,24 @@ export const getTournaments = async (): Promise<Tournament[]> => {
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "getTournaments");
+    throw appError;
+  }
+};
+
+/**
+ * Tous les tournois (admin) : y compris passés / annulés.
+ * GET /tournaments/all
+ */
+export const getAllTournaments = async (token: string): Promise<Tournament[]> => {
+  const api = api_aw_token(token);
+  try {
+    const response = await api.get<Tournament[] | { data: Tournament[] }>(URL_BACK_GET_ALL_TOURNAMENTS);
+    const data = response?.data;
+    const list = Array.isArray(data) ? data : (data as { data?: Tournament[] })?.data ?? [];
+    return list;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getAllTournaments");
     throw appError;
   }
 };

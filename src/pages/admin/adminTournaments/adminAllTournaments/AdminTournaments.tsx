@@ -4,7 +4,7 @@ import AdminBodyHeader from "@/components/pages/admin/AdminBodyHeader";
 import AdminSection from "@/components/pages/admin/AdminSection";
 import AdminTournamentTable from "@/components/pages/admin/archetype/adminTournaments/AdminTournamentTable";
 import { URL_FRONT_ADMIN_TOURNAMENT_ADD } from "@/constant/urlsFront";
-import { deleteTournament, getTournaments } from "@/services/tournament";
+import { deleteTournament, getAllTournaments } from "@/services/tournament";
 import type { RootState } from "@/redux/store";
 import type { Tournament } from "@/types";
 import AdminLayout from "../../adminLayout";
@@ -28,10 +28,16 @@ const AdminTournaments = () => {
   const [error, setError] = useState<string | null>(null);
 
   const loadTournaments = useCallback(async () => {
+    if (!token) {
+      setTournaments([]);
+      setError("Authentification requise.");
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const list = await getTournaments();
+      const list = await getAllTournaments(token);
       setTournaments(list);
     } catch (e) {
       setError("Erreur lors du chargement des tournois.");
@@ -39,7 +45,7 @@ const AdminTournaments = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     void loadTournaments();
