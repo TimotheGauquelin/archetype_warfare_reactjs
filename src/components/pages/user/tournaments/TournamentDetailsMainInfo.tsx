@@ -13,6 +13,11 @@ function getMatchTypeLabel(matchType: number | undefined): string {
   return "Single match";
 }
 
+function getResolutionModeLabel(mode: string | undefined): string {
+  if (mode === "highest_score") return "Meilleur score";
+  return "Victoire stricte";
+}
+
 interface TournamentDetailProps {
   tournament: Tournament;
   isLoggedIn: boolean;
@@ -115,6 +120,10 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
         <div>
           <dt className="text-gray-500">Type de match</dt>
           <dd className="font-medium">{getMatchTypeLabel(tournament.matches_per_round)}</dd>
+        </div>
+        <div>
+          <dt className="text-gray-500">Résolution</dt>
+          <dd className="font-medium">{getResolutionModeLabel(tournament.match_resolution_mode)}</dd>
         </div>
       </dl>
 

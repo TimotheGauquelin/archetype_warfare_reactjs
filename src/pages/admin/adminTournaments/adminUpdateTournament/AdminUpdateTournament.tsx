@@ -17,6 +17,7 @@ import type { RootState } from "@/redux/store";
 import { toast } from "react-toastify";
 import { Tournament, TournamentStatus } from "@/types";
 import { formatDateForInputWithHours } from "@/utils/date/formatDateForInput";
+import { MATCH_RESOLUTION_MODE_OPTIONS } from "@/utils/tournament/bestOfScore";
 
 const AdminUpdateTournament = () => {
   const { tournamentId } = useParams<{ tournamentId: string }>();
@@ -35,16 +36,22 @@ const AdminUpdateTournament = () => {
     is_online: false,
     max_number_of_rounds: 1,
     matches_per_round: 0,
+    match_resolution_mode: "strict_wins",
     require_deck_list: false,
     until_winner: false,
     allow_penalities: false,
   });
 
   const matchesPerRoundOptions = [
-    { id: "1 Duel", label: "1 Duel" },
-    { id: "3 Duels", label: "3 Duels" },
-    { id: "5 Duels", label: "5 Duels" },
+    { id: "1", label: "1 Duel" },
+    { id: "3", label: "3 Duels" },
+    { id: "5", label: "5 Duels" },
   ];
+
+  const matchResolutionModeOptions = MATCH_RESOLUTION_MODE_OPTIONS.map((o) => ({
+    id: o.id,
+    label: o.label,
+  }));
 
   const statusOptions = [
     { id: "registration_open", label: "Inscriptions ouvertes" },
@@ -75,6 +82,7 @@ const AdminUpdateTournament = () => {
           max_players: tournament.max_players,
           max_number_of_rounds: tournament.max_number_of_rounds,
           matches_per_round: tournament.matches_per_round,
+          match_resolution_mode: tournament.match_resolution_mode ?? "strict_wins",
           require_deck_list: tournament.require_deck_list,
           until_winner: tournament.until_winner,
           location: tournament.location,
@@ -114,6 +122,8 @@ const AdminUpdateTournament = () => {
         until_winner: tournament.until_winner as boolean,
         max_number_of_rounds: Number(tournament.max_number_of_rounds) || 1,
         matches_per_round: Number(tournament.matches_per_round) || 1,
+        match_resolution_mode:
+          tournament.match_resolution_mode === "highest_score" ? "highest_score" : "strict_wins",
         allow_penalities: tournament.allow_penalities as boolean,
       };
       setIsLoading(true);
@@ -224,6 +234,16 @@ const AdminUpdateTournament = () => {
             />
           </div>
           <div className="grid grid-cols-12 sm:grid-cols-6 gap-4">
+            <SelectInput
+              defaultOptionLabel="Choisir le mode de résolution"
+              colSpanWidth="6"
+              label="Résolution des matchs"
+              required
+              attribute="match_resolution_mode"
+              data={tournament as Record<string, unknown>}
+              setAction={setTournament as React.Dispatch<React.SetStateAction<Record<string, unknown>>>}
+              options={matchResolutionModeOptions}
+            />
             <Input
               label="Nombre de rondes"
               required inputType="number"

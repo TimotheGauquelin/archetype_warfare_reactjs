@@ -103,6 +103,7 @@ export interface MyTournamentDetail {
   status: Tournament["status"];
   max_number_of_rounds: number;
   matches_per_round: number;
+  match_resolution_mode?: "strict_wins" | "highest_score";
   current_round: number;
   event_date: string;
   event_date_end: string;
@@ -172,9 +173,12 @@ export interface TournamentDetail {
   max_players?: number;
   players?: TournamentPlayerAdmin[];
   matches_per_round: number;
+  match_resolution_mode?: "strict_wins" | "highest_score";
   require_deck_list: boolean;
   allow_penalities: boolean;
   until_winner?: boolean;
+  event_date?: string | null;
+  event_date_end?: string | null;
 }
 
 export interface TournamentPlayerDeckSnapshot {
@@ -441,6 +445,7 @@ export interface CreateTournamentPayload {
   name: string;
   max_number_of_rounds: number;
   matches_per_round: number;
+  match_resolution_mode?: "strict_wins" | "highest_score";
   max_players: number;
   location: string;
   event_date: string;
@@ -484,6 +489,7 @@ export interface UpdateTournamentPayload {
   until_winner: boolean;
   max_number_of_rounds: number;
   matches_per_round: number;
+  match_resolution_mode?: "strict_wins" | "highest_score";
   allow_penalities: boolean;
 }
 

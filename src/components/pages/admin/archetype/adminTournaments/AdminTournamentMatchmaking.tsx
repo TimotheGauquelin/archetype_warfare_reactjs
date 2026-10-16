@@ -10,6 +10,11 @@ import type {
 } from "@/services/tournament";
 import { TOURNAMENT_MATCH_STATUS, TOURNAMENT_ROUND_STATUS } from "@/utils/trad/tournamentStatus";
 import NoItemMessage from "@/components/generic/NoItemMessage";
+import {
+  clampScore,
+  getMaxOpponentGamesWon,
+  getWinsNeeded,
+} from "@/utils/tournament/bestOfScore";
 
 interface AdminTournamentMatchmakingProps {
   rounds: TournamentDetailRound[];
@@ -54,16 +59,29 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
   const [rollbackRoundId, setRollbackRoundId] = useState<number | null>(null);
   const [rollbackLoading, setRollbackLoading] = useState(false);
 
-  const maxWinningDuelPerPlayer = Math.max(
-    0,
-    Math.ceil((Number(matchesPerRound) || 0) / 2)
-  );
+  const winsNeeded = getWinsNeeded(matchesPerRound);
+  const maxP1 = getMaxOpponentGamesWon(editP2Games, winsNeeded);
+  const maxP2 = getMaxOpponentGamesWon(editP1Games, winsNeeded);
 
   const openEditMatch = useCallback((m: TournamentDetailMatch) => {
     setEditMatchId(m.id);
     setEditP1Games(m.player1_games_won);
     setEditP2Games(m.player2_games_won);
   }, []);
+
+  const handleEditP1Change = useCallback((raw: number) => {
+    const nextP1 = clampScore(raw, winsNeeded);
+    const nextMaxP2 = getMaxOpponentGamesWon(nextP1, winsNeeded);
+    setEditP1Games(nextP1);
+    setEditP2Games((prev) => clampScore(prev, nextMaxP2));
+  }, [winsNeeded]);
+
+  const handleEditP2Change = useCallback((raw: number) => {
+    const nextP2 = clampScore(raw, winsNeeded);
+    const nextMaxP1 = getMaxOpponentGamesWon(nextP2, winsNeeded);
+    setEditP2Games(nextP2);
+    setEditP1Games((prev) => clampScore(prev, nextMaxP1));
+  }, [winsNeeded]);
 
   const saveMatchResult = useCallback(
     async (matchId: number) => {
@@ -155,11 +173,11 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
                             <input
                               type="number"
                               min={0}
-                              max={maxWinningDuelPerPlayer}
+                              max={maxP1}
                               className="w-14 border border-gray-300 rounded px-1 py-0.5 text-right"
                               value={editP1Games}
                               onChange={(e) =>
-                                setEditP1Games(Number(e.target.value) || 0)
+                                handleEditP1Change(Number(e.target.value) || 0)
                               }
                               aria-label="Score joueur 1"
                             />
@@ -167,11 +185,11 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
                             <input
                               type="number"
                               min={0}
-                              max={maxWinningDuelPerPlayer}
+                              max={maxP2}
                               className="w-14 border border-gray-300 rounded px-1 py-0.5 text-right"
                               value={editP2Games}
                               onChange={(e) =>
-                                setEditP2Games(Number(e.target.value) || 0)
+                                handleEditP2Change(Number(e.target.value) || 0)
                               }
                               aria-label="Score joueur 2"
                             />

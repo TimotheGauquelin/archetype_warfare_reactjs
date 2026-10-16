@@ -26,10 +26,14 @@ import AdminTournamentMatchmaking from "@/components/pages/admin/archetype/admin
 import { TournamentDetailsStanding } from "@/components/pages/user/tournaments/TournamentDetailsStanding";
 import AdminManageTournamentActionSection from "./AdminManageTournamentActionSection";
 import AdminManageTournamentPlayersSection from "./AdminManageTournamentPlayersSection";
+import PopUp from "@/components/generic/PopUp";
+import usePopup from "@/hooks/usePopup";
+import { verbalDate } from "@/utils/date/verbalDate";
 
 const AdminManageTournament = () => {
     const { tournamentId } = useParams<{ tournamentId: string }>();
     const { token } = useSelector((state: RootState) => state.user);
+    const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
     const [tournament, setTournament] = useState<TournamentDetail | null>(null);
     const [standings, setStandings] = useState<TournamentStanding[]>([]);
     const [loading, setLoading] = useState(true);
@@ -65,7 +69,7 @@ const AdminManageTournament = () => {
         void loadData();
     }, [loadData]);
 
-    const handleStart = useCallback(async () => {
+    const doStartTournament = useCallback(async () => {
         if (!token || !tournamentId) return;
         setActionLoading(true);
         try {
@@ -75,6 +79,39 @@ const AdminManageTournament = () => {
             setActionLoading(false);
         }
     }, [token, tournamentId, loadData]);
+
+    const handleStart = useCallback(() => {
+        if (!token || !tournamentId) return;
+
+        const eventStart = tournament?.event_date
+            ? new Date(tournament.event_date)
+            : null;
+        const startsInFuture =
+            eventStart != null
+            && !Number.isNaN(eventStart.getTime())
+            && eventStart.getTime() > Date.now();
+
+        if (!startsInFuture) {
+            void doStartTournament();
+            return;
+        }
+
+        const msUntilStart = eventStart.getTime() - Date.now();
+        const daysUntilStart = Math.max(1, Math.ceil(msUntilStart / (24 * 60 * 60 * 1000)));
+        const dateLabel = verbalDate(tournament?.event_date ?? "", true);
+
+        showConfirmDialog({
+            title: "Démarrage anticipé",
+            message:
+                `Ce tournoi est prévu le ${dateLabel} (dans ${daysUntilStart} jour${daysUntilStart > 1 ? "s" : ""}). `
+                + "Démarrer maintenant mettra à jour la date de début (et la date de fin si définie). Continuer ?",
+            confirmText: "Démarrer maintenant",
+            cancelText: "Annuler",
+            onConfirm: () => {
+                void doStartTournament();
+            },
+        });
+    }, [token, tournamentId, tournament?.event_date, doStartTournament, showConfirmDialog]);
 
     const handleNextRound = useCallback(async () => {
         if (!token || !tournamentId) return;
@@ -253,6 +290,17 @@ const AdminManageTournament = () => {
                     </p>
                 )}
             </AdminSection>
+
+            <PopUp
+                isOpen={isOpen}
+                onClose={closePopup}
+                title={popupConfig.title}
+                className={popupConfig.className}
+                showCloseButton={popupConfig.showCloseButton}
+                closeOnBackdropClick={popupConfig.closeOnBackdropClick}
+            >
+                {popupConfig.content}
+            </PopUp>
 
         </AdminLayout>
     );

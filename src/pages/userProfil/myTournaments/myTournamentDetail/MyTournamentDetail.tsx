@@ -486,6 +486,9 @@ const MyTournamentDetail: React.FC = () => {
                                                             key={round.id}
                                                             round={round}
                                                             maxWinningDuelPerPlayer={maxWinningDuelPerPlayer}
+                                                            matchResolutionMode={
+                                                              tournament.match_resolution_mode ?? "strict_wins"
+                                                            }
                                                             onSubmitScore={handleSubmitScore}
                                                         />
                                                     )

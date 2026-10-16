@@ -11,6 +11,7 @@ import { URL_FRONT_ADMIN_TOURNAMENTS } from "@/constant/urlsFront";
 import type { RootState } from "@/redux/store";
 import { toast } from "react-toastify";
 import SelectInput from "@/components/generic/form/SelectInput";
+import { MATCH_RESOLUTION_MODE_OPTIONS } from "@/utils/tournament/bestOfScore";
 
 function toDatetimeLocal(date: Date): string {
   const pad = (n: number) => (n < 10 ? "0" + n : String(n));
@@ -21,6 +22,7 @@ type TournamentFormState = {
   name: string;
   max_number_of_rounds: string;
   matches_per_round: string;
+  match_resolution_mode: string;
   max_players: string;
   location: string;
   event_date: string;
@@ -47,6 +49,7 @@ const AdminAddTournament = () => {
     name: "",
     max_number_of_rounds: "",
     matches_per_round: "3",
+    match_resolution_mode: "strict_wins",
     max_players: "16",
     location: "",
     event_date: defaultStart(),
@@ -55,10 +58,15 @@ const AdminAddTournament = () => {
   });
 
   const matchesPerRoundOptions = [
-    { id: "1 Duel", label: "1 Duel" },
-    { id: "3 Duels", label: "3 Duels" },
-    { id: "5 Duels", label: "5 Duels" },
+    { id: "1", label: "1 Duel" },
+    { id: "3", label: "3 Duels" },
+    { id: "5", label: "5 Duels" },
   ];
+
+  const matchResolutionModeOptions = MATCH_RESOLUTION_MODE_OPTIONS.map((o) => ({
+    id: o.id,
+    label: o.label,
+  }));
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -71,6 +79,8 @@ const AdminAddTournament = () => {
         name: form.name.trim(),
         max_number_of_rounds: Number(form.max_number_of_rounds) || 1,
         matches_per_round: Number(form.matches_per_round) || 1,
+        match_resolution_mode:
+          form.match_resolution_mode === "highest_score" ? "highest_score" : "strict_wins",
         max_players: Number(form.max_players) || 2,
         location: form.location.trim(),
         event_date: new Date(form.event_date).toISOString(),
@@ -166,6 +176,16 @@ const AdminAddTournament = () => {
             />
           </div>
           <div className="grid grid-cols-12 sm:grid-cols-6 gap-4">
+            <SelectInput
+              defaultOptionLabel="Choisir le mode de résolution"
+              colSpanWidth="6"
+              label="Résolution des matchs"
+              required
+              attribute="match_resolution_mode"
+              data={form as Record<string, unknown>}
+              setAction={setForm as React.Dispatch<React.SetStateAction<Record<string, unknown>>>}
+              options={matchResolutionModeOptions}
+            />
             <Input
               label="Nombre de rondes"
               required

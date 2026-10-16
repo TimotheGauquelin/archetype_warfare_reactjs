@@ -337,6 +337,8 @@ export type TournamentStatus =
   | "tournament_cancelled"
   | "tournament_did_not_happen";
 
+export type MatchResolutionMode = "strict_wins" | "highest_score";
+
 export interface TournamentPlayerUser {
   id?: string;
   username?: string;
@@ -362,6 +364,7 @@ export interface Tournament {
   is_online: boolean;
   max_number_of_rounds?: number;
   matches_per_round?: number;
+  match_resolution_mode?: MatchResolutionMode;
   players?: TournamentPlayer[];
   [key: string]: unknown;
 }
