@@ -80,7 +80,7 @@ function CompletionListInput<T>({
         <input
           id={id}
           type="text"
-          className="p-1 bg-gray-100 rounded-md w-full"
+          className="p-1 bg-white rounded-md w-full"
           value={value}
           onChange={(e) => {
             onChange(e.target.value);

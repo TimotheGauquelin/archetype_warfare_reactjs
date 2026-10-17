@@ -21,7 +21,6 @@ import type { PaginatedResponse } from "@/types";
 import type { RootState } from "@/redux/store";
 import { TOURNAMENT_STATUS } from "@/utils/trad/tournamentStatus";
 import ErrorText from "@/components/generic/ErrorText";
-import AdminSection from "@/components/pages/admin/AdminSection";
 import AdminTournamentMatchmaking from "@/components/pages/admin/archetype/adminTournaments/AdminTournamentMatchmaking";
 import { TournamentDetailsStanding } from "@/components/pages/user/tournaments/TournamentDetailsStanding";
 import AdminManageTournamentActionSection from "./AdminManageTournamentActionSection";
@@ -29,6 +28,15 @@ import AdminManageTournamentPlayersSection from "./AdminManageTournamentPlayersS
 import PopUp from "@/components/generic/PopUp";
 import usePopup from "@/hooks/usePopup";
 import { verbalDate } from "@/utils/date/verbalDate";
+
+type ManageTournamentTab = "players" | "matchmaking" | "standings";
+
+const TAB_CLASS = (active: boolean) =>
+    `py-2 px-4 rounded-t-md cursor-pointer ${
+        active
+            ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
+            : "text-gray-700 bg-gray-200 hover:bg-gray-300"
+    }`;
 
 const AdminManageTournament = () => {
     const { tournamentId } = useParams<{ tournamentId: string }>();
@@ -38,6 +46,7 @@ const AdminManageTournament = () => {
     const [standings, setStandings] = useState<TournamentStanding[]>([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
+    const [activeTab, setActiveTab] = useState<ManageTournamentTab>("players");
     const [, setError] = useState<string | null>(null);
 
     const [, setRemovePlayer] = useState<TournamentPlayerAdmin | null>(null);
@@ -252,23 +261,45 @@ const AdminManageTournament = () => {
                 canAdvanceRound={canAdvanceRound}
             />
 
-            <AdminManageTournamentPlayersSection
-                tournament={tournament}
-                players={players}
-                addPlayerUsername={addPlayerUsername}
-                setAddPlayerUsername={setAddPlayerUsername}
-                addPlayerResults={addPlayerResults}
-                inscribedUserIds={inscribedUserIds}
-                addingUserId={addingUserId}
-                handleAddPlayer={handleAddPlayer}
-                handleRemovePlayer={handleRemovePlayer}
-                setRemovePlayer={setRemovePlayer}
-                token={token ?? null}
-                onDeckAssigned={loadData}
-            />
+            <div className="flex">
+                <span
+                    className={TAB_CLASS(activeTab === "players")}
+                    onClick={() => setActiveTab("players")}
+                >
+                    Joueurs
+                </span>
+                <span
+                    className={TAB_CLASS(activeTab === "matchmaking")}
+                    onClick={() => setActiveTab("matchmaking")}
+                >
+                    Matchmaking
+                </span>
+                <span
+                    className={TAB_CLASS(activeTab === "standings")}
+                    onClick={() => setActiveTab("standings")}
+                >
+                    Classement
+                </span>
+            </div>
 
-            
-            <AdminSection adminSectionTitle="Matchmaking">
+            <div className={activeTab === "players" ? "" : "hidden"}>
+                <AdminManageTournamentPlayersSection
+                    tournament={tournament}
+                    players={players}
+                    addPlayerUsername={addPlayerUsername}
+                    setAddPlayerUsername={setAddPlayerUsername}
+                    addPlayerResults={addPlayerResults}
+                    inscribedUserIds={inscribedUserIds}
+                    addingUserId={addingUserId}
+                    handleAddPlayer={handleAddPlayer}
+                    handleRemovePlayer={handleRemovePlayer}
+                    setRemovePlayer={setRemovePlayer}
+                    token={token ?? null}
+                    onDeckAssigned={loadData}
+                />
+            </div>
+
+            <div className={activeTab === "matchmaking" ? "" : "hidden"}>
                 {tournament && token && (
                     <AdminTournamentMatchmaking
                         tournamentId={tournament.id}
@@ -279,9 +310,9 @@ const AdminManageTournament = () => {
                         matchesPerRound={tournament.matches_per_round}
                     />
                 )}
-            </AdminSection>
+            </div>
 
-            <AdminSection adminSectionTitle="Classement">
+            <div className={activeTab === "standings" ? "" : "hidden"}>
                 {standings && standings.length > 0 ? (
                     <TournamentDetailsStanding standings={standings} />
                 ) : (
@@ -289,7 +320,7 @@ const AdminManageTournament = () => {
                         Aucun classement disponible pour ce tournoi pour le moment
                     </p>
                 )}
-            </AdminSection>
+            </div>
 
             <PopUp
                 isOpen={isOpen}

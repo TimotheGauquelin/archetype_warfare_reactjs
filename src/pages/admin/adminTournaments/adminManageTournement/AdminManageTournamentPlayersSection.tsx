@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import CompletionListInput from "@/components/generic/form/CompletionListInput";
 import NoItemMessage from "@/components/generic/NoItemMessage";
 import PaginationTableHead from "@/components/generic/pagination/PaginationTableHead";
-import AdminSection from "@/components/pages/admin/AdminSection";
 import PopUp from "@/components/generic/PopUp";
 import DeckCardsGrid from "@/components/pages/userProfil/deckCommon/DeckCardsGrid";
 import DeckSection from "@/components/pages/userProfil/deckCommon/DeckSection";
@@ -195,14 +194,13 @@ const AdminManageTournamentPlayersSection = ({
   }, [sortedSnapshotCards]);
 
   return (
-    <AdminSection adminSectionTitle="Joueurs">
+    <>
       <div className="flex flex-col flex-wrap gap-2">
         {tournament?.status.includes("registration") && (
           <div className="space-y-2 bg-gray-100 rounded-md p-2">
-            <label htmlFor="addPlayerUsername" className="font-semibold">Actions</label>
+            <label htmlFor="addPlayerUsername" className="font-semibold">Ajouter un joueur</label>
             <CompletionListInput
               id="addPlayerUsername"
-              placeholder="Ajouter un joueur"
               items={addPlayerResults?.data ?? []}
               getItemLabel={(user: User) => user.username ?? ""}
               alreadyAdded={players.map((p) => p.user).filter(Boolean) as User[]}
@@ -453,7 +451,7 @@ const AdminManageTournamentPlayersSection = ({
           </div>
         )}
       </PopUp>
-    </AdminSection>
+    </>
   );
 };
 
