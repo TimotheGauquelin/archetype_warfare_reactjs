@@ -15,6 +15,7 @@ import {
   getMaxOpponentGamesWon,
   getWinsNeeded,
 } from "@/utils/tournament/bestOfScore";
+import { matchHasReportedResult } from "@/utils/tournament/matchResult";
 
 interface AdminTournamentMatchmakingProps {
   rounds: TournamentDetailRound[];
@@ -156,10 +157,16 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
                 {sortedMatches.map((m, index) => {
                   const isEditing = editMatchId === m.id;
                   const tableNumber = index + 1;
+                  const isBye = m.player2_tournament_player_id == null;
+                  const hasResult = matchHasReportedResult(m);
                   return (
                     <div
                       key={m.id}
-                      className="grid grid-cols-12 col-span-12 items-center border-b border-l border-r hover:bg-slate-50"
+                      className={`grid grid-cols-12 col-span-12 items-center border-b border-l border-r ${
+                        hasResult
+                          ? "bg-emerald-50 hover:bg-emerald-100"
+                          : "bg-white hover:bg-slate-50"
+                      } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
                     >
                       <div className="col-span-1 px-2 py-1 border-r border-gray-200 font-medium">
                         {tableNumber}
@@ -194,17 +201,27 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
                               aria-label="Score joueur 2"
                             />
                           </span>
-                        ) : (
+                        ) : hasResult ? (
                           `${m.player1_games_won} – ${m.player2_games_won}`
+                        ) : (
+                          <span className="text-gray-400 italic">—</span>
                         )}
                       </div>
                       <div className="col-span-3 lscreen:col-span-3 px-2 py-1 border-r border-gray-200">
-                        {m.player2_tournament_player_id != null
-                          ? idToName(m.player2_tournament_player_id, standings)
-                          : "BYE"}
+                        {isBye
+                          ? "BYE"
+                          : idToName(m.player2_tournament_player_id!, standings)}
                       </div>
-                      <div className="col-span-2 lscreen:col-span-1 px-2 py-1 text-center border-r border-gray-200">
-                        {TOURNAMENT_MATCH_STATUS(m.status) ?? m.status}
+                      <div
+                        className={`col-span-2 lscreen:col-span-1 px-2 py-1 text-center border-r border-gray-200 ${
+                          hasResult
+                            ? "text-green-600 font-medium"
+                            : m.status === "in_progress"
+                              ? "text-amber-600"
+                              : "text-red-500"
+                        }`}
+                      >
+                        {TOURNAMENT_MATCH_STATUS(m.status, { isBye }) ?? m.status}
                       </div>
                       <div className="hidden lscreen:col-span-2 px-2 py-1 text-center lscreen:block">
                         {isEditing ? (

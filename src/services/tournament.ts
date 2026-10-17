@@ -76,6 +76,7 @@ export interface MyTournamentMatch {
   id: number,
   round_id: number,
   status: "in_progress" | "completed" | "pending",
+  result_reported_at?: string | null,
   player1: {
     id: number,
     username: string,
@@ -87,7 +88,7 @@ export interface MyTournamentMatch {
     username: string,
     isWinner: boolean,
     gamesWon: number
-  }
+  } | null
 }
 
 export interface MyTournamentRound {
@@ -152,6 +153,7 @@ export interface TournamentDetailMatch {
   player2_games_won: number;
   winner_tournament_player_id: number | null;
   status: "pending" | "in_progress" | "completed";
+  result_reported_at?: string | null;
 }
 
 /** Ronde telle que renvoyée par GET /tournaments/:id. */

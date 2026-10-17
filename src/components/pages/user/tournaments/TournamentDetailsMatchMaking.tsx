@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import api_aw from "@/api/api_aw";
 import { TournamentDropDown } from "./TournamentDropDown";
 import { TOURNAMENT_MATCH_STATUS } from "@/utils/trad/tournamentStatus";
+import { matchHasReportedResult } from "@/utils/tournament/matchResult";
 
 interface Props {
   tournamentId: string;
@@ -18,6 +19,7 @@ export interface Match {
   player2_games_won: number;
   winner_tournament_player_id: number | null;
   status: "pending" | "in_progress" | "completed";
+  result_reported_at?: string | null;
 }
 
 export interface Round {
@@ -214,12 +216,16 @@ export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) 
                         ? null
                         : (roundPoints[match.player2_tournament_player_id!] ?? 0);
 
-                      const isCompleted = match.status === "completed";
+                      const hasResult = matchHasReportedResult(match);
 
                       return (
                         <tr
                           key={match.id}
-                          className="border-b odd:bg-gray-200 bg-white"
+                          className={`border-b ${
+                            hasResult
+                              ? "bg-emerald-50"
+                              : "odd:bg-gray-100 bg-white"
+                          } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
                         >
                           <td className="p-2 text-center">Table {index + 1}</td>
                           <td className="block p-2 text-center flex flex-col lscreen:flex-row justify-center items-center">
@@ -239,19 +245,20 @@ export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) 
                             </span>
                           </td>
                           <td className="p-2 text-center">
-                            {isCompleted
+                            {hasResult
                               ? `${match.player1_games_won} - ${match.player2_games_won}`
-                              : "—"}
+                              : <span className="text-gray-400 italic">—</span>}
                           </td>
                           <td
-                            className={`p-2 text-center ${match.status === "completed"
-                                ? "text-green-500"
+                            className={`p-2 text-center ${
+                              hasResult
+                                ? "text-green-600 font-medium"
                                 : match.status === "in_progress"
-                                  ? "text-yellow-500"
+                                  ? "text-amber-600"
                                   : "text-red-500"
-                              }`}
+                            }`}
                           >
-                            {TOURNAMENT_MATCH_STATUS(match.status)}
+                            {TOURNAMENT_MATCH_STATUS(match.status, { isBye })}
                           </td>
                         </tr>
                       );

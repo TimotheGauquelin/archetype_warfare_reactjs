@@ -20,7 +20,13 @@ export const TOURNAMENT_STATUS = (status: string): string => {
     }
 }
 
-export const TOURNAMENT_MATCH_STATUS = (status: string) => {
+export const TOURNAMENT_MATCH_STATUS = (
+    status: string,
+    options?: { isBye?: boolean }
+) => {
+    if (options?.isBye && (status === 'completed' || status === 'pending' || status === 'in_progress')) {
+        return 'Terminé (BYE)';
+    }
     switch (status) {
         case 'pending':
             return 'En attente';

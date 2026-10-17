@@ -243,7 +243,8 @@
     "draw": "Égalité",
     "doubleLoss": "Double défaite",
     "wonBy": "Match gagné par",
-    "score": "Score :"
+    "score": "Score :",
+    "scorePending": "Score en attente"
   },
   "archetypePage": {
     "mainType": "Type Principal",

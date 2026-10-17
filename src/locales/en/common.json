@@ -243,7 +243,8 @@
     "draw": "Draw",
     "doubleLoss": "Double loss",
     "wonBy": "Match won by",
-    "score": "Score:"
+    "score": "Score:",
+    "scorePending": "Score pending"
   },
   "archetypePage": {
     "mainType": "Main Type",

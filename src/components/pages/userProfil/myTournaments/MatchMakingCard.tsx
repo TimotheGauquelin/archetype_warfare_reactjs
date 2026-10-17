@@ -11,6 +11,7 @@ import {
     resolveMatchOutcome,
     type MatchResolutionMode,
 } from "@/utils/tournament/bestOfScore";
+import { matchHasReportedResult } from "@/utils/tournament/matchResult";
 
 
 interface MatchMakingCardProps {
@@ -36,6 +37,11 @@ export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({
     const user = useSelector((state: RootState) => state.user);
     const roundMatch = round.match ?? null;
     const isBye = roundMatch.player2 == null;
+    const hasResult = matchHasReportedResult({
+        status: roundMatch.status,
+        result_reported_at: roundMatch.result_reported_at,
+        player2: roundMatch.player2,
+    });
     const winsNeeded = Math.max(1, maxWinningDuelPerPlayer);
     const maxP1 = getMaxOpponentGamesWon(playersScore.player2_games_won, winsNeeded);
     const maxP2 = getMaxOpponentGamesWon(playersScore.player1_games_won, winsNeeded);
@@ -78,11 +84,16 @@ export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({
             </h3>
 
             <ul className="space-y-2">
-                <li key={round.id} className="border rounded p-2">
+                <li
+                    key={round.id}
+                    className={`border rounded p-2 ${
+                        hasResult ? "bg-emerald-50 border-emerald-200" : "bg-white"
+                    } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
+                >
                     <div className="flex flex-col gap-1">
                         <div className="flex justify-between">
                             <span className="font-medium">
-                                {player1Username} vs {player2Username}
+                                {player1Username} vs {isBye ? "BYE" : player2Username}
                             </span>
                         </div>
 
@@ -124,14 +135,16 @@ export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({
                                     {t("matchmaking.saveScore")}
                                 </button>
                             </form>
+                        ) : !hasResult ? (
+                            <p className="text-gray-400 italic mt-1">{t("matchmaking.scorePending")}</p>
                         ) : (
                             <>
                                 {isBye ? (
-                                    <p className="text-gray-600 mt-1">{t("matchmaking.byeWin")}</p>
+                                    <p className="text-green-700 mt-1 font-medium">{t("matchmaking.byeWin")}</p>
                                 ) : (() => {
                                     const outcome = resolveMatchOutcome(
                                         roundMatch.player1.gamesWon,
-                                        roundMatch.player2.gamesWon,
+                                        roundMatch.player2!.gamesWon,
                                         winsNeeded,
                                         matchResolutionMode
                                     );
@@ -150,7 +163,7 @@ export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({
                                         </p>
                                     );
                                 })()}
-                                {!isBye && (
+                                {!isBye && roundMatch.player2 && (
                                     <p className="text-gray-600 mt-1">
                                         {t("matchmaking.score")} {player1Username} {roundMatch.player1.gamesWon} - {roundMatch.player2.gamesWon}{" "}
                                         {player2Username}
