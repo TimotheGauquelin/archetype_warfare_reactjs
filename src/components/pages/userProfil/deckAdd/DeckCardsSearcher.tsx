@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import { EXTRA_DECK_LABELS } from "../../../../utils/const/extraDeckConst";
 import { STATUS_FORBIDDEN, STATUS_UNLIMITED } from "../../../../utils/const/banlistConst";
 import type { Deck, Card, Pagination, CardSearchCriteria, RootState } from "../../../../types";
+import { useLongPress } from "@/hooks/useLongPress";
+import DeckCardDetailPopUp from "../deckCommon/DeckCardDetailPopUp";
 
 interface DeckCardsSearcherProps {
   myDeck: Deck;
@@ -18,10 +20,94 @@ interface DeckCardsSearcherProps {
   setPagination: React.Dispatch<React.SetStateAction<Pagination>>;
 }
 
+interface DeckSearchCardItemProps {
+  card: Card;
+  totalQuantityInDeck: number;
+  cardLimit: number;
+  shouldDisable: boolean;
+  isForbidden: boolean;
+  hasReachedLimit: boolean;
+  cardStatusLabel: string;
+  onAdd: (card: Card) => void;
+  onShowDetails: (card: Card) => void;
+}
+
+const DeckSearchCardItem: React.FC<DeckSearchCardItemProps> = ({
+  card,
+  totalQuantityInDeck,
+  cardLimit,
+  shouldDisable,
+  isForbidden,
+  hasReachedLimit,
+  cardStatusLabel,
+  onAdd,
+  onShowDetails,
+}) => {
+  const { t } = useTranslation();
+  const { handlers, wasLongPress } = useLongPress(
+    useCallback(() => {
+      onShowDetails(card);
+    }, [card, onShowDetails])
+  );
+
+  return (
+    <div className="col-span-12 lscreen:col-span-4 relative">
+      <div
+        className={`p-1 hover:saturate-150 relative transition-opacity select-none touch-manipulation ${
+          shouldDisable ? "grayscale opacity-50 cursor-not-allowed" : "cursor-pointer"
+        }`}
+        {...handlers}
+        onClick={() => {
+          if (wasLongPress()) return;
+          if (!shouldDisable) onAdd(card);
+        }}
+        title={
+          [
+            isForbidden
+              ? t("profile.cardForbidden")
+              : hasReachedLimit
+                ? t("profile.cardLimitReachedShort", { limit: cardLimit })
+                : totalQuantityInDeck > 0
+                  ? t("profile.copiesInDeck", { count: totalQuantityInDeck, limit: cardLimit })
+                  : t("profile.clickToAdd"),
+            t("profile.longPressForDetails"),
+          ].join(" — ")
+        }
+      >
+        <img
+          src={card?.img_url || ""}
+          alt={card?.name || "Carte"}
+          loading="lazy"
+          className="w-full h-auto pointer-events-none"
+          draggable={false}
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}assets/waiting_archetype_image.jpg`;
+          }}
+        />
+        {totalQuantityInDeck > 0 && (
+          <div className="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
+            {totalQuantityInDeck}/{cardLimit}
+          </div>
+        )}
+      </div>
+      {cardStatusLabel && (
+        <div className="absolute top-0 right-0 w-1/3 pointer-events-none">
+          <img
+            src={`${import.meta.env.BASE_URL}assets/banlistCardStatusIcon/${cardStatusLabel}.png`}
+            alt={cardStatusLabel}
+            loading="lazy"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
 const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck, filters, setFilters, pagination, setPagination }) => {
   const { t } = useTranslation();
   const [researchedCards, setResearchedCards] = useState<Card[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [detailCard, setDetailCard] = useState<Card | null>(null);
   const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
 
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -227,6 +313,10 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
     }));
   }, [myDeck, setMyDeck, t]);
 
+  const handleShowDetails = useCallback((card: Card) => {
+    setDetailCard(card);
+  }, []);
+
   // Mémoriser le rendu des cartes pour éviter les re-rendus inutiles
   const renderedCards = useMemo(() => {
     if (!researchedCards || researchedCards.length === 0) {
@@ -252,54 +342,21 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
       const cardStatusLabel = card?.card_status?.label ? card?.card_status?.label?.toLowerCase() : STATUS_UNLIMITED.toLowerCase();
 
       return (
-        <div key={card.id} className="col-span-12 lscreen:col-span-4 relative">
-          <div
-            key={card.id}
-            className={`p-1 hover:saturate-150 relative transition-opacity ${shouldDisable ? "grayscale opacity-50 cursor-not-allowed" : "cursor-pointer"
-              }`}
-            onClick={() => {
-              if (!shouldDisable) {
-                addCardsIntoDeck(card);
-              }
-            }}
-            title={
-              isForbidden
-                ? t("profile.cardForbidden")
-                : hasReachedLimit
-                  ? t("profile.cardLimitReachedShort", { limit: cardLimit })
-                  : totalQuantityInDeck > 0
-                    ? t("profile.copiesInDeck", { count: totalQuantityInDeck, limit: cardLimit })
-                    : t("profile.clickToAdd")
-            }
-          >
-            <img
-              src={card?.img_url || ""}
-              alt={card?.name || "Carte"}
-              loading="lazy"
-              className="w-full h-auto"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = `${import.meta.env.BASE_URL}assets/waiting_archetype_image.jpg`;
-              }}
-            />
-            {totalQuantityInDeck > 0 && (
-              <div className="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
-                {totalQuantityInDeck}/{cardLimit}
-              </div>
-            )}
-          </div>
-          {cardStatusLabel && (
-            <div className="absolute top-0 right-0 w-1/3">
-              <img
-                src={`${import.meta.env.BASE_URL}assets/banlistCardStatusIcon/${cardStatusLabel}.png`}
-                alt={cardStatusLabel}
-                loading="lazy"
-              />
-            </div>
-          )}
-        </div>
+        <DeckSearchCardItem
+          key={card.id}
+          card={card}
+          totalQuantityInDeck={totalQuantityInDeck}
+          cardLimit={cardLimit}
+          shouldDisable={shouldDisable}
+          isForbidden={isForbidden}
+          hasReachedLimit={hasReachedLimit}
+          cardStatusLabel={cardStatusLabel}
+          onAdd={addCardsIntoDeck}
+          onShowDetails={handleShowDetails}
+        />
       );
     });
-  }, [researchedCards, isLoading, myDeck, addCardsIntoDeck, t]);
+  }, [researchedCards, isLoading, myDeck, addCardsIntoDeck, handleShowDetails, t]);
 
   return (
     <div className="bg-gray-200 col-span-3 p-2 rounded">
@@ -340,6 +397,12 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
           aria-label={t("common.nextPage")}
         />
       </div>
+
+      <DeckCardDetailPopUp
+        card={detailCard}
+        isOpen={detailCard != null}
+        onClose={() => setDetailCard(null)}
+      />
     </div>
   );
 };
