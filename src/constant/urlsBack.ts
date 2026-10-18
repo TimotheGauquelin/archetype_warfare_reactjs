@@ -188,3 +188,6 @@ export const URL_BACK_ASSIGN_TOURNAMENT_PLAYER_DECK = (
   tournamentId: number | string,
   playerId: number | string
 ) => `/tournaments/${tournamentId}/players/${playerId}/deck`;
+
+export const URL_BACK_GET_ARCHETYPE_RANKING = (archetypeId: number | string) =>
+  `/archetype-rankings/archetype/${archetypeId}`;

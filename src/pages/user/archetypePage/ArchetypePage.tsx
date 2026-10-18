@@ -10,6 +10,10 @@ import Jumbotron from "../../../components/pages/archetype/Jumbotron";
 import "../../../styles/Archetype.scss";
 import PageContentBlock from "../../../components/generic/PageContentBlock";
 import { getArchetypeById } from "../../../services/archetype";
+import {
+  getArchetypeRanking,
+  type ArchetypeRankingPlayer,
+} from "../../../services/archetypeRanking";
 import Card from "../../../components/generic/Card";
 import SkeletonArchetypePage from "../../../components/skeletons/SkeletonArchetypePage";
 import Footer from "../../../components/generic/footer/Footer";
@@ -21,6 +25,7 @@ import UserHeroLayout from "../layout";
 import { URL_FRONT_HOME } from "@/constant/urlsFront";
 import { useCardTypes } from "../../../hooks/useCardTypes";
 import { optimizeImageUrl } from "../../../utils/image/optimizeImageUrl";
+import ArchetypeMastersSection from "../../../components/pages/archetype/ArchetypeMastersSection";
 
 const ArchetypePage = () => {
   const { t } = useTranslation();
@@ -28,6 +33,8 @@ const ArchetypePage = () => {
   const [archetype, setArchetype] = useState<Archetype | null>(null);
   const [isFetching, setIsFetching] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [masters, setMasters] = useState<ArchetypeRankingPlayer[]>([]);
+  const [isLoadingMasters, setIsLoadingMasters] = useState(false);
 
   const { slug } = useParams();
   const { cardTypes } = useCardTypes();
@@ -43,6 +50,7 @@ const ArchetypePage = () => {
 
     setIsFetching(true);
     setErrorMessage(null);
+    setMasters([]);
 
     try {
       const setArchetypeWrapper = (value: Archetype | ((prev: Archetype) => Archetype)) => {
@@ -57,8 +65,19 @@ const ArchetypePage = () => {
     } catch (err) {
       setErrorMessage(t("archetypePage.loadError"));
       console.error("Erreur lors du chargement de l'archétype:", err);
-    } finally {
       setIsFetching(false);
+      return;
+    }
+
+    setIsFetching(false);
+    setIsLoadingMasters(true);
+    try {
+      const ranking = await getArchetypeRanking(slug);
+      setMasters(ranking.rankings ?? []);
+    } catch {
+      setMasters([]);
+    } finally {
+      setIsLoadingMasters(false);
     }
   }, [slug, t, locale]);
 
@@ -153,6 +172,10 @@ const ArchetypePage = () => {
                 <p className="text-right text-sm">{t("archetypePage.staffSignature")}</p>
               </div>
             )}
+            <ArchetypeMastersSection
+              masters={masters}
+              isLoading={isLoadingMasters}
+            />
             <div className="pt-5">
               <SubtitleDivider
                 label={t("archetypePage.allCards", { count: sortedCards.length })}

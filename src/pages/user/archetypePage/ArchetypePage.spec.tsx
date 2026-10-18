@@ -7,7 +7,11 @@ import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
 import ArchetypePage from "./ArchetypePage";
 import type { Archetype, BanlistCard } from "../../../types";
-import { URL_BACK_GET_ARCHETYPE_BY_ID, URL_BACK_GET_ALL_CARD_TYPES } from "@/constant/urlsBack";
+import {
+    URL_BACK_GET_ARCHETYPE_BY_ID,
+    URL_BACK_GET_ALL_CARD_TYPES,
+    URL_BACK_GET_ARCHETYPE_RANKING,
+} from "@/constant/urlsBack";
 import userReducer from "../../../redux/slice/userSlice";
 import cardTypeReducer from "../../../redux/slice/cardTypeSlice";
 
@@ -146,6 +150,17 @@ describe("ArchetypePage (integration)", () => {
             }),
             http.get(`${API_BASE_URL}${URL_BACK_GET_ALL_CARD_TYPES}`, () => {
                 return HttpResponse.json({ data: mockCardTypes });
+            }),
+            http.get(`${API_BASE_URL}${URL_BACK_GET_ARCHETYPE_RANKING("dark-magician")}`, () => {
+                return HttpResponse.json({
+                    archetypeId: 1,
+                    archetypeName: "Dark Magician",
+                    rankings: [
+                        { userId: "u1", username: "Alice", tournamentWins: 3 },
+                        { userId: "u2", username: "Bob", tournamentWins: 2 },
+                        { userId: "u3", username: "Charlie", tournamentWins: 1 },
+                    ],
+                });
             })
         );
     });
@@ -216,6 +231,20 @@ describe("ArchetypePage (integration)", () => {
           await waitFor(() => {
             expect(screen.getByText(/Toutes les cartes \(3\)/)).toBeInTheDocument();
           });
+        });
+
+        it("displays top three archetype masters", async () => {
+          vi.useRealTimers();
+
+          renderArchetypePage();
+
+          await waitFor(() => {
+            expect(screen.getByText("Maîtres de l'archétype")).toBeInTheDocument();
+          });
+
+          expect(screen.getByText("Alice")).toBeInTheDocument();
+          expect(screen.getByText("Bob")).toBeInTheDocument();
+          expect(screen.getByText("Charlie")).toBeInTheDocument();
         });
 
         it("displays NoItemMessage when archetype has no cards", async () => {

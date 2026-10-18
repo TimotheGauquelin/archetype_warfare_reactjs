@@ -270,7 +270,15 @@
     "infoPrefix": "Information : {{comment}}",
     "staffSignature": "Le Staff AW",
     "allCards": "Toutes les cartes ({{count}})",
-    "noCards": "Il n'y a pas de carte dans cet archétype."
+    "noCards": "Il n'y a pas de carte dans cet archétype.",
+    "masters": "Maîtres de l'archétype",
+    "noMasters": "Aucun maître pour le moment — gagnez un tournoi avec cet archétype !",
+    "masterRank1": "1er",
+    "masterRank2": "2e",
+    "masterRank3": "3e",
+    "masterUnknown": "Joueur inconnu",
+    "masterWins_one": "{{count}} victoire",
+    "masterWins_other": "{{count}} victoires"
   },
   "concept": {
     "legendaryTitle": "Un jeu légendaire devenu un phénomène mondial",

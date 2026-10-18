@@ -270,7 +270,15 @@
     "infoPrefix": "Information: {{comment}}",
     "staffSignature": "The AW Staff",
     "allCards": "All cards ({{count}})",
-    "noCards": "There are no cards in this archetype."
+    "noCards": "There are no cards in this archetype.",
+    "masters": "Archetype masters",
+    "noMasters": "No masters yet — win a tournament with this archetype!",
+    "masterRank1": "1st",
+    "masterRank2": "2nd",
+    "masterRank3": "3rd",
+    "masterUnknown": "Unknown player",
+    "masterWins_one": "{{count}} win",
+    "masterWins_other": "{{count}} wins"
   },
   "concept": {
     "legendaryTitle": "A legendary game turned global phenomenon",
