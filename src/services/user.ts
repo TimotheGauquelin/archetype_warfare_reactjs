@@ -274,6 +274,7 @@ export const updateMyProfile = async (
   userId: number | string,
   payload: {
     biography?: string | null;
+    country?: string | null;
     loved_archetype_id?: number | string | null;
     locale?: CardLocale;
   },

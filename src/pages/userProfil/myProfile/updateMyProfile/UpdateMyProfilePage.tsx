@@ -7,6 +7,7 @@ import { Input } from "@/components/generic/form/input/Input";
 import { InputPassword } from "@/components/generic/form/inputPassword/InputPassword";
 import TextArea from "@/components/generic/form/textArea/TextArea";
 import SelectInput from "@/components/generic/form/SelectInput";
+import CountrySelect from "@/components/generic/form/CountrySelect";
 import Button from "@/components/generic/buttons/classicButton/Button";
 import UserProfilLayout from "../../layout";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
@@ -27,6 +28,7 @@ const UpdateMyProfilePage = () => {
     username: "",
     email: "",
     biography: "",
+    country: "",
     loved_archetype_id: "",
   });
   const [passwordForm, setPasswordForm] = useState<ChangePasswordForm>({
@@ -51,6 +53,7 @@ const UpdateMyProfilePage = () => {
         username: user.username || initialUsername || "",
         email: user.email || initialEmail || "",
         biography: user.biography || "",
+        country: user.country || "",
         loved_archetype_id:
           user.loved_archetype_id != null ? String(user.loved_archetype_id) : "",
       });
@@ -64,6 +67,7 @@ const UpdateMyProfilePage = () => {
       id,
       {
         biography: profile.biography.trim() || null,
+        country: profile.country || null,
         loved_archetype_id: profile.loved_archetype_id || null,
       },
       token,
@@ -73,6 +77,7 @@ const UpdateMyProfilePage = () => {
       dispatch(
         updateUser({
           biography: updated.biography ?? null,
+          country: updated.country ?? null,
           loved_archetype_id: updated.loved_archetype_id ?? null,
           loved_archetype: updated.loved_archetype ?? null,
         })
@@ -147,7 +152,7 @@ const UpdateMyProfilePage = () => {
               onChange={(e) => setProfile((prev) => ({ ...prev, biography: e.target.value }))}
             />
           </div>
-          <div className="col-span-12 md:col-span-6">
+          <div className="col-span-12 md:col-span-6 space-y-2">
             <SelectInput
               defaultOptionLabel={t("profile.selectFavoriteArchetype")}
               label={t("profile.favoriteArchetypeLabel")}
@@ -160,6 +165,14 @@ const UpdateMyProfilePage = () => {
               attribute="loved_archetype_id"
               setAction={setProfile}
               colSpanWidth="12"
+            />
+            <CountrySelect
+              label={t("profile.countryLabel")}
+              value={profile.country}
+              onChange={(code) =>
+                setProfile((prev) => ({ ...prev, country: code }))
+              }
+              disabled={isSavingProfile}
             />
           </div>
         </div>

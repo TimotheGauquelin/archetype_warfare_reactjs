@@ -28,6 +28,7 @@ vi.mock("@/services/user", async () => {
                 email: "test@example.com",
                 roles: ["USER"],
                 biography: "",
+                country: null,
                 loved_archetype_id: null,
                 loved_archetype: null,
             });
@@ -55,6 +56,7 @@ const mockUser = {
     roles: ["USER"],
     token: "fake-token",
     biography: null,
+    country: null,
     loved_archetype_id: null,
     loved_archetype: null,
 };

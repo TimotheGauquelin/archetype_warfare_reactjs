@@ -13,6 +13,7 @@ export interface User {
   is_active?: boolean;
   is_banned?: boolean;
   biography?: string | null;
+  country?: string | null;
   loved_archetype_id?: number | string | null;
   loved_archetype?: {
     id: number;
@@ -40,6 +41,7 @@ export interface UserUpdateForm {
   username: string;
   email: string;
   biography: string;
+  country: string;
   loved_archetype_id: string;
   [key: string]: unknown;
 }

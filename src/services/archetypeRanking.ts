@@ -5,6 +5,7 @@ import { handleApiError, logError } from "../utils/errorHandler";
 export interface ArchetypeRankingPlayer {
   userId: string;
   username: string | null;
+  country: string | null;
   tournamentWins: number;
 }
 

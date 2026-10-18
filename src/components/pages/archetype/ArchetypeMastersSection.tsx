@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import SubtitleDivider from "../../generic/SubtitleDivider";
 import NoItemMessage from "../../generic/NoItemMessage";
+import CountryFlagLabel from "../../generic/CountryFlagLabel";
 import type { ArchetypeRankingPlayer } from "../../../services/archetypeRanking";
 
 const MEDAL_TYPES = ["gold", "silver", "bronze"] as const;
@@ -48,6 +49,7 @@ const ArchetypeMastersSection = ({
                   <span className="font-medium text-gray-900 truncate">
                     {player.username?.trim() || t("archetypePage.masterUnknown")}
                   </span>
+                  <CountryFlagLabel countryCode={player.country} />
                 </div>
                 <span className="text-gray-600 shrink-0">
                   {t("archetypePage.masterWins", { count: player.tournamentWins })}

@@ -12,16 +12,18 @@ import UserProfilLayout from "../../layout";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 import { URL_FRONT_MY_PROFILE_EDIT } from "@/constant/urlsFront";
 import { updateUser } from "@/redux/slice/userSlice";
+import { getCountryFlagUrl, getCountryName } from "@/utils/country";
 
 const MyProfile = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id, username, roles, biography, loved_archetype } = useSelector(
+  const { id, username, roles, biography, country, loved_archetype } = useSelector(
     (state: RootState) => state.user
   );
   const [profileBio, setProfileBio] = useState(biography || "");
+  const [profileCountry, setProfileCountry] = useState(country || "");
   const [favoriteArchetypeName, setFavoriteArchetypeName] = useState(
     loved_archetype?.name || ""
   );
@@ -31,10 +33,12 @@ const MyProfile = () => {
     getUserById(id, (userData) => {
       const user = userData as User;
       setProfileBio(user.biography || "");
+      setProfileCountry(user.country || "");
       setFavoriteArchetypeName(user.loved_archetype?.name || "");
       dispatch(
         updateUser({
           biography: user.biography ?? null,
+          country: user.country ?? null,
           loved_archetype_id: user.loved_archetype_id ?? null,
           loved_archetype: user.loved_archetype ?? null,
         })
@@ -92,6 +96,25 @@ const MyProfile = () => {
               <p className="text-black">
                 {favoriteArchetypeName || t("profile.noFavoriteArchetype")}
               </p>
+            </div>
+            <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
+              <p className="font-semibold text-black mb-1">{t("profile.countryLabel")}</p>
+              {profileCountry ? (
+                <p className="text-black inline-flex items-center gap-2">
+                  <img
+                    src={getCountryFlagUrl(profileCountry)}
+                    alt=""
+                    className="w-6 h-4 object-cover rounded-sm"
+                    width={24}
+                    height={18}
+                  />
+                  <span>
+                    {getCountryName(profileCountry, i18n.language) ?? profileCountry}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-black">{t("profile.noCountry")}</p>
+              )}
             </div>
             <div className="col-span-12 flex flex-col space-y-1">
               <p className="font-semibold text-black mb-1">{t("profile.biographyLabel")}</p>

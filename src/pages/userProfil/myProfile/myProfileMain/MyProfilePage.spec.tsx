@@ -31,6 +31,7 @@ vi.mock("../../../../services/user", () => ({
       email: "test@example.com",
       roles: ["USER"],
       biography: null,
+      country: null,
       loved_archetype_id: null,
       loved_archetype: null,
     });
@@ -46,6 +47,7 @@ const mockUser = {
   roles: ["USER"],
   token: "fake-token",
   biography: null,
+  country: null,
   loved_archetype_id: null,
   loved_archetype: null,
 };
