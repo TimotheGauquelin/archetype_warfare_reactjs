@@ -97,9 +97,10 @@ const AdminCards = () => {
       level: card.level ? card.level : null,
       atk: card.atk === 0 ? 0 : card.atk && card.atk > 0 ? card.atk : null,
       def: card.def === 0 ? 0 : card.def && card.def > 0 ? card.def : null,
-      attribute: card.attribute ? card.attribute : null,
+      attribute: card.attribute ? card.attribute.toLowerCase() : null,
       description: card.desc ? card.desc : null,
       img_url: card?.card_images?.[0]?.image_url,
+      type: card.type.includes("Monster") ? (card.race ?? null) : null,
       card_type: card.type.includes("Monster")
         ? card.type
         : card.type.includes("Spell") || card.type.includes("Trap")

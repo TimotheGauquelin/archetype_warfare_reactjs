@@ -8,6 +8,7 @@ import { URL_FRONT_ADMIN_CARDS } from "../../../constant/urlsFront";
 import Loader from "../../../components/generic/Loader";
 import { attributeToFrench } from "@/utils/trad/attribute";
 import { cardTypeToFrench } from "@/utils/trad/cardType";
+import { MONSTER_TYPE_LABELS, monsterTypeToFrench } from "@/utils/trad/monsterType";
 import { useCardTypes } from "../../../hooks/useCardTypes";
 import { useAttributes } from "../../../hooks/useAttributes";
 
@@ -15,7 +16,7 @@ type LocaleTab = "fr" | "en";
 
 type CardStatsForm = Pick<
   CardDetailResponse,
-  "id" | "img_url" | "level" | "atk" | "def" | "attribute" | "card_type"
+  "id" | "img_url" | "level" | "atk" | "def" | "attribute" | "type" | "card_type"
 >;
 
 type CardTextForm = Pick<CardDetailResponse, "name" | "description">;
@@ -81,7 +82,8 @@ const AdminCardDetail = () => {
         level: enCard.level,
         atk: enCard.atk,
         def: enCard.def,
-        attribute: enCard.attribute,
+        attribute: enCard.attribute?.toLowerCase(),
+        type: enCard.type,
         card_type: enCard.card_type,
       });
       setArchetypes(enCard.archetypes ?? []);
@@ -135,7 +137,10 @@ const AdminCardDetail = () => {
         level: editStats.level ?? null,
         atk: editStats.atk ?? null,
         def: editStats.def ?? null,
-        attribute: editStats.attribute || null,
+        attribute: editStats.attribute
+          ? editStats.attribute.toLowerCase()
+          : null,
+        type: editStats.type || null,
         card_type: editStats.card_type || null,
       });
       setStats({ ...editStats });
@@ -313,9 +318,15 @@ const AdminCardDetail = () => {
                       <dd className="text-gray-900">{attributeToFrench(stats.attribute)}</dd>
                     </>
                   )}
+                  {!isSpellOrTrap(stats.card_type) && stats.type && (
+                    <>
+                      <dt className="font-medium text-gray-500">Type de monstre</dt>
+                      <dd className="text-gray-900">{monsterTypeToFrench(stats.type)}</dd>
+                    </>
+                  )}
                   {stats.card_type && (
                     <>
-                      <dt className="font-medium text-gray-500">Type</dt>
+                      <dt className="font-medium text-gray-500">Type de carte</dt>
                       <dd className="text-gray-900">{cardTypeToFrench(stats.card_type)}</dd>
                     </>
                   )}
@@ -324,7 +335,7 @@ const AdminCardDetail = () => {
                 <div className="mt-4">
                   {renderEditActions(cancelEditStats, saveInformations)}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Type de carte</label>
                     <select
                       value={editStats.card_type ?? ""}
                       onChange={(e) =>
@@ -415,20 +426,49 @@ const AdminCardDetail = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Attribut</label>
                         <select
-                          value={editStats.attribute ?? ""}
+                          value={(editStats.attribute ?? "").toLowerCase()}
                           onChange={(e) =>
                             setEditStats((prev) =>
-                              prev ? { ...prev, attribute: e.target.value } : prev
+                              prev
+                                ? { ...prev, attribute: e.target.value.toLowerCase() }
+                                : prev
                             )
                           }
                           className="w-full rounded border border-gray-300 px-3 py-2"
                         >
                           <option value="">Sélectionner</option>
                           {attributes.map((attr) => (
-                            <option key={attr.id} value={attr.label}>
+                            <option key={attr.id} value={attr.label.toLowerCase()}>
                               {attributeToFrench(attr.label)}
                             </option>
                           ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Type de monstre
+                        </label>
+                        <select
+                          value={editStats.type ?? ""}
+                          onChange={(e) =>
+                            setEditStats((prev) =>
+                              prev ? { ...prev, type: e.target.value } : prev
+                            )
+                          }
+                          className="w-full rounded border border-gray-300 px-3 py-2"
+                        >
+                          <option value="">Sélectionner</option>
+                          {MONSTER_TYPE_LABELS.map((label) => (
+                            <option key={label} value={label}>
+                              {monsterTypeToFrench(label)}
+                            </option>
+                          ))}
+                          {editStats.type
+                            && !(MONSTER_TYPE_LABELS as readonly string[]).includes(editStats.type) && (
+                            <option value={editStats.type}>
+                              {monsterTypeToFrench(editStats.type)}
+                            </option>
+                          )}
                         </select>
                       </div>
                     </div>

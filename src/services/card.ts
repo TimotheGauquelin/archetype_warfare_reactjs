@@ -141,6 +141,8 @@ export interface CardDetailResponse {
   atk?: number;
   def?: number;
   attribute?: string;
+  /** Race / type de monstre (ex. Warrior, Wyrm) */
+  type?: string;
   card_type?: string;
   archetypes?: CardArchetypeLink[];
   is_generic?: boolean;
@@ -166,6 +168,7 @@ export type CardUpdatePayload = {
   atk?: number | null;
   def?: number | null;
   attribute?: string | null;
+  type?: string | null;
   card_type?: string | null;
   locale?: string;
 };

@@ -182,6 +182,7 @@
     "longPressForDetails": "Long-press to see details",
     "cardDetails": "Card details",
     "cardType": "Type",
+    "monsterType": "Monster type",
     "cardAttribute": "Attribute",
     "cardLevel": "Level",
     "cardBanlistStatus": "Banlist status",

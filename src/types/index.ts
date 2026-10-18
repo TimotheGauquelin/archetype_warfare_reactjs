@@ -190,12 +190,14 @@ export interface Card {
   id: number;
   name: string;
   img_url?: string;
+  /** Race / type de monstre (ex. Warrior, Wyrm) */
+  type?: string;
   card_type?: string;
   cardType?: { id: number; label: string };
   level?: number;
   atk?: number;
   def?: number;
-  attribute?: { id: number; label: string };
+  attribute?: { id: number; label: string } | string;
   card_status?: {
     id?: number;
     label: string;

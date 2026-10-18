@@ -4,10 +4,14 @@ import { useSelector } from "react-redux";
 import PopUp from "@/components/generic/PopUp";
 import { getCardById, type CardDetailResponse } from "@/services/card";
 import type { Card, RootState } from "@/types";
+import { attributeToFrench } from "@/utils/trad/attribute";
+import { cardTypeToFrench } from "@/utils/trad/cardType";
+import { cardStatusToFrench } from "@/utils/trad/cardStatus";
+import { monsterTypeToFrench } from "@/utils/trad/monsterType";
 
 type DeckCardDetailSource = Pick<
   Card,
-  "id" | "name" | "img_url" | "card_type" | "level" | "atk" | "def" | "card_status"
+  "id" | "name" | "img_url" | "type" | "card_type" | "level" | "atk" | "def" | "card_status"
 > & {
   description?: string | null;
   attribute?: string | { id?: number; label?: string } | null;
@@ -62,21 +66,43 @@ const DeckCardDetailPopUp: React.FC<DeckCardDetailPopUpProps> = ({
 
   if (!card) return null;
 
+  const isFrench = locale !== "en";
   const name = detail?.name ?? card.name;
   const description =
     detail?.description ??
     (typeof card.description === "string" ? card.description : null);
   const img = detail?.img_url ?? card.img_url;
-  const cardType =
+  const rawCardType =
     detail?.card_type ??
     card.card_type ??
     card.cardType?.label ??
     null;
-  const attribute = detail?.attribute ?? attrLabel(card.attribute);
+  const rawMonsterType = detail?.type ?? card.type ?? null;
+  const rawAttribute = detail?.attribute ?? attrLabel(card.attribute);
+  const cardType = rawCardType
+    ? isFrench
+      ? cardTypeToFrench(rawCardType)
+      : rawCardType
+    : null;
+  const monsterType = rawMonsterType
+    ? isFrench
+      ? monsterTypeToFrench(rawMonsterType)
+      : rawMonsterType
+    : null;
+  const attribute = rawAttribute
+    ? isFrench
+      ? attributeToFrench(rawAttribute)
+      : rawAttribute
+    : null;
   const level = detail?.level ?? card.level;
   const atk = detail?.atk ?? card.atk;
   const def = detail?.def ?? card.def;
-  const statusLabel = card.card_status?.label;
+  const rawStatusLabel = card.card_status?.label;
+  const statusLabel = rawStatusLabel
+    ? isFrench
+      ? cardStatusToFrench(rawStatusLabel)
+      : rawStatusLabel
+    : null;
   const statusLimit = card.card_status?.limit;
 
   return (
@@ -107,6 +133,12 @@ const DeckCardDetailPopUp: React.FC<DeckCardDetailPopUpProps> = ({
               <p>
                 <span className="font-semibold">{t("profile.cardType")} :</span>{" "}
                 {cardType}
+              </p>
+            )}
+            {monsterType && (
+              <p>
+                <span className="font-semibold">{t("profile.monsterType")} :</span>{" "}
+                {monsterType}
               </p>
             )}
             {attribute && (
