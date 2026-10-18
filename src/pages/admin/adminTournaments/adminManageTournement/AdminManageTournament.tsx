@@ -31,6 +31,14 @@ import { verbalDate } from "@/utils/date/verbalDate";
 
 type ManageTournamentTab = "players" | "matchmaking" | "standings";
 
+const TOURNAMENT_PENALTY_TYPE_LABELS = [
+    "Caution",
+    "Warning",
+    "Game Loss",
+    "Match Loss",
+    "Disqualification",
+] as const;
+
 const TAB_CLASS = (active: boolean) =>
     `py-2 px-4 rounded-t-md cursor-pointer ${
         active
@@ -236,18 +244,47 @@ const AdminManageTournament = () => {
             )}
 
             {tournament && !loading && (
-                <div className="p-3 bg-gray-100 rounded-md text-sm text-gray-700 space-y-1 mb-4">
+                <div className="p-3 bg-gray-100 rounded-md text-sm text-gray-700 space-y-2 mb-4">
                     <p>
                         <span className="font-semibold">Ronde actuelle :</span>{" "}
                         {tournament.current_round} / {tournament.max_number_of_rounds}
                     </p>
-                    <p className="font-semibold">Fin du tournoi :</p>
-                    <ul className="list-disc list-inside ml-2 space-y-0.5">
-                        <li>Au bout de {tournament.max_number_of_rounds} ronde(s)</li>
-                        {tournament.until_winner && (
-                            <li>Lorsqu&apos;il y a un vainqueur</li>
+                    <div>
+                        <p className="font-semibold">Fin du tournoi :</p>
+                        <ul className="list-disc list-inside ml-2 space-y-0.5">
+                            <li>Au bout de {tournament.max_number_of_rounds} ronde(s)</li>
+                            {tournament.until_winner ? (
+                                <li>
+                                    S&apos;arrête aussi dès qu&apos;il y a un vainqueur
+                                    (avant le maximum de rondes)
+                                </li>
+                            ) : (
+                                <li>
+                                    Pas d&apos;arrêt anticipé : uniquement au bout du
+                                    nombre max de rondes
+                                </li>
+                            )}
+                        </ul>
+                    </div>
+                    <p>
+                        <span className="font-semibold">Decklist obligatoire :</span>{" "}
+                        {tournament.require_deck_list ? "Oui" : "Non"}
+                    </p>
+                    <div>
+                        <p className="font-semibold">Pénalités :</p>
+                        {tournament.allow_penalities ? (
+                            <ul className="list-disc list-inside ml-2 space-y-0.5">
+                                <li>Activées — types applicables :</li>
+                                {TOURNAMENT_PENALTY_TYPE_LABELS.map((label) => (
+                                    <li key={label} className="ml-4 list-[circle]">
+                                        {label}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="ml-2">Non autorisées pour ce tournoi</p>
                         )}
-                    </ul>
+                    </div>
                 </div>
             )}
 
