@@ -39,15 +39,27 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments, isLoading 
     tournaments.forEach((tournament) => {
       const status = (tournament.status as string | undefined)?.toLowerCase();
 
-      if (
-        (status === "tournament_cancelled" || status === "tournament_did_not_happen")
-        && tournament.event_date
-      ) {
-        const start = new Date(tournament.event_date).getTime();
-        const diffDaysPast = (nowTime - start) / dayMs;
-        if (diffDaysPast >= 0 && diffDaysPast <= 7) {
+      // Statut métier prioritaire sur les dates
+      if (status === "tournament_finished") {
+        push("finished", tournament);
+        return;
+      }
+
+      if (status === "tournament_cancelled" || status === "tournament_did_not_happen") {
+        if (tournament.event_date) {
+          const start = new Date(tournament.event_date).getTime();
+          const diffDaysPast = (nowTime - start) / dayMs;
+          if (diffDaysPast >= 0 && diffDaysPast <= 7) {
+            push("cancelled", tournament);
+          }
+        } else {
           push("cancelled", tournament);
         }
+        return;
+      }
+
+      if (status === "tournament_in_progress") {
+        push("inProgress", tournament);
         return;
       }
 
@@ -57,19 +69,19 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments, isLoading 
           ? new Date(tournament.event_date_end).getTime()
           : start;
 
-        // Tournoi fini (dates uniquement)
+        // Dates passées sans statut "finished" explicite → section finis
         if (end < nowTime) {
           push("finished", tournament);
           return;
         }
 
-        // Tournoi en cours (entre début et fin)
+        // Fenêtre calendaire en cours (inscriptions / début, etc.)
         if (start <= nowTime && end >= nowTime) {
           push("inProgress", tournament);
           return;
         }
 
-        // Tournoi à venir : classification uniquement à partir de la date de début
+        // À venir : selon la date de début
         const diffDays = (start - today) / dayMs;
 
         if (diffDays >= 0 && diffDays < 7) {
@@ -77,17 +89,11 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments, isLoading 
           return;
         }
 
-        if (diffDays >= 7 && diffDays < 30) {
-          push("inMonth", tournament);
-          return;
-        }
-
-        // Au-delà de 30 jours : on le considère aussi comme "dans le mois" / futur
         push("inMonth", tournament);
         return;
       }
 
-      // Pas de date : on le place par défaut dans "dans le mois"
+      // Pas de date : par défaut "dans le mois"
       push("inMonth", tournament);
     });
 
