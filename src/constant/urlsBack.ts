@@ -191,3 +191,24 @@ export const URL_BACK_ASSIGN_TOURNAMENT_PLAYER_DECK = (
 
 export const URL_BACK_GET_ARCHETYPE_RANKING = (archetypeId: number | string) =>
   `/archetype-rankings/archetype/${archetypeId}`;
+
+export const URL_BACK_QUIZ_HUB = `/quizzes/hub`;
+export const URL_BACK_QUIZ_THEMES = `/quizzes/themes`;
+export const URL_BACK_QUIZ_START_FREE = `/quizzes/attempts/free`;
+export const URL_BACK_QUIZ_START_DAILY = `/quizzes/attempts/daily`;
+export const URL_BACK_QUIZ_ATTEMPT = (attemptId: string) =>
+  `/quizzes/attempts/${attemptId}`;
+export const URL_BACK_QUIZ_SUBMIT_ANSWER = (attemptId: string) =>
+  `/quizzes/attempts/${attemptId}/answers`;
+export const URL_BACK_QUIZ_FINISH = (attemptId: string) =>
+  `/quizzes/attempts/${attemptId}/finish`;
+export const URL_BACK_QUIZ_ADMIN_QUESTIONS = `/quizzes/admin/questions`;
+export const URL_BACK_QUIZ_ADMIN_QUESTION = (questionId: number | string) =>
+  `/quizzes/admin/questions/${questionId}`;
+export const URL_BACK_QUIZ_SWITCH_ALL_TO_INACTIVE = `/quizzes/admin/questions/switchAllToInactive`;
+export const URL_BACK_QUIZ_SWITCH_ALL_TO_NON_DAILY = `/quizzes/admin/questions/switchAllToNonDaily`;
+export const URL_BACK_QUIZ_ADMIN_SEASONS = `/quizzes/admin/seasons`;
+export const URL_BACK_QUIZ_ADMIN_SEASON = (seasonId: number | string) =>
+  `/quizzes/admin/seasons/${seasonId}`;
+export const URL_BACK_QUIZ_ADMIN_SEASON_PODIUM = (seasonId: number | string) =>
+  `/quizzes/admin/seasons/${seasonId}/podium`;

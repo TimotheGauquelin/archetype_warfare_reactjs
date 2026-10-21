@@ -39,12 +39,21 @@ import {
   URL_FRONT_ADMIN_OPTIONS,
   URL_FRONT_MY_PROFILE_EDIT,
   URL_FRONT_TOURNAMENTS,
+  URL_FRONT_QUIZ,
+  URL_FRONT_QUIZ_DAILY,
   URL_FRONT_MY_TOURNAMENTS,
   URL_FRONT_ADMIN_TOURNAMENTS,
   URL_FRONT_ADMIN_TOURNAMENT_ADD,
   URL_FRONT_ADMIN_TOURNAMENT_UPDATE,
   URL_FRONT_ADMIN_TOURNAMENT_MANAGE,
   URL_FRONT_ADMIN_CARD_DETAIL,
+  URL_FRONT_ADMIN_QUIZZES,
+  URL_FRONT_ADMIN_QUIZ_QUESTIONS,
+  URL_FRONT_ADMIN_QUIZ_SEASONS,
+  URL_FRONT_ADMIN_QUIZ_SEASON_ADD,
+  URL_FRONT_ADMIN_QUIZ_SEASON_UPDATE,
+  URL_FRONT_ADMIN_QUIZ_ADD,
+  URL_FRONT_ADMIN_QUIZ_UPDATE,
 } from "./constant/urlsFront";
 import PrivateRoute from "./components/generic/PrivateRoute";
 import { ROLE_ADMIN } from "./utils/const/rolesConst";
@@ -71,6 +80,10 @@ const ArchetypesPage = lazy(() => import("./pages/user/archetypesPage/Archetypes
 const ArchetypePage = lazy(() => import("./pages/user/archetypePage/ArchetypePage"));
 const TournamentsPage = lazy(() => import("./pages/user/tournaments/TournamentsPage"));
 const TournamentDetailPage = lazy(() => import("./pages/user/tournamentDetail/TournamentDetailPage"));
+const QuizFrenchOnlyGate = lazy(() => import("./pages/user/quiz/QuizFrenchOnlyGate"));
+const QuizHubPage = lazy(() => import("./pages/user/quiz/QuizHubPage"));
+const QuizDailyPage = lazy(() => import("./pages/user/quiz/QuizDailyPage"));
+const QuizPlayPage = lazy(() => import("./pages/user/quiz/QuizPlayPage"));
 
 const MyProfilePage = lazy(() => import("./pages/userProfil/myProfile/myProfileMain/MyProfilePage"));
 const UpdateMyProfilePage = lazy(() => import("./pages/userProfil/myProfile/updateMyProfile/UpdateMyProfilePage"));
@@ -100,6 +113,21 @@ const AdminTournaments = lazy(() => import("./pages/admin/adminTournaments/admin
 const AdminAddTournament = lazy(() => import("./pages/admin/adminTournaments/adminAddTournament/AdminAddTournament"));
 const AdminUpdateTournament = lazy(() => import("./pages/admin/adminTournaments/adminUpdateTournament/AdminUpdateTournament"));
 const AdminManageTournament = lazy(() => import("./pages/admin/adminTournaments/adminManageTournement/AdminManageTournament"));
+const AdminQuizzes = lazy(() => import("./pages/admin/adminQuizzes/AdminQuizzes"));
+const AdminQuizQuestions = lazy(
+  () => import("./pages/admin/adminQuizzes/AdminQuizQuestions")
+);
+const AdminQuizSeasons = lazy(
+  () => import("./pages/admin/adminQuizzes/AdminQuizSeasons")
+);
+const AdminQuizSeasonAdd = lazy(
+  () => import("./pages/admin/adminQuizzes/AdminQuizSeasonAdd")
+);
+const AdminQuizSeasonUpdate = lazy(
+  () => import("./pages/admin/adminQuizzes/AdminQuizSeasonUpdate")
+);
+const AdminQuizAdd = lazy(() => import("./pages/admin/adminQuizzes/AdminQuizAdd"));
+const AdminQuizUpdate = lazy(() => import("./pages/admin/adminQuizzes/AdminQuizUpdate"));
 
 const AuthAutoLogout: React.FC = () => {
   const isExpired = useAuthAutoLogout();
@@ -190,6 +218,11 @@ const AppContent: React.FC = () => {
             <Route path={URL_FRONT_BANLIST} element={<BanlistPage />} />
             <Route path={URL_FRONT_TOURNAMENTS} element={<TournamentsPage />} />
             <Route path="/tournaments/:id" element={<TournamentDetailPage />} />
+            <Route element={<QuizFrenchOnlyGate />}>
+              <Route path={URL_FRONT_QUIZ} element={<QuizHubPage />} />
+              <Route path={URL_FRONT_QUIZ_DAILY} element={<QuizDailyPage />} />
+              <Route path="/quiz/play/:attemptId" element={<QuizPlayPage />} />
+            </Route>
             <Route path={URL_FRONT_PASSWORD_LOST} element={<PasswordLostPage />} />
             <Route path={URL_FRONT_PASSWORD_RESET} element={<PasswordReset />} />
 
@@ -257,6 +290,39 @@ const AppContent: React.FC = () => {
             </Route>
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
               <Route path={URL_FRONT_ADMIN_TOURNAMENT_MANAGE} element={<AdminManageTournament />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_QUIZZES} element={<AdminQuizzes />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route
+                path={URL_FRONT_ADMIN_QUIZ_QUESTIONS}
+                element={<AdminQuizQuestions />}
+              />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route
+                path={URL_FRONT_ADMIN_QUIZ_SEASONS}
+                element={<AdminQuizSeasons />}
+              />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route
+                path={URL_FRONT_ADMIN_QUIZ_SEASON_ADD}
+                element={<AdminQuizSeasonAdd />}
+              />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route
+                path={URL_FRONT_ADMIN_QUIZ_SEASON_UPDATE}
+                element={<AdminQuizSeasonUpdate />}
+              />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_QUIZ_ADD} element={<AdminQuizAdd />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_QUIZ_UPDATE} element={<AdminQuizUpdate />} />
             </Route>
 
             <Route path="*" element={<Navigate to={URL_FRONT_HOME} />} />

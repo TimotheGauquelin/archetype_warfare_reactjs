@@ -25,6 +25,10 @@ export const URL_FRONT_BANLIST = "/banlist";
 export const URL_FRONT_ROAD_MAP = "/road-map";
 export const URL_FRONT_TOURNAMENTS = "/tournaments";
 export const URL_FRONT_TOURNAMENT = (id: number | string): string => `/tournaments/${id}`;
+export const URL_FRONT_QUIZ = "/quiz";
+export const URL_FRONT_QUIZ_DAILY = "/quiz/daily";
+export const URL_FRONT_QUIZ_PLAY = (attemptId: string): string =>
+  `/quiz/play/${attemptId}`;
 
 //Profil
 export const URL_FRONT_MY_PROFILE = "/my-profile";
@@ -56,6 +60,18 @@ export const URL_FRONT_ADMIN_USER_ADD = "/admin/users/add";
 export const URL_FRONT_ADMIN_USER_UPDATE = "/admin/users/update/:userId";
 export const URL_FRONT_ADMIN_CARDS = "/admin/cards";
 export const URL_FRONT_ADMIN_CARD_DETAIL = "/admin/cards/:cardId";
+export const URL_FRONT_ADMIN_QUIZZES = "/admin/quizzes";
+export const URL_FRONT_ADMIN_QUIZ_QUESTIONS = "/admin/quizzes/questions";
+export const URL_FRONT_ADMIN_QUIZ_SEASONS = "/admin/quizzes/seasons";
+export const URL_FRONT_ADMIN_QUIZ_SEASON_ADD = "/admin/quizzes/seasons/add";
+export const URL_FRONT_ADMIN_QUIZ_SEASON_UPDATE =
+  "/admin/quizzes/seasons/update/:seasonId";
+export const getAdminQuizSeasonUpdatePath = (seasonId: number | string) =>
+  `/admin/quizzes/seasons/update/${seasonId}`;
+export const URL_FRONT_ADMIN_QUIZ_ADD = "/admin/quizzes/add";
+export const URL_FRONT_ADMIN_QUIZ_UPDATE = "/admin/quizzes/update/:questionId";
+export const getAdminQuizUpdatePath = (questionId: number | string) =>
+  `/admin/quizzes/update/${questionId}`;
 export const URL_FRONT_ADMIN_OPTIONS = "/admin/options";
 export const URL_FRONT_ADMIN_FILES = "/admin/files";
 export const URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON = "/admin/files/archetypes/jumbotron";
