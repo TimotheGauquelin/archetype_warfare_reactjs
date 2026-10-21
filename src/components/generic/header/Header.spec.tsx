@@ -81,12 +81,13 @@ describe("Header", () => {
       expect(homeLink!).toBeInTheDocument();
     });
 
-    it("renders navigation links: Concept, Archetypes, Banlist, Tournaments, RoadMap", () => {
+    it("renders navigation links: Concept, Archetypes, Banlist, Tournaments, Quizz, RoadMap", () => {
       renderHeader();
       expect(screen.getByRole("link", { name: /Concept/i })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: /Archetypes/i })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: /Banlist/i })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: /Tournois/i })).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /Quizz/i })).toBeInTheDocument();
       expect(screen.getByRole("link", { name: /RoadMap/i })).toBeInTheDocument();
     });
 
@@ -96,6 +97,7 @@ describe("Header", () => {
       expect(screen.getByRole("link", { name: /Archetypes/i })).toHaveAttribute("href", URL_FRONT_ARCHETYPES);
       expect(screen.getByRole("link", { name: /Banlist/i })).toHaveAttribute("href", URL_FRONT_BANLIST);
       expect(screen.getByRole("link", { name: /Tournois/i })).toHaveAttribute("href", URL_FRONT_TOURNAMENTS);
+      expect(screen.getByRole("link", { name: /Quizz/i })).toHaveAttribute("href", "/quiz");
       expect(screen.getByRole("link", { name: /RoadMap/i })).toHaveAttribute("href", URL_FRONT_ROAD_MAP);
     });
 
@@ -110,16 +112,20 @@ describe("Header", () => {
   describe("user state", () => {
     it("shows Connexion and links to login when user is not authenticated", () => {
       renderHeader({ user: { isAuthenticated: false } });
-      const connexionLink = screen.getByRole("link", { name: /Connexion/i });
-      expect(connexionLink).toBeInTheDocument();
-      expect(connexionLink).toHaveAttribute("href", URL_FRONT_LOGIN);
+      const connexionLinks = screen.getAllByRole("link", { name: /Connexion/i });
+      expect(connexionLinks.length).toBeGreaterThanOrEqual(2);
+      connexionLinks.forEach((link) => {
+        expect(link).toHaveAttribute("href", URL_FRONT_LOGIN);
+      });
     });
 
     it("shows username and links to profile when user is authenticated", () => {
       renderHeader({ user: { isAuthenticated: true, username: "john_doe" } });
-      const profileLink = screen.getByRole("link", { name: /john_doe/i });
-      expect(profileLink).toBeInTheDocument();
-      expect(profileLink).toHaveAttribute("href", URL_FRONT_MY_PROFILE);
+      const profileLinks = screen.getAllByRole("link", { name: /john_doe/i });
+      expect(profileLinks.length).toBeGreaterThanOrEqual(2);
+      profileLinks.forEach((link) => {
+        expect(link).toHaveAttribute("href", URL_FRONT_MY_PROFILE);
+      });
     });
   });
 
@@ -139,19 +145,25 @@ describe("Header", () => {
 
   describe("mobile menu", () => {
     it("toggles mobile nav when hamburger is clicked", async () => {
-      const { container } = renderHeader();
+      renderHeader();
 
-      const mobileBar = container.querySelector(".flex.items-center.gap-3.lscreen\\:hidden");
-      expect(mobileBar).toBeTruthy();
-      const hamburger = mobileBar?.querySelector("div:last-child");
-      expect(hamburger).toBeTruthy();
+      const hamburger = screen.getByRole("button", { name: /Ouvrir le menu/i });
 
       await act(async () => {
-        await userEvent.click(hamburger as HTMLElement);
+        await userEvent.click(hamburger);
       });
 
       const conceptLinks = screen.getAllByRole("link", { name: /Concept/i });
       expect(conceptLinks.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it("shows Connexion in the mobile bar when not authenticated", () => {
+      renderHeader({ user: { isAuthenticated: false } });
+      const connexionLinks = screen.getAllByRole("link", { name: /Connexion/i });
+      expect(connexionLinks.length).toBeGreaterThanOrEqual(2);
+      connexionLinks.forEach((link) => {
+        expect(link).toHaveAttribute("href", URL_FRONT_LOGIN);
+      });
     });
   });
 });

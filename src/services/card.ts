@@ -137,6 +137,7 @@ export interface CardDetailResponse {
   name: string;
   description?: string;
   img_url?: string;
+  artwork_url?: string | null;
   level?: number;
   atk?: number;
   def?: number;
@@ -164,6 +165,7 @@ export type CardUpdatePayload = {
   name?: string;
   description?: string | null;
   img_url?: string | null;
+  artwork_url?: string | null;
   level?: number | null;
   atk?: number | null;
   def?: number | null;

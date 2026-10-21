@@ -13,6 +13,7 @@ import {
   URL_FRONT_LOGIN,
   URL_FRONT_MY_PROFILE,
   URL_FRONT_TOURNAMENTS,
+  URL_FRONT_QUIZ,
 } from "../../../constant/urlsFront";
 import type { RootState } from "../../../types";
 import LanguageSwitch from "./LanguageSwitch";
@@ -29,6 +30,7 @@ const HeaderMemo = memo(function Header() {
       { titleKey: "nav.archetypes", url: URL_FRONT_ARCHETYPES },
       { titleKey: "nav.banlist", url: URL_FRONT_BANLIST },
       { titleKey: "nav.tournaments", url: URL_FRONT_TOURNAMENTS },
+      { titleKey: "nav.quiz", url: URL_FRONT_QUIZ },
       { titleKey: "nav.roadmap", url: URL_FRONT_ROAD_MAP },
     ],
     []
@@ -98,15 +100,37 @@ const HeaderMemo = memo(function Header() {
             </button>
           </Link>
         </div>
-        <div className="flex items-center gap-3 lscreen:hidden">
+        <div className="flex items-center gap-2 lscreen:hidden">
           <LanguageSwitch />
-          <div
+          <Link
+            to={
+              authUser.isAuthenticated ? URL_FRONT_MY_PROFILE : URL_FRONT_LOGIN
+            }
+            className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm font-medium text-gray-700"
+            aria-label={
+              authUser.isAuthenticated
+                ? authUser.username ?? undefined
+                : t("nav.login")
+            }
+          >
+            <BsPerson className="h-4 w-auto flex-shrink-0 text-red-400" />
+            <span className="max-w-[7rem] truncate">
+              {authUser.isAuthenticated
+                ? authUser.username
+                : t("nav.login")}
+            </span>
+          </Link>
+          <button
+            type="button"
+            className="p-1"
+            aria-expanded={displayNav}
+            aria-label={displayNav ? t("nav.closeMenu") : t("nav.openMenu")}
             onClick={() => {
               setDisplayNav(!displayNav);
             }}
           >
             {displayNav ? <FaTimes /> : <FaBars />}
-          </div>
+          </button>
         </div>
       </div>
       {displayNav && (
@@ -122,12 +146,36 @@ const HeaderMemo = memo(function Header() {
                         : "text-gray-600"
                     }
                     to={component.url}
+                    onClick={() => setDisplayNav(false)}
                   >
                     {t(component.titleKey)}
                   </Link>
                 </li>
               );
             })}
+            <li className="my-2 px-2 border-t border-gray-100 pt-3">
+              <Link
+                className={
+                  url.includes(
+                    authUser.isAuthenticated
+                      ? URL_FRONT_MY_PROFILE
+                      : URL_FRONT_LOGIN
+                  )
+                    ? "text-red-400"
+                    : "text-gray-600"
+                }
+                to={
+                  authUser.isAuthenticated
+                    ? URL_FRONT_MY_PROFILE
+                    : URL_FRONT_LOGIN
+                }
+                onClick={() => setDisplayNav(false)}
+              >
+                {authUser.isAuthenticated
+                  ? authUser.username
+                  : t("nav.login")}
+              </Link>
+            </li>
           </ul>
         </div>
       )}

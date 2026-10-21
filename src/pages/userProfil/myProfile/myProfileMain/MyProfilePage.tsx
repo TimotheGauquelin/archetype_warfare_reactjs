@@ -19,14 +19,14 @@ const MyProfile = () => {
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id, username, roles, biography, country, loved_archetype } = useSelector(
-    (state: RootState) => state.user
-  );
+  const { id, username, roles, biography, country, loved_archetype, quiz_points } =
+    useSelector((state: RootState) => state.user);
   const [profileBio, setProfileBio] = useState(biography || "");
   const [profileCountry, setProfileCountry] = useState(country || "");
   const [favoriteArchetypeName, setFavoriteArchetypeName] = useState(
     loved_archetype?.name || ""
   );
+  const [quizPoints, setQuizPoints] = useState(quiz_points ?? 0);
 
   useEffect(() => {
     if (!id) return;
@@ -35,12 +35,14 @@ const MyProfile = () => {
       setProfileBio(user.biography || "");
       setProfileCountry(user.country || "");
       setFavoriteArchetypeName(user.loved_archetype?.name || "");
+      setQuizPoints(user.quiz_points ?? 0);
       dispatch(
         updateUser({
           biography: user.biography ?? null,
           country: user.country ?? null,
           loved_archetype_id: user.loved_archetype_id ?? null,
           loved_archetype: user.loved_archetype ?? null,
+          quiz_points: user.quiz_points ?? 0,
         })
       );
     });
@@ -96,6 +98,10 @@ const MyProfile = () => {
               <p className="text-black">
                 {favoriteArchetypeName || t("profile.noFavoriteArchetype")}
               </p>
+            </div>
+            <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
+              <p className="font-semibold text-black mb-1">{t("profile.quizScoreLabel")}</p>
+              <p className="text-black">{quizPoints}</p>
             </div>
             <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
               <p className="font-semibold text-black mb-1">{t("profile.countryLabel")}</p>

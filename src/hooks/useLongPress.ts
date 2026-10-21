@@ -3,10 +3,6 @@ import { useCallback, useRef } from "react";
 const DEFAULT_MS = 450;
 const MOVE_THRESHOLD_PX = 10;
 
-/**
- * Long-press (souris + tactile). Après un long-press, appeler wasLongPress()
- * dans onClick pour ignorer l'action courte (ajout / retrait).
- */
 export function useLongPress(onLongPress: () => void, ms: number = DEFAULT_MS) {
   const timerRef = useRef<number | null>(null);
   const longPressRef = useRef(false);

@@ -29,8 +29,12 @@ const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
     const url = config.url || "";
     const isCardGet = method === "get" && /\/cards(\/|\?|$)/.test(url);
     const isArchetypeGet = method === "get" && /\/archetypes(\/|\?|$)/.test(url);
+    const isQuizRequest = /\/quizzes(\/|\?|$)/.test(url);
 
-    if ((isCardGet || isArchetypeGet) && !/[?&]locale=/.test(url)) {
+    if (
+      (isCardGet || isArchetypeGet || isQuizRequest) &&
+      !/[?&]locale=/.test(url)
+    ) {
       const locale = state.locale?.value || "fr";
       const separator = url.includes("?") ? "&" : "?";
       config.url = `${url}${separator}locale=${locale}`;

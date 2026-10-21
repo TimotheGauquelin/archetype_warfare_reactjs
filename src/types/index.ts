@@ -22,6 +22,7 @@ export interface User {
     card_img_url?: string | null;
     is_active?: boolean;
   } | null;
+  quiz_points?: number;
   created_at?: string;
   updated_at?: string;
   [key: string]: unknown;
@@ -192,6 +193,8 @@ export interface Card {
   id: number;
   name: string;
   img_url?: string;
+  /** Artwork croppé YGOPRODeck (image_url_cropped) */
+  artwork_url?: string | null;
   /** Race / type de monstre (ex. Warrior, Wyrm) */
   type?: string;
   card_type?: string;

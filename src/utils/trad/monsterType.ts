@@ -10,6 +10,7 @@ export const MONSTER_TYPE_LABELS = [
     "Fairy",
     "Fiend",
     "Fish",
+    "Illusion",
     "Insect",
     "Machine",
     "Plant",
@@ -78,6 +79,8 @@ export const monsterTypeToFrench = (monsterType: string): string => {
             return "Poisson";
         case "insect":
             return "Insecte";
+        case "illusion":
+            return "Illusion";
         case "creator-god":
         case "creator god":
             return "Dieu Créateur";
