@@ -95,7 +95,7 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
           startDate,
           endDate,
         });
-        toast.success("Saison créée — vous pouvez maintenant gérer le pool");
+        toast.success("Saison créée");
         navigate(getAdminQuizSeasonUpdatePath(created.id));
       }
     } catch (error) {
@@ -108,10 +108,9 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
   };
 
   const tabClass = (tab: SeasonTab) =>
-    `py-2 px-4 rounded-t-md cursor-pointer ${
-      activeTab === tab
-        ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
-        : "text-gray-700 bg-gray-200 hover:bg-gray-300"
+    `py-2 px-4 rounded-t-md cursor-pointer ${activeTab === tab
+      ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
+      : "text-gray-700 bg-gray-200 hover:bg-gray-300"
     }`;
 
   return (
@@ -126,33 +125,35 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
         <p className="text-sm text-gray-500">Chargement…</p>
       ) : (
         <div>
-          <div className="flex">
-            <span
-              className={tabClass("informations")}
-              onClick={() => setActiveTab("informations")}
-            >
-              Informations générales
-            </span>
-            <span
-              className={tabClass("pool")}
-              onClick={() => {
-                if (!resolvedSeasonId) {
-                  toast.info(
-                    "Enregistrez d'abord la saison pour gérer le pool de questions"
-                  );
-                  return;
-                }
-                setActiveTab("pool");
-              }}
-            >
-              Pool questions
-            </span>
-          </div>
+          {mode === "edit" && (
+            <div className="flex">
+              <span
+                className={tabClass("informations")}
+                onClick={() => setActiveTab("informations")}
+              >
+                Informations générales
+              </span>
+              <span
+                className={tabClass("pool")}
+                onClick={() => setActiveTab("pool")}
+              >
+                Pool questions
+              </span>
+            </div>
+          )}
 
-          <div className={activeTab === "informations" ? "" : "hidden"}>
+          <div
+            className={
+              mode === "add" || activeTab === "informations" ? "" : "hidden"
+            }
+          >
             <form
               onSubmit={(e) => void onSubmit(e)}
-              className="max-w-lg space-y-4 bg-white border border-t-0 rounded-b-md p-4"
+              className={`max-w-lg space-y-4 bg-white p-4 ${
+                mode === "edit"
+                  ? "border border-t-0 rounded-b-md"
+                  : "border rounded-md"
+              }`}
             >
               <label className="flex flex-col gap-1 text-sm font-medium text-gray-800">
                 Nom
@@ -186,8 +187,8 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
                   required
                 />
               </label>
-              <p className="text-xs text-gray-500">
-                Par défaut la fin est fixée à 90 jours après le début.
+              <p className="text-sm text-gray-500 bg-yellow-100 border border-yellow-500 p-2 rounded-md">
+                <span className="text-yellow-500">ⓘ</span> Par défaut la fin est fixée à 90 jours après le début.
               </p>
               <button
                 type="submit"
@@ -203,18 +204,11 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
             </form>
           </div>
 
-          {resolvedSeasonId ? (
+          {mode === "edit" && resolvedSeasonId && (
             <AdminQuizSeasonPoolTab
               seasonId={resolvedSeasonId}
               active={activeTab === "pool"}
             />
-          ) : (
-            activeTab === "pool" && (
-              <div className="border border-t-0 rounded-b-md bg-white p-4 text-sm text-gray-600">
-                Créez d&apos;abord la saison dans « Informations générales »
-                pour pouvoir y rattacher des questions.
-              </div>
-            )
           )}
         </div>
       )}
