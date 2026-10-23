@@ -13,6 +13,9 @@ import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle"
 import { URL_FRONT_MY_PROFILE_EDIT } from "@/constant/urlsFront";
 import { updateUser } from "@/redux/slice/userSlice";
 import { getCountryFlagUrl, getCountryName } from "@/utils/country";
+import MyProfileRankingTab from "@/components/pages/user/profile/MyProfileRankingTab";
+
+type ProfileTab = "informations" | "ranking";
 
 const MyProfile = () => {
   const { t, i18n } = useTranslation();
@@ -21,6 +24,7 @@ const MyProfile = () => {
   const dispatch = useDispatch();
   const { id, username, roles, biography, country, loved_archetype, quiz_points } =
     useSelector((state: RootState) => state.user);
+  const [activeTab, setActiveTab] = useState<ProfileTab>("informations");
   const [profileBio, setProfileBio] = useState(biography || "");
   const [profileCountry, setProfileCountry] = useState(country || "");
   const [favoriteArchetypeName, setFavoriteArchetypeName] = useState(
@@ -64,82 +68,110 @@ const MyProfile = () => {
       <div className="bg-white rounded-lg shadow-sm p-4 mb-2">
         <div className="flex flex-row justify-between items-start gap-2 mb-2">
           <UserProfileLayoutTitle title={t("profile.accountInfo")} />
-          <Button
-            className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded font-semibold shadow-sm"
-            buttonText={t("profile.editProfile")}
-            action={() => navigate(URL_FRONT_MY_PROFILE_EDIT)}
-          />
+          {activeTab === "informations" && (
+            <Button
+              className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded font-semibold shadow-sm"
+              buttonText={t("profile.editProfile")}
+              action={() => navigate(URL_FRONT_MY_PROFILE_EDIT)}
+            />
+          )}
         </div>
 
-        <div className="space-y-2 mb-4">
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-              <p className="font-semibold text-black mb-1">{t("profile.username")}</p>
-              <p className="text-black">{username}</p>
-            </div>
-            <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-              <p className="font-semibold text-black">{t("profile.roles")}</p>
-              <div className="flex flex-wrap gap-1">
-                {roles?.map((role: string, index: number) => {
-                  return (
-                    <div
-                      key={index}
-                      className={`flex items-center gap-1 px-3 py-1 ${role?.toLowerCase() === "admin" ? "bg-red-500" : "bg-green-500"} text-white font-bold rounded-md shadow-sm`}
-                    >
-                      {role?.toLowerCase() === "admin" && <FaCrown className="text-xs" />}
-                      <span>{role}</span>
-                    </div>
-                  );
-                })}
+        <div className="flex mb-4">
+          <span
+            className={`py-2 px-4 rounded-t-md cursor-pointer ${
+              activeTab === "informations"
+                ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
+                : "text-gray-700 bg-gray-200 hover:bg-gray-300"
+            }`}
+            onClick={() => setActiveTab("informations")}
+          >
+            {t("profile.tabGeneral")}
+          </span>
+          <span
+            className={`py-2 px-4 rounded-t-md cursor-pointer ${
+              activeTab === "ranking"
+                ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
+                : "text-gray-700 bg-gray-200 hover:bg-gray-300"
+            }`}
+            onClick={() => setActiveTab("ranking")}
+          >
+            {t("profile.tabRanking")}
+          </span>
+        </div>
+
+        <div className={activeTab === "informations" ? "" : "hidden"}>
+          <div className="space-y-2 mb-4">
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
+                <p className="font-semibold text-black mb-1">{t("profile.username")}</p>
+                <p className="text-black">{username}</p>
+              </div>
+              <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
+                <p className="font-semibold text-black">{t("profile.roles")}</p>
+                <div className="flex flex-wrap gap-1">
+                  {roles?.map((role: string, index: number) => {
+                    return (
+                      <div
+                        key={index}
+                        className={`flex items-center gap-1 px-3 py-1 ${role?.toLowerCase() === "admin" ? "bg-red-500" : "bg-green-500"} text-white font-bold rounded-md shadow-sm`}
+                      >
+                        {role?.toLowerCase() === "admin" && <FaCrown className="text-xs" />}
+                        <span>{role}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
+                <p className="font-semibold text-black mb-1">{t("profile.favoriteArchetypeLabel")}</p>
+                <p className="text-black">
+                  {favoriteArchetypeName || t("profile.noFavoriteArchetype")}
+                </p>
+              </div>
+
+              <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
+                <p className="font-semibold text-black mb-1">{t("profile.countryLabel")}</p>
+                {profileCountry ? (
+                  <p className="text-black inline-flex items-center gap-2">
+                    <img
+                      src={getCountryFlagUrl(profileCountry)}
+                      alt=""
+                      className="w-6 h-4 object-cover rounded-sm"
+                      width={24}
+                      height={18}
+                    />
+                    <span>
+                      {getCountryName(profileCountry, i18n.language) ?? profileCountry}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-black">{t("profile.noCountry")}</p>
+                )}
+              </div>
+              <div className="col-span-12 flex flex-col space-y-1">
+                <p className="font-semibold text-black mb-1">{t("profile.biographyLabel")}</p>
+                <p className="text-black whitespace-pre-wrap">
+                  {profileBio || t("profile.noBiography")}
+                </p>
               </div>
             </div>
-            <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-              <p className="font-semibold text-black mb-1">{t("profile.favoriteArchetypeLabel")}</p>
-              <p className="text-black">
-                {favoriteArchetypeName || t("profile.noFavoriteArchetype")}
-              </p>
-            </div>
-            <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-              <p className="font-semibold text-black mb-1">{t("profile.quizScoreLabel")}</p>
-              <p className="text-black">{quizPoints}</p>
-            </div>
-            <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-              <p className="font-semibold text-black mb-1">{t("profile.countryLabel")}</p>
-              {profileCountry ? (
-                <p className="text-black inline-flex items-center gap-2">
-                  <img
-                    src={getCountryFlagUrl(profileCountry)}
-                    alt=""
-                    className="w-6 h-4 object-cover rounded-sm"
-                    width={24}
-                    height={18}
-                  />
-                  <span>
-                    {getCountryName(profileCountry, i18n.language) ?? profileCountry}
-                  </span>
-                </p>
-              ) : (
-                <p className="text-black">{t("profile.noCountry")}</p>
-              )}
-            </div>
-            <div className="col-span-12 flex flex-col space-y-1">
-              <p className="font-semibold text-black mb-1">{t("profile.biographyLabel")}</p>
-              <p className="text-black whitespace-pre-wrap">
-                {profileBio || t("profile.noBiography")}
-              </p>
-            </div>
+          </div>
+          <div className="bg-red-200 rounded-lg p-4 space-y-2">
+            <h3 className="text-lg font-bold text-red-500 flex items-center gap-1">
+              {t("profile.dangerZone")}
+            </h3>
+            <p className="text-base">{t("profile.dangerZoneDesc")}</p>
+            <Button
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
+              buttonText={t("profile.deleteAccount")}
+              action={handleDeleteUser}
+            />
           </div>
         </div>
-        <div className="bg-red-200 rounded-lg p-4 space-y-2">
-          <h3 className="text-lg font-bold text-red-500 flex items-center gap-1">
-            {t("profile.dangerZone")}
-          </h3>
-          <p className="text-base">{t("profile.dangerZoneDesc")}</p>
-          <Button
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
-            buttonText={t("profile.deleteAccount")}
-            action={handleDeleteUser}
-          />
+
+        <div className={activeTab === "ranking" ? "" : "hidden"}>
+          {activeTab === "ranking" && <MyProfileRankingTab />}
         </div>
       </div>
       <PopUp

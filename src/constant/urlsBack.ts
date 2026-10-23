@@ -191,8 +191,10 @@ export const URL_BACK_ASSIGN_TOURNAMENT_PLAYER_DECK = (
 
 export const URL_BACK_GET_ARCHETYPE_RANKING = (archetypeId: number | string) =>
   `/archetype-rankings/archetype/${archetypeId}`;
+export const URL_BACK_GET_MY_ARCHETYPE_RANKINGS = `/archetype-rankings/me`;
 
 export const URL_BACK_QUIZ_HUB = `/quizzes/hub`;
+export const URL_BACK_QUIZ_MY_STATS = `/quizzes/me/stats`;
 export const URL_BACK_QUIZ_THEMES = `/quizzes/themes`;
 export const URL_BACK_QUIZ_START_FREE = `/quizzes/attempts/free`;
 export const URL_BACK_QUIZ_START_DAILY = `/quizzes/attempts/daily`;
@@ -212,3 +214,6 @@ export const URL_BACK_QUIZ_ADMIN_SEASON = (seasonId: number | string) =>
   `/quizzes/admin/seasons/${seasonId}`;
 export const URL_BACK_QUIZ_ADMIN_SEASON_PODIUM = (seasonId: number | string) =>
   `/quizzes/admin/seasons/${seasonId}/podium`;
+export const URL_BACK_QUIZ_ADMIN_SEASON_AUTO_SCHEDULE = (
+  seasonId: number | string
+) => `/quizzes/admin/seasons/${seasonId}/auto-schedule`;

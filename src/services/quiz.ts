@@ -3,11 +3,13 @@ import {
   URL_BACK_QUIZ_ADMIN_QUESTION,
   URL_BACK_QUIZ_ADMIN_QUESTIONS,
   URL_BACK_QUIZ_ADMIN_SEASON,
+  URL_BACK_QUIZ_ADMIN_SEASON_AUTO_SCHEDULE,
   URL_BACK_QUIZ_ADMIN_SEASON_PODIUM,
   URL_BACK_QUIZ_ADMIN_SEASONS,
   URL_BACK_QUIZ_ATTEMPT,
   URL_BACK_QUIZ_FINISH,
   URL_BACK_QUIZ_HUB,
+  URL_BACK_QUIZ_MY_STATS,
   URL_BACK_QUIZ_START_DAILY,
   URL_BACK_QUIZ_START_FREE,
   URL_BACK_QUIZ_SUBMIT_ANSWER,
@@ -174,6 +176,19 @@ export type QuizHubResponse = {
   } | null;
 };
 
+export type MyQuizTypeStats = {
+  type: string;
+  answersCount: number;
+  correctCount: number;
+  points: number;
+  accuracy: number;
+};
+
+export type MyQuizStatsResponse = {
+  quizPoints: number;
+  byType: MyQuizTypeStats[];
+};
+
 export const getQuizHub = async (): Promise<QuizHubResponse> => {
   try {
     const response = await api_aw.get(URL_BACK_QUIZ_HUB);
@@ -181,6 +196,18 @@ export const getQuizHub = async (): Promise<QuizHubResponse> => {
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "getQuizHub");
+    throw appError;
+  }
+};
+
+/** Stats quiz de l'utilisateur (points daily + perf par mode de jeu). */
+export const getMyQuizStats = async (): Promise<MyQuizStatsResponse> => {
+  try {
+    const response = await api_aw.get(URL_BACK_QUIZ_MY_STATS);
+    return response.data as MyQuizStatsResponse;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getMyQuizStats");
     throw appError;
   }
 };
@@ -498,6 +525,48 @@ export const getAdminQuizSeasonPodium = async (
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "getAdminQuizSeasonPodium");
+    throw appError;
+  }
+};
+
+export type AutoScheduleSeasonResult = {
+  assignedCount: number;
+  skippedDays: string[];
+  emptyDaysBefore: number;
+  notEnoughQuestions: boolean;
+  assigned: Array<{
+    day: string;
+    questionId: number;
+    difficulty: string;
+    type: string;
+  }>;
+};
+
+/**
+ * Propose un auto-remplissage (dryRun par défaut) à partir du brouillon courant.
+ * Ne persiste rien côté serveur tant que dryRun=true.
+ */
+export const autoScheduleAdminQuizSeason = async (
+  seasonId: number | string,
+  options?: {
+    dryRun?: boolean;
+    currentAssignments?: Record<string, number>;
+    candidateQuestionIds?: number[];
+  }
+): Promise<AutoScheduleSeasonResult> => {
+  try {
+    const response = await api_aw.post(
+      URL_BACK_QUIZ_ADMIN_SEASON_AUTO_SCHEDULE(seasonId),
+      {
+        dryRun: options?.dryRun !== false,
+        currentAssignments: options?.currentAssignments ?? {},
+        candidateQuestionIds: options?.candidateQuestionIds ?? [],
+      }
+    );
+    return response.data as AutoScheduleSeasonResult;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "autoScheduleAdminQuizSeason");
     throw appError;
   }
 };
