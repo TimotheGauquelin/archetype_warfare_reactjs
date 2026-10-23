@@ -22,7 +22,7 @@ const MyProfile = () => {
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id, username, roles, biography, country, loved_archetype, quiz_points } =
+  const { id, username, roles, biography, country, loved_archetype } =
     useSelector((state: RootState) => state.user);
   const [activeTab, setActiveTab] = useState<ProfileTab>("informations");
   const [profileBio, setProfileBio] = useState(biography || "");
@@ -30,7 +30,6 @@ const MyProfile = () => {
   const [favoriteArchetypeName, setFavoriteArchetypeName] = useState(
     loved_archetype?.name || ""
   );
-  const [quizPoints, setQuizPoints] = useState(quiz_points ?? 0);
 
   useEffect(() => {
     if (!id) return;
@@ -39,7 +38,6 @@ const MyProfile = () => {
       setProfileBio(user.biography || "");
       setProfileCountry(user.country || "");
       setFavoriteArchetypeName(user.loved_archetype?.name || "");
-      setQuizPoints(user.quiz_points ?? 0);
       dispatch(
         updateUser({
           biography: user.biography ?? null,

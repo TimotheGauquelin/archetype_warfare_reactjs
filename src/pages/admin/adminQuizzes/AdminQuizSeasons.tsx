@@ -74,7 +74,7 @@ const AdminQuizSeasons = () => {
     <AdminStructure>
       <AdminBodyHeader
         label="Saisons Daily Quizz"
-        catchphrase="Toutes les sessions (~3 mois)"
+        catchphrase="Toutes les saisons de quizz du jour"
         buttonUrl={URL_FRONT_ADMIN_QUIZ_SEASON_ADD}
         buttonLabel="Ajouter une saison"
         returnButton

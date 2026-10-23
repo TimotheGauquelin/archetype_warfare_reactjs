@@ -15,15 +15,14 @@ interface AdminQuizSeasonPaginationProps {
   seasonsTotalCount?: number;
   totalPages?: number;
   pageSize?: number;
-  countLabel?: string;
 }
 
 const TABLE_HEAD = [
   { colspan: "col-span-3", label: "Nom" },
-  { colspan: "col-span-2", label: "Début" },
-  { colspan: "col-span-2", label: "Fin" },
-  { colspan: "col-span-1", label: "Jours" },
-  { colspan: "col-span-1", label: "Questions" },
+  { colspan: "col-span-2", label: "Date de début" },
+  { colspan: "col-span-2", label: "Date de fin" },
+  { colspan: "col-span-1", label: "Nb. jours total" },
+  { colspan: "col-span-1", label: "Nb. questions planifiées" },
   { colspan: "col-span-1", label: "Statut" },
   { colspan: "col-span-2", label: "Actions" },
 ];
@@ -39,20 +38,16 @@ const AdminQuizSeasonPagination: React.FC<AdminQuizSeasonPaginationProps> = ({
   seasonsTotalCount,
   totalPages = 1,
   pageSize = 30,
-  countLabel,
 }) => {
   const total = seasonsTotalCount ?? seasons.length;
 
   return (
-    <div className="">
-      <p className="mb-2">
-        {countLabel ?? `${total} saison(s) trouvée(s)`}
-      </p>
+    <div className="bg-white">
 
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <PaginationTableHead tableHeadItem={TABLE_HEAD} />
 
-        <div className="min-h-[120px]">
+        <div className="">
           {loading ? (
             <div className="p-4">Chargement...</div>
           ) : (

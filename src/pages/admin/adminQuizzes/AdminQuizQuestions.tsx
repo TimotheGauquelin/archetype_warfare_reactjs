@@ -153,26 +153,28 @@ const AdminQuizQuestions = () => {
         returnButton
       />
 
-      <AdminQuizFilter
-        themes={themes}
-        criteria={filters}
-        setCriteria={setFilters}
-        resetAllFilters={resetAllFilters}
-        setRefresh={setRefresh}
-      />
+      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm mb-10 space-y-3">
+        <AdminQuizFilter
+          themes={themes}
+          criteria={filters}
+          setCriteria={setFilters}
+          resetAllFilters={resetAllFilters}
+          setRefresh={setRefresh}
+        />
 
-      <AdminQuizPagination
-        questions={paginatedQuestions}
-        currentPage={page}
-        setPagination={setCurrentPage}
-        setRefresh={setRefresh}
-        questionsTotalCount={filteredQuestions.length}
-        totalPages={totalPages}
-        pageSize={PAGE_SIZE}
-        loading={loading}
-        onDelete={handleDelete}
-        onToggleActive={(q) => void handleToggleActive(q)}
-      />
+        <AdminQuizPagination
+          questions={paginatedQuestions}
+          currentPage={page}
+          setPagination={setCurrentPage}
+          setRefresh={setRefresh}
+          questionsTotalCount={filteredQuestions.length}
+          totalPages={totalPages}
+          pageSize={PAGE_SIZE}
+          loading={loading}
+          onDelete={handleDelete}
+          onToggleActive={(q) => void handleToggleActive(q)}
+        />
+      </section>
 
       <PopUp
         isOpen={isOpen}

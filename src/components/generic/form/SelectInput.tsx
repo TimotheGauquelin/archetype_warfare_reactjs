@@ -57,7 +57,7 @@ const SelectInput = <T extends Record<string, unknown>>({
       )}
       <select
         id={selectId}
-        className={`h-full p-2 bg-gray-100 rounded-md ${className ?? ""} ${disabled ? "opacity-50 hover:outline-none" : ""}`}
+        className={`h-full p-2 bg-white border border-slate-100 rounded-md outline-none focus:outline-none ${className ?? ""} ${disabled ? "opacity-50" : ""}`}
         name={inputName}
         aria-label={label ? undefined : accessibleName}
         value={

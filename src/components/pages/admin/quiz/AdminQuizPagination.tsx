@@ -30,24 +30,22 @@ const AdminQuizPagination: React.FC<AdminQuizPaginationProps> = ({
 }) => {
   const tableHeadItemArray = [
     { colspan: "col-span-1", label: "Id" },
-    { colspan: "col-span-2", label: "Thème" },
-    { colspan: "col-span-1", label: "Type" },
-    { colspan: "col-span-2", label: "Énoncé" },
+    { colspan: "col-span-1", label: "Thème du quizz" },
+    { colspan: "col-span-1", label: "Mode de jeu" },
+    { colspan: "col-span-3", label: "Énoncé de la question" },
     { colspan: "col-span-1", label: "Difficulté" },
-    { colspan: "col-span-1", label: "Pts" },
-    { colspan: "col-span-1", label: "Ex-daily" },
+    { colspan: "col-span-1", label: "Points" },
+    { colspan: "col-span-1", label: "A été planifié en daily" },
     { colspan: "col-span-1", label: "Active" },
     { colspan: "col-span-2", label: "Actions" },
   ];
 
   return (
     <div className="">
-      <p className="mb-2">{questionsTotalCount} question(s) trouvée(s)</p>
-
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <PaginationTableHead tableHeadItem={tableHeadItemArray} />
 
-        <div className="min-h-[120px]">
+        <div>
           {loading ? (
             <div className="p-4">Chargement...</div>
           ) : (

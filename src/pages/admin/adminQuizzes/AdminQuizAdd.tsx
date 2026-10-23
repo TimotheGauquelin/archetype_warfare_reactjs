@@ -7,7 +7,7 @@ const AdminQuizAdd = () => {
     <AdminStructure>
       <AdminBodyHeader
         label="Ajouter une question"
-        catchphrase="Créez une question MCQ ou Vrai/Faux"
+        catchphrase="Créez une question et ajoutez-la à un quizz"
         returnButton
       />
       <AdminQuizQuestionForm mode="create" />

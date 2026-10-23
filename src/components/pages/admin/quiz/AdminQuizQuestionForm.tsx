@@ -1,4 +1,11 @@
-import { FormEvent, useEffect, useState } from "react";
+import {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import {
@@ -41,6 +48,27 @@ import AdminHintLadderEditor, {
   type HintLadderFormState,
 } from "./AdminHintLadderEditor";
 import CheckboxSlider from "../../../generic/CheckboxSlider";
+import { Input } from "../../../generic/form/input/Input";
+import SelectInput from "../../../generic/form/SelectInput";
+import { SwitchInput } from "../../../generic/form/SwitchInput";
+
+type QuestionTab = "informations" | "daily";
+
+const DIFFICULTY_OPTIONS = [
+  { id: "easy", label: "Facile" },
+  { id: "medium", label: "Moyen" },
+  { id: "hard", label: "Difficile" },
+];
+
+const TYPE_OPTIONS = [
+  { id: "mcq", label: "MCQ (4 choix)" },
+  { id: "true_false", label: "Vrai / Faux" },
+  { id: "order", label: "Dans l'ordre" },
+  { id: "name_the_cards", label: "Trouvez le nom" },
+  { id: "summoner", label: "Invocateur" },
+  { id: "zoom", label: "Zoom" },
+  { id: "hint_ladder", label: "Indices" },
+];
 
 export type ChoicesMode = "text" | "cards";
 export type ImageMode = "upload" | "card";
@@ -180,7 +208,7 @@ export type QuestionFormState = {
   imageCardName: string | null;
   hint: string;
   explanation: string;
-};
+} & Record<string, unknown>;
 
 export const emptyForm = (themeSlug = ""): QuestionFormState => ({
   themeSlug,
@@ -226,12 +254,12 @@ const normalizeCardAnswersFromQuestion = (
   const answers = emptyNameTheCardsAnswers(count).map((_, index) => {
     const raw = rawAnswers[index] as
       | {
-          cardId?: string | null;
-          label?: string;
-          name?: string | null;
-          artworkUrl?: string | null;
-          text?: string;
-        }
+        cardId?: string | null;
+        label?: string;
+        name?: string | null;
+        artworkUrl?: string | null;
+        text?: string;
+      }
       | undefined;
     if (!raw) return emptyChoice();
     return {
@@ -263,13 +291,13 @@ const normalizeSummonerFromQuestion = (
     (_, index) => {
       const raw = rawProps[index] as
         | {
-            cardId?: string | null;
-            label?: string;
-            name?: string | null;
-            artworkUrl?: string | null;
-            text?: string;
-            isMaterial?: boolean;
-          }
+          cardId?: string | null;
+          label?: string;
+          name?: string | null;
+          artworkUrl?: string | null;
+          text?: string;
+          isMaterial?: boolean;
+        }
         | undefined;
       if (!raw) return emptySummonerProposition();
       return {
@@ -519,6 +547,89 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
   const [form, setForm] = useState<QuestionFormState>(emptyForm());
   const [saving, setSaving] = useState(false);
   const [loadingThemes, setLoadingThemes] = useState(true);
+  const [activeTab, setActiveTab] = useState<QuestionTab>("informations");
+
+  const themeOptions = useMemo(
+    () => themes.map((t) => ({ id: t.slug, label: t.label })),
+    [themes]
+  );
+
+  const seasonOptions = useMemo(
+    () =>
+      seasons.map((season) => ({
+        id: season.id,
+        label: `${season.name} (${season.startDate} → ${season.endDate})`,
+      })),
+    [seasons]
+  );
+
+  const selectedSeason = useMemo(
+    () => seasons.find((s) => s.id === Number(form.season_id)),
+    [seasons, form.season_id]
+  );
+
+  const setSeasonForm: Dispatch<SetStateAction<QuestionFormState>> = (
+    action
+  ) => {
+    setForm((prev) => {
+      const next = typeof action === "function" ? action(prev) : action;
+      const raw = next.season_id as number | string | null;
+      const season_id =
+        raw === "" || raw == null ? null : Number(raw);
+      const prevId = prev.season_id == null ? null : Number(prev.season_id);
+      const nextId =
+        season_id != null && Number.isFinite(season_id) ? season_id : null;
+      return {
+        ...next,
+        season_id: nextId,
+        scheduled_date: nextId !== prevId ? null : next.scheduled_date,
+      };
+    });
+  };
+
+  const setTypeForm: Dispatch<SetStateAction<QuestionFormState>> = (
+    action
+  ) => {
+    setForm((prev) => {
+      const next = typeof action === "function" ? action(prev) : action;
+      const nextType = next.type as QuestionType;
+      if (!nextType || nextType === prev.type) {
+        return { ...next, type: nextType || prev.type };
+      }
+      return {
+        ...next,
+        type: nextType,
+        ...(isCardGameQuestionType(nextType)
+          ? { themeSlug: CARD_GAME_THEME_SLUG }
+          : {}),
+        ...(nextType === "zoom"
+          ? {
+              prompt: "Quelle est cette carte ?",
+              hint: "",
+              explanation: "",
+              zoom: emptyZoomForm(),
+            }
+          : nextType === "hint_ladder"
+            ? {
+                prompt: "Trouvez le nom de la carte grâce aux indices",
+                hint: "",
+                explanation: "",
+                hintLadder: emptyHintLadderForm(),
+              }
+            : {}),
+      };
+    });
+  };
+
+  const setScheduleDailyForm: Dispatch<SetStateAction<QuestionFormState>> = (
+    action
+  ) => {
+    setForm((prev) => {
+      const next = typeof action === "function" ? action(prev) : action;
+      if (next.schedule_daily) return next;
+      return { ...next, season_id: null, scheduled_date: null };
+    });
+  };
 
   useEffect(() => {
     void (async () => {
@@ -633,14 +744,27 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
       prompt: form.prompt.trim(),
       payload: buildPayload(form),
       points:
-        form.type === "zoom" || form.type === "hint_ladder" ? 3 : form.points,
+        form.type === "zoom" || form.type === "hint_ladder"
+          ? 3
+          : Math.max(1, Number(form.points) || 1),
       is_active: form.is_active,
       was_daily_question:
         form.schedule_daily || form.was_daily_question ? true : undefined,
       daily_time_limit_seconds:
-        form.type === "zoom" ? 0 : form.daily_time_limit_seconds,
-      season_id: form.schedule_daily ? form.season_id : null,
-      scheduled_date: form.schedule_daily ? form.scheduled_date : null,
+        form.type === "zoom"
+          ? 0
+          : Math.max(
+            0,
+            Math.min(30, Math.floor(Number(form.daily_time_limit_seconds) || 0))
+          ),
+      season_id: form.schedule_daily
+        ? form.season_id != null && String(form.season_id) !== ""
+          ? Number(form.season_id)
+          : null
+        : null,
+      scheduled_date: form.schedule_daily
+        ? form.scheduled_date || null
+        : null,
       difficulty: form.difficulty,
       image_url:
         form.type === "zoom"
@@ -683,658 +807,589 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
     return <div className="p-4">Chargement du formulaire…</div>;
   }
 
+  const tabClass = (tab: QuestionTab) =>
+    `py-2 px-4 rounded-t-md cursor-pointer ${activeTab === tab
+      ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
+      : "text-gray-700 bg-gray-200 hover:bg-gray-300"
+    }`;
+
+  const pointsFormData: QuestionFormState =
+    form.type === "zoom" || form.type === "hint_ladder"
+      ? { ...form, points: 3 }
+      : form;
+
+  const themeFormData: QuestionFormState = isCardGameQuestionType(form.type)
+    ? { ...form, themeSlug: CARD_GAME_THEME_SLUG }
+    : form;
+
   return (
-    <form onSubmit={handleSubmit} className="bg-slate-200 rounded p-4 space-y-4">
-      <div className="grid grid-cols-12 gap-4">
-        <label className="col-span-12 tablet:col-span-3 flex flex-col text-sm font-medium text-gray-800">
-          Thème
-          <select
-            required
-            disabled={isCardGameQuestionType(form.type)}
-            className="mt-1 p-2 rounded font-normal disabled:bg-gray-100 disabled:text-gray-500"
-            value={
-              isCardGameQuestionType(form.type)
-                ? CARD_GAME_THEME_SLUG
-                : form.themeSlug
-            }
-            title={
-              isCardGameQuestionType(form.type)
-                ? "Ce type de question est forcément « Jeu de Cartes »"
-                : undefined
-            }
-            onChange={(e) =>
-              setForm((prev) => ({ ...prev, themeSlug: e.target.value }))
-            }
-          >
-            {themes.map((t) => (
-              <option key={t.id} value={t.slug}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-          {isCardGameQuestionType(form.type) && (
-            <span className="mt-1 text-xs text-gray-600 font-normal">
-              Forcé : Jeu de Cartes (Invocateur / Zoom / Indices)
-            </span>
-          )}
-        </label>
-
-        <label className="col-span-12 tablet:col-span-3 flex flex-col text-sm font-medium text-gray-800">
-          Type de question
-          <select
-            className="mt-1 p-2 rounded font-normal"
-            value={form.type}
-            onChange={(e) => {
-              const nextType = e.target.value as QuestionType;
-              setForm((prev) => ({
-                ...prev,
-                type: nextType,
-                ...(isCardGameQuestionType(nextType)
-                  ? { themeSlug: CARD_GAME_THEME_SLUG }
-                  : {}),
-                ...(nextType === "zoom"
-                  ? {
-                      prompt: "Quelle est cette carte ?",
-                      hint: "",
-                      explanation: "",
-                      zoom: emptyZoomForm(),
-                    }
-                  : nextType === "hint_ladder"
-                    ? {
-                        prompt: "Trouvez le nom de la carte grâce aux indices",
-                        hint: "",
-                        explanation: "",
-                        hintLadder: emptyHintLadderForm(),
-                      }
-                    : {}),
-              }));
-            }}
-          >
-            <option value="mcq">MCQ (4 choix)</option>
-            <option value="true_false">Vrai / Faux</option>
-            <option value="order">Dans l&apos;ordre</option>
-            <option value="name_the_cards">Trouvez le nom</option>
-            <option value="summoner">Invocateur</option>
-            <option value="zoom">Zoom</option>
-            <option value="hint_ladder">Indices</option>
-          </select>
-        </label>
-
-        <label className="col-span-12 tablet:col-span-2 flex flex-col text-sm font-medium text-gray-800">
-          Difficulté
-          <select
-            className="mt-1 p-2 rounded font-normal"
-            value={form.difficulty}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                difficulty: e.target.value as QuizDifficulty,
-              }))
-            }
-          >
-            <option value="easy">Facile</option>
-            <option value="medium">Moyen</option>
-            <option value="hard">Difficile</option>
-          </select>
-        </label>
-
-        <label className="col-span-12 tablet:col-span-2 flex flex-col text-sm font-medium text-gray-800">
-          Points
-          <input
-            type="number"
-            min={1}
-            disabled={form.type === "zoom" || form.type === "hint_ladder"}
-            className="mt-1 p-2 rounded font-normal disabled:bg-gray-100 disabled:text-gray-500"
-            value={
-              form.type === "zoom" || form.type === "hint_ladder"
-                ? 3
-                : form.points
-            }
-            title={
-              form.type === "zoom"
-                ? "Zoom : 3 / 2 / 1 selon la phase"
-                : form.type === "hint_ladder"
-                  ? "Indices : 3 / 2 / 1 / 0 selon le niveau"
-                  : undefined
-            }
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                points: Math.max(1, Number(e.target.value) || 1),
-              }))
-            }
-          />
-          {form.type === "zoom" && (
-            <span className="mt-1 text-xs text-gray-600 font-normal">
-              Auto : 3 → 2 → 1 selon la phase
-            </span>
-          )}
-          {form.type === "hint_ladder" && (
-            <span className="mt-1 text-xs text-gray-600 font-normal">
-              Auto : 3 → 2 → 1 → 0 selon l&apos;indice
-            </span>
-          )}
-        </label>
-
-        <label className="col-span-12 tablet:col-span-2 flex items-end gap-2 text-sm font-medium text-gray-800 pb-2">
-          <input
-            type="checkbox"
-            checked={form.is_active}
-            onChange={(e) =>
-              setForm((prev) => ({ ...prev, is_active: e.target.checked }))
-            }
-          />
-          Question active
-        </label>
-
+    <div>
+      <div className="flex">
+        <span
+          className={tabClass("informations")}
+          onClick={() => setActiveTab("informations")}
+        >
+          Informations générales
+        </span>
+        <span
+          className={tabClass("daily")}
+          onClick={() => setActiveTab("daily")}
+        >
+          Mode Défi du jour
+        </span>
       </div>
 
-      <fieldset className="rounded border-2 border-amber-400 bg-amber-50/60 p-4 space-y-3">
-        <legend className="px-2 text-sm font-bold text-amber-900">
-          Mode défi du jour
-        </legend>
-        {form.daily_locked ? (
-          <p className="text-sm text-amber-900 font-medium">
-            Cette question a déjà été utilisée en Daily et ne peut plus être
-            planifiée.
-          </p>
-        ) : (
-          <label className="flex items-center gap-2 text-sm font-medium text-gray-800">
-            <input
-              type="checkbox"
-              checked={form.schedule_daily}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  schedule_daily: e.target.checked,
-                  ...(e.target.checked
-                    ? {}
-                    : { season_id: null, scheduled_date: null }),
-                }))
-              }
-            />
-            Planifier pour le défi du jour
-          </label>
-        )}
-        {form.schedule_daily && (
-          <>
-            <label className="flex flex-col text-sm font-medium text-gray-800 max-w-md">
-              Saison Daily Quizz
-              <select
-                className="mt-1 p-2 rounded font-normal border border-amber-300 bg-white"
-                value={form.season_id ?? ""}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    season_id: e.target.value ? Number(e.target.value) : null,
-                    scheduled_date: null,
-                  }))
-                }
-                required
-              >
-                <option value="">Sélectionner une saison</option>
-                {seasons.map((season) => (
-                  <option key={season.id} value={season.id}>
-                    {season.name} ({season.startDate} → {season.endDate})
-                  </option>
-                ))}
-              </select>
-              {seasons.length === 0 && (
-                <span className="mt-1 text-xs text-red-600 font-normal">
-                  Créez d&apos;abord une saison depuis le dashboard Quizz.
-                </span>
-              )}
-            </label>
-            <label className="flex flex-col text-sm font-medium text-gray-800 max-w-md">
-              Jour du défi (1 question / jour)
-              <input
-                type="date"
-                className="mt-1 p-2 rounded font-normal border border-amber-300 bg-white"
-                value={form.scheduled_date ?? ""}
-                min={
-                  seasons.find((s) => s.id === form.season_id)?.startDate ??
-                  undefined
-                }
-                max={
-                  seasons.find((s) => s.id === form.season_id)?.endDate ??
-                  undefined
-                }
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    scheduled_date: e.target.value || null,
-                  }))
-                }
-                required
-                disabled={!form.season_id}
-              />
-              <span className="mt-1 text-xs text-gray-600 font-normal">
-                Ce jour-là, cette question sera le défi du jour (unique dans la
-                saison).
-              </span>
-            </label>
-          </>
-        )}
-        {form.type === "zoom" ? (
-          <p className="text-xs text-gray-700">
-            Pour Zoom, le chrono joueur = 3 × « Durée par phase » (ex. 15 s →
-            45 s). Pas de chrono daily séparé.
-          </p>
-        ) : (
-          <label className="flex flex-col text-sm font-medium text-gray-800 max-w-xs">
-            Temps imparti (secondes)
-            <input
-              type="number"
-              min={0}
-              max={30}
-              className="mt-1 p-2 rounded font-normal border border-amber-300 bg-white"
-              value={form.daily_time_limit_seconds}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  daily_time_limit_seconds: Math.max(
-                    0,
-                    Math.min(30, Math.floor(Number(e.target.value) || 0))
-                  ),
-                }))
-              }
-            />
-            <span className="mt-1 text-xs text-gray-600 font-normal">
-              0 = pas de chrono. Maximum 30 secondes.
-            </span>
-          </label>
-        )}
-      </fieldset>
-
-      <label className="flex flex-col text-sm font-medium text-gray-800">
-        Énoncé
-        <textarea
-          required
-          rows={4}
-          className="mt-1 p-2 rounded font-normal"
-          value={form.prompt}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, prompt: e.target.value }))
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white border border-t-0 border-gray-200 rounded-b-lg p-4 space-y-4"
+      >
+        <div
+          className={
+            activeTab === "informations" ? "space-y-4" : "hidden"
           }
-        />
-      </label>
+        >
+          <div className="bg-gray-100 rounded p-3 flex flex-col gap-2">
+            <div className="flex justify-end">
+              <SwitchInput
+                label="Question active"
+                attribute="is_active"
+                data={form}
+                setAction={setForm}
+                displayRow
+              />
+            </div>
+            <div className="grid grid-cols-12 gap-4 items-end">
+              <div className="col-span-12 tablet:col-span-3">
+                <SelectInput
+                  label="Thème"
+                  attribute="themeSlug"
+                  data={themeFormData}
+                  setAction={setForm}
+                  options={themeOptions}
+                  defaultOptionLabel="-- Choisir un thème --"
+                  disabled={isCardGameQuestionType(form.type)}
+                  required
+                  colSpanWidth="12"
+                />
+              </div>
 
-      <div className="grid grid-cols-12 gap-4">
-        {form.type !== "zoom" && form.type !== "hint_ladder" && (
-          <div className="col-span-12 tablet:col-span-6 bg-gray-100 rounded p-3 space-y-3">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm font-medium text-gray-800">Image</p>
-              <div className="flex flex-row items-center gap-2">
-                <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
-                  Fichier
-                </span>
-                <label className="inline-flex relative items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="sr-only peer"
-                    checked={form.imageMode === "card"}
-                    onChange={() => {
-                      const nextMode: ImageMode =
-                        form.imageMode === "card" ? "upload" : "card";
-                      setForm((prev) => ({
-                        ...prev,
-                        imageMode: nextMode,
-                        image_url: "",
-                        imageCardName: null,
-                      }));
-                    }}
-                  />
-                  <CheckboxSlider />
-                </label>
-                <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
-                  Artwork carte
-                </span>
+              <SelectInput
+                label="Type de question"
+                attribute="type"
+                data={form}
+                setAction={setTypeForm}
+                options={TYPE_OPTIONS}
+                defaultOptionLabel="-- Choisir un type --"
+                required
+                colSpanWidth="3"
+              />
+
+              <SelectInput
+                label="Difficulté"
+                required
+                attribute="difficulty"
+                data={form}
+                setAction={setForm}
+                options={DIFFICULTY_OPTIONS}
+                defaultOptionLabel="-- Difficulté --"
+                colSpanWidth="2"
+              />
+
+              <div className="col-span-12 tablet:col-span-2">
+                <Input
+                  label="Points"
+                  attribute="points"
+                  data={pointsFormData}
+                  setAction={setForm}
+                  inputType="number"
+                  min={1}
+                  disabled={
+                    form.type === "zoom" || form.type === "hint_ladder"
+                  }
+                  colSpanWidth="12"
+                />
+                {form.type === "zoom" && (
+                  <span className="mt-1 text-xs text-gray-600 font-normal">
+                    Auto : 3 → 2 → 1 selon la phase
+                  </span>
+                )}
+                {form.type === "hint_ladder" && (
+                  <span className="mt-1 text-xs text-gray-600 font-normal">
+                    Auto : 3 → 2 → 1 → 0 selon l&apos;indice
+                  </span>
+                )}
               </div>
             </div>
 
-            {form.image_url && (
-              <img
-                src={form.image_url}
-                alt="Prévisualisation"
-                className="max-h-40 rounded object-contain shadow-sm"
+            <label className="flex flex-col text-sm font-medium text-gray-800">
+              Énoncé
+              <textarea
+                required
+                rows={4}
+                className="mt-1 p-2 rounded font-normal"
+                value={form.prompt}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, prompt: e.target.value }))
+                }
               />
-            )}
+            </label>
+          </div>
 
-            {form.imageMode === "upload" ? (
-              <label className="flex flex-col text-sm font-medium text-gray-800">
-                Fichier image
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="mt-1 font-normal"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    const base64Img = await convertBase64(file);
-                    if (typeof base64Img === "string") {
+          <div className="grid grid-cols-12 gap-4">
+            {form.type !== "zoom" && form.type !== "hint_ladder" && (
+              <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-3 space-y-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="font-medium text-gray-800">Image <span className="font-semibold text-red-600">*</span></p>
+                  <div className="flex flex-row items-center gap-2">
+                    <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
+                      Ajouter ma propre image
+                    </span>
+                    <label className="inline-flex relative items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="sr-only peer"
+                        checked={form.imageMode === "card"}
+                        onChange={() => {
+                          const nextMode: ImageMode =
+                            form.imageMode === "card" ? "upload" : "card";
+                          setForm((prev) => ({
+                            ...prev,
+                            imageMode: nextMode,
+                            image_url: "",
+                            imageCardName: null,
+                          }));
+                        }}
+                      />
+                      <CheckboxSlider />
+                    </label>
+                    <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
+                      Cherche une carte dans la base de données
+                    </span>
+                  </div>
+                </div>
+
+                {form.image_url && (
+                  <img
+                    src={form.image_url}
+                    alt="Prévisualisation"
+                    className="max-h-40 rounded object-contain shadow-sm"
+                  />
+                )}
+
+                {form.imageMode === "upload" ? (
+                  <label className="flex flex-col text-sm font-medium text-gray-800">
+                    Fichier image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="mt-1 font-normal"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const base64Img = await convertBase64(file);
+                        if (typeof base64Img === "string") {
+                          setForm((prev) => ({
+                            ...prev,
+                            image_url: base64Img,
+                            imageCardName: null,
+                          }));
+                        }
+                      }}
+                    />
+                  </label>
+                ) : (
+                  <QuizImageCardSearch
+                    selectedName={form.imageCardName}
+                    onSelect={(artworkUrl, cardName) =>
                       setForm((prev) => ({
                         ...prev,
-                        image_url: base64Img,
-                        imageCardName: null,
-                      }));
+                        image_url: artworkUrl,
+                        imageCardName: cardName,
+                      }))
                     }
-                  }}
-                />
-              </label>
-            ) : (
-              <QuizImageCardSearch
-                selectedName={form.imageCardName}
-                onSelect={(artworkUrl, cardName) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    image_url: artworkUrl,
-                    imageCardName: cardName,
-                  }))
-                }
-                onClear={() =>
-                  setForm((prev) => ({
-                    ...prev,
-                    image_url: "",
-                    imageCardName: null,
-                  }))
-                }
-              />
+                    onClear={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        image_url: "",
+                        imageCardName: null,
+                      }))
+                    }
+                  />
+                )}
+
+                {form.image_url && (
+                  <button
+                    type="button"
+                    className="text-sm text-red-600 hover:underline"
+                    onClick={() =>
+                      setForm((prev) => ({
+                        ...prev,
+                        image_url: "",
+                        imageCardName: null,
+                      }))
+                    }
+                  >
+                    Retirer l&apos;image
+                  </button>
+                )}
+              </div>
             )}
 
-            {form.image_url && (
-              <button
-                type="button"
-                className="text-sm text-red-600 hover:underline"
-                onClick={() =>
+            {form.type !== "zoom" && form.type !== "hint_ladder" && (
+              <div className="flex flex-col border border-gray-200 bg-gray-100 rounded p-3 space-y-3 col-span-12 tablet:col-span-6 space-y-3">
+                <div className="flex flex-col gap-2">
+                  <label className="font-medium text-gray-800">
+                    Donner un indice pour trouver le nom de la carte
+                  </label>
+                  <textarea
+                    rows={3}
+                    className="mt-1 p-2 rounded font-normal"
+                    value={form.hint}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, hint: e.target.value }))
+                    }
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="flex flex-col font-medium text-gray-800">
+                    Donner une explication pour trouver le nom de la carte
+                  </label>
+                  <textarea
+                    rows={4}
+                    className="mt-1 p-2 rounded font-normal"
+                    value={form.explanation}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, explanation: e.target.value }))
+                    }
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {form.type === "order" ? (
+            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+              <legend className="text-sm font-medium text-gray-800 mb-2">
+                Dans l&apos;ordre — 4 propositions à classer
+              </legend>
+              <AdminOrderItemsEditor
+                items={form.orderItems}
+                correctOrder={form.correctOrder}
+                onChangeItems={(orderItems) =>
+                  setForm((prev) => ({ ...prev, orderItems }))
+                }
+                onChangeCorrectOrder={(correctOrder) =>
+                  setForm((prev) => ({ ...prev, correctOrder }))
+                }
+              />
+            </fieldset>
+          ) : form.type === "name_the_cards" ? (
+            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+              <legend className="text-sm font-medium text-gray-800 mb-2">
+                Trouvez le nom — réponses dans l&apos;ordre de l&apos;image
+              </legend>
+              <p className="text-xs text-amber-800 bg-amber-50 rounded p-2">
+                Une image de question est obligatoire (hébergée ci-dessus). Les
+                numéros 1…N sur l&apos;image correspondent aux réponses ci-dessous.
+              </p>
+              <AdminNameTheCardsEditor
+                monsterCount={form.monsterCount}
+                answers={form.nameTheCardsAnswers}
+                onChangeMonsterCount={(monsterCount) =>
+                  setForm((prev) => {
+                    const answers =
+                      monsterCount > prev.nameTheCardsAnswers.length
+                        ? [
+                          ...prev.nameTheCardsAnswers,
+                          ...emptyNameTheCardsAnswers(
+                            monsterCount - prev.nameTheCardsAnswers.length
+                          ),
+                        ]
+                        : prev.nameTheCardsAnswers.slice(0, monsterCount);
+                    return {
+                      ...prev,
+                      monsterCount,
+                      nameTheCardsAnswers: answers,
+                    };
+                  })
+                }
+                onChangeAnswers={(nameTheCardsAnswers) =>
+                  setForm((prev) => ({ ...prev, nameTheCardsAnswers }))
+                }
+              />
+            </fieldset>
+          ) : form.type === "summoner" ? (
+            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+              <legend className="text-sm font-medium text-gray-800 mb-2">
+                Invocateur — propositions &amp; matériaux
+              </legend>
+              <p className="text-xs text-amber-800 bg-amber-50 rounded p-2">
+                Image de la carte invocatrice obligatoire. Ajoutez des
+                propositions (autocomplétion), puis cochez celles qui sont les
+                matériaux. Le joueur verra toutes les propositions et devra
+                cocher les bons matériaux.
+              </p>
+              <AdminSummonerEditor
+                propositionCount={form.propositionCount}
+                propositions={form.summonerPropositions}
+                onChangePropositionCount={(propositionCount) =>
+                  setForm((prev) => {
+                    const propositions =
+                      propositionCount > prev.summonerPropositions.length
+                        ? [
+                          ...prev.summonerPropositions,
+                          ...emptySummonerPropositions(
+                            propositionCount - prev.summonerPropositions.length
+                          ),
+                        ]
+                        : prev.summonerPropositions.slice(0, propositionCount);
+                    return {
+                      ...prev,
+                      propositionCount,
+                      summonerPropositions: propositions,
+                    };
+                  })
+                }
+                onChangePropositions={(summonerPropositions) =>
+                  setForm((prev) => ({ ...prev, summonerPropositions }))
+                }
+              />
+            </fieldset>
+          ) : form.type === "zoom" ? (
+            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+              <legend className="text-sm font-medium text-gray-800 mb-2">
+                Zoom — focus progressif (3 → 2 → 1 points)
+              </legend>
+              <p className="text-xs text-amber-800 bg-amber-50 rounded p-2">
+                Sélectionnez la carte réponse : son artwork sert d&apos;image. Le
+                joueur voit d&apos;abord une petite zone (carré), puis plus large,
+                puis la carte entière. Trouver tôt rapporte plus de points.
+              </p>
+              <AdminZoomEditor
+                value={form.zoom}
+                onChange={(zoom) => setForm((prev) => ({ ...prev, zoom }))}
+              />
+            </fieldset>
+          ) : form.type === "hint_ladder" ? (
+            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+              <legend className="text-sm font-medium text-gray-800 mb-2">
+                Indices — Difficile 3 → Moyen 2 → Facile 1 → Newbie 0
+              </legend>
+              <p className="text-xs text-amber-800 bg-amber-50 rounded p-2">
+                Le joueur commence avec l&apos;indice Difficile. Il peut révéler
+                les indices suivants (et baisser ses points potentiels) avant de
+                proposer le nom de la carte.
+              </p>
+              <AdminHintLadderEditor
+                value={form.hintLadder}
+                onChange={(hintLadder) =>
+                  setForm((prev) => ({ ...prev, hintLadder }))
+                }
+              />
+            </fieldset>
+          ) : form.type === "mcq" ? (
+            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <legend className="text-sm font-medium text-gray-800">
+                  Propositions (cochez la bonne réponse)
+                </legend>
+                <div className="flex flex-row items-center justify-center gap-2 px-2">
+                  <span className="text-sm font-medium text-gray-800 whitespace-nowrap">
+                    Entrée imagée
+                  </span>
+                  <label className="inline-flex relative items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={form.choicesMode === "text"}
+                      onChange={() =>
+                        setChoicesMode(
+                          form.choicesMode === "text" ? "cards" : "text"
+                        )
+                      }
+                    />
+                    <CheckboxSlider />
+                  </label>
+                  <span className="text-sm font-medium text-gray-800 whitespace-nowrap">
+                    Entrée libre
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-600">
+                {form.choicesMode === "cards"
+                  ? "Chaque proposition doit être une carte sélectionnée dans la liste (recherche dans le nom)."
+                  : "Saisissez librement les 4 propositions (ex. culture G)."}
+              </p>
+
+              {form.choices.map((choice, index) => (
+                <div
+                  key={`${form.choicesMode}-${index}`}
+                  className="flex items-start gap-3 bg-white rounded p-3 border border-gray-200"
+                >
+                  <input
+                    type="radio"
+                    name="correctIndex"
+                    className="mt-3"
+                    title={`Bonne réponse : proposition ${String.fromCharCode(65 + index)}`}
+                    checked={form.correctIndex === index}
+                    onChange={() =>
+                      setForm((prev) => ({ ...prev, correctIndex: index }))
+                    }
+                  />
+                  {form.choicesMode === "cards" ? (
+                    <QuizChoiceCardPicker
+                      label={`Proposition ${String.fromCharCode(65 + index)}`}
+                      value={choice}
+                      onChange={(next) => {
+                        const choices = [
+                          ...form.choices,
+                        ] as QuestionFormState["choices"];
+                        choices[index] = next;
+                        setForm((prev) => ({ ...prev, choices }));
+                      }}
+                    />
+                  ) : (
+                    <label className="flex-1 flex flex-col text-sm font-medium text-gray-800">
+                      Proposition {String.fromCharCode(65 + index)}
+                      <input
+                        type="text"
+                        className="mt-1 p-2 rounded font-normal border border-gray-300"
+                        value={choice.text}
+                        placeholder="Texte de la proposition"
+                        onChange={(e) => {
+                          const choices = [
+                            ...form.choices,
+                          ] as QuestionFormState["choices"];
+                          choices[index] = {
+                            text: e.target.value,
+                            cardId: null,
+                            name: null,
+                            artworkUrl: null,
+                          };
+                          setForm((prev) => ({ ...prev, choices }));
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+              ))}
+            </fieldset>
+          ) : (
+            <label className="flex flex-col text-sm font-medium text-gray-800 max-w-xs">
+              Bonne réponse
+              <select
+                className="mt-1 p-2 rounded font-normal"
+                value={form.correct ? "true" : "false"}
+                onChange={(e) =>
                   setForm((prev) => ({
                     ...prev,
-                    image_url: "",
-                    imageCardName: null,
+                    correct: e.target.value === "true",
                   }))
                 }
               >
-                Retirer l&apos;image
-              </button>
-            )}
-          </div>
-        )}
-
-        {form.type !== "zoom" && form.type !== "hint_ladder" && (
-          <div className="col-span-12 tablet:col-span-6 space-y-3">
-            <label className="flex flex-col text-sm font-medium text-gray-800">
-              Indice
-              <textarea
-                rows={3}
-                className="mt-1 p-2 rounded font-normal"
-                value={form.hint}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, hint: e.target.value }))
-                }
-              />
+                <option value="true">Vrai</option>
+                <option value="false">Faux</option>
+              </select>
             </label>
-            <label className="flex flex-col text-sm font-medium text-gray-800">
-              Explication
-              <textarea
-                rows={4}
-                className="mt-1 p-2 rounded font-normal"
-                value={form.explanation}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, explanation: e.target.value }))
-                }
-              />
-            </label>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {form.type === "order" ? (
-        <fieldset className="space-y-4 bg-gray-100 rounded p-4">
-          <legend className="text-sm font-medium text-gray-800 mb-2">
-            Dans l&apos;ordre — 4 propositions à classer
-          </legend>
-          <AdminOrderItemsEditor
-            items={form.orderItems}
-            correctOrder={form.correctOrder}
-            onChangeItems={(orderItems) =>
-              setForm((prev) => ({ ...prev, orderItems }))
-            }
-            onChangeCorrectOrder={(correctOrder) =>
-              setForm((prev) => ({ ...prev, correctOrder }))
-            }
-          />
-        </fieldset>
-      ) : form.type === "name_the_cards" ? (
-        <fieldset className="space-y-4 bg-gray-100 rounded p-4">
-          <legend className="text-sm font-medium text-gray-800 mb-2">
-            Trouvez le nom — réponses dans l&apos;ordre de l&apos;image
-          </legend>
-          <p className="text-xs text-amber-800 bg-amber-50 rounded p-2">
-            Une image de question est obligatoire (hébergée ci-dessus). Les
-            numéros 1…N sur l&apos;image correspondent aux réponses ci-dessous.
-          </p>
-          <AdminNameTheCardsEditor
-            monsterCount={form.monsterCount}
-            answers={form.nameTheCardsAnswers}
-            onChangeMonsterCount={(monsterCount) =>
-              setForm((prev) => {
-                const answers =
-                  monsterCount > prev.nameTheCardsAnswers.length
-                    ? [
-                        ...prev.nameTheCardsAnswers,
-                        ...emptyNameTheCardsAnswers(
-                          monsterCount - prev.nameTheCardsAnswers.length
-                        ),
-                      ]
-                    : prev.nameTheCardsAnswers.slice(0, monsterCount);
-                return {
-                  ...prev,
-                  monsterCount,
-                  nameTheCardsAnswers: answers,
-                };
-              })
-            }
-            onChangeAnswers={(nameTheCardsAnswers) =>
-              setForm((prev) => ({ ...prev, nameTheCardsAnswers }))
-            }
-          />
-        </fieldset>
-      ) : form.type === "summoner" ? (
-        <fieldset className="space-y-4 bg-gray-100 rounded p-4">
-          <legend className="text-sm font-medium text-gray-800 mb-2">
-            Invocateur — propositions &amp; matériaux
-          </legend>
-          <p className="text-xs text-amber-800 bg-amber-50 rounded p-2">
-            Image de la carte invocatrice obligatoire. Ajoutez des
-            propositions (autocomplétion), puis cochez celles qui sont les
-            matériaux. Le joueur verra toutes les propositions et devra
-            cocher les bons matériaux.
-          </p>
-          <AdminSummonerEditor
-            propositionCount={form.propositionCount}
-            propositions={form.summonerPropositions}
-            onChangePropositionCount={(propositionCount) =>
-              setForm((prev) => {
-                const propositions =
-                  propositionCount > prev.summonerPropositions.length
-                    ? [
-                        ...prev.summonerPropositions,
-                        ...emptySummonerPropositions(
-                          propositionCount - prev.summonerPropositions.length
-                        ),
-                      ]
-                    : prev.summonerPropositions.slice(0, propositionCount);
-                return {
-                  ...prev,
-                  propositionCount,
-                  summonerPropositions: propositions,
-                };
-              })
-            }
-            onChangePropositions={(summonerPropositions) =>
-              setForm((prev) => ({ ...prev, summonerPropositions }))
-            }
-          />
-        </fieldset>
-      ) : form.type === "zoom" ? (
-        <fieldset className="space-y-4 bg-gray-100 rounded p-4">
-          <legend className="text-sm font-medium text-gray-800 mb-2">
-            Zoom — focus progressif (3 → 2 → 1 points)
-          </legend>
-          <p className="text-xs text-amber-800 bg-amber-50 rounded p-2">
-            Sélectionnez la carte réponse : son artwork sert d&apos;image. Le
-            joueur voit d&apos;abord une petite zone (carré), puis plus large,
-            puis la carte entière. Trouver tôt rapporte plus de points.
-          </p>
-          <AdminZoomEditor
-            value={form.zoom}
-            onChange={(zoom) => setForm((prev) => ({ ...prev, zoom }))}
-          />
-        </fieldset>
-      ) : form.type === "hint_ladder" ? (
-        <fieldset className="space-y-4 bg-gray-100 rounded p-4">
-          <legend className="text-sm font-medium text-gray-800 mb-2">
-            Indices — Difficile 3 → Moyen 2 → Facile 1 → Newbie 0
-          </legend>
-          <p className="text-xs text-amber-800 bg-amber-50 rounded p-2">
-            Le joueur commence avec l&apos;indice Difficile. Il peut révéler
-            les indices suivants (et baisser ses points potentiels) avant de
-            proposer le nom de la carte.
-          </p>
-          <AdminHintLadderEditor
-            value={form.hintLadder}
-            onChange={(hintLadder) =>
-              setForm((prev) => ({ ...prev, hintLadder }))
-            }
-          />
-        </fieldset>
-      ) : form.type === "mcq" ? (
-        <fieldset className="space-y-4 bg-gray-100 rounded p-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <legend className="text-sm font-medium text-gray-800">
-              Propositions (cochez la bonne réponse)
-            </legend>
-            <div className="flex flex-row items-center justify-center gap-2 px-2">
-              <span className="text-sm font-medium text-gray-800 whitespace-nowrap">
-                Entrée imagée
-              </span>
-              <label className="inline-flex relative items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={form.choicesMode === "text"}
-                  onChange={() =>
-                    setChoicesMode(
-                      form.choicesMode === "text" ? "cards" : "text"
-                    )
-                  }
+        <div className={activeTab === "daily" ? "space-y-4" : "hidden"}>
+          {form.daily_locked ? (
+            <p className="text-sm text-amber-900 font-medium">
+              Cette question a déjà été utilisée en Daily et ne peut plus être
+              planifiée.
+            </p>
+          ) : (
+            <SwitchInput
+              label="Planifier pour le défi du jour"
+              attribute="schedule_daily"
+              data={form}
+              setAction={setScheduleDailyForm}
+              displayRow
+            />
+          )}
+
+          {form.schedule_daily && (
+            <div className="grid grid-cols-12 gap-4 max-w-2xl">
+              <div className="col-span-12 tablet:col-span-6">
+                <SelectInput
+                  label="Saison Daily Quizz"
+                  attribute="season_id"
+                  data={form}
+                  setAction={setSeasonForm}
+                  options={seasonOptions}
+                  defaultOptionLabel="Sélectionner une saison"
+                  required
+                  colSpanWidth="12"
                 />
-                <CheckboxSlider />
-              </label>
-              <span className="text-sm font-medium text-gray-800 whitespace-nowrap">
-                Entrée libre
+                {seasons.length === 0 && (
+                  <span className="mt-1 text-xs text-red-600 font-normal">
+                    Créez d&apos;abord une saison depuis le dashboard Quizz.
+                  </span>
+                )}
+              </div>
+              <div className="col-span-12 tablet:col-span-6">
+                <Input
+                  label="Jour du défi (1 question / jour)"
+                  attribute="scheduled_date"
+                  data={form}
+                  setAction={setForm}
+                  inputType="date"
+                  min={selectedSeason?.startDate}
+                  max={selectedSeason?.endDate}
+                  disabled={!form.season_id}
+                  required
+                  colSpanWidth="12"
+                />
+                <span className="mt-1 text-xs text-gray-600 font-normal">
+                  Ce jour-là, cette question sera le défi du jour (unique dans
+                  la saison).
+                </span>
+              </div>
+            </div>
+          )}
+
+          {form.type === "zoom" ? (
+            <p className="text-xs text-gray-700">
+              Pour Zoom, le chrono joueur = 3 × « Durée par phase » (ex. 15 s →
+              45 s). Pas de chrono daily séparé.
+            </p>
+          ) : (
+            <div className="max-w-xs">
+              <Input
+                label="Temps imparti (secondes)"
+                attribute="daily_time_limit_seconds"
+                data={form}
+                setAction={setForm}
+                inputType="number"
+                min={0}
+                max={30}
+                colSpanWidth="12"
+              />
+              <span className="mt-1 text-xs text-gray-600 font-normal">
+                0 = pas de chrono. Maximum 30 secondes.
               </span>
             </div>
-          </div>
+          )}
+        </div>
 
-          <p className="text-xs text-gray-600">
-            {form.choicesMode === "cards"
-              ? "Chaque proposition doit être une carte sélectionnée dans la liste (recherche dans le nom)."
-              : "Saisissez librement les 4 propositions (ex. culture G)."}
-          </p>
-
-          {form.choices.map((choice, index) => (
-            <div
-              key={`${form.choicesMode}-${index}`}
-              className="flex items-start gap-3 bg-white rounded p-3 border border-gray-200"
-            >
-              <input
-                type="radio"
-                name="correctIndex"
-                className="mt-3"
-                title={`Bonne réponse : proposition ${String.fromCharCode(65 + index)}`}
-                checked={form.correctIndex === index}
-                onChange={() =>
-                  setForm((prev) => ({ ...prev, correctIndex: index }))
-                }
-              />
-              {form.choicesMode === "cards" ? (
-                <QuizChoiceCardPicker
-                  label={`Proposition ${String.fromCharCode(65 + index)}`}
-                  value={choice}
-                  onChange={(next) => {
-                    const choices = [
-                      ...form.choices,
-                    ] as QuestionFormState["choices"];
-                    choices[index] = next;
-                    setForm((prev) => ({ ...prev, choices }));
-                  }}
-                />
-              ) : (
-                <label className="flex-1 flex flex-col text-sm font-medium text-gray-800">
-                  Proposition {String.fromCharCode(65 + index)}
-                  <input
-                    type="text"
-                    className="mt-1 p-2 rounded font-normal border border-gray-300"
-                    value={choice.text}
-                    placeholder="Texte de la proposition"
-                    onChange={(e) => {
-                      const choices = [
-                        ...form.choices,
-                      ] as QuestionFormState["choices"];
-                      choices[index] = {
-                        text: e.target.value,
-                        cardId: null,
-                        name: null,
-                        artworkUrl: null,
-                      };
-                      setForm((prev) => ({ ...prev, choices }));
-                    }}
-                  />
-                </label>
-              )}
-            </div>
-          ))}
-        </fieldset>
-      ) : (
-        <label className="flex flex-col text-sm font-medium text-gray-800 max-w-xs">
-          Bonne réponse
-          <select
-            className="mt-1 p-2 rounded font-normal"
-            value={form.correct ? "true" : "false"}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                correct: e.target.value === "true",
-              }))
-            }
+        <div className="flex gap-3 pt-2">
+          <button
+            type="submit"
+            disabled={saving}
+            className="text-white p-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer disabled:opacity-50"
           >
-            <option value="true">Vrai</option>
-            <option value="false">Faux</option>
-          </select>
-        </label>
-      )}
-
-      <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={saving}
-          className="text-white p-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer disabled:opacity-50"
-        >
-          {saving
-            ? "Enregistrement…"
-            : mode === "edit"
-              ? "Mettre à jour"
-              : "Créer la question"}
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate(URL_FRONT_ADMIN_QUIZ_QUESTIONS)}
-          className="p-2 rounded border border-gray-400 bg-white hover:bg-gray-100 font-medium"
-        >
-          Annuler
-        </button>
-      </div>
-    </form>
+            {saving
+              ? "Enregistrement…"
+              : mode === "edit"
+                ? "Mettre à jour"
+                : "Créer la question"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

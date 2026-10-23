@@ -42,7 +42,7 @@ const AdminQuizPaginationTableBody: React.FC<AdminQuizPaginationTableBodyProps> 
           key={item.id}
         >
           <div className="col-span-1 p-1">{item.id}</div>
-          <div className="col-span-2 p-1">{item.theme?.label ?? "—"}</div>
+          <div className="col-span-1 p-1">{item.theme?.label ?? "—"}</div>
           <div className="col-span-1 p-1">
             {item.type === "true_false"
               ? "Vrai/Faux"
@@ -58,7 +58,7 @@ const AdminQuizPaginationTableBody: React.FC<AdminQuizPaginationTableBodyProps> 
                         ? "Indices"
                         : "MCQ"}
           </div>
-          <div className="col-span-2 p-1 line-clamp-2" title={item.prompt}>
+          <div className="col-span-3 p-1 line-clamp-2" title={item.prompt}>
             {item.prompt}
           </div>
           <div className="col-span-1 p-1">{difficultyLabel(item.difficulty)}</div>

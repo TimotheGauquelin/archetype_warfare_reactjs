@@ -33,23 +33,25 @@ const AdminBodyHeader: React.FC<AdminBodyHeaderProps> = ({
         <h1 className="text-2xl font-semibold mb-2">{label}</h1>
         {catchphrase && <h2 className="text-gray-600 ml-0.5">{catchphrase}</h2>}
       </div>
-      {buttonUrl && (
-        <Link to={buttonUrl} className="h-fit block text-white p-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer">
+      <div className="flex flex-col items-end gap-2">
+        {returnButton && (
+          <div
+            className="flex items-center cursor-pointer hover:text-green-400"
+            onClick={() => history(-1)}
+          >
+            <FaAngleLeft />
+            <p>Retour</p>
+          </div>
+        )}
+        {buttonUrl && (
+          <Link to={buttonUrl} className="h-fit block text-white p-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer">
             {buttonLabel}
-        </Link>
-      )}
-      {returnButton && (
-        <div
-          className="flex items-center cursor-pointer hover:text-green-400"
-          onClick={() => history(-1)}
-        >
-          <FaAngleLeft />
-          <p>Retour</p>
-        </div>
-      )}
+          </Link>
+        )}
+      </div>
       {actionButton && (
-        <button 
-          onClick={actionButton} 
+        <button
+          onClick={actionButton}
           className={`${actionButtonColor}`}
           disabled={actionButtonDisabled}
         >

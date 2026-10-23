@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import usePopup from "../../../../hooks/usePopup";
 import PopUp from "../../../generic/PopUp";
+import { Input } from "../../../generic/form/input/Input";
+import SelectInput from "../../../generic/form/SelectInput";
 import type { QuizDifficulty, QuizTheme } from "../../../../services/quiz";
 import {
   switchAllQuizQuestionsToInactive,
   switchAllQuizQuestionsToNonDaily,
 } from "../../../../services/quiz";
+import { FaCalendar, FaEyeSlash } from "react-icons/fa";
 
 export type AdminQuizFilters = {
   prompt: string;
@@ -15,7 +18,7 @@ export type AdminQuizFilters = {
   difficulty: "" | QuizDifficulty;
   is_active: "" | "true" | "false";
   was_daily_question: "" | "true" | "false";
-};
+} & Record<string, unknown>;
 
 interface AdminQuizFilterProps {
   themes: QuizTheme[];
@@ -24,6 +27,32 @@ interface AdminQuizFilterProps {
   resetAllFilters: () => void;
   setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+const TYPE_OPTIONS = [
+  { id: "mcq", label: "MCQ" },
+  { id: "true_false", label: "Vrai / Faux" },
+  { id: "order", label: "Dans l'ordre" },
+  { id: "name_the_cards", label: "Trouvez le nom" },
+  { id: "summoner", label: "Invocateur" },
+  { id: "zoom", label: "Zoom" },
+  { id: "hint_ladder", label: "Indices" },
+];
+
+const DIFFICULTY_OPTIONS = [
+  { id: "easy", label: "Facile" },
+  { id: "medium", label: "Moyen" },
+  { id: "hard", label: "Difficile" },
+];
+
+const ACTIVE_OPTIONS = [
+  { id: "true", label: "Actives" },
+  { id: "false", label: "Inactives" },
+];
+
+const DAILY_OPTIONS = [
+  { id: "true", label: "Déjà utilisée" },
+  { id: "false", label: "Jamais utilisée" },
+];
 
 const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
   themes,
@@ -34,6 +63,14 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
 }) => {
   const [displayGeneralActions, setDisplayGeneralActions] = useState(false);
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
+
+  const themeOptions = useMemo(
+    () =>
+      themes
+        .filter((theme) => theme.slug !== "all")
+        .map((theme) => ({ id: theme.slug, label: theme.label })),
+    [themes]
+  );
 
   const handleResetAllFiltersButton = () => {
     showConfirmDialog({
@@ -91,115 +128,18 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
   };
 
   return (
-    <div className="bg-slate-200 rounded p-2">
+    <div className="border border-gray-200 bg-slate-100 rounded p-2">
       <div className="flex justify-between">
-        <h2>Filtres : </h2>
-        <p
-          className="hover:text-red-500 cursor-pointer"
-          onClick={() => handleResetAllFiltersButton()}
-        >
-          Reset les filtres
-        </p>
-      </div>
-
-      <div className="flex justify-between items-center">
-        <div className="grid grid-cols-12 pt-4 gap-4 flex justify-center items-center">
-          <input
-            className="col-span-3 p-2 rounded"
-            placeholder="Quelle question recherchez-vous ?"
-            type="text"
-            value={criteria.prompt}
-            onChange={(e) => {
-              setCriteria((prev) => ({
-                ...prev,
-                prompt: e.target.value,
-              }));
-            }}
-          />
-          <select
-            value={criteria.theme}
-            className="col-span-2 p-2 rounded"
-            onChange={(e) =>
-              setCriteria((prev) => ({
-                ...prev,
-                theme: e.target.value,
-              }))
-            }
-          >
-            <option value="">-- Aucun thème --</option>
-            {themes
-              .filter((theme) => theme.slug !== "all")
-              .map((theme) => (
-                <option key={theme.id} value={theme.slug}>
-                  {theme.label}
-                </option>
-              ))}
-          </select>
-          <select
-            value={criteria.type}
-            className="col-span-2 p-2 rounded"
-            onChange={(e) =>
-              setCriteria((prev) => ({
-                ...prev,
-                type: e.target.value,
-              }))
-            }
-          >
-            <option value="">-- Aucun type --</option>
-            <option value="mcq">MCQ</option>
-            <option value="true_false">Vrai / Faux</option>
-            <option value="order">Dans l&apos;ordre</option>
-            <option value="name_the_cards">Trouvez le nom</option>
-            <option value="summoner">Invocateur</option>
-            <option value="zoom">Zoom</option>
-            <option value="hint_ladder">Indices</option>
-          </select>
-          <select
-            value={criteria.difficulty}
-            className="col-span-2 p-2 rounded"
-            onChange={(e) =>
-              setCriteria((prev) => ({
-                ...prev,
-                difficulty: e.target.value as AdminQuizFilters["difficulty"],
-              }))
-            }
-          >
-            <option value="">-- Aucune difficulté --</option>
-            <option value="easy">Facile</option>
-            <option value="medium">Moyen</option>
-            <option value="hard">Difficile</option>
-          </select>
-          <select
-            value={criteria.is_active}
-            className="col-span-1 p-2 rounded"
-            onChange={(e) =>
-              setCriteria((prev) => ({
-                ...prev,
-                is_active: e.target.value as AdminQuizFilters["is_active"],
-              }))
-            }
-          >
-            <option value="">-- Statut --</option>
-            <option value="true">Actives</option>
-            <option value="false">Inactives</option>
-          </select>
-          <select
-            value={criteria.was_daily_question}
-            className="col-span-1 p-2 rounded"
-            onChange={(e) =>
-              setCriteria((prev) => ({
-                ...prev,
-                was_daily_question: e.target
-                  .value as AdminQuizFilters["was_daily_question"],
-              }))
-            }
-          >
-            <option value="">-- Daily --</option>
-            <option value="true">Déjà utilisée</option>
-            <option value="false">Jamais utilisée</option>
-          </select>
+        <h2 className="text-md font-semibold">Filtres : </h2>
+        <div className="flex flex-col items-center gap-2">
           <p
-            className="col-span-1 flex justify-end hover:text-red-500 cursor-pointer text-sm whitespace-nowrap"
+            className="hover:text-red-500 cursor-pointer"
+            onClick={() => handleResetAllFiltersButton()}
+          >
+            Reset les filtres
+          </p>
+          <p
+            className="hover:text-blue-500 cursor-pointer"
             onClick={() => {
               setDisplayGeneralActions(!displayGeneralActions);
             }}
@@ -209,32 +149,80 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
         </div>
       </div>
 
+      <div className="grid grid-cols-12 gap-4 items-end pt-2">
+        <Input
+          attribute="prompt"
+          data={criteria}
+          setAction={setCriteria}
+          placeholder="Quelle question recherchez-vous ?"
+          inputType="text"
+          colSpanWidth="3"
+        />
+        <SelectInput
+          attribute="theme"
+          data={criteria}
+          setAction={setCriteria}
+          defaultOptionLabel="-- Aucun thème --"
+          options={themeOptions}
+          colSpanWidth="2"
+          ariaLabel="Thème"
+        />
+        <SelectInput
+          attribute="type"
+          data={criteria}
+          setAction={setCriteria}
+          defaultOptionLabel="-- Aucun type --"
+          options={TYPE_OPTIONS}
+          colSpanWidth="2"
+          ariaLabel="Type"
+        />
+        <SelectInput
+          attribute="difficulty"
+          data={criteria}
+          setAction={setCriteria}
+          defaultOptionLabel="-- Aucune difficulté --"
+          options={DIFFICULTY_OPTIONS}
+          colSpanWidth="2"
+          ariaLabel="Difficulté"
+        />
+        <SelectInput
+          attribute="is_active"
+          data={criteria}
+          setAction={setCriteria}
+          defaultOptionLabel="-- Statut --"
+          options={ACTIVE_OPTIONS}
+          colSpanWidth="1"
+          ariaLabel="Statut"
+        />
+        <SelectInput
+          attribute="was_daily_question"
+          data={criteria}
+          setAction={setCriteria}
+          defaultOptionLabel="-- Daily --"
+          options={DAILY_OPTIONS}
+          colSpanWidth="1"
+          ariaLabel="Daily"
+        />
+      </div>
+
       {displayGeneralActions && (
-        <div className="mt-2 space-y-2">
-          <div className="bg-slate-200 rounded p-2">
-            <div className="flex items-center flex-wrap gap-2">
-              <p>Mettre toutes les questions en inactif :</p>
-              <button
-                type="button"
-                className="bg-red-200 p-1 rounded text-white hover:bg-red-300"
-                onClick={handleSwitchAllToInactive}
-              >
-                Activer !
-              </button>
-            </div>
-          </div>
-          <div className="bg-slate-200 rounded p-2">
-            <div className="flex items-center flex-wrap gap-2">
-              <p>Libérer tous les créneaux Daily :</p>
-              <button
-                type="button"
-                className="bg-red-200 p-1 rounded text-white hover:bg-red-300"
-                onClick={handleSwitchAllToNonDaily}
-              >
-                Activer !
-              </button>
-            </div>
-          </div>
+        <div className="flex bg-white border border-gray-200 rounded-lg p-2 mt-2 space-x-2">
+          <button
+            type="button"
+            className="flex items-center bg-orange-100 hover:bg-orange-200 p-1 rounded text-orange-500 font-semibold"
+            onClick={handleSwitchAllToNonDaily}
+          >
+            <FaCalendar className="mr-2" />
+            Changer toutes les questions en « non-planifiées » pour le daily
+          </button>
+          <button
+            type="button"
+            className="flex items-center bg-red-100 hover:bg-red-200 p-1 rounded text-red-500 font-semibold"
+            onClick={handleSwitchAllToInactive}
+          >
+            <FaEyeSlash className="mr-2" />
+            Changer toutes les questions en « inactives »
+          </button>
         </div>
       )}
 
