@@ -52,7 +52,7 @@ const ArchetypeMastersSection = ({
                   <CountryFlagLabel countryCode={player.country} />
                 </div>
                 <span className="text-gray-600 shrink-0">
-                  {t("archetypePage.masterWins", { count: player.tournamentWins })}
+                  {t("archetypePage.masterPoints", { count: player.points })}
                 </span>
               </li>
             ))}

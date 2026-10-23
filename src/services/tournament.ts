@@ -114,6 +114,7 @@ export interface MyTournamentDetail {
   tournament_player: MyTournamentPlayer;
   rounds: MyTournamentRound[];
   require_deck_list: boolean;
+  is_official?: boolean;
   allow_penalities: boolean;
 }
 
@@ -177,6 +178,7 @@ export interface TournamentDetail {
   matches_per_round: number;
   match_resolution_mode?: "strict_wins" | "highest_score";
   require_deck_list: boolean;
+  is_official?: boolean;
   allow_penalities: boolean;
   until_winner?: boolean;
   event_date?: string | null;
@@ -453,6 +455,9 @@ export interface CreateTournamentPayload {
   event_date: string;
   event_date_end: string;
   is_online: boolean;
+  require_deck_list?: boolean;
+  until_winner?: boolean;
+  is_official?: boolean;
 }
 
 /**
@@ -488,6 +493,7 @@ export interface UpdateTournamentPayload {
   event_date_end: string;
   is_online: boolean;
   require_deck_list: boolean;
+  is_official: boolean;
   until_winner: boolean;
   max_number_of_rounds: number;
   matches_per_round: number;

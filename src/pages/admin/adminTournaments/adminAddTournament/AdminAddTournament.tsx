@@ -28,6 +28,9 @@ type TournamentFormState = {
   event_date: string;
   event_date_end: string;
   is_online: boolean;
+  require_deck_list: boolean;
+  until_winner: boolean;
+  is_official: boolean;
 };
 
 const defaultStart = () => {
@@ -55,6 +58,9 @@ const AdminAddTournament = () => {
     event_date: defaultStart(),
     event_date_end: defaultEnd(),
     is_online: false,
+    require_deck_list: false,
+    until_winner: false,
+    is_official: false,
   });
 
   const matchesPerRoundOptions = [
@@ -86,6 +92,9 @@ const AdminAddTournament = () => {
         event_date: new Date(form.event_date).toISOString(),
         event_date_end: new Date(form.event_date_end).toISOString(),
         is_online: form.is_online,
+        require_deck_list: form.require_deck_list,
+        until_winner: form.until_winner,
+        is_official: form.is_official,
       };
       setIsLoading(true);
       try {
@@ -121,6 +130,12 @@ const AdminAddTournament = () => {
             <SwitchInput
               label="Decklist obligatoire"
               attribute="require_deck_list"
+              data={form}
+              setAction={setForm}
+            />
+            <SwitchInput
+              label="Tournoi officiel"
+              attribute="is_official"
               data={form}
               setAction={setForm}
             />

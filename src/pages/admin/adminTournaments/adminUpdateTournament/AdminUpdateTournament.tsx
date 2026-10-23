@@ -38,6 +38,7 @@ const AdminUpdateTournament = () => {
     matches_per_round: 0,
     match_resolution_mode: "strict_wins",
     require_deck_list: false,
+    is_official: false,
     until_winner: false,
     allow_penalities: false,
   });
@@ -84,6 +85,7 @@ const AdminUpdateTournament = () => {
           matches_per_round: tournament.matches_per_round,
           match_resolution_mode: tournament.match_resolution_mode ?? "strict_wins",
           require_deck_list: tournament.require_deck_list,
+          is_official: tournament.is_official ?? false,
           until_winner: tournament.until_winner,
           location: tournament.location,
           event_date: formatDateForInputWithHours(tournament.event_date),
@@ -119,6 +121,7 @@ const AdminUpdateTournament = () => {
         event_date_end: new Date(tournament.event_date_end).toISOString(),
         is_online: tournament.is_online,
         require_deck_list: tournament.require_deck_list as boolean,
+        is_official: tournament.is_official as boolean,
         until_winner: tournament.until_winner as boolean,
         max_number_of_rounds: Number(tournament.max_number_of_rounds) || 1,
         matches_per_round: Number(tournament.matches_per_round) || 1,
@@ -164,6 +167,12 @@ const AdminUpdateTournament = () => {
             <SwitchInput
               label="Decklist obligatoire"
               attribute="require_deck_list"
+              data={tournament}
+              setAction={setTournament}
+            />
+            <SwitchInput
+              label="Tournoi officiel"
+              attribute="is_official"
               data={tournament}
               setAction={setTournament}
             />

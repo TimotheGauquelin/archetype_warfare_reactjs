@@ -172,10 +172,6 @@ const ArchetypePage = () => {
                 <p className="text-right text-sm">{t("archetypePage.staffSignature")}</p>
               </div>
             )}
-            <ArchetypeMastersSection
-              masters={masters}
-              isLoading={isLoadingMasters}
-            />
             <div className="pt-5">
               <SubtitleDivider
                 label={t("archetypePage.allCards", { count: sortedCards.length })}
@@ -191,6 +187,10 @@ const ArchetypePage = () => {
             ) : (
               <NoItemMessage message={t("archetypePage.noCards")} textPosition="center" />
             )}
+            <ArchetypeMastersSection
+              masters={masters}
+              isLoading={isLoadingMasters}
+            />
           </div>
         </PageContentBlock>
       </main>

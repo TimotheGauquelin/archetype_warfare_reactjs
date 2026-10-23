@@ -270,6 +270,10 @@ const AdminManageTournament = () => {
                         <span className="font-semibold">Decklist obligatoire :</span>{" "}
                         {tournament.require_deck_list ? "Oui" : "Non"}
                     </p>
+                    <p>
+                        <span className="font-semibold">Tournoi officiel :</span>{" "}
+                        {tournament.is_official ? "Oui" : "Non"}
+                    </p>
                     <div>
                         <p className="font-semibold">Pénalités :</p>
                         {tournament.allow_penalities ? (

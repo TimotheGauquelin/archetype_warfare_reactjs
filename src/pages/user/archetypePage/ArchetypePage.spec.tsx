@@ -156,9 +156,9 @@ describe("ArchetypePage (integration)", () => {
                     archetypeId: 1,
                     archetypeName: "Dark Magician",
                     rankings: [
-                        { userId: "u1", username: "Alice", country: "FR", tournamentWins: 3 },
-                        { userId: "u2", username: "Bob", country: "BE", tournamentWins: 2 },
-                        { userId: "u3", username: "Charlie", country: null, tournamentWins: 1 },
+                        { userId: "u1", username: "Alice", country: "FR", points: 30 },
+                        { userId: "u2", username: "Bob", country: "BE", points: 15 },
+                        { userId: "u3", username: "Charlie", country: null, points: 5 },
                     ],
                 });
             })
