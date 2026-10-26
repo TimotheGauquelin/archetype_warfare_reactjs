@@ -54,10 +54,12 @@ const AdminBanlistFormik: React.FC<AdminBanlistFormikProps> = ({
   return (
     <>
       <AdminBanlistFormikData newBanlist={newBanlist} setNewBanlist={setNewBanlist} />
-      <div className="bg-gray-300 mt-4 rounded p-2">
-        <h2 className="font-bold text-xl">Cartes de la banlist :</h2>
-        <div className="bg-gray-300 grid grid-cols-12 gap-1">
-          <div className="bg-gray-400 col-span-9 mt-2 p-3 rounded">
+      <div className="bg-gray-100 mt-4 rounded p-3 space-y-3">
+        <h2 className="font-semibold text-lg text-gray-900">
+          Cartes de la banlist
+        </h2>
+        <div className="grid grid-cols-12 gap-2">
+          <div className="bg-white border border-gray-200 col-span-9 p-3 rounded">
             <div
               // className={`overflow-y-auto col-span-8 grid bg-white p-2 rounded ${
               //   banlistCardsLength > 0 && "grid-cols-12"
@@ -160,7 +162,7 @@ const AdminBanlistFormik: React.FC<AdminBanlistFormikProps> = ({
       </div>
       <button
         id="form"
-        className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded"
+        className="text-white mt-2 p-2 px-4 bg-blue-400 rounded hover:bg-blue-500 font-bold"
         onClick={() => { addBanlist() }}
       >
         {`${location?.state?.request === "put" ? `Modifier` : "Créer"

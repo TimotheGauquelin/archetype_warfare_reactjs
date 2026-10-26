@@ -2,7 +2,11 @@ import React from "react";
 import { format } from "date-fns";
 import { enGB } from "date-fns/locale";
 import { Link } from "react-router-dom";
-import { STATUS_FORBIDDEN, STATUS_LIMITED, STATUS_SEMI_LIMITED } from "../../../utils/const/banlistConst";
+import {
+  STATUS_FORBIDDEN,
+  STATUS_LIMITED,
+  STATUS_SEMI_LIMITED,
+} from "../../../utils/const/banlistConst";
 import type { Banlist } from "../../../types";
 
 interface AdminBanlistPaginationTableBodyProps {
@@ -10,48 +14,77 @@ interface AdminBanlistPaginationTableBodyProps {
   handleDeleteBanlist: (id: number) => void;
 }
 
-const AdminBanlistPaginationTableBody: React.FC<AdminBanlistPaginationTableBodyProps> = ({
-  arrayItems,
-  handleDeleteBanlist,
-}) => {
-
-  const numberOfCardsFromArchetypePerStatus = (item: Banlist, status: string): number => {
+const AdminBanlistPaginationTableBody: React.FC<
+  AdminBanlistPaginationTableBodyProps
+> = ({ arrayItems, handleDeleteBanlist }) => {
+  const numberOfCardsFromArchetypePerStatus = (
+    item: Banlist,
+    status: string
+  ): number => {
     return (item.banlist_archetype_cards || []).filter((card) => {
-      const archetypeId = 'archetype_id' in card ? card.archetype_id : undefined;
-      const cardStatusLabel = card.card_status?.label?.toLowerCase() || '';
-      return archetypeId === null && cardStatusLabel === status.toLowerCase();
+      const archetypeId =
+        "archetype_id" in card ? card.archetype_id : undefined;
+      const cardStatusLabel = card.card_status?.label?.toLowerCase() || "";
+      return (
+        archetypeId === null && cardStatusLabel === status.toLowerCase()
+      );
     }).length;
   };
 
+  if (!arrayItems || arrayItems.length === 0) {
+    return (
+      <div className="col-span-12 p-4 border border-l border-r text-center">
+        Aucune banlist trouvée.
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-12 even:bg-slate-100">
-      {arrayItems?.map((item, index) => {
+    <div className="grid grid-cols-12">
+      {arrayItems.map((item, index) => {
+        const totalCards = item.banlist_archetype_cards?.length ?? 0;
         return (
           <div
-            className="even:bg-slate-100 grid grid-cols-12 col-span-12 flex items-center border-b border-l border-r hover:bg-slate-200 cursor-pointer"
-            key={index}
+            className="grid grid-cols-12 col-span-12 flex items-center border-b border-l border-r hover:bg-slate-200 cursor-pointer"
+            key={item.id ?? index}
           >
-            <div className={`col-span-2 p-1`}>
+            <div className="col-span-2 p-1">
               <p>{item?.label}</p>
             </div>
-            <div className={`col-span-2 p-1`}>
-              <p>Active {item?.release_date ? format(new Date(item.release_date), "PPP", {
-                locale: enGB,
-              }) : "Date non définie"}</p>
+            <div className="col-span-2 p-1">
+              <p>
+                Active{" "}
+                {item?.release_date
+                  ? format(new Date(item.release_date), "PPP", {
+                      locale: enGB,
+                    })
+                  : "Date non définie"}
+              </p>
             </div>
-            <div className={`col-span-1 px-3 py-4`}>
-              {item.banlist_archetype_cards && item.banlist_archetype_cards.length > 1 ? `${item.banlist_archetype_cards.length} cards` : item.banlist_archetype_cards ? `${item.banlist_archetype_cards.length} card` : "0 card"}
+            <div className="col-span-1 p-1">
+              {totalCards > 1
+                ? `${totalCards} cards`
+                : `${totalCards} card`}
             </div>
-            <div className={`col-span-1 px-3 py-4`}>
-              {numberOfCardsFromArchetypePerStatus(item, STATUS_FORBIDDEN.toLowerCase())}
+            <div className="col-span-1 p-1">
+              {numberOfCardsFromArchetypePerStatus(
+                item,
+                STATUS_FORBIDDEN.toLowerCase()
+              )}
             </div>
-            <div className={`col-span-1 px-3 py-4`}>
-              {numberOfCardsFromArchetypePerStatus(item, STATUS_LIMITED.toLowerCase())}
+            <div className="col-span-1 p-1">
+              {numberOfCardsFromArchetypePerStatus(
+                item,
+                STATUS_LIMITED.toLowerCase()
+              )}
             </div>
-            <div className={`col-span-1 px-3 py-4`}>
-              {numberOfCardsFromArchetypePerStatus(item, STATUS_SEMI_LIMITED.toLowerCase())}
+            <div className="col-span-1 p-1">
+              {numberOfCardsFromArchetypePerStatus(
+                item,
+                STATUS_SEMI_LIMITED.toLowerCase()
+              )}
             </div>
-            <div className="col-span-4 bg-gray-100 p-4 text-right">
+            <div className="col-span-4 bg-gray-100 p-1 text-right">
               <p
                 className="font-medium text-blue-600 hover:text-red-600 hover:underline cursor-pointer"
                 onClick={() => {

@@ -164,6 +164,7 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
           setCriteria={setFilters}
           resetAllFilters={() => setFilters({ ...defaultFilters })}
           attributes={attributes}
+          compact
         />
         <div
           className="overflow-y-auto bg-white grid grid-cols-12 gap-1 p-1"

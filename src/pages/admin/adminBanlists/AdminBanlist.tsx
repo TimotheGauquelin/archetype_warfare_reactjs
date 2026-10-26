@@ -6,7 +6,11 @@ import AdminStructure from "../adminLayout";
 import AdminBanlistPagination from "../../../components/pages/admin/AdminBanlistPagination";
 import PaginationTableHead from "../../../components/generic/pagination/PaginationTableHead";
 import AdminBanlistPaginationTableBody from "../../../components/pages/admin/AdminBanlistPaginationTableBody";
-import { deleteBanlist, getBanlists, getCurrentBanlist } from "../../../services/banlist";
+import {
+  deleteBanlist,
+  getBanlists,
+  getCurrentBanlist,
+} from "../../../services/banlist";
 import { URL_FRONT_ADMIN_BANLIST_ADD } from "../../../constant/urlsFront";
 import usePopup from "../../../hooks/usePopup";
 import PopUp from "../../../components/generic/PopUp";
@@ -17,6 +21,7 @@ const AdminBanlist = () => {
   const [banlists, setBanlists] = useState<Banlist[]>([]);
   const [currentBanlist, setCurrentBanlist] = useState<Banlist | null>(null);
   const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -30,14 +35,31 @@ const AdminBanlist = () => {
       onConfirm: () => {
         if (token) deleteBanlist(token, banlistId, navigate, setIsLoading);
         setRefresh(true);
-      }
+      },
     });
   };
 
   useEffect(() => {
-    getCurrentBanlist((v) => setCurrentBanlist(prev => typeof v === 'function' ? (v as (p: Banlist | null) => Banlist | null)(prev) : v), false);
-    getBanlists((v) => setBanlists(prev => typeof v === 'function' ? (v as (p: Banlist[]) => Banlist[])(prev) : v));
-    setRefresh(false);
+    setLoading(true);
+    void Promise.all([
+      getCurrentBanlist(
+        (v) =>
+          setCurrentBanlist((prev) =>
+            typeof v === "function"
+              ? (v as (p: Banlist | null) => Banlist | null)(prev)
+              : v
+          ),
+        false
+      ),
+      getBanlists((v) =>
+        setBanlists((prev) =>
+          typeof v === "function" ? (v as (p: Banlist[]) => Banlist[])(prev) : v
+        )
+      ),
+    ]).finally(() => {
+      setLoading(false);
+      setRefresh(false);
+    });
   }, [refresh]);
 
   const currentBanlistsArray = useMemo(
@@ -61,30 +83,45 @@ const AdminBanlist = () => {
   return (
     <AdminStructure>
       <AdminBodyHeader
-        label="Banlist"
-        catchphrase="Bannir, Limiter ou Illimiter"
+        label="Banlists"
+        catchphrase="Banlist en cours et historique des listes"
         buttonUrl={URL_FRONT_ADMIN_BANLIST_ADD}
         buttonLabel="Ajouter une banlist"
       />
-      <p>Banlist en cours :</p>
-      {currentBanlistsArray.length ? (
-        <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400 mt-2">
+
+      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm mb-10 space-y-3">
+        <h2 className="text-xl font-semibold text-gray-900">
+          Banlist en cours
+        </h2>
+        <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
           <PaginationTableHead tableHeadItem={currentTableHeadItems} />
-          <AdminBanlistPaginationTableBody
-            arrayItems={currentBanlistsArray}
-            handleDeleteBanlist={handleDeleteBanlist}
-          />
+          {loading ? (
+            <div className="p-4">Chargement...</div>
+          ) : currentBanlistsArray.length ? (
+            <AdminBanlistPaginationTableBody
+              arrayItems={currentBanlistsArray}
+              handleDeleteBanlist={handleDeleteBanlist}
+            />
+          ) : (
+            <div className="col-span-12 p-4 border border-l border-r text-center text-red-500">
+              Aucune banlist en cours
+            </div>
+          )}
         </div>
-      ) : (
-        <p className="bg-red-100 text-red-500 p-2 rounded-md">
-          Aucune banlist en cours
-        </p>
-      )}
-      <AdminBanlistPagination
-        banlists={banlists}
-        setRefresh={setRefresh}
-        handleDeleteBanlist={handleDeleteBanlist}
-      />
+      </section>
+
+      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
+        <h2 className="text-xl font-semibold text-gray-900">
+          Toutes les banlists
+        </h2>
+        <AdminBanlistPagination
+          banlists={banlists}
+          loading={loading}
+          setRefresh={setRefresh}
+          handleDeleteBanlist={handleDeleteBanlist}
+        />
+      </section>
+
       <PopUp
         isOpen={isOpen}
         onClose={closePopup}

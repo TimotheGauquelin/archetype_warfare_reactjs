@@ -148,45 +148,47 @@ const AdminAddBanlist = () => {
                 returnButton
             />
 
-            <div className="bg-gray-300 rounded p-4 mb-4">
-                <div className="flex flex-row justify-between items-center mb-2">
-                    <h2 className="font-bold text-xl">Informations Principales</h2>
-                    <div className="flex justify-center items-center">
-                        <SwitchInput
-                            label="En ligne"
-                            attribute="is_active"
+            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm mb-4 space-y-4">
+                <div className="bg-gray-100 rounded p-3 space-y-3">
+                    <div className="flex flex-row justify-between items-center">
+                        <h2 className="font-semibold text-lg text-gray-900">
+                            Informations Principales
+                        </h2>
+                        <div className="flex justify-center items-center">
+                            <SwitchInput
+                                label="En ligne"
+                                attribute="is_active"
+                                data={banlist}
+                                setAction={setBanlist}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-12 gap-4">
+                        <Input
+                            label="Nom"
+                            required
+                            inputType="text"
+                            attribute="label"
+                            colSpanWidth="6"
                             data={banlist}
                             setAction={setBanlist}
                         />
+
+                        <Input
+                            label="Date de sortie"
+                            required
+                            inputType="date"
+                            attribute="release_date"
+                            colSpanWidth="6"
+                            data={{
+                                ...banlist,
+                                release_date: formatDateForInput(banlist?.release_date)
+                            }}
+                            setAction={setBanlist}
+                        />
                     </div>
-                </div>
 
-                <div className="grid grid-cols-12 gap-4">
-                    <Input
-                        label="Nom"
-                        required
-                        inputType="text"
-                        attribute="label"
-                        colSpanWidth="6"
-                        data={banlist}
-                        setAction={setBanlist}
-                    />
-
-                    <Input
-                        label="Date de sortie"
-                        required
-                        inputType="date"
-                        attribute="release_date"
-                        colSpanWidth="6"
-                        data={{
-                            ...banlist,
-                            release_date: formatDateForInput(banlist?.release_date)
-                        }}
-                        setAction={setBanlist}
-                    />
-                </div>
-
-                <div className="mt-4">
                     <Input
                         label="Description"
                         required
@@ -196,17 +198,16 @@ const AdminAddBanlist = () => {
                         setAction={setBanlist}
                     />
                 </div>
-            </div>
 
-            <div className="bg-gray-300 rounded p-4 mb-4">
-                <h2 className="font-bold text-xl mb-4">
+                <div className="bg-gray-100 rounded p-3 space-y-3">
+                <h2 className="font-semibold text-lg text-gray-900">
                     Cartes génériques de la banlist ({banlist.banlist_archetype_cards.length})
                 </h2>
 
                 <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-8">
                         <div
-                            className="bg-white rounded-lg p-4 overflow-y-auto"
+                            className="bg-white border border-gray-200 rounded-lg p-4 overflow-y-auto"
                             style={{ height: "500px" }}
                         >
                             {banlist.banlist_archetype_cards.length > 0 ? (
@@ -238,15 +239,16 @@ const AdminAddBanlist = () => {
                         <AdminBanlistAddCard banlist={banlist} setBanlist={setBanlist as React.Dispatch<React.SetStateAction<AdminBanlistFormLike>>} />
                     </div>
                 </div>
-            </div>
+                </div>
 
             <Button
-                className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded font-semibold transition-all duration-200 shadow-sm"
+                className="text-white p-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer disabled:opacity-50"
                 buttonText="Ajouter la banlist"
                 action={handleAddBanlist}
                 disabled={isLoading}
                 loadingText="Ajout en cours..."
             />
+            </div>
 
         </AdminStructure>
     );

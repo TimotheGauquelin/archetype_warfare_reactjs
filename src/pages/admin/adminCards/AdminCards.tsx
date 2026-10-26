@@ -202,18 +202,21 @@ const AdminCards = () => {
     <AdminStructure>
       <AdminBodyHeader
         label="Cartes"
-        catchphrase="Vérifiez toutes les cartes"
+        catchphrase="Recherche et vérification de la base de cartes"
         actionButton={() => {
           updateDatabase();
         }}
-        actionButtonColor={`h-fit ${databaseUpdateLoader ? "bg-gray-200" : "bg-green-500 hover:bg-green-600"
-          } p-2 rounded text-white font-bold cursor-pointer`}
+        actionButtonColor={`h-fit ${
+          databaseUpdateLoader
+            ? "bg-gray-200"
+            : "bg-green-500 hover:bg-green-600"
+        } p-2 rounded text-white font-bold cursor-pointer`}
         actionButtonText="Mettre à jour la BDD"
         actionButtonDisabled={databaseUpdateLoader}
       />
 
       {databaseUpdateLoader === false ? (
-        <div>
+        <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm mb-10 space-y-3">
           <AdminCardsFilter
             cardTypes={cardTypes}
             criteria={criteria}
@@ -222,30 +225,32 @@ const AdminCards = () => {
             attributes={attributes}
           />
 
-          {cards?.length > 0 && (
-            <div className="bg-slate-200 rounded p-2 ">
-              <div className="grid grid-cols-10 gap-1">
-                {cards?.map((card) => {
-                  return (
-                    <div
-                      key={card.id}
-                      className="col-span-1 cursor-pointer hover:opacity-80 transition-opacity"
-                      onClick={() => {
-                        navigate(`/admin/cards/${card.id}`);
-                      }}
-                    >
-                      <img
-                        className="w-full"
-                        src={card.img_url}
-                        alt={card.name}
-                      />
-                      <span className="text-xs line-clamp-1">
-                        {card.name}
-                      </span>
-                    </div>
-                  );
-                })}
+          {cards?.length > 0 ? (
+            <div className="bg-gray-100 border border-gray-200 rounded p-3">
+              <div className="grid grid-cols-10 gap-2">
+                {cards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="col-span-1 cursor-pointer hover:opacity-80 transition-opacity"
+                    onClick={() => {
+                      navigate(`/admin/cards/${card.id}`);
+                    }}
+                  >
+                    <img
+                      className="w-full rounded"
+                      src={card.img_url}
+                      alt={card.name}
+                    />
+                    <span className="text-xs line-clamp-1 text-gray-700">
+                      {card.name}
+                    </span>
+                  </div>
+                ))}
               </div>
+            </div>
+          ) : (
+            <div className="p-4 border border-gray-200 rounded text-center text-gray-500 text-sm">
+              Aucune carte trouvée.
             </div>
           )}
 
@@ -257,7 +262,7 @@ const AdminCards = () => {
             totalPages={pagination.totalPages}
             pageSize={pagination.pageSize}
           />
-        </div>
+        </section>
       ) : (
         <Loader />
       )}

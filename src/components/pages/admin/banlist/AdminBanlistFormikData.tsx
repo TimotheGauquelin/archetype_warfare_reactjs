@@ -10,9 +10,11 @@ interface AdminBanlistFormikDataProps {
 
 const AdminBanlistFormikData: React.FC<AdminBanlistFormikDataProps> = ({newBanlist, setNewBanlist}) => {
   return (
-    <div className="bg-gray-300 rounded p-2">
+    <div className="bg-gray-100 rounded p-3 space-y-3">
       <div className="flex flex-row justify-between items-center">
-        <h2 className="font-bold text-xl">Informations Principales :</h2>
+        <h2 className="font-semibold text-lg text-gray-900">
+          Informations Principales
+        </h2>
         <div className="flex justify-center items-center">
           <SwitchInput label="En ligne" attribute="is_active" data={newBanlist} setAction={setNewBanlist} />
         </div>
