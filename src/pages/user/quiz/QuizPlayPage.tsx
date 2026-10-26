@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import UserBasicLayout from "../layout";
@@ -16,6 +16,8 @@ import NameTheCardsQuestion from "@/components/pages/quiz/NameTheCardsQuestion";
 import SummonerQuestion from "@/components/pages/quiz/SummonerQuestion";
 import ZoomQuestion from "@/components/pages/quiz/ZoomQuestion";
 import HintLadderQuestion from "@/components/pages/quiz/HintLadderQuestion";
+import PopUp from "@/components/generic/PopUp";
+import usePopup from "@/hooks/usePopup";
 import {
   URL_FRONT_LOGIN,
   URL_FRONT_QUIZ,
@@ -27,6 +29,7 @@ const QuizPlayPage = () => {
   const { attemptId } = useParams<{ attemptId: string }>();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
@@ -36,7 +39,9 @@ const QuizPlayPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  const [showResults, setShowResults] = useState(false);
   const timeoutSubmittedRef = useRef(false);
+  const questionBlockRef = useRef<HTMLDivElement>(null);
 
   const loadAttempt = useCallback(async () => {
     if (!attemptId) return;
@@ -45,8 +50,14 @@ const QuizPlayPage = () => {
     try {
       const data = await getQuizAttempt(attemptId);
       setAttempt(data);
-      const firstUnanswered = data.questions.findIndex((q) => !q.userAnswer);
-      setCurrentIndex(firstUnanswered >= 0 ? firstUnanswered : 0);
+      const allAnswered = data.questions.every((q) => q.userAnswer);
+      const isFreeFinished =
+        data.mode !== "daily" && data.status === "finished" && allAnswered;
+      setShowResults(isFreeFinished);
+      if (!isFreeFinished) {
+        const firstUnanswered = data.questions.findIndex((q) => !q.userAnswer);
+        setCurrentIndex(firstUnanswered >= 0 ? firstUnanswered : 0);
+      }
       timeoutSubmittedRef.current = false;
     } catch {
       setError(t("quiz.loadAttemptError"));
@@ -67,6 +78,14 @@ const QuizPlayPage = () => {
     () => attempt?.questions[currentIndex] ?? null,
     [attempt, currentIndex]
   );
+
+  useEffect(() => {
+    if (!currentQuestion?.id || showResults) return;
+    questionBlockRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [currentQuestion?.id, currentIndex, showResults]);
 
   const isDaily = attempt?.mode === "daily";
 
@@ -110,7 +129,22 @@ const QuizPlayPage = () => {
           currentQuestion.id,
           answer
         );
-        setAttempt(updated);
+        // Daily : finaliser sans écran résultat (comportement d’origine)
+        if (
+          updated.mode === "daily" &&
+          updated.status !== "finished" &&
+          updated.questions.every((q) => q.userAnswer)
+        ) {
+          try {
+            const finished = await finishQuizAttempt(updated.id);
+            setAttempt(finished);
+          } catch {
+            setAttempt(updated);
+            setError(t("quiz.finishError"));
+          }
+        } else {
+          setAttempt(updated);
+        }
       } catch {
         setError(t("quiz.answerError"));
       } finally {
@@ -131,24 +165,28 @@ const QuizPlayPage = () => {
     void handleAnswer({ timedOut: true, selectedIndex: -1, value: null });
   }, [isDailyTimerActive, secondsLeft, isSubmitting, handleAnswer]);
 
-  const goNext = async () => {
-    if (!attempt) return;
+  const goNext = useCallback(async () => {
+    if (!attempt || attempt.mode === "daily") return;
     if (currentIndex < attempt.questions.length - 1) {
       setCurrentIndex((i) => i + 1);
+      timeoutSubmittedRef.current = false;
       return;
     }
-    if (attempt.status !== "finished") {
-      setIsSubmitting(true);
-      try {
-        const updated = await finishQuizAttempt(attempt.id);
-        setAttempt(updated);
-      } catch {
-        setError(t("quiz.finishError"));
-      } finally {
-        setIsSubmitting(false);
+
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      if (attempt.status !== "finished") {
+        const finished = await finishQuizAttempt(attempt.id);
+        setAttempt(finished);
       }
+      setShowResults(true);
+    } catch {
+      setError(t("quiz.finishError"));
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }, [attempt, currentIndex, t]);
 
   const timerUrgent = secondsLeft !== null && secondsLeft <= 5;
 
@@ -163,16 +201,58 @@ const QuizPlayPage = () => {
   const isLastQuestion =
     Boolean(attempt) && currentIndex >= (attempt?.questions.length ?? 0) - 1;
 
+  const showResultsSlide =
+    Boolean(attempt) && showResults && attempt?.mode !== "daily";
+
+  const leaveToHub = useCallback(async () => {
+    if (!attempt) {
+      navigate(URL_FRONT_QUIZ);
+      return;
+    }
+    if (attempt.status === "in_progress") {
+      try {
+        await finishQuizAttempt(attempt.id);
+      } catch {
+        // On quitte quand même le hub même si la finalisation échoue.
+      }
+    }
+    navigate(URL_FRONT_QUIZ);
+  }, [attempt, navigate]);
+
+  const handleBackToHubClick = useCallback(() => {
+    if (!attempt || attempt.status !== "in_progress") {
+      navigate(URL_FRONT_QUIZ);
+      return;
+    }
+    showConfirmDialog({
+      title: t("quiz.leaveConfirmTitle"),
+      message: isDaily
+        ? t("quiz.leaveConfirmDaily")
+        : t("quiz.leaveConfirmFree"),
+      confirmText: t("quiz.leaveConfirmYes"),
+      cancelText: t("quiz.leaveConfirmNo"),
+      onConfirm: () => {
+        void leaveToHub();
+      },
+    });
+  }, [attempt, isDaily, leaveToHub, navigate, showConfirmDialog, t]);
+
   return (
     <UserBasicLayout
-      mainTitle={attempt?.theme?.label ?? t("quiz.playTitle")}
+      mainTitle={
+        showResultsSlide
+          ? t("quiz.resultTitle")
+          : attempt?.theme?.label ?? t("quiz.playTitle")
+      }
       subTitle={
-        attempt
-          ? t("quiz.progress", {
-              current: Math.min(currentIndex + 1, attempt.totalCount),
-              total: attempt.totalCount,
-            })
-          : t("quiz.playTitle")
+        showResultsSlide
+          ? t("quiz.resultSubtitle")
+          : attempt
+            ? t("quiz.progress", {
+                current: Math.min(currentIndex + 1, attempt.totalCount),
+                total: attempt.totalCount,
+              })
+            : t("quiz.playTitle")
       }
     >
       <div className="px-4 py-6 max-w-2xl mx-auto">
@@ -188,18 +268,45 @@ const QuizPlayPage = () => {
           </p>
         )}
 
-        {!isLoading && attempt && currentQuestion && (
-          <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm space-y-5">
+        {!isLoading && attempt && showResultsSlide && (
+          <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm space-y-6 text-center">
+            <p className="text-sm text-gray-500">
+              {isDaily ? t("quiz.modeDaily") : t("quiz.modeFree")}
+              {attempt.theme?.label ? ` · ${attempt.theme.label}` : ""}
+            </p>
+            <p className="text-3xl font-bold text-gray-900">
+              {t("quiz.finalScore", {
+                score: attempt.score,
+                max: attempt.maxScore,
+              })}
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate(URL_FRONT_QUIZ)}
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800"
+            >
+              {t("quiz.backToHub")}
+            </button>
+          </div>
+        )}
+
+        {!isLoading && attempt && !showResultsSlide && currentQuestion && (
+          <div
+            id="quiz-question"
+            ref={questionBlockRef}
+            className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm space-y-5 scroll-mt-4"
+          >
             <div className="flex items-center justify-between text-sm text-gray-500">
               <span>
                 {isDaily ? t("quiz.modeDaily") : t("quiz.modeFree")}
               </span>
-              <Link
-                to={URL_FRONT_QUIZ}
+              <button
+                type="button"
+                onClick={handleBackToHubClick}
                 className="text-blue-600 hover:underline"
               >
                 ← {t("quiz.backToHub")}
-              </Link>
+              </button>
             </div>
 
             {isDailyTimerActive && secondsLeft !== null && (
@@ -304,63 +411,45 @@ const QuizPlayPage = () => {
               </div>
             )}
 
-            {/* Feedback : uniquement en partie libre */}
             {!isDaily && currentQuestion.userAnswer && (
               <div className="flex items-center justify-between gap-3 pt-2">
-                <div className="space-y-1">
-                  <p
-                    className={`text-sm font-medium ${
-                      currentQuestion.isCorrect ? "text-green-700" : "text-red-700"
-                    }`}
-                  >
-                    {Boolean(currentQuestion.userAnswer?.skipped)
-                      ? t("quiz.skipped")
-                      : Boolean(currentQuestion.userAnswer?.timedOut)
-                        ? t("quiz.timedOut")
-                        : currentQuestion.isCorrect
-                          ? t("quiz.correct")
-                          : t("quiz.incorrect")}
-                  </p>
-                </div>
-                {!isLastQuestion && (
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    disabled={isSubmitting}
-                    className="px-4 py-2 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50"
-                  >
-                    {t("quiz.next")}
-                  </button>
-                )}
-                {isLastQuestion && attempt.status !== "finished" && (
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    disabled={isSubmitting}
-                    className="px-4 py-2 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50"
-                  >
-                    {t("quiz.finish")}
-                  </button>
-                )}
+                <p
+                  className={`text-sm font-medium ${
+                    currentQuestion.isCorrect ? "text-green-700" : "text-red-700"
+                  }`}
+                >
+                  {Boolean(currentQuestion.userAnswer?.skipped)
+                    ? t("quiz.skipped")
+                    : Boolean(currentQuestion.userAnswer?.timedOut)
+                      ? t("quiz.timedOut")
+                      : currentQuestion.isCorrect
+                        ? t("quiz.correct")
+                        : t("quiz.incorrect")}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => void goNext()}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50"
+                >
+                  {isLastQuestion ? t("quiz.seeScore") : t("quiz.next")}
+                </button>
               </div>
             )}
-
-            {!isDaily &&
-              attempt.status === "finished" &&
-              isLastQuestion &&
-              currentQuestion.userAnswer && (
-                <div className="border-t border-gray-100 pt-4">
-                  <p className="text-lg font-bold text-gray-900">
-                    {t("quiz.finalScore", {
-                      score: attempt.score,
-                      max: attempt.maxScore,
-                    })}
-                  </p>
-                </div>
-              )}
           </div>
         )}
       </div>
+
+      <PopUp
+        isOpen={isOpen}
+        onClose={closePopup}
+        title={popupConfig.title}
+        className={popupConfig.className}
+        showCloseButton={popupConfig.showCloseButton}
+        closeOnBackdropClick={popupConfig.closeOnBackdropClick}
+      >
+        {popupConfig.content}
+      </PopUp>
     </UserBasicLayout>
   );
 };
