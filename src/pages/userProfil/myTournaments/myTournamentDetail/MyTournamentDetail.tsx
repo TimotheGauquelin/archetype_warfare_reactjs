@@ -268,15 +268,17 @@ const MyTournamentDetail: React.FC = () => {
 
     return (
         <UserProfilLayout>
-            <div className="bg-white rounded-lg sh p-4 mb-2">
-                <UserProfileLayoutTitle title={t("profile.tournamentDetails", { name: tournament?.name ?? "" })} returnButton={true} />
+            <div className="space-y-4 mb-2">
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <UserProfileLayoutTitle title={t("profile.tournamentDetails", { name: tournament?.name ?? "" })} returnButton={true} />
+                </div>
 
                 {isLoading && (
                     <p className="text-gray-500 mb-3">{t("profile.loadingTournamentInfo")}</p>
                 )}
 
                 {error && (
-                    <p className="text-red-600 mb-3" role="alert">
+                    <p className="text-red-600 bg-red-50 border border-red-200 rounded-lg p-3 mb-3" role="alert">
                         {error}
                     </p>
                 )}
@@ -286,11 +288,17 @@ const MyTournamentDetail: React.FC = () => {
                 )}
 
                 {tournament && (
-                    <div className="space-y-1 flex flex-col ITEM">
-                        <section className="p-2 bg-gray-100 rounded-md">
-                            <div className="text-gray-700 space-y-1">
+                    <div className="space-y-4 flex flex-col">
+                        <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
+                            <h2 className="text-xl font-semibold text-gray-900">
+                                Informations générales
+                            </h2>
+                            <div className="text-sm text-gray-700 space-y-2">
                                 <p>
-                                    <span className="font-semibold">{t("profile.status")}</span> <span className="text-red-500 font-semibold">{TOURNAMENT_STATUS(tournament.status)}</span>
+                                    <span className="font-semibold">{t("profile.status")}</span>{" "}
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700">
+                                        {TOURNAMENT_STATUS(tournament.status)}
+                                    </span>
                                 </p>
                                 {tournament?.status?.includes("finished") && myStanding != null && (
                                     <p>
@@ -375,7 +383,7 @@ const MyTournamentDetail: React.FC = () => {
                                                                 : t("profile.validateDeck")}
                                                     </button>}
                                                 </div>
-                                                <div className="p-2 md:col-span-10 col-span-12 bg-white">
+                                                <div className="md:p-2 p-0 md:col-span-10 col-span-12 bg-white">
                                                     {deckSnapshotLoading || selectedDeckPreviewLoading ? (
                                                         <p className="text-gray-500 text-sm">{t("profile.loadingDeck")}</p>
                                                     ) : deckCardsForDisplay ? (
@@ -546,5 +554,6 @@ const MyTournamentDetail: React.FC = () => {
         </UserProfilLayout>
     );
 };
+
 
 export default MyTournamentDetail;

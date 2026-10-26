@@ -97,20 +97,20 @@ const TournamentList: React.FC<TournamentListProps> = ({ tournaments, isLoading 
       push("inMonth", tournament);
     });
 
-    const sortByDate = (items: Tournament[]) =>
+    const sortByDateDesc = (items: Tournament[]) =>
       [...items].sort((a, b) => {
-        const dateA = a.event_date ? new Date(a.event_date).getTime() : Number.POSITIVE_INFINITY;
-        const dateB = b.event_date ? new Date(b.event_date).getTime() : Number.POSITIVE_INFINITY;
-        if (dateA !== dateB) return dateA - dateB;
-        return (a.id ?? "").localeCompare(b.id ?? "");
+        const dateA = a.event_date ? new Date(a.event_date).getTime() : Number.NEGATIVE_INFINITY;
+        const dateB = b.event_date ? new Date(b.event_date).getTime() : Number.NEGATIVE_INFINITY;
+        if (dateA !== dateB) return dateB - dateA;
+        return (b.id ?? "").localeCompare(a.id ?? "");
       });
 
     return {
-      inProgress: sortByDate(groups.inProgress),
-      in7Days: sortByDate(groups.in7Days),
-      inMonth: sortByDate(groups.inMonth),
-      finished: sortByDate(groups.finished),
-      cancelled: sortByDate(groups.cancelled),
+      inProgress: sortByDateDesc(groups.inProgress),
+      in7Days: sortByDateDesc(groups.in7Days),
+      inMonth: sortByDateDesc(groups.inMonth),
+      finished: sortByDateDesc(groups.finished),
+      cancelled: sortByDateDesc(groups.cancelled),
     };
   }, [tournaments]);
 

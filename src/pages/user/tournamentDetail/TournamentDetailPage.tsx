@@ -137,7 +137,7 @@ const TournamentDetailPage: React.FC = () => {
       mainTitle={tournament.name}
       subTitle="Détail du tournoi"
     >
-      <div className="px-4 py-6 max-w-4xl mx-auto">
+      <div className="px-4 py-6 max-w-4xl mx-auto space-y-6">
         <TournamentDetailsMainInfo
           tournament={tournament}
           isLoggedIn={user.isAuthenticated}
@@ -152,37 +152,35 @@ const TournamentDetailPage: React.FC = () => {
         />
 
         {tournament.status.includes("finished") && (
-          <>
+          <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Classement final
+            </h2>
             {isLoadingStandings && (
-              <p className="mt-4 text-gray-500 text-sm">
+              <p className="text-gray-500 text-sm">
                 Chargement du classement final…
               </p>
             )}
             {standingsError && (
-              <p className="mt-4 text-red-600 text-sm" role="alert">
+              <p className="text-red-600 text-sm" role="alert">
                 {standingsError}
               </p>
             )}
             {standings && standings.length > 0 && (
               <TournamentDetailsStanding standings={standings} />
             )}
-          </>
+          </section>
         )}
 
-        {
-          !tournament.status.includes("tournament_finished") && (
-            <TournamentDetailsPlayers
-              players={tournament.players ?? [] as TournamentPlayer[]}
-            />)
-        }
+        {!tournament.status.includes("tournament_finished") && (
+          <TournamentDetailsPlayers
+            players={(tournament.players ?? []) as TournamentPlayer[]}
+          />
+        )}
 
-        {
-          !tournament.status.includes("registration") && (
-            <TournamentDetailsMatchMaking
-              tournamentId={id}
-            />)
-        }
-
+        {!tournament.status.includes("registration") && (
+          <TournamentDetailsMatchMaking tournamentId={id} />
+        )}
       </div>
     </UserBasicLayout>
   );

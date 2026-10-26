@@ -161,113 +161,131 @@ export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) 
 
       {sortedRounds
         .sort((a, b) => b.round_number - a.round_number)
-        .map((round) => (
-          <div key={round.id} className="space-y-2">
-            <h3 className="text-lg font-medium">
-              Ronde {round.round_number} ( {round.status === "pending" ? "En attente" : round.status === "in_progress" ? "En cours" : "Terminée"} )
-            </h3>
+        .map((round) => {
+          const statusLabel =
+            round.status === "pending"
+              ? "En attente"
+              : round.status === "in_progress"
+                ? "En cours"
+                : "Terminée";
 
-            {round.matches.length === 0 ? (
-              <p>Aucun match dans cette ronde.</p>
-            ) : (
-              <table className="w-full border-collapse text-base boder">
-                <thead className="bg-gray-500 text-white">
-                  <tr>
-                    <th className="p-2 border-b">
-                      Table
-                    </th>
-                    <th className="p-2 border-b">
-                      Joueur 1
-                    </th>
-                    <th className="p-2 border-b">
-                      Joueur 2
-                    </th>
-                    <th className="p-2 border-b">
-                      Score
-                    </th>
-                    <th className="p-2 border-b">
-                      Statut
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...round.matches]
-                    .sort((a, b) => a.id - b.id)
-                    .map((match, index) => {
-                      const isBye = match.player2_tournament_player_id == null;
-                      const p1Standing =
-                        standings[match.player1_tournament_player_id];
-                      const p2Standing = isBye
-                        ? undefined
-                        : standings[match.player2_tournament_player_id!];
+          return (
+            <TournamentDropDown
+              key={round.id}
+              nested
+              defaultCollapsed={round.status !== "in_progress"}
+              title={
+                <>
+                  Ronde {round.round_number}{" "}
+                  <span className="font-medium text-red-500">
+                    ({statusLabel})
+                  </span>
+                </>
+              }
+            >
+              {round.matches.length === 0 ? (
+                <p>Aucun match dans cette ronde.</p>
+              ) : (
+                <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                  <table className="w-full border-collapse text-sm">
+                    <thead className="bg-gray-100 text-gray-700">
+                      <tr>
+                        <th className="p-2 border-b text-left">Table</th>
+                        <th className="p-2 border-b text-left">Joueur 1</th>
+                        <th className="p-2 border-b text-left">Joueur 2</th>
+                        <th className="p-2 border-b text-center">Score</th>
+                        <th className="p-2 border-b text-center">Statut</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[...round.matches]
+                        .sort((a, b) => a.id - b.id)
+                        .map((match, index) => {
+                          const isBye =
+                            match.player2_tournament_player_id == null;
+                          const p1Standing =
+                            standings[match.player1_tournament_player_id];
+                          const p2Standing = isBye
+                            ? undefined
+                            : standings[match.player2_tournament_player_id!];
 
-                      const p1Name =
-                        p1Standing?.username ??
-                        `TP#${match.player1_tournament_player_id}`;
-                      const p2Name = isBye
-                        ? "BYE"
-                        : p2Standing?.username ??
-                        `TP#${match.player2_tournament_player_id}`;
+                          const p1Name =
+                            p1Standing?.username ??
+                            `TP#${match.player1_tournament_player_id}`;
+                          const p2Name = isBye
+                            ? "BYE"
+                            : p2Standing?.username ??
+                              `TP#${match.player2_tournament_player_id}`;
 
-                      const roundPoints = roundPointsByRoundId[round.id] || {};
-                      const p1Points =
-                        roundPoints[match.player1_tournament_player_id] ?? 0;
-                      const p2Points = isBye
-                        ? null
-                        : (roundPoints[match.player2_tournament_player_id!] ?? 0);
+                          const roundPoints =
+                            roundPointsByRoundId[round.id] || {};
+                          const p1Points =
+                            roundPoints[match.player1_tournament_player_id] ??
+                            0;
+                          const p2Points = isBye
+                            ? null
+                            : (roundPoints[
+                                match.player2_tournament_player_id!
+                              ] ?? 0);
 
-                      const hasResult = matchHasReportedResult(match);
+                          const hasResult = matchHasReportedResult(match);
 
-                      return (
-                        <tr
-                          key={match.id}
-                          className={`border-b ${
-                            hasResult
-                              ? "bg-emerald-50"
-                              : "odd:bg-gray-100 bg-white"
-                          } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
-                        >
-                          <td className="p-2 text-center">Table {index + 1}</td>
-                          <td className="block p-2 text-center flex flex-col lscreen:flex-row justify-center items-center">
-                            <span className="font-bold">
-                              {p1Name}
-                            </span>
-                            <span>
-                              ({p1Points} pts)
-                            </span>
-                          </td>
-                          <td className="p-2 text-center">
-                            <span className="font-bold">
-                            {p2Name}
-                            </span>
-                            <span>
-                              {p2Points !== null ? ` (${p2Points} pts)` : ""}
-                            </span>
-                          </td>
-                          <td className="p-2 text-center">
-                            {hasResult
-                              ? `${match.player1_games_won} - ${match.player2_games_won}`
-                              : <span className="text-gray-400 italic">—</span>}
-                          </td>
-                          <td
-                            className={`p-2 text-center ${
-                              hasResult
-                                ? "text-green-600 font-medium"
-                                : match.status === "in_progress"
-                                  ? "text-amber-600"
-                                  : "text-red-500"
-                            }`}
-                          >
-                            {TOURNAMENT_MATCH_STATUS(match.status, { isBye })}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
-            )}
-          </div>
-        ))}
+                          return (
+                            <tr
+                              key={match.id}
+                              className={`border-b ${
+                                hasResult
+                                  ? "bg-emerald-50"
+                                  : "odd:bg-gray-100 bg-white"
+                              } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
+                            >
+                              <td className="p-2 text-center">
+                                Table {index + 1}
+                              </td>
+                              <td className="block p-2 text-center flex flex-col lscreen:flex-row justify-center items-center">
+                                <span className="font-bold">{p1Name}</span>
+                                <span>({p1Points} pts)</span>
+                              </td>
+                              <td className="p-2 text-center">
+                                <span className="font-bold">{p2Name}</span>
+                                <span>
+                                  {p2Points !== null
+                                    ? ` (${p2Points} pts)`
+                                    : ""}
+                                </span>
+                              </td>
+                              <td className="p-2 text-center">
+                                {hasResult ? (
+                                  `${match.player1_games_won} - ${match.player2_games_won}`
+                                ) : (
+                                  <span className="text-gray-400 italic">
+                                    —
+                                  </span>
+                                )}
+                              </td>
+                              <td
+                                className={`p-2 text-center ${
+                                  hasResult
+                                    ? "text-green-600 font-medium"
+                                    : match.status === "in_progress"
+                                      ? "text-amber-600"
+                                      : "text-red-500"
+                                }`}
+                              >
+                                {TOURNAMENT_MATCH_STATUS(match.status, {
+                                  isBye,
+                                })}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </TournamentDropDown>
+          );
+        })}
     </TournamentDropDown>
   );
 };

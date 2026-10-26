@@ -73,20 +73,17 @@ export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps>
 
   if (!standings || standings.length === 0) {
     return (
-      <section className="mt-6">
-        <h2 className="text-lg font-semibold mb-2">Classement final</h2>
-        <p className="text-gray-600 text-sm">
-          Aucun classement disponible pour ce tournoi.
-        </p>
-      </section>
+      <p className="text-gray-600 text-sm">
+        Aucun classement disponible pour ce tournoi.
+      </p>
     );
   }
 
   return (
     <div>
-      <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-200 text-sm">
-          <thead className="bg-gray-100">
+      <div className="overflow-x-auto border border-gray-200 rounded-lg">
+        <table className="min-w-full text-sm">
+          <thead className="bg-gray-100 text-gray-700">
             <tr>
               <th className="px-3 py-2 border-b text-left">Rang</th>
               <th className="px-3 py-2 border-b text-left">Joueur (Pts totaux)</th>
