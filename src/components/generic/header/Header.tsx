@@ -37,9 +37,15 @@ const HeaderMemo = memo(function Header() {
   );
 
   const url = location.pathname;
+  const accountHref = authUser.isAuthenticated
+    ? URL_FRONT_MY_PROFILE
+    : URL_FRONT_LOGIN;
+  const accountLabel = authUser.isAuthenticated
+    ? authUser.username
+    : t("nav.login");
 
   return (
-    <div className="flex flex-col justify-center">
+    <div className="relative z-30 bg-white">
       <div className="flex flex-row justify-between items-center h-[50px] lscreen:h-[60px] px-2 w-full lscreen:m-auto lscreen:max-w-containerSize">
         <div className="flex flex-row items-center">
           <Link
@@ -85,44 +91,21 @@ const HeaderMemo = memo(function Header() {
         </div>
         <div className="hidden lscreen:flex lscreen:items-center lscreen:gap-3 lscreen:justify-end">
           <LanguageSwitch />
-          <Link
-            to={
-              authUser.isAuthenticated ? URL_FRONT_MY_PROFILE : URL_FRONT_LOGIN
-            }
-          >
-            <button className="flex justify-center items-center lscreen:shadow p-2 lscreen:p-3 lscreen:rounded-lg lscreen:bg-white font-medium">
+          <Link to={accountHref}>
+            <button
+              type="button"
+              className="flex justify-center items-center shadow p-3 rounded-lg bg-white font-medium"
+            >
               <BsPerson className="h-4 w-auto flex-shrink-0 text-red-400" />
-              <p className="lscreen:pl-2">
-                {authUser.isAuthenticated
-                  ? `${authUser.username}`
-                  : t("nav.login")}
-              </p>
+              <p className="pl-2">{accountLabel}</p>
             </button>
           </Link>
         </div>
         <div className="flex items-center gap-2 lscreen:hidden">
           <LanguageSwitch />
-          <Link
-            to={
-              authUser.isAuthenticated ? URL_FRONT_MY_PROFILE : URL_FRONT_LOGIN
-            }
-            className="flex items-center gap-1 rounded-md px-2 py-1.5 text-sm font-medium text-gray-700"
-            aria-label={
-              authUser.isAuthenticated
-                ? authUser.username ?? undefined
-                : t("nav.login")
-            }
-          >
-            <BsPerson className="h-4 w-auto flex-shrink-0 text-red-400" />
-            <span className="max-w-[7rem] truncate">
-              {authUser.isAuthenticated
-                ? authUser.username
-                : t("nav.login")}
-            </span>
-          </Link>
           <button
             type="button"
-            className="p-1"
+            className="relative z-40 flex items-center justify-center p-2 rounded-md bg-white shadow border border-gray-100"
             aria-expanded={displayNav}
             aria-label={displayNav ? t("nav.closeMenu") : t("nav.openMenu")}
             onClick={() => {
@@ -134,11 +117,15 @@ const HeaderMemo = memo(function Header() {
         </div>
       </div>
       {displayNav && (
-        <div className="flex flex-col shadow-md lscreen:hidden lscreen:max-w-containerSize">
-          <ul className="flex flex-col">
+        <div className="absolute left-0 right-0 top-full z-40 flex flex-col shadow-md lscreen:hidden bg-white border-b border-gray-100">
+          <ul className="flex flex-col max-w-containerSize mx-auto w-full">
             {navBarComponent.map((component) => {
               return (
-                <li key={component.url} className="my-2 px-2" style={{ paddingRight: "2rem" }}>
+                <li
+                  key={component.url}
+                  className="my-2 px-2"
+                  style={{ paddingRight: "2rem" }}
+                >
                   <Link
                     className={
                       url.includes(component.url)
@@ -153,27 +140,19 @@ const HeaderMemo = memo(function Header() {
                 </li>
               );
             })}
-            <li className="my-2 px-2 border-t border-gray-100 pt-3">
+            <li className="my-2 px-2 border-t border-gray-100 pt-3 pb-2">
               <Link
-                className={
-                  url.includes(
-                    authUser.isAuthenticated
-                      ? URL_FRONT_MY_PROFILE
-                      : URL_FRONT_LOGIN
-                  )
-                    ? "text-red-400"
-                    : "text-gray-600"
-                }
-                to={
-                  authUser.isAuthenticated
-                    ? URL_FRONT_MY_PROFILE
-                    : URL_FRONT_LOGIN
-                }
+                to={accountHref}
                 onClick={() => setDisplayNav(false)}
+                className="flex items-center justify-center gap-2 w-full shadow rounded-lg bg-white border border-gray-100 px-3 py-2.5 font-medium text-gray-800"
+                aria-label={
+                  authUser.isAuthenticated
+                    ? authUser.username ?? undefined
+                    : t("nav.login")
+                }
               >
-                {authUser.isAuthenticated
-                  ? authUser.username
-                  : t("nav.login")}
+                <BsPerson className="h-4 w-auto flex-shrink-0 text-red-400" />
+                <span className="truncate">{accountLabel}</span>
               </Link>
             </li>
           </ul>

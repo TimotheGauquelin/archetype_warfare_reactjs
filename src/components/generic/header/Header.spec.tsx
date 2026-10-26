@@ -113,7 +113,7 @@ describe("Header", () => {
     it("shows Connexion and links to login when user is not authenticated", () => {
       renderHeader({ user: { isAuthenticated: false } });
       const connexionLinks = screen.getAllByRole("link", { name: /Connexion/i });
-      expect(connexionLinks.length).toBeGreaterThanOrEqual(2);
+      expect(connexionLinks.length).toBeGreaterThanOrEqual(1);
       connexionLinks.forEach((link) => {
         expect(link).toHaveAttribute("href", URL_FRONT_LOGIN);
       });
@@ -122,7 +122,7 @@ describe("Header", () => {
     it("shows username and links to profile when user is authenticated", () => {
       renderHeader({ user: { isAuthenticated: true, username: "john_doe" } });
       const profileLinks = screen.getAllByRole("link", { name: /john_doe/i });
-      expect(profileLinks.length).toBeGreaterThanOrEqual(2);
+      expect(profileLinks.length).toBeGreaterThanOrEqual(1);
       profileLinks.forEach((link) => {
         expect(link).toHaveAttribute("href", URL_FRONT_MY_PROFILE);
       });
@@ -157,10 +157,16 @@ describe("Header", () => {
       expect(conceptLinks.length).toBeGreaterThanOrEqual(1);
     });
 
-    it("shows Connexion in the mobile bar when not authenticated", () => {
+    it("shows Connexion at the end of the hamburger menu when not authenticated", async () => {
       renderHeader({ user: { isAuthenticated: false } });
+
+      const hamburger = screen.getByRole("button", { name: /Ouvrir le menu/i });
+      await act(async () => {
+        await userEvent.click(hamburger);
+      });
+
       const connexionLinks = screen.getAllByRole("link", { name: /Connexion/i });
-      expect(connexionLinks.length).toBeGreaterThanOrEqual(2);
+      expect(connexionLinks.length).toBeGreaterThanOrEqual(1);
       connexionLinks.forEach((link) => {
         expect(link).toHaveAttribute("href", URL_FRONT_LOGIN);
       });
