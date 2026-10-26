@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { FaDownload, FaHandPaper, FaTrash } from "react-icons/fa";
 import DeckData from "../../../../components/pages/userProfil/deckAdd/DeckData";
 import Button from "../../../../components/generic/buttons/classicButton/Button";
 import { deleteMyDeck, getDeckById, updateDeck } from "../../../../services/deck";
@@ -148,22 +149,33 @@ const UpdateMyDeckPage = () => {
 
                 <div className="flex flex-row justify-end items-center gap-1 mb-2">
                     <Button
-                        className="bg-blue-200 mt-2 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
-                        buttonText={t("profile.testHand")}
+                        className="inline-flex items-center justify-center flex-1 sscreen:flex-none mt-1 sscreen:mt-2 px-2 py-1.5 sscreen:px-4 sscreen:py-2 text-xs sscreen:text-sm bg-green-200 hover:bg-green-300 text-green-700 rounded font-semibold shadow-sm"
+                        ariaLabel={t("profile.testHand")}
+                        icon={<FaHandPaper className="w-3.5 h-3.5 sscreen:w-4 sscreen:h-4" />}
                         action={() => { handleTestHand() }}
-                    />
+                    >
+                        <span className="sscreen:hidden">{t("profile.testHandShort")}</span>
+                        <span className="hidden sscreen:inline">{t("profile.testHand")}</span>
+                    </Button>
                     <Button
-                        className="bg-blue-200 mt-2 hover:bg-blue-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
-                        buttonText={t("profile.exportCm")}
+                        className="inline-flex items-center justify-center flex-1 sscreen:flex-none mt-1 sscreen:mt-2 px-2 py-1.5 sscreen:px-4 sscreen:py-2 text-xs sscreen:text-sm bg-orange-100 hover:bg-orange-200 text-orange-600 rounded font-semibold shadow-sm"
+                        ariaLabel={t("profile.exportCm")}
+                        icon={<FaDownload className="w-3.5 h-3.5 sscreen:w-4 sscreen:h-4" />}
                         action={() => { handleExportForCM() }}
-                    />
+                    >
+                        <span className="sscreen:hidden">{t("profile.exportCmShort")}</span>
+                        <span className="hidden sscreen:inline">{t("profile.exportCm")}</span>
+                    </Button>
                     <Button
-                        className="bg-red-200 mt-2 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
-                        buttonText={t("profile.deleteDeck")}
+                        className="inline-flex items-center justify-center flex-1 sscreen:flex-none mt-1 sscreen:mt-2 px-2 py-1.5 sscreen:px-4 sscreen:py-2 text-xs sscreen:text-sm bg-red-100 hover:bg-red-200 text-red-600 rounded font-semibold shadow-sm"
+                        ariaLabel={t("profile.deleteDeck")}
+                        icon={<FaTrash className="w-3.5 h-3.5 sscreen:w-4 sscreen:h-4" />}
                         disabled={isLoading}
-                        loadingText={t("profile.deletingDeck")}
                         action={handleDeleteClick}
-                    />
+                    >
+                        <span className="sscreen:hidden">{t("profile.deleteDeckShort")}</span>
+                        <span className="hidden sscreen:inline">{t("profile.deleteDeck")}</span>
+                    </Button>
                 </div>
 
                 {!isFetching ? (
