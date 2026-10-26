@@ -20,8 +20,10 @@ import {
   URL_BACK_START_TOURNAMENT,
   URL_BACK_TOURNAMENT_NEXT_ROUND,
   URL_BACK_TOURNAMENT_ROLLBACK_ROUND,
+  URL_BACK_TOURNAMENT_REPAIR_ROUND,
   URL_BACK_TOURNAMENT_PLAYER_BAN,
   URL_BACK_REMOVE_TOURNAMENT_PLAYER,
+  URL_BACK_ADMIN_SET_TOURNAMENT_PLAYER_DROPPED,
   URL_BACK_ADD_TOURNAMENT_PLAYER,
   URL_BACK_TOGGLE_TOURNAMENT_REGISTRATION,
 } from "../constant/urlsBack";
@@ -243,7 +245,7 @@ export interface MatchResultPayload {
 }
 
 /**
- * Tournois "courants" (public) : event_date depuis J-7.
+ * Tournois publics (tous sauf « non visibles »).
  */
 export const getTournaments = async (): Promise<Tournament[]> => {
   try {
@@ -458,6 +460,7 @@ export interface CreateTournamentPayload {
   require_deck_list?: boolean;
   until_winner?: boolean;
   is_official?: boolean;
+  allow_penalities?: boolean;
 }
 
 /**
@@ -608,6 +611,30 @@ export const rollbackTournamentRound = async (
 };
 
 /**
+ * Re-génère les appariements de la ronde courante. Admin only.
+ * PUT /tournaments/:id/rounds/repair
+ */
+export const repairTournamentRound = async (
+  id: number | string,
+  token: string
+): Promise<void> => {
+  const api = api_aw_token(token);
+  try {
+    const response = await api.put(URL_BACK_TOURNAMENT_REPAIR_ROUND(id));
+    if (response?.data?.message) {
+      toast.success(response.data.message);
+    } else {
+      toast.success("Re-pairing effectué.");
+    }
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "repairTournamentRound");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
+/**
  * Définit le deck du joueur pour ce tournoi (inscription au deck).
  * PUT /tournaments/:id/my-deck avec body { deckId: string } (UUID).
  */
@@ -700,17 +727,28 @@ export const startTournament = async (
   }
 };
 
+export type TournamentPlayerDropUpdate = {
+  tournamentPlayerId: number;
+  dropped: boolean;
+};
+
 /**
  * Advance to next round. Backend checks that all matches of current round are completed. Admin only.
- * POST /tournaments/:id/rounds/next
+ * Optional playerDropUpdates are applied before pairing (deferred drops).
+ * PUT /tournaments/:id/rounds/next
  */
 export const tournamentNextRound = async (
   id: number | string,
-  token: string
+  token: string,
+  options?: { playerDropUpdates?: TournamentPlayerDropUpdate[] }
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
-    await api.put(URL_BACK_TOURNAMENT_NEXT_ROUND(id));
+    const body =
+      options?.playerDropUpdates && options.playerDropUpdates.length > 0
+        ? { playerDropUpdates: options.playerDropUpdates }
+        : undefined;
+    await api.put(URL_BACK_TOURNAMENT_NEXT_ROUND(id), body);
     toast.success("Passage à la ronde suivante");
   } catch (error) {
     const appError = handleApiError(error);
@@ -760,6 +798,34 @@ export const removePlayerFromTournament = async (
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "removePlayerFromTournament");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
+/**
+ * Admin drop / undrop d'un joueur pendant la ronde courante.
+ * PUT /tournaments/:id/players/:tournamentPlayerId/drop { dropped }
+ */
+export const adminSetTournamentPlayerDropped = async (
+  tournamentId: number | string,
+  tournamentPlayerId: number | string,
+  dropped: boolean,
+  token: string
+): Promise<void> => {
+  const api = api_aw_token(token);
+  try {
+    const response = await api.put(
+      URL_BACK_ADMIN_SET_TOURNAMENT_PLAYER_DROPPED(tournamentId, tournamentPlayerId),
+      { dropped }
+    );
+    toast.success(
+      response.data?.message ??
+        (dropped ? "Joueur dropped" : "Joueur réintégré")
+    );
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "adminSetTournamentPlayerDropped");
     toast.error(getErrorMessage(appError));
     throw appError;
   }

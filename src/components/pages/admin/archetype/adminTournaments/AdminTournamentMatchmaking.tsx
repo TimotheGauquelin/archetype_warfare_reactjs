@@ -2,7 +2,11 @@ import { useCallback, useState } from "react";
 import Button from "@/components/generic/buttons/classicButton/Button";
 import PopUp from "@/components/generic/PopUp";
 import PaginationTableHead from "@/components/generic/pagination/PaginationTableHead";
-import { reportMatchResult, rollbackTournamentRound } from "@/services/tournament";
+import {
+  reportMatchResult,
+  repairTournamentRound,
+  rollbackTournamentRound,
+} from "@/services/tournament";
 import type {
   TournamentDetailMatch,
   TournamentDetailRound,
@@ -24,6 +28,8 @@ interface AdminTournamentMatchmakingProps {
   token: string;
   onMatchUpdated: () => void | Promise<void>;
   matchesPerRound: number;
+  pendingDropOverrides: Record<number, boolean>;
+  onTogglePendingDrop: (tournamentPlayerId: number, dropped: boolean) => void;
 }
 
 const TABLE_HEAD_ITEMS = [
@@ -35,15 +41,37 @@ const TABLE_HEAD_ITEMS = [
   { colspan: "hidden lscreen:flex lscreen:col-span-2", label: "Actions" },
 ];
 
+const getStanding = (
+  tournamentPlayerId: number,
+  standings: TournamentStanding[]
+): TournamentStanding | undefined =>
+  standings.find(
+    (x) => Number(x.tournament_player_id) === tournamentPlayerId
+  );
+
 const idToName = (
   tournamentPlayerId: number,
   standings: TournamentStanding[]
 ): string => {
-  const s = standings.find(
-    (x) => Number(x.tournament_player_id) === tournamentPlayerId
-  );
+  const s = getStanding(tournamentPlayerId, standings);
   return s?.username ?? `#${tournamentPlayerId}`;
 };
+
+const getServerDropped = (
+  tournamentPlayerId: number,
+  standings: TournamentStanding[]
+): boolean =>
+  Boolean(
+    getStanding(tournamentPlayerId, standings)?.matches_breakdown?.hasDropped
+  );
+
+const getEffectiveDropped = (
+  tournamentPlayerId: number,
+  standings: TournamentStanding[],
+  pendingDropOverrides: Record<number, boolean>
+): boolean =>
+  pendingDropOverrides[tournamentPlayerId] ??
+  getServerDropped(tournamentPlayerId, standings);
 
 const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
   rounds,
@@ -52,6 +80,8 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
   token,
   onMatchUpdated,
   matchesPerRound,
+  pendingDropOverrides,
+  onTogglePendingDrop,
 }) => {
   const [editMatchId, setEditMatchId] = useState<number | null>(null);
   const [editP1Games, setEditP1Games] = useState(0);
@@ -59,10 +89,30 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
   const [savingResult, setSavingResult] = useState(false);
   const [rollbackRoundId, setRollbackRoundId] = useState<number | null>(null);
   const [rollbackLoading, setRollbackLoading] = useState(false);
+  const [repairRoundId, setRepairRoundId] = useState<number | null>(null);
+  const [repairLoading, setRepairLoading] = useState(false);
 
   const winsNeeded = getWinsNeeded(matchesPerRound);
   const maxP1 = getMaxOpponentGamesWon(editP2Games, winsNeeded);
   const maxP2 = getMaxOpponentGamesWon(editP1Games, winsNeeded);
+  const pendingAbandonCount = Object.values(pendingDropOverrides).filter(
+    (dropped) => dropped
+  ).length;
+
+  const lastRoundByPlayerId = (() => {
+    const map: Record<number, number> = {};
+    for (const round of rounds) {
+      for (const m of round.matches ?? []) {
+        const p1 = m.player1_tournament_player_id;
+        const p2 = m.player2_tournament_player_id;
+        map[p1] = Math.max(map[p1] ?? 0, round.round_number);
+        if (p2 != null) {
+          map[p2] = Math.max(map[p2] ?? 0, round.round_number);
+        }
+      }
+    }
+    return map;
+  })();
 
   const openEditMatch = useCallback((m: TournamentDetailMatch) => {
     setEditMatchId(m.id);
@@ -119,6 +169,18 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
     }
   }, [token, tournamentId, rollbackRoundId, onMatchUpdated]);
 
+  const handleConfirmRepair = useCallback(async () => {
+    if (!token || !tournamentId || repairRoundId == null) return;
+    setRepairLoading(true);
+    try {
+      await repairTournamentRound(tournamentId, token);
+      await onMatchUpdated();
+      setRepairRoundId(null);
+    } finally {
+      setRepairLoading(false);
+    }
+  }, [token, tournamentId, repairRoundId, onMatchUpdated]);
+
   if (!rounds?.length) {
     return <NoItemMessage message="Aucune ronde pour l'instant" />;
   }
@@ -134,134 +196,236 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
     <div className="space-y-4">
       {sortedRounds.map((round) => {
         const sortedMatches = [...(round.matches ?? [])].sort((ma, mb) => ma.id - mb.id);
+        const playerIdsInRound = new Set<number>();
+        for (const m of sortedMatches) {
+          playerIdsInRound.add(m.player1_tournament_player_id);
+          if (m.player2_tournament_player_id != null) {
+            playerIdsInRound.add(m.player2_tournament_player_id);
+          }
+        }
+        let abandonedThisRound = 0;
+        for (const playerId of playerIdsInRound) {
+          const abandoned =
+            getEffectiveDropped(playerId, standings, pendingDropOverrides) &&
+            lastRoundByPlayerId[playerId] === round.round_number;
+          if (abandoned) abandonedThisRound += 1;
+        }
+        const isCurrentRound = round.status === "in_progress";
         return (
-        <div key={round.id} className="border border-gray-200 rounded p-2 space-y-2">
-          <div className="flex justify-between items-center">
-            <h3 className="font-medium">
-              Ronde {round.round_number} <span className="font-bold text-red-500">({TOURNAMENT_ROUND_STATUS(round.status)})</span>
-            </h3>
-            {round.status === "in_progress" && (
-              <button
-                type="button"
-                className="bg-red-600 text-white rounded px-2 py-1 text-sm hover:underline"
-                onClick={() => setRollbackRoundId(round.id)}
-              >
-                Annuler la ronde
-              </button>
+          <div key={round.id} className="border border-gray-200 rounded p-2 space-y-2">
+            <div className="flex justify-between items-center">
+              <h3 className="font-medium">
+                Ronde {round.round_number} <span className="font-bold text-red-500">({TOURNAMENT_ROUND_STATUS(round.status)})</span>
+              </h3>
+              {isCurrentRound && (
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="bg-amber-600 text-white rounded px-2 py-1 text-sm hover:bg-amber-700"
+                    onClick={() => setRepairRoundId(round.id)}
+                  >
+                    Faire un re-pairing
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-red-600 text-white rounded px-2 py-1 text-sm hover:bg-red-700"
+                    onClick={() => setRollbackRoundId(round.id)}
+                  >
+                    Annuler la ronde
+                  </button>
+                </div>
+              )}
+            </div>
+            {isCurrentRound && pendingAbandonCount > 0 && (
+              <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2">
+                {pendingAbandonCount === 1
+                  ? "Une personne abandonnera à la fin de cette manche."
+                  : `${pendingAbandonCount} personnes abandonneront à la fin de cette manche.`}
+              </p>
             )}
-          </div>
-          <div className="overflow-x-auto">
-            <div className="min-w-full text-sm text-left text-gray-500">
-              <PaginationTableHead tableHeadItem={TABLE_HEAD_ITEMS} />
-              <div className="grid grid-cols-12">
-                {sortedMatches.map((m, index) => {
-                  const isEditing = editMatchId === m.id;
-                  const tableNumber = index + 1;
-                  const isBye = m.player2_tournament_player_id == null;
-                  const hasResult = matchHasReportedResult(m);
-                  return (
-                    <div
-                      key={m.id}
-                      className={`grid grid-cols-12 col-span-12 items-center border-b border-l border-r ${
-                        hasResult
-                          ? "bg-emerald-50 hover:bg-emerald-100"
-                          : "bg-white hover:bg-slate-50"
-                      } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
-                    >
-                      <div className="col-span-1 px-2 py-1 border-r border-gray-200 font-medium">
-                        {tableNumber}
-                      </div>
-                      <div className="col-span-4 lscreen:col-span-3 px-2 py-1 border-r border-gray-200">
-                        {idToName(m.player1_tournament_player_id, standings)}
-                      </div>
-                      <div className="col-span-2 lscreen:col-span-2 px-2 py-1 text-center border-r border-gray-200">
-                        {isEditing ? (
-                          <span className="inline-flex items-center gap-1">
-                            <input
-                              type="number"
-                              min={0}
-                              max={maxP1}
-                              className="w-14 border border-gray-300 rounded px-1 py-0.5 text-right"
-                              value={editP1Games}
-                              onChange={(e) =>
-                                handleEditP1Change(Number(e.target.value) || 0)
-                              }
-                              aria-label="Score joueur 1"
-                            />
-                            <span className="text-gray-400">–</span>
-                            <input
-                              type="number"
-                              min={0}
-                              max={maxP2}
-                              className="w-14 border border-gray-300 rounded px-1 py-0.5 text-right"
-                              value={editP2Games}
-                              onChange={(e) =>
-                                handleEditP2Change(Number(e.target.value) || 0)
-                              }
-                              aria-label="Score joueur 2"
-                            />
-                          </span>
-                        ) : hasResult ? (
-                          `${m.player1_games_won} – ${m.player2_games_won}`
-                        ) : (
-                          <span className="text-gray-400 italic">—</span>
-                        )}
-                      </div>
-                      <div className="col-span-3 lscreen:col-span-3 px-2 py-1 border-r border-gray-200">
-                        {isBye
-                          ? "BYE"
-                          : idToName(m.player2_tournament_player_id!, standings)}
-                      </div>
+            {!isCurrentRound && abandonedThisRound > 0 && (
+              <p className="text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded px-3 py-2">
+                {abandonedThisRound === 1
+                  ? "1 personne a abandonné sur cette ronde"
+                  : `${abandonedThisRound} personnes ont abandonné sur cette ronde`}
+              </p>
+            )}
+            <div className="overflow-x-auto">
+              <div className="min-w-full text-sm text-left text-gray-500">
+                <PaginationTableHead tableHeadItem={TABLE_HEAD_ITEMS} />
+                <div className="grid grid-cols-12">
+                  {sortedMatches.map((m, index) => {
+                    const isEditing = editMatchId === m.id;
+                    const tableNumber = index + 1;
+                    const isBye = m.player2_tournament_player_id == null;
+                    const hasResult = matchHasReportedResult(m);
+                    return (
                       <div
-                        className={`col-span-2 lscreen:col-span-1 px-2 py-1 text-center border-r border-gray-200 ${
-                          hasResult
-                            ? "text-green-600 font-medium"
-                            : m.status === "in_progress"
-                              ? "text-amber-600"
-                              : "text-red-500"
-                        }`}
+                        key={m.id}
+                        className={`grid grid-cols-12 col-span-12 items-center border-b border-l border-r ${hasResult
+                            ? "bg-emerald-50 hover:bg-emerald-100"
+                            : "bg-white hover:bg-slate-50"
+                          } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
                       >
-                        {TOURNAMENT_MATCH_STATUS(m.status, { isBye }) ?? m.status}
-                      </div>
-                      <div className="hidden lscreen:col-span-2 px-2 py-1 text-center lscreen:block">
-                        {isEditing ? (
-                          <span className="inline-flex items-center gap-2">
-                            <Button
-                              buttonText={
-                                savingResult ? "Enregistrement…" : "Enregistrer"
+                        <div className="col-span-1 px-2 py-1 border-r border-gray-200 font-medium">
+                          {tableNumber}
+                        </div>
+                        <div className="col-span-4 lscreen:col-span-3 px-2 py-1 border-r border-gray-200">
+                          <PlayerDropCell
+                            tournamentPlayerId={m.player1_tournament_player_id}
+                            standings={standings}
+                            pendingDropOverrides={pendingDropOverrides}
+                            canToggleDrop={round.status === "in_progress"}
+                            showAbandoned={
+                              getEffectiveDropped(
+                                m.player1_tournament_player_id,
+                                standings,
+                                pendingDropOverrides
+                              ) &&
+                              lastRoundByPlayerId[
+                              m.player1_tournament_player_id
+                              ] === round.round_number
+                            }
+                            onToggleDrop={onTogglePendingDrop}
+                          />
+                        </div>
+                        <div className="col-span-2 lscreen:col-span-2 px-2 py-1 text-center border-r border-gray-200">
+                          {isEditing ? (
+                            <span className="inline-flex items-center gap-1">
+                              <input
+                                type="number"
+                                min={0}
+                                max={maxP1}
+                                className="w-14 border border-gray-300 rounded px-1 py-0.5 text-right"
+                                value={editP1Games}
+                                onChange={(e) =>
+                                  handleEditP1Change(Number(e.target.value) || 0)
+                                }
+                                aria-label="Score joueur 1"
+                              />
+                              <span className="text-gray-400">–</span>
+                              <input
+                                type="number"
+                                min={0}
+                                max={maxP2}
+                                className="w-14 border border-gray-300 rounded px-1 py-0.5 text-right"
+                                value={editP2Games}
+                                onChange={(e) =>
+                                  handleEditP2Change(Number(e.target.value) || 0)
+                                }
+                                aria-label="Score joueur 2"
+                              />
+                            </span>
+                          ) : hasResult ? (
+                            `${m.player1_games_won} – ${m.player2_games_won}`
+                          ) : (
+                            <span className="text-gray-400 italic">—</span>
+                          )}
+                        </div>
+                        <div className="col-span-3 lscreen:col-span-3 px-2 py-1 border-r border-gray-200">
+                          {isBye ? (
+                            "BYE"
+                          ) : (
+                            <PlayerDropCell
+                              tournamentPlayerId={m.player2_tournament_player_id!}
+                              standings={standings}
+                              pendingDropOverrides={pendingDropOverrides}
+                              canToggleDrop={round.status === "in_progress"}
+                              showAbandoned={
+                                getEffectiveDropped(
+                                  m.player2_tournament_player_id!,
+                                  standings,
+                                  pendingDropOverrides
+                                ) &&
+                                lastRoundByPlayerId[
+                                m.player2_tournament_player_id!
+                                ] === round.round_number
                               }
-                              action={() => saveMatchResult(m.id)}
-                              disabled={savingResult}
-                              className="px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                              onToggleDrop={onTogglePendingDrop}
                             />
+                          )}
+                        </div>
+                        <div
+                          className={`col-span-2 lscreen:col-span-1 px-2 py-1 text-center border-r border-gray-200 ${hasResult
+                              ? "text-green-600 font-medium"
+                              : m.status === "in_progress"
+                                ? "text-amber-600"
+                                : "text-red-500"
+                            }`}
+                        >
+                          {TOURNAMENT_MATCH_STATUS(m.status, { isBye }) ?? m.status}
+                        </div>
+                        <div className="hidden lscreen:col-span-2 px-2 py-1 text-center lscreen:block">
+                          {isEditing ? (
+                            <span className="inline-flex items-center gap-2">
+                              <Button
+                                buttonText={
+                                  savingResult ? "Enregistrement…" : "Enregistrer"
+                                }
+                                action={() => saveMatchResult(m.id)}
+                                disabled={savingResult}
+                                className="px-2 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700"
+                              />
+                              <button
+                                type="button"
+                                onClick={cancelEdit}
+                                disabled={savingResult}
+                                className="text-gray-600 hover:underline text-sm"
+                              >
+                                Annuler
+                              </button>
+                            </span>
+                          ) : round.status === "in_progress" && m.player2_tournament_player_id != null ? (
                             <button
                               type="button"
-                              onClick={cancelEdit}
-                              disabled={savingResult}
-                              className="text-gray-600 hover:underline text-sm"
+                              onClick={() => openEditMatch(m)}
+                              className="text-blue-600 hover:underline"
                             >
-                              Annuler
+                              Modifier les scores
                             </button>
-                          </span>
-                        ) : round.status === "in_progress" && m.player2_tournament_player_id != null ? (
-                          <button
-                            type="button"
-                            onClick={() => openEditMatch(m)}
-                            className="text-blue-600 hover:underline"
-                          >
-                            Modifier les scores
-                          </button>
-                        ) : null}
+                          ) : null}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
-        </div>
         );
       })}
+
+      <PopUp
+        isOpen={repairRoundId != null}
+        onClose={() => {
+          if (!repairLoading) setRepairRoundId(null);
+        }}
+        title="Faire un re-pairing"
+        className="max-w-md w-full"
+      >
+        <p className="mb-4 text-sm text-gray-700">
+          Régénérer les appariements de cette ronde ? Impossible si des résultats
+          ont déjà été saisis (hors BYE).
+        </p>
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              if (!repairLoading) setRepairRoundId(null);
+            }}
+            disabled={repairLoading}
+            className="px-3 py-1 border rounded text-sm text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+          >
+            Annuler
+          </button>
+          <Button
+            buttonText={repairLoading ? "Re-pairing…" : "Confirmer"}
+            action={handleConfirmRepair}
+            disabled={repairLoading}
+            className="px-3 py-1 bg-amber-600 text-white rounded text-sm"
+          />
+        </div>
+      </PopUp>
 
       <PopUp
         isOpen={rollbackRoundId != null}
@@ -293,6 +457,52 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
           />
         </div>
       </PopUp>
+    </div>
+  );
+};
+
+interface PlayerDropCellProps {
+  tournamentPlayerId: number;
+  standings: TournamentStanding[];
+  pendingDropOverrides: Record<number, boolean>;
+  canToggleDrop: boolean;
+  showAbandoned: boolean;
+  onToggleDrop: (tournamentPlayerId: number, dropped: boolean) => void;
+}
+
+const PlayerDropCell: React.FC<PlayerDropCellProps> = ({
+  tournamentPlayerId,
+  standings,
+  pendingDropOverrides,
+  canToggleDrop,
+  showAbandoned,
+  onToggleDrop,
+}) => {
+  const name = idToName(tournamentPlayerId, standings);
+  const dropped = getEffectiveDropped(
+    tournamentPlayerId,
+    standings,
+    pendingDropOverrides
+  );
+
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <span>{name}</span>
+      {showAbandoned && (
+        <span className="text-xs text-red-600 font-medium">a abandonné</span>
+      )}
+      {canToggleDrop && (
+        <button
+          type="button"
+          onClick={() => onToggleDrop(tournamentPlayerId, !dropped)}
+          className={`text-xs px-1.5 py-0.5 rounded border ${dropped
+              ? "border-emerald-600 text-emerald-700 hover:bg-emerald-50"
+              : "border-red-500 text-red-600 hover:bg-red-50"
+            }`}
+        >
+          {dropped ? "Annuler" : "Abandonner ?"}
+        </button>
+      )}
     </div>
   );
 };

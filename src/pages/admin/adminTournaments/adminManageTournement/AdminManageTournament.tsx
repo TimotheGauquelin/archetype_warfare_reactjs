@@ -62,10 +62,14 @@ const AdminManageTournament = () => {
     const [addPlayerUsername, setAddPlayerUsername] = useState("");
     const [addPlayerResults, setAddPlayerResults] = useState<PaginatedResponse<User> | null>(null);
     const [addingUserId, setAddingUserId] = useState<string | null>(null);
+    /** Brouillon drop/undrop : appliqué seulement au passage de ronde. */
+    const [pendingDropOverrides, setPendingDropOverrides] = useState<
+        Record<number, boolean>
+    >({});
 
-    const loadData = useCallback(async () => {
+    const loadData = useCallback(async (options?: { silent?: boolean }) => {
         if (!tournamentId) return;
-        setLoading(true);
+        if (!options?.silent) setLoading(true);
         setError(null);
         try {
             const [tournament, standings] = await Promise.all([
@@ -78,7 +82,7 @@ const AdminManageTournament = () => {
             setError("Impossible de charger le tournoi.");
             console.error(e);
         } finally {
-            setLoading(false);
+            if (!options?.silent) setLoading(false);
         }
     }, [tournamentId]);
 
@@ -130,16 +134,45 @@ const AdminManageTournament = () => {
         });
     }, [token, tournamentId, tournament?.event_date, doStartTournament, showConfirmDialog]);
 
+    const handleTogglePendingDrop = useCallback(
+        (tournamentPlayerId: number, dropped: boolean) => {
+            const serverDropped = Boolean(
+                standings.find(
+                    (s) => Number(s.tournament_player_id) === tournamentPlayerId
+                )?.matches_breakdown?.hasDropped
+            );
+            setPendingDropOverrides((prev) => {
+                const next = { ...prev };
+                if (dropped === serverDropped) {
+                    delete next[tournamentPlayerId];
+                } else {
+                    next[tournamentPlayerId] = dropped;
+                }
+                return next;
+            });
+        },
+        [standings]
+    );
+
     const handleNextRound = useCallback(async () => {
         if (!token || !tournamentId) return;
         setActionLoading(true);
         try {
-            await tournamentNextRound(tournamentId, token);
-            await loadData();
+            const playerDropUpdates = Object.entries(pendingDropOverrides).map(
+                ([id, dropped]) => ({
+                    tournamentPlayerId: Number(id),
+                    dropped,
+                })
+            );
+            await tournamentNextRound(tournamentId, token, {
+                playerDropUpdates,
+            });
+            setPendingDropOverrides({});
+            await loadData({ silent: true });
         } finally {
             setActionLoading(false);
         }
-    }, [token, tournamentId, loadData]);
+    }, [token, tournamentId, loadData, pendingDropOverrides]);
 
     const handleToggleRegistration = useCallback(async () => {
         try {
@@ -232,136 +265,181 @@ const AdminManageTournament = () => {
             />
 
             {overCapacity && (
-                <ErrorText
-                    errorText={`Le nombre de joueurs inscrits (${players.length})
-        dépasse la capacité maximale du tournoi (${maxPlayers})`}
-                    errorTextCenter={false}
-                />
-            )}
-
-            {loading && (
-                <p className="text-gray-600 text-sm">Chargement…</p>
-            )}
-
-            {tournament && !loading && (
-                <div className="p-3 bg-gray-100 rounded-md text-sm text-gray-700 space-y-2 mb-4">
-                    <p>
-                        <span className="font-semibold">Ronde actuelle :</span>{" "}
-                        {tournament.current_round} / {tournament.max_number_of_rounds}
-                    </p>
-                    <div>
-                        <p className="font-semibold">Fin du tournoi :</p>
-                        <ul className="list-disc list-inside ml-2 space-y-0.5">
-                            <li>Au bout de {tournament.max_number_of_rounds} ronde(s)</li>
-                            {tournament.until_winner ? (
-                                <li>
-                                    S&apos;arrête aussi dès qu&apos;il y a un vainqueur
-                                    (avant le maximum de rondes)
-                                </li>
-                            ) : (
-                                <li>
-                                    Pas d&apos;arrêt anticipé : uniquement au bout du
-                                    nombre max de rondes
-                                </li>
-                            )}
-                        </ul>
-                    </div>
-                    <p>
-                        <span className="font-semibold">Decklist obligatoire :</span>{" "}
-                        {tournament.require_deck_list ? "Oui" : "Non"}
-                    </p>
-                    <p>
-                        <span className="font-semibold">Tournoi officiel :</span>{" "}
-                        {tournament.is_official ? "Oui" : "Non"}
-                    </p>
-                    <div>
-                        <p className="font-semibold">Pénalités :</p>
-                        {tournament.allow_penalities ? (
-                            <ul className="list-disc list-inside ml-2 space-y-0.5">
-                                <li>Activées — types applicables :</li>
-                                {TOURNAMENT_PENALTY_TYPE_LABELS.map((label) => (
-                                    <li key={label} className="ml-4 list-[circle]">
-                                        {label}
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="ml-2">Non autorisées pour ce tournoi</p>
-                        )}
-                    </div>
+                <div className="mb-4">
+                    <ErrorText
+                        errorText={`Le nombre de joueurs inscrits (${players.length}) dépasse la capacité maximale du tournoi (${maxPlayers})`}
+                        errorTextCenter={false}
+                    />
                 </div>
             )}
 
-            <AdminManageTournamentActionSection
-                tournament={tournament}
-                actionLoading={actionLoading}
-                handleNextRound={handleNextRound}
-                handleToggleRegistration={handleToggleRegistration}
-                handleStart={handleStart}
-                hasEnoughPlayers={hasEnoughPlayers}
-                canAdvanceRound={canAdvanceRound}
-            />
+            {loading && (
+                <p className="text-sm text-gray-500">Chargement…</p>
+            )}
 
-            <div className="flex">
-                <span
-                    className={TAB_CLASS(activeTab === "players")}
-                    onClick={() => setActiveTab("players")}
-                >
-                    Joueurs
-                </span>
-                <span
-                    className={TAB_CLASS(activeTab === "matchmaking")}
-                    onClick={() => setActiveTab("matchmaking")}
-                >
-                    Matchmaking
-                </span>
-                <span
-                    className={TAB_CLASS(activeTab === "standings")}
-                    onClick={() => setActiveTab("standings")}
-                >
-                    Classement
-                </span>
-            </div>
-
-            <div className={activeTab === "players" ? "" : "hidden"}>
-                <AdminManageTournamentPlayersSection
-                    tournament={tournament}
-                    players={players}
-                    addPlayerUsername={addPlayerUsername}
-                    setAddPlayerUsername={setAddPlayerUsername}
-                    addPlayerResults={addPlayerResults}
-                    inscribedUserIds={inscribedUserIds}
-                    addingUserId={addingUserId}
-                    handleAddPlayer={handleAddPlayer}
-                    handleRemovePlayer={handleRemovePlayer}
-                    setRemovePlayer={setRemovePlayer}
-                    token={token ?? null}
-                    onDeckAssigned={loadData}
-                />
-            </div>
-
-            <div className={activeTab === "matchmaking" ? "" : "hidden"}>
-                {tournament && token && (
-                    <AdminTournamentMatchmaking
-                        tournamentId={tournament.id}
-                        rounds={tournament.rounds ?? []}
-                        standings={standings}
-                        token={token}
-                        onMatchUpdated={loadData}
-                        matchesPerRound={tournament.matches_per_round}
-                    />
-                )}
-            </div>
-
-            <div className={activeTab === "standings" ? "" : "hidden"}>
-                {standings && standings.length > 0 ? (
-                    <TournamentDetailsStanding standings={standings} />
-                ) : (
-                    <p className="text-gray-600 text-sm">
-                        Aucun classement disponible pour ce tournoi pour le moment
+            {tournament && !loading && (
+                <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3 mb-6">
+                    <h2 className="text-xl font-semibold text-gray-900">
+                        Informations générales
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                        Résumé des règles et de l&apos;avancement du tournoi.
                     </p>
-                )}
-            </div>
+                    <div className="text-sm text-gray-700 space-y-2">
+                        <p>
+                            <span className="font-semibold">Ronde actuelle : </span>
+                            {`${tournament.current_round} / ${tournament.max_number_of_rounds}`}
+                        </p>
+                        <p>
+                            <span className="font-semibold">
+                                Nombre de joueurs max :{" "}
+                            </span>
+                            {tournament.max_players ?? "—"}
+                        </p>
+                        <div>
+                            <p className="font-semibold">Fin du tournoi :</p>
+                            <ul className="list-disc list-inside ml-2 space-y-0.5">
+                                <li>
+                                    {`Au bout de ${tournament.max_number_of_rounds} ronde(s)`}
+                                </li>
+                                {tournament.until_winner ? (
+                                    <li>
+                                        S&apos;arrête aussi dès qu&apos;il y a un
+                                        vainqueur (avant le maximum de rondes)
+                                    </li>
+                                ) : (
+                                    <li>
+                                        Pas d&apos;arrêt anticipé : uniquement au
+                                        bout du nombre max de rondes
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
+                        <p>
+                            <span className="font-semibold">
+                                Decklist obligatoire :
+                            </span>{" "}
+                            {tournament.require_deck_list ? "Oui" : "Non"}
+                        </p>
+                        <p>
+                            <span className="font-semibold">Tournoi officiel :</span>{" "}
+                            {tournament.is_official ? "Oui" : "Non"}
+                        </p>
+                        <div>
+                            <p className="font-semibold">Pénalités :</p>
+                            {tournament.allow_penalities ? (
+                                <ul className="list-disc list-inside ml-2 space-y-0.5">
+                                    <li>Activées — types applicables :</li>
+                                    {TOURNAMENT_PENALTY_TYPE_LABELS.map((label) => (
+                                        <li
+                                            key={label}
+                                            className="ml-4 list-[circle]"
+                                        >
+                                            {label}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="ml-2">
+                                    Non autorisées pour ce tournoi
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {!loading && (
+                <AdminManageTournamentActionSection
+                    tournament={tournament}
+                    actionLoading={actionLoading}
+                    handleNextRound={handleNextRound}
+                    handleToggleRegistration={handleToggleRegistration}
+                    handleStart={handleStart}
+                    hasEnoughPlayers={hasEnoughPlayers}
+                    canAdvanceRound={canAdvanceRound}
+                />
+            )}
+
+            {!loading && (
+                <div>
+                    <div className="flex">
+                        <span
+                            className={TAB_CLASS(activeTab === "players")}
+                            onClick={() => setActiveTab("players")}
+                        >
+                            Joueurs
+                        </span>
+                        <span
+                            className={TAB_CLASS(activeTab === "matchmaking")}
+                            onClick={() => setActiveTab("matchmaking")}
+                        >
+                            Matchmaking
+                        </span>
+                        <span
+                            className={TAB_CLASS(activeTab === "standings")}
+                            onClick={() => setActiveTab("standings")}
+                        >
+                            Classement
+                        </span>
+                    </div>
+
+                    <div className="bg-white border border-t-0 border-gray-200 rounded-b-lg p-4 shadow-sm">
+                        <div className={activeTab === "players" ? "" : "hidden"}>
+                            <AdminManageTournamentPlayersSection
+                                tournament={tournament}
+                                players={players}
+                                addPlayerUsername={addPlayerUsername}
+                                setAddPlayerUsername={setAddPlayerUsername}
+                                addPlayerResults={addPlayerResults}
+                                inscribedUserIds={inscribedUserIds}
+                                addingUserId={addingUserId}
+                                handleAddPlayer={handleAddPlayer}
+                                handleRemovePlayer={handleRemovePlayer}
+                                setRemovePlayer={setRemovePlayer}
+                                token={token ?? null}
+                                onDeckAssigned={loadData}
+                            />
+                        </div>
+
+                        <div
+                            className={
+                                activeTab === "matchmaking" ? "" : "hidden"
+                            }
+                        >
+                            {tournament && token && (
+                                <AdminTournamentMatchmaking
+                                    tournamentId={tournament.id}
+                                    rounds={tournament.rounds ?? []}
+                                    standings={standings}
+                                    token={token}
+                                    onMatchUpdated={() => loadData({ silent: true })}
+                                    matchesPerRound={
+                                        tournament.matches_per_round
+                                    }
+                                    pendingDropOverrides={pendingDropOverrides}
+                                    onTogglePendingDrop={handleTogglePendingDrop}
+                                />
+                            )}
+                        </div>
+
+                        <div
+                            className={activeTab === "standings" ? "" : "hidden"}
+                        >
+                            {standings && standings.length > 0 ? (
+                                <TournamentDetailsStanding
+                                    standings={standings}
+                                />
+                            ) : (
+                                <p className="text-sm text-gray-600">
+                                    Aucun classement disponible pour ce tournoi
+                                    pour le moment
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <PopUp
                 isOpen={isOpen}

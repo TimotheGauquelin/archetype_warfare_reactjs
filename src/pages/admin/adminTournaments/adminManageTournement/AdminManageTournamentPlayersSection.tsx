@@ -193,9 +193,17 @@ const AdminManageTournamentPlayersSection = ({
     return { mainDisplayCards: main, extraDisplayCards: extra };
   }, [sortedSnapshotCards]);
 
+  const maxPlayersLabel =
+    tournament?.max_players != null && tournament.max_players > 0
+      ? String(tournament.max_players)
+      : "—";
+
   return (
     <>
       <div className="flex flex-col flex-wrap gap-2">
+        <p className="text-sm font-semibold text-gray-800">
+          Joueurs : {players.length} / {maxPlayersLabel}
+        </p>
         {tournament?.status.includes("registration") && (
           <div className="space-y-2 bg-gray-100 rounded-md p-2">
             <label htmlFor="addPlayerUsername" className="font-semibold">Ajouter un joueur</label>
@@ -269,12 +277,14 @@ const AdminManageTournamentPlayersSection = ({
                     )}
                     {tournament?.require_deck_list && (
                       <button
-                      type="button"
-                      onClick={() => handleOpenAssignDeck(player)}
-                      className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer block w-full text-right"
-                    >
-                      {player.deck_snapshot ? "Changer le deck" : "Assigner un deck"}
-                    </button>
+                        type="button"
+                        onClick={() => handleOpenAssignDeck(player)}
+                        className="font-medium text-blue-600 hover:text-blue-800 hover:underline cursor-pointer block w-full text-right"
+                      >
+                        {player.deck_snapshot
+                          ? "Changer le deck"
+                          : "Assigner un deck"}
+                      </button>
                     )}
                   </div>
                 </div>

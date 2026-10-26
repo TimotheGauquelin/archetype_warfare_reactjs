@@ -1,5 +1,7 @@
 export const TOURNAMENT_STATUS = (status: string): string => {
     switch (status) {
+        case 'not_visible':
+            return 'Non visible';
         case 'registration_open':
             return 'Inscriptions ouvertes';
         case 'registration_closed':
