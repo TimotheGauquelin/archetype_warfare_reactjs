@@ -136,7 +136,7 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
 
   if (!myDeck.archetype_id) {
     return (
-      <div className="mt-2 p-4 bg-gray-300 rounded-lg">
+      <div className="mt-1 sscreen:mt-2 p-1 sscreen:p-4 bg-gray-300 rounded-lg">
         <p className="text-center py-4 text-gray-800">
           {t("profile.selectArchetypeToAddCards")}
         </p>
@@ -144,35 +144,53 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
     )
   } else {
     return (
-      <div className="mt-2 p-4 bg-gray-300 rounded-lg">
-        <p className="font-bold text-lg mb-2">
+      <div className="mt-1 sscreen:mt-2 p-1 sscreen:p-4 bg-gray-300 rounded-lg">
+        <p className="font-bold text-lg mb-1 sscreen:mb-2">
           {t("profile.addCardsToDeck")}
         </p>
         {mainDeckTotal < 40 && (
-          <div className="mb-2 p-2 bg-yellow-100 text-yellow-800 rounded-md">
+          <div className="mb-1 sscreen:mb-2 p-2 bg-yellow-100 text-yellow-800 rounded-md">
             <p className="font-semibold">
               {t("profile.deckNotPlayable")}
             </p>
           </div>
         )}
         {illegalCardsCount > 0 && (
-          <div className="mb-2 p-2 bg-orange-100 text-orange-900 rounded-md">
+          <div className="mb-1 sscreen:mb-2 p-2 bg-orange-100 text-orange-900 rounded-md">
             <p className="font-semibold">
               {t("profile.illegalCardsWarning", { count: illegalCardsCount })}
             </p>
           </div>
         )}
 
-        <AdminCardsFilter
-          cardTypes={cardTypes}
-          criteria={filters}
-          setCriteria={setFilters}
-          resetAllFilters={resetAllFilters}
-          attributes={attributes}
-        />
+        <div className="grid grid-cols-12 gap-1 mt-1 sscreen:mt-2 items-start">
+          {/* Portable : filtres + recherche sticky ; PC : contents → grille d’origine */}
+          <div className="col-span-12 sticky top-0 z-10 space-y-1 bg-gray-300 pb-1 sscreen:contents">
+            <div className="sscreen:col-span-12 sscreen:mb-1">
+              <AdminCardsFilter
+                cardTypes={cardTypes}
+                criteria={filters}
+                setCriteria={setFilters}
+                resetAllFilters={resetAllFilters}
+                attributes={attributes}
+                onClearAllDeckCards={() =>
+                  setMyDeck((prev) => ({ ...prev, deck_cards: [] }))
+                }
+              />
+            </div>
+            <div className="sscreen:col-span-3 sscreen:col-start-10 sscreen:row-start-2 sscreen:self-start">
+              <DeckCardsSearcher
+                myDeck={myDeck}
+                setMyDeck={setMyDeck}
+                filters={filters}
+                setFilters={setFilters}
+                pagination={pagination}
+                setPagination={setPagination}
+              />
+            </div>
+          </div>
 
-        <div className="grid grid-cols-12 gap-1 mt-2">
-          <div className="col-span-9">
+          <div className="col-span-12 sscreen:col-span-9 sscreen:col-start-1 sscreen:row-start-2">
             <DeckSection
               title={t("profile.mainDeckCards")}
               badges={[
@@ -210,7 +228,7 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
                 onCardClick={removeCardFromDeck}
               />
             </DeckSection>
-            <div className="mt-2">
+            <div className="mt-1 sscreen:mt-2">
               <DeckSection
                 title={t("profile.extraDeckCards")}
                 badges={[
@@ -229,14 +247,6 @@ const DeckCreator: React.FC<DeckCreatorProps> = ({
               </DeckSection>
             </div>
           </div>
-          <DeckCardsSearcher
-            myDeck={myDeck}
-            setMyDeck={setMyDeck}
-            filters={filters}
-            setFilters={setFilters}
-            pagination={pagination}
-            setPagination={setPagination}
-          />
         </div>
       </div>
     );

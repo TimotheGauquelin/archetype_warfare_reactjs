@@ -44,18 +44,18 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
     };
 
     return (
-        <div data-testid="deck-data" className="p-4 bg-gray-300 rounded-lg">
-            <span className="font-bold text-lg mb-2">
+        <div data-testid="deck-data" className="p-1 sscreen:p-4 bg-gray-300 rounded-lg">
+            <span className="block font-bold text-lg mb-1 sscreen:mb-2">
                 {t("profile.deckInfo")}
             </span>
             {
                 myDeck.archetype?.is_active === false && (
-                    <p className="p-2 bg-yellow-100 text-yellow-800 rounded-md text-sm font-semibold">
+                    <p className="mb-1 sscreen:mb-2 p-1 sscreen:p-2 bg-yellow-100 text-yellow-800 rounded-md text-sm font-semibold">
                         {t("profile.archetypeInactiveWarning")}
                     </p>
                 )
             }
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-1 sscreen:gap-4 [&_label]:mt-1 sscreen:[&_label]:mt-2 [&_input]:mt-1 sscreen:[&_input]:mt-2 [&>div]:!mt-0 sscreen:[&>div]:!mt-2 [&>div]:!space-y-0 sscreen:[&>div]:!space-y-2">
                 <Input
                     label={t("profile.deckName")}
                     inputName="label"
@@ -67,7 +67,6 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
                 />
                 <SelectInput
                     defaultOptionLabel={t("profile.selectArchetype")}
-                    className="mt-2"
                     label={t("profile.selectedArchetype")}
                     required={true}
                     options={archetypes.map((archetype) => ({ id: archetype.id, label: archetype.name }))}
@@ -77,7 +76,7 @@ const DeckData: React.FC<DeckDataProps> = ({ myDeck, setMyDeck, archetypes }) =>
                     disabled={(myDeck?.deck_cards?.length ?? 0) > 0}
                 />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-1 sscreen:gap-4 mt-1 sscreen:mt-0 [&_label]:mt-1 sscreen:[&_label]:mt-2 [&_textarea]:mt-1 sscreen:[&_textarea]:mt-2">
                 <TextArea
                     className="col-span-2"
                     label={t("profile.deckDescription")}
