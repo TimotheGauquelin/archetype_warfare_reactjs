@@ -79,7 +79,7 @@ const HintLadderQuestion = ({
         <p className="text-sm font-semibold text-gray-700">{questionNumberLabel}</p>
       )}
       <QuizQuestionBadges question={question} />
-      <p className="text-lg font-medium text-gray-900">{question.prompt}</p>
+      <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
       <p className="text-sm text-gray-600">{t("quiz.hintLadderIntro")}</p>
 
       {!hasAnswered && (
@@ -126,48 +126,9 @@ const HintLadderQuestion = ({
       )}
 
       {hasAnswered ? (
-        <div className="mt-8 space-y-2 rounded-lg border border-slate-200 bg-slate-100 p-4">
-          {answeredCardId && (
-            <div
-              className={`rounded-lg p-3 shadow-md ${
-                question.isCorrect
-                  ? "bg-green-50 ring-2 ring-green-400"
-                  : "bg-red-50 ring-2 ring-red-300"
-              }`}
-            >
-              <p className="text-sm font-bold text-gray-900 mb-2">
-                {t("quiz.hintLadderAnswerLabel")}
-              </p>
-              <div className="flex items-center gap-3">
-                {question.isCorrect && correctAnswer?.artworkUrl && (
-                  <img
-                    src={correctAnswer.artworkUrl}
-                    alt=""
-                    className="h-14 w-14 object-cover rounded"
-                  />
-                )}
-                <div>
-                  <p className="text-sm font-semibold">
-                    {question.isCorrect
-                      ? correctAnswer?.name ||
-                        correctAnswer?.label ||
-                        answeredCardId
-                      : slot.name || slot.text || answeredCardId}
-                  </p>
-                  {!Boolean(question.userAnswer?.skipped) && (
-                    <p className="text-xs text-gray-600">
-                      {t("quiz.hintLadderAnsweredAt", {
-                        level: t(`quiz.hintLadderLevels.${answeredLevel}`),
-                        points: POINTS_BY_LEVEL[answeredLevel],
-                      })}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-          {correctAnswer && (
-            <div className="flex items-center gap-3 rounded-lg bg-green-50 border border-green-200 p-3">
+        <div className="mt-8 space-y-2">
+          {question.isCorrect && correctAnswer ? (
+            <div className="flex items-center gap-3 rounded-lg bg-green-50 ring-2 ring-green-400 p-3 shadow-md">
               {correctAnswer.artworkUrl && (
                 <img
                   src={correctAnswer.artworkUrl}
@@ -177,13 +138,63 @@ const HintLadderQuestion = ({
               )}
               <div>
                 <p className="text-xs font-medium text-green-800">
-                  {t("quiz.hintLadderExpected")}
+                  {t("quiz.zoomCorrectAnswer")}
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
                   {correctAnswer.name || correctAnswer.label}
                 </p>
+                {!Boolean(question.userAnswer?.skipped) && (
+                  <p className="text-xs text-gray-600 mt-0.5">
+                    {t("quiz.hintLadderAnsweredAt", {
+                      level: t(`quiz.hintLadderLevels.${answeredLevel}`),
+                      points: POINTS_BY_LEVEL[answeredLevel],
+                    })}
+                  </p>
+                )}
               </div>
             </div>
+          ) : (
+            <>
+              {answeredCardId && (
+                <div className="flex items-center gap-3 rounded-lg bg-red-50 ring-2 ring-red-300 p-3 shadow-md">
+                  <div>
+                    <p className="text-xs font-medium text-red-800">
+                      {t("quiz.zoomYourAnswer")}
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {slot.name || slot.text || answeredCardId}
+                    </p>
+                    {!Boolean(question.userAnswer?.skipped) && (
+                      <p className="text-xs text-gray-600 mt-0.5">
+                        {t("quiz.hintLadderAnsweredAt", {
+                          level: t(`quiz.hintLadderLevels.${answeredLevel}`),
+                          points: POINTS_BY_LEVEL[answeredLevel],
+                        })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              {correctAnswer && (
+                <div className="flex items-center gap-3 rounded-lg bg-green-50 border border-green-200 p-3">
+                  {correctAnswer.artworkUrl && (
+                    <img
+                      src={correctAnswer.artworkUrl}
+                      alt=""
+                      className="h-14 w-14 object-cover rounded"
+                    />
+                  )}
+                  <div>
+                    <p className="text-xs font-medium text-green-800">
+                      {t("quiz.hintLadderExpected")}
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {correctAnswer.name || correctAnswer.label}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       ) : (

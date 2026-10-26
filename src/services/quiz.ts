@@ -9,6 +9,7 @@ import {
   URL_BACK_QUIZ_ATTEMPT,
   URL_BACK_QUIZ_FINISH,
   URL_BACK_QUIZ_HUB,
+  URL_BACK_QUIZ_SEASON_RANKING,
   URL_BACK_QUIZ_MY_STATS,
   URL_BACK_QUIZ_START_DAILY,
   URL_BACK_QUIZ_START_FREE,
@@ -196,6 +197,25 @@ export const getQuizHub = async (): Promise<QuizHubResponse> => {
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "getQuizHub");
+    throw appError;
+  }
+};
+
+export type QuizSeasonRankingResponse = {
+  season: AdminQuizSeason;
+  podium: QuizSeasonPodiumEntry[];
+};
+
+/** Classement complet d'une saison (public). */
+export const getQuizSeasonRanking = async (
+  seasonId: number | string = "current"
+): Promise<QuizSeasonRankingResponse> => {
+  try {
+    const response = await api_aw.get(URL_BACK_QUIZ_SEASON_RANKING(seasonId));
+    return response.data as QuizSeasonRankingResponse;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getQuizSeasonRanking");
     throw appError;
   }
 };

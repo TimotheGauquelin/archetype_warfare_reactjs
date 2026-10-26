@@ -57,7 +57,7 @@ const McqQuestion = ({
         <p className="text-sm font-semibold text-gray-700">{questionNumberLabel}</p>
       )}
       <QuizQuestionBadges question={question} />
-      <p className="text-lg font-medium text-gray-900">{question.prompt}</p>
+      <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
 
       {question.hint && !hasAnswered && (
         <div className="space-y-1">

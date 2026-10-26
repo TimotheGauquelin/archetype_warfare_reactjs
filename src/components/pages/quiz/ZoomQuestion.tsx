@@ -127,7 +127,7 @@ const ZoomQuestion = ({
         <p className="text-sm font-semibold text-gray-700">{questionNumberLabel}</p>
       )}
       <QuizQuestionBadges question={question} />
-      <p className="text-lg font-medium text-gray-900">{question.prompt}</p>
+      <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
       <p className="text-sm text-gray-600">{t("quiz.zoomHint")}</p>
 
       {!hasAnswered && (

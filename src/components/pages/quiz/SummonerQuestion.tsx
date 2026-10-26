@@ -77,13 +77,12 @@ const SummonerQuestion = ({
         <p className="text-sm font-semibold text-gray-700">{questionNumberLabel}</p>
       )}
       <QuizQuestionBadges question={question} />
-      <p className="text-lg font-medium text-gray-900">{question.prompt}</p>
-      <p className="text-sm text-gray-600">
-        {t("quiz.summonerHint")}
-        {materialCountHint != null && materialCountHint > 0 && (
-          <> {t("quiz.summonerMaterialHint", { count: materialCountHint })}</>
-        )}
-      </p>
+      <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
+      {materialCountHint != null && materialCountHint > 0 && (
+        <p className="inline-flex items-center rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm font-bold text-amber-900">
+          {t("quiz.summonerMaterialHint", { count: materialCountHint })}
+        </p>
+      )}
 
       {question.imageUrl && (
         <div className="flex justify-center">
