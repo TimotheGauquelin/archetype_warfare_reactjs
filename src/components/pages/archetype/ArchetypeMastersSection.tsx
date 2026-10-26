@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import SubtitleDivider from "../../generic/SubtitleDivider";
 import NoItemMessage from "../../generic/NoItemMessage";
 import CountryFlagLabel from "../../generic/CountryFlagLabel";
+import PaginationTableHead from "../../generic/pagination/PaginationTableHead";
 import type { ArchetypeRankingPlayer } from "../../../services/archetypeRanking";
 
 const MEDAL_TYPES = ["gold", "silver", "bronze"] as const;
@@ -21,6 +23,15 @@ const ArchetypeMastersSection = ({
   const { t } = useTranslation();
   const topThree = masters.slice(0, 3);
 
+  const tableHead = useMemo(
+    () => [
+      { colspan: "col-span-2", label: t("archetypePage.masterColRank") },
+      { colspan: "col-span-7", label: t("archetypePage.masterColPlayer") },
+      { colspan: "col-span-3", label: t("archetypePage.masterColPoints") },
+    ],
+    [t]
+  );
+
   return (
     <div className="pt-5">
       <SubtitleDivider label={t("archetypePage.masters")} displayDivider />
@@ -31,32 +42,38 @@ const ArchetypeMastersSection = ({
           <div className="h-6 bg-gray-200 rounded w-3/5" />
         </div>
       ) : topThree.length > 0 ? (
-        <div className="bg-gray-100 p-4 border border-gray-200 rounded-lg mb-4">
-          <ol className="space-y-3">
+        <div className="w-full text-sm text-left text-gray-500 mb-4 overflow-hidden rounded-lg border border-gray-200">
+          <PaginationTableHead tableHeadItem={tableHead} />
+          <div className="grid grid-cols-12 bg-white">
             {topThree.map((player, index) => (
-              <li
+              <div
                 key={player.userId}
-                className="flex items-center justify-between gap-3 text-sm sm:text-base"
+                className="grid grid-cols-12 col-span-12 items-center border-b border-l border-r last:border-b-0 hover:bg-slate-200"
               >
-                <div className="flex items-center gap-3 min-w-0">
+                <div className="col-span-2 p-2 flex items-center justify-center gap-1.5 font-semibold text-gray-900">
                   <img
                     src={medalSrc(index)}
                     alt={t(`archetypePage.masterRank${index + 1}`)}
-                    className="w-8 h-8 object-contain shrink-0"
-                    width={32}
-                    height={32}
+                    className="w-6 h-6 object-contain shrink-0"
+                    width={24}
+                    height={24}
+                    loading="lazy"
+                    decoding="async"
                   />
-                  <span className="font-medium text-gray-900 truncate">
+                  <span>#{index + 1}</span>
+                </div>
+                <div className="col-span-7 p-2 flex items-center gap-2 min-w-0 text-gray-900">
+                  <span className="font-medium truncate">
                     {player.username?.trim() || t("archetypePage.masterUnknown")}
                   </span>
                   <CountryFlagLabel countryCode={player.country} />
                 </div>
-                <span className="text-gray-600 shrink-0">
+                <div className="col-span-3 p-2 text-center text-gray-800">
                   {t("archetypePage.masterPoints", { count: player.points })}
-                </span>
-              </li>
+                </div>
+              </div>
             ))}
-          </ol>
+          </div>
         </div>
       ) : (
         <div className="mb-4">
