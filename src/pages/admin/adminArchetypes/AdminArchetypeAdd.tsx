@@ -45,7 +45,7 @@ const AdminArchetypeAdd = () => {
     <AdminStructure>
       <AdminBodyHeader
         label="Ajouter un archétype"
-        catchphrase=""
+        catchphrase="Informations, traduction EN, mécaniques et cartes"
         returnButton
       />
       <AdminArchetypeForm

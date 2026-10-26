@@ -41,24 +41,31 @@ const AdminArchetypeForm: React.FC<AdminArchetypeFormProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const tabClass = (tab: string) =>
+    `py-2 px-4 rounded-t-md cursor-pointer ${
+      activeTab === tab
+        ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
+        : "text-gray-700 bg-gray-200 hover:bg-gray-300"
+    }`;
+
   return (
-    <>
+    <div>
       <div className="flex">
         <span
-          className={`py-2 px-4 rounded-t-md cursor-pointer ${activeTab === "informations" ? "text-blue-700 bg-blue-200 hover:bg-blue-300" : "text-gray-700 bg-gray-200 hover:bg-gray-300"}`}
+          className={tabClass("informations")}
           onClick={() => setActiveTab("informations")}
         >
-          Informations Principales
+          Informations générales
         </span>
         <span
-          className={`py-2 px-4 rounded-t-md cursor-pointer ${activeTab === "cards" ? "text-blue-700 bg-blue-200 hover:bg-blue-300" : "text-gray-700 bg-gray-200 hover:bg-gray-300"}`}
+          className={tabClass("cards")}
           onClick={() => setActiveTab("cards")}
         >
-          Cartes de l'archetype
+          Cartes de l&apos;archétype
         </span>
       </div>
-      <div className="">
-        <div className={activeTab === "informations" ? "" : "hidden"}>
+      <div className="bg-white border border-t-0 border-gray-200 rounded-b-lg p-4 space-y-4">
+        <div className={activeTab === "informations" ? "space-y-4" : "hidden"}>
           <AdminArchetypeData
             eras={eras}
             attributes={attributes}
@@ -68,24 +75,23 @@ const AdminArchetypeForm: React.FC<AdminArchetypeFormProps> = ({
             setNewArchetype={setNewArchetype}
           />
         </div>
-        <div className={activeTab === "cards" ? "" : "hidden"}>
+        <div className={activeTab === "cards" ? "space-y-4" : "hidden"}>
           <AdminArchetypeCards
             newArchetype={newArchetype}
             setNewArchetype={setNewArchetype}
           />
         </div>
+        <Button
+          className="text-white p-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer disabled:opacity-50"
+          buttonText="Créer l'archetype"
+          disabled={isLoading}
+          loadingText="Création en cours..."
+          action={() => {
+            addArchetype();
+          }}
+        />
       </div>
-      <Button
-        className="bg-gray-800 hover:bg-gray-900 text-white mt-2 p-2 px-4 rounded"
-        buttonText="Créer l'archetype"
-        disabled={isLoading}
-        loadingText="Création en cours..."
-        action={() => {
-          addArchetype();
-        }}
-      />
-
-    </>
+    </div>
   );
 };
 

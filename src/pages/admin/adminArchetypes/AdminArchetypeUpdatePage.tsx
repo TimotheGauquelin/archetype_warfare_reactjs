@@ -45,13 +45,10 @@ const AdminArchetypeUpdatePage = () => {
   return (
     <AdminStructure>
       <AdminBodyHeader
-        label={`Modifier l'archetype ${archetype.name}`}
-        catchphrase=""
+        label={`Modifier l'archétype ${archetype.name || ""}`}
+        catchphrase="Informations, traduction EN, mécaniques et cartes"
         returnButton
       />
-      {/* <AdminArchetypeSwitchButtons
-        location={location}
-      /> */}
       <AdminArchetypeUpdateFormik
         archetype={archetype}
         setArchetype={setArchetype}

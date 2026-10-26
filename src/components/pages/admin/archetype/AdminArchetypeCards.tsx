@@ -80,10 +80,12 @@ const AdminArchetypeCards: React.FC<AdminArchetypeCardsProps> = ({ newArchetype,
   }, [cardsRefresh, newArchetype]);
 
   return (
-    <div className="bg-gray-300 rounded p-2">
-      <h2 className="font-bold text-xl">Cartes de l'archetype :</h2>
-      <div className="bg-gray-300 grid grid-cols-12 gap-1">
-        <div className="bg-gray-400 col-span-8 mt-2 p-3 rounded">
+    <div className="bg-gray-100 border border-gray-200 rounded p-3 space-y-3">
+      <h2 className="font-semibold text-lg text-gray-900">
+        Cartes de l&apos;archétype
+      </h2>
+      <div className="grid grid-cols-12 gap-4">
+        <div className="bg-white border border-gray-200 col-span-8 p-3 rounded-lg">
           <div
             className={`overflow-y-auto grid gap-1 ${
               sortedCards.length > 0 && "grid-cols-3"

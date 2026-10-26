@@ -20,9 +20,17 @@ const AdminArchetypePaginationTableBody: React.FC<AdminArchetypePaginationTableB
   deleteArchetype,
   setRefresh
 }) => {
+  if (!arrayItems || arrayItems.length === 0) {
+    return (
+      <div className="col-span-12 p-4 border border-l border-r text-center">
+        Aucun archétype trouvé.
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-12">
-      {arrayItems?.map((item: Archetype, index: number) => {
+      {arrayItems.map((item: Archetype, index: number) => {
         const cardCount = item?.cards?.length ?? 0;
         const hasValidSlider = Boolean(item?.slider_img_url?.trim());
         const canToggleHighlight = Boolean(item?.is_highlighted) || hasValidSlider;

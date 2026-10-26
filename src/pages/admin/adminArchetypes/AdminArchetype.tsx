@@ -29,6 +29,7 @@ const AdminArchetype = () => {
   });
   const [_errorMessage, setErrorMessage] = useState("");
   const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const resetAllFilters = () => {
     setFilters({
@@ -46,35 +47,53 @@ const AdminArchetype = () => {
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
 
   useEffect(() => {
-    getArchetypesWithCriteria(filters, setArchetypes, setPagination, setErrorMessage);
-    setRefresh(false);
+    setLoading(true);
+    void Promise.resolve(
+      getArchetypesWithCriteria(
+        filters,
+        setArchetypes,
+        setPagination,
+        setErrorMessage
+      )
+    ).finally(() => {
+      setLoading(false);
+      setRefresh(false);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh, filters]);
 
   return (
     <AdminStructure>
       <AdminBodyHeader
-        label="Archetype"
-        catchphrase="Vous avez des archétypes de toute sorte"
+        label="Archétypes"
+        catchphrase="Filtres, mise en ligne et édition des archétypes"
         buttonUrl={URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM}
         buttonLabel="Ajouter un archetype"
       />
-      <AdminArchetypeFilter
-        resetAllFilters={() => resetAllFilters()}
-        criteria={filters}
-        setCriteria={setFilters}
-        setRefresh={setRefresh}
-      />
-      <AdminArchetypePagination
-        setRefresh={setRefresh}
-        currentPage={pagination?.currentPage}
-        archetypes={archetypes}
-        setPagination={(page: number) => setPagination((prev) => ({ ...prev, currentPage: page }))}
-        archetypesTotalCount={pagination?.total}
-        totalPages={pagination?.totalPages}
-        pageSize={pagination?.pageSize}
-        showConfirmPopupDialog={showConfirmDialog}
-      />
+
+      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm mb-10 space-y-3">
+        <AdminArchetypeFilter
+          resetAllFilters={() => resetAllFilters()}
+          criteria={filters}
+          setCriteria={setFilters}
+          setRefresh={setRefresh}
+        />
+        <AdminArchetypePagination
+          setRefresh={setRefresh}
+          currentPage={pagination?.currentPage}
+          archetypes={archetypes}
+          setPagination={(page: number) => {
+            setFilters((prev) => ({ ...prev, page }));
+            setPagination((prev) => ({ ...prev, currentPage: page }));
+          }}
+          archetypesTotalCount={pagination?.total}
+          totalPages={pagination?.totalPages}
+          pageSize={pagination?.pageSize}
+          loading={loading}
+          showConfirmPopupDialog={showConfirmDialog}
+        />
+      </section>
+
       <PopUp
         isOpen={isOpen}
         onClose={closePopup}

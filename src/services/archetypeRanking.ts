@@ -19,6 +19,17 @@ export interface ArchetypeRankingResponse {
   rankings: ArchetypeRankingPlayer[];
 }
 
+export interface MyArchetypeTournamentResult {
+  tournamentId: string;
+  tournamentName: string;
+  eventDate: string | null;
+  tournamentPlayerId: number;
+  deckLabel: string | null;
+  place: number;
+  playersCount: number;
+  points: number;
+}
+
 export interface MyArchetypeRankingEntry {
   archetypeId: number;
   archetypeName: string;
@@ -26,6 +37,7 @@ export interface MyArchetypeRankingEntry {
   points: number;
   rank: number;
   playersCount: number;
+  tournaments: MyArchetypeTournamentResult[];
 }
 
 export interface MyArchetypeRankingsResponse {

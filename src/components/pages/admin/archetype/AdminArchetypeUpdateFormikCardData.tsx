@@ -80,14 +80,20 @@ const AdminArchetypeUpdateFormikCardData: React.FC<AdminArchetypeUpdateFormikCar
   }, [cardsRefresh, newArchetype]);
 
   return (
-    <div className={`bg-gray-300 rounded p-2 ${activeTab === "cards" ? "" : "hidden"}`}>
-      <h2 className="font-bold text-xl">Cartes de l'archetypes :</h2>
-      {/* Afficher les cartes déjà dans l'archetype */}
-      <div className="bg-gray-300 grid grid-cols-12 gap-1">
-        <div className="bg-gray-400 col-span-8 mt-2 p-3 rounded">
+    <div
+      className={`bg-gray-100 border border-gray-200 rounded p-3 space-y-3 ${
+        activeTab === "cards" ? "" : "hidden"
+      }`}
+    >
+      <h2 className="font-semibold text-lg text-gray-900">
+        Cartes de l&apos;archétype
+      </h2>
+      <div className="grid grid-cols-12 gap-4">
+        <div className="bg-white border border-gray-200 col-span-8 p-3 rounded-lg">
           <div
-            className={`overflow-y-auto h-full grid gap-1 ${sortedCards.length > 0 && "grid-cols-3"
-              } bg-white p-2 rounded`}
+            className={`overflow-y-auto h-full grid gap-1 ${
+              sortedCards.length > 0 && "grid-cols-3"
+            } bg-white p-2 rounded`}
           >
             {sortedCards.length > 0
               ? sortedCards.map((card) => {
@@ -135,7 +141,11 @@ const AdminArchetypeUpdateFormikCardData: React.FC<AdminArchetypeUpdateFormikCar
                     />
                 );
               })
-              : "Cet archétype ne possède aucune carte"}
+              : (
+                  <div className="col-span-12 text-center text-gray-500 py-8">
+                    Cet archétype ne possède aucune carte
+                  </div>
+                )}
           </div>
         </div>
         <AddCardModule

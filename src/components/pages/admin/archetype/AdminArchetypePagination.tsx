@@ -25,6 +25,7 @@ interface AdminArchetypePaginationProps {
   archetypesTotalCount: number;
   totalPages: number;
   pageSize: number;
+  loading?: boolean;
   showConfirmPopupDialog: (params: ShowConfirmDialogParams) => void;
 }
 
@@ -36,6 +37,7 @@ const AdminArchetypePagination: React.FC<AdminArchetypePaginationProps> = ({
   archetypesTotalCount,
   totalPages,
   pageSize,
+  loading = false,
   showConfirmPopupDialog,
 }) => {
 
@@ -96,13 +98,19 @@ const AdminArchetypePagination: React.FC<AdminArchetypePaginationProps> = ({
     <div className="">
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <PaginationTableHead tableHeadItem={tableHeadItemArray} />
-        <AdminArchetypePaginationTableBody
-          arrayItems={archetypes}
-          switchIsHighlighted={switchIsHighlighted}
-          switchIsActive={switchIsActive}
-          deleteArchetype={handleDeleteArchetypeButton}
-          setRefresh={setRefresh}
-        />
+        <div>
+          {loading ? (
+            <div className="p-4">Chargement...</div>
+          ) : (
+            <AdminArchetypePaginationTableBody
+              arrayItems={archetypes}
+              switchIsHighlighted={switchIsHighlighted}
+              switchIsActive={switchIsActive}
+              deleteArchetype={handleDeleteArchetypeButton}
+              setRefresh={setRefresh}
+            />
+          )}
+        </div>
       </div>
       <PaginationFooter
         setRefresh={() => setRefresh((prev) => !prev)}
