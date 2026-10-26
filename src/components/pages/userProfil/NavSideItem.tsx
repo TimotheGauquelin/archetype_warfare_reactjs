@@ -4,18 +4,26 @@ import { Link, useLocation } from "react-router-dom";
 interface NavSideItemProps {
   url: string;
   label: string;
+  onNavigate?: () => void;
 }
 
-const NavSideItem: React.FC<NavSideItemProps> = ({ url, label }) => {
+const NavSideItem: React.FC<NavSideItemProps> = ({
+  url,
+  label,
+  onNavigate,
+}) => {
   const location = useLocation();
 
   return (
     <li>
       <Link
         className={`block p-2 ${
-          location.pathname.includes(url) ? "border-l-4 border-indigo-500" : "border-l-4 border-transparent"
+          location.pathname.includes(url)
+            ? "border-l-4 border-indigo-500"
+            : "border-l-4 border-transparent"
         } hover:bg-blue-200`}
         to={url}
+        onClick={onNavigate}
       >
         {label}
       </Link>

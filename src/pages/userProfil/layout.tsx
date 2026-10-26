@@ -1,8 +1,14 @@
 import React, { useState, useRef, useLayoutEffect, useMemo } from "react";
-import { FaEllipsisH } from "react-icons/fa";
+import {
+  FaCog,
+  FaLayerGroup,
+  FaSignOutAlt,
+  FaTrophy,
+  FaUser,
+} from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import NavSideItem from "../../components/pages/userProfil/NavSideItem";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   URL_FRONT_ADMIN_HOME,
   URL_FRONT_MY_DECKS,
@@ -23,9 +29,9 @@ interface UserProfilLayoutProps {
 
 const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
   const { t } = useTranslation();
-  const [displayedNavBar, setDisplayedNavBar] = useState<boolean>(true);
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState<boolean>(false);
-  const [userProfilLayoutHeight, setUserProfilLayoutHeight] = useState<number>(0);
+  const location = useLocation();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [userProfilLayoutHeight, setUserProfilLayoutHeight] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
   const navbarRef = useRef<HTMLDivElement>(null);
   const authUser = useSelector((state: RootState) => state.user);
@@ -73,6 +79,8 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
     setShowLogoutConfirm(false);
   };
 
+  const isAdmin = (authUser?.roles ?? []).includes(ROLE_ADMIN);
+
   const navSideItems = useMemo(
     () => [
       { url: URL_FRONT_MY_PROFILE, label: t("profile.myProfile") },
@@ -82,68 +90,128 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
     [t]
   );
 
+  const mobileTabItems = useMemo(
+    () => [
+      {
+        url: URL_FRONT_MY_PROFILE,
+        label: t("profile.myProfile"),
+        icon: FaUser,
+      },
+      {
+        url: URL_FRONT_MY_DECKS,
+        label: t("profile.myDecks"),
+        icon: FaLayerGroup,
+      },
+      {
+        url: URL_FRONT_MY_TOURNAMENTS,
+        label: t("profile.myTournaments"),
+        icon: FaTrophy,
+      },
+      ...(isAdmin
+        ? [
+            {
+              url: URL_FRONT_ADMIN_HOME,
+              label: t("profile.adminPanel"),
+              icon: FaCog,
+            },
+          ]
+        : []),
+    ],
+    [t, isAdmin]
+  );
+
+  const sideNavContent = (
+    <>
+      <div className="flex-1 overflow-y-auto">
+        <ul>
+          {navSideItems.map((item) => (
+            <NavSideItem key={item.url} url={item.url} label={item.label} />
+          ))}
+        </ul>
+        {isAdmin && (
+          <ul>
+            <NavSideItem
+              url={URL_FRONT_ADMIN_HOME}
+              label={t("profile.adminPanel")}
+            />
+          </ul>
+        )}
+      </div>
+      <span
+        className="block w-full p-2 hover:bg-blue-200 cursor-pointer border-l-4 border-transparent"
+        onClick={confirmLogout}
+      >
+        {t("common.logout")}
+      </span>
+    </>
+  );
+
   return (
     <>
       <div className="flex flex-col">
-        <div ref={headerRef}>
+        <div ref={headerRef} className="relative z-30">
           <Header />
         </div>
-        <div ref={navbarRef}>
+        <div ref={navbarRef} className="relative z-20">
           <Navbar />
         </div>
         <div
           id="userProfilLayout"
           className="relative w-full max-w-containerSize mx-auto overflow-hidden"
-          style={{ height: userProfilLayoutHeight > 0 ? `${userProfilLayoutHeight - 10}px` : "calc(100vh - 120px)" }}
+          style={{
+            height:
+              userProfilLayoutHeight > 0
+                ? `${userProfilLayoutHeight - 10}px`
+                : "calc(100vh - 120px)",
+          }}
         >
-          <div className="relative h-full w-full grid-cols-12">
-            <div
-              className="lscreen:hidden mr-2"
-              onClick={() => setDisplayedNavBar(!displayedNavBar)}
-            >
-              <FaEllipsisH />
+          <div className="relative h-full w-full flex flex-col lscreen:grid lscreen:grid-cols-12 bg-gray-300">
+            {/* Nav desktop */}
+            <aside className="hidden lscreen:flex lscreen:col-span-2 lscreen:flex-col lscreen:justify-between bg-gray-200">
+              {sideNavContent}
+            </aside>
+
+            <div className="flex-1 min-h-0 lscreen:col-span-10 bg-gray-100 p-2 overflow-y-auto">
+              {children}
             </div>
 
-            <div
-              className={`h-full lscreen:grid lscreen:grid-cols-12 bg-gray-300 lscreen:flex`}
+            {/* Nav mobile — barre d’onglets fixe en bas */}
+            <nav
+              className="lscreen:hidden shrink-0 z-20 flex items-stretch justify-around border-t border-gray-200 bg-white pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] shadow-[0_-2px_8px_rgba(0,0,0,0.06)]"
+              aria-label={t("profile.myProfile")}
             >
-              <div
-                className={`col-span-1 bg-gray-200 flex flex-col justify-between ${displayedNavBar ? "display" : "hidden"
-                  }`}
+              {mobileTabItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = location.pathname.includes(item.url);
+                return (
+                  <Link
+                    key={item.url}
+                    to={item.url}
+                    className={`flex flex-1 flex-col items-center justify-center gap-0.5 min-w-0 px-1 py-1.5 text-[10px] leading-tight ${
+                      isActive
+                        ? "text-indigo-600 font-semibold"
+                        : "text-gray-500"
+                    }`}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    <Icon className="w-5 h-5 shrink-0" aria-hidden />
+                    <span className="truncate max-w-full">{item.label}</span>
+                  </Link>
+                );
+              })}
+              <button
+                type="button"
+                className="flex flex-1 flex-col items-center justify-center gap-0.5 min-w-0 px-1 py-1.5 text-[10px] leading-tight text-gray-500"
+                onClick={confirmLogout}
+                aria-label={t("common.logout")}
               >
-                <div>
-                  <ul>
-                    {navSideItems.map((item, itemIndex) => {
-                      return (
-                        <NavSideItem
-                          key={itemIndex}
-                          url={item.url}
-                          label={item.label}
-                        />
-                      );
-                    })}
-                  </ul>
-                  {(authUser?.roles ?? []).includes(ROLE_ADMIN) && (
-                    <ul>
-                      <NavSideItem url={URL_FRONT_ADMIN_HOME} label={t("profile.adminPanel")} />
-                    </ul>
-                  )}
-                </div>
-                <span
-                  className="block w-full p-2 hover:bg-blue-200 cursor-pointer border-l-4 border-transparent"
-                  onClick={confirmLogout}
-                >
-                  {t("common.logout")}
-                </span>
-              </div>
-
-              <div className="col-span-11 bg-gray-100 p-2 overflow-y-auto min-h-0 h-full">
-                {children}
-              </div>
-            </div>
+                <FaSignOutAlt className="w-5 h-5 shrink-0" aria-hidden />
+                <span className="truncate max-w-full">{t("common.logout")}</span>
+              </button>
+            </nav>
           </div>
         </div>
-      </div >
+      </div>
 
       <PopUp
         isOpen={showLogoutConfirm}

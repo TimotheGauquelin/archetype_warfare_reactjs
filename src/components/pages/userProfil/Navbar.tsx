@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
         : "";
 
   return (
-    <div className="bg-blue-300 flex flex-row items-center w-full max-w-containerSize mx-auto py-3 px-2">
+    <div className="hidden lscreen:flex bg-blue-300 flex-row items-center w-full max-w-containerSize mx-auto py-3 px-2">
       <FaHome className="cursor-pointer mr-3" onClick={() => history("/")} />
       <span className="text-black">{breadcrumb}</span>
     </div>
