@@ -14,27 +14,31 @@ interface DeckCardsGridProps {
   onCardClick?: (deckCard: DeckCard) => void;
 }
 
-interface DeckGridCardCopyProps {
+interface DeckGridCardProps {
   deckCard: DeckCard;
-  copy: DeckCard & { uniqueKey: string };
-  copyIndex: number;
   isLegal: boolean;
   foreignNames: string;
-  archetypeId?: number | string | null;
   onCardClick?: (deckCard: DeckCard) => void;
   onShowDetails: (card: Card) => void;
+  /** Affiche le badge quantité (mode mobile empilé) */
+  showQuantityBadge?: boolean;
+  /** Classes de colonne responsive */
+  colClassName?: string;
+  uniqueKey: string;
 }
 
-const DeckGridCardCopy: React.FC<DeckGridCardCopyProps> = ({
+const DeckGridCard: React.FC<DeckGridCardProps> = ({
   deckCard,
-  copy,
-  copyIndex,
   isLegal,
   foreignNames,
   onCardClick,
   onShowDetails,
+  showQuantityBadge = false,
+  colClassName = "col-span-3 lscreen:col-span-1",
+  uniqueKey,
 }) => {
   const { t } = useTranslation();
+  const quantity = deckCard.quantity || 1;
   const { handlers, wasLongPress } = useLongPress(
     useCallback(() => {
       onShowDetails(deckCard.card);
@@ -43,8 +47,8 @@ const DeckGridCardCopy: React.FC<DeckGridCardCopyProps> = ({
 
   return (
     <div
-      key={copy.uniqueKey}
-      className={`col-span-6 lscreen:col-span-1 relative cursor-pointer hover:opacity-80 transition-opacity group select-none touch-manipulation ${
+      key={uniqueKey}
+      className={`${colClassName} relative cursor-pointer hover:opacity-80 transition-opacity group select-none touch-manipulation ${
         isLegal ? "" : "grayscale opacity-50"
       }`}
       {...handlers}
@@ -61,15 +65,15 @@ const DeckGridCardCopy: React.FC<DeckGridCardCopyProps> = ({
       }
     >
       <img
-        src={copy.img_url || copy.card?.img_url}
-        alt={copy.card?.name || "Carte"}
+        src={deckCard.img_url || deckCard.card?.img_url}
+        alt={deckCard.card?.name || "Carte"}
         className="w-full h-auto pointer-events-none"
         loading="lazy"
         draggable={false}
       />
-      {copy.quantity > 1 && copyIndex === copy.quantity - 1 && (
-        <div className="absolute bottom-0 right-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
-          x{copy.quantity}
+      {showQuantityBadge && quantity > 1 && (
+        <div className="absolute bottom-1 right-1 min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center bg-black/80 text-white text-xs font-bold rounded-full shadow">
+          {quantity}
         </div>
       )}
       {!isLegal && (
@@ -93,40 +97,60 @@ const DeckCardsGrid: React.FC<DeckCardsGridProps> = ({
     setDetailCard(card);
   }, []);
 
+  const cardMeta = (deckCard: DeckCard) => {
+    const isLegal = isDeckCardLegalForArchetype(deckCard, archetypeId);
+    const foreignArchetypes = getForeignArchetypesForDeckCard(
+      deckCard,
+      archetypeId
+    );
+    const foreignNames = foreignArchetypes.map((a) => a.name).join(", ");
+    return { isLegal, foreignNames };
+  };
+
   return (
     <>
-      <div className="grid grid-cols-12 lscreen:grid-cols-10 gap-1 p-1 mt-2 bg-white">
+      {/* Mobile : 4 par ligne, 1 vignette + badge quantité */}
+      <div className="grid grid-cols-12 gap-1 p-1 mt-2 bg-white lscreen:hidden">
         {cards.map((deckCard, cardIndex) => {
-          const isLegal = isDeckCardLegalForArchetype(deckCard, archetypeId);
-          const foreignArchetypes = getForeignArchetypesForDeckCard(
-            deckCard,
-            archetypeId
-          );
-          const foreignNames = foreignArchetypes.map((a) => a.name).join(", ");
-
-          const cardCopies = Array.from(
-            { length: deckCard.quantity || 1 },
-            (_, index) => ({
-              ...deckCard,
-              uniqueKey: `${deckCard.card.id}-${cardIndex}-${index}`,
-            })
-          );
-
-          return cardCopies.map((copy, copyIndex) => (
-            <DeckGridCardCopy
-              key={copy.uniqueKey}
+          const { isLegal, foreignNames } = cardMeta(deckCard);
+          return (
+            <DeckGridCard
+              key={`mobile-${deckCard.card.id}-${cardIndex}`}
+              uniqueKey={`mobile-${deckCard.card.id}-${cardIndex}`}
               deckCard={deckCard}
-              copy={copy}
-              copyIndex={copyIndex}
               isLegal={isLegal}
               foreignNames={foreignNames}
-              archetypeId={archetypeId}
               onCardClick={onCardClick}
               onShowDetails={handleShowDetails}
+              showQuantityBadge
+              colClassName="col-span-3"
+            />
+          );
+        })}
+      </div>
+
+      {/* Desktop : un exemplaire par copie (comportement d'origine) */}
+      <div className="hidden lscreen:grid grid-cols-10 gap-1 p-1 mt-2 bg-white">
+        {cards.map((deckCard, cardIndex) => {
+          const { isLegal, foreignNames } = cardMeta(deckCard);
+          const quantity = deckCard.quantity || 1;
+
+          return Array.from({ length: quantity }, (_, copyIndex) => (
+            <DeckGridCard
+              key={`desktop-${deckCard.card.id}-${cardIndex}-${copyIndex}`}
+              uniqueKey={`desktop-${deckCard.card.id}-${cardIndex}-${copyIndex}`}
+              deckCard={deckCard}
+              isLegal={isLegal}
+              foreignNames={foreignNames}
+              onCardClick={onCardClick}
+              onShowDetails={handleShowDetails}
+              showQuantityBadge={false}
+              colClassName="col-span-1"
             />
           ));
         })}
       </div>
+
       <DeckCardDetailPopUp
         card={detailCard}
         isOpen={detailCard != null}

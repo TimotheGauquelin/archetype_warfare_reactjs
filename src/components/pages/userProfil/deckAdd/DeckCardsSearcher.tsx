@@ -51,9 +51,9 @@ const DeckSearchCardItem: React.FC<DeckSearchCardItemProps> = ({
   );
 
   return (
-    <div className="col-span-12 lscreen:col-span-4 relative">
+    <div className="relative w-14 sscreen:w-[22%] flex-shrink-0">
       <div
-        className={`p-1 hover:saturate-150 relative transition-opacity select-none touch-manipulation ${
+        className={`p-0.5 hover:saturate-150 relative transition-opacity select-none touch-manipulation ${
           shouldDisable ? "grayscale opacity-50 cursor-not-allowed" : "cursor-pointer"
         }`}
         {...handlers}
@@ -85,7 +85,7 @@ const DeckSearchCardItem: React.FC<DeckSearchCardItemProps> = ({
           }}
         />
         {totalQuantityInDeck > 0 && (
-          <div className="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white text-xs px-1 rounded">
+          <div className="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white text-[10px] leading-tight px-0.5 rounded">
             {totalQuantityInDeck}/{cardLimit}
           </div>
         )}
@@ -321,7 +321,7 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
   const renderedCards = useMemo(() => {
     if (!researchedCards || researchedCards.length === 0) {
       return (
-        <div className="col-span-12 text-center py-8 text-gray-500">
+        <div className="w-full text-center py-4 text-gray-500 text-sm">
           {isLoading ? t("common.loading") : t("profile.noCardsFound")}
         </div>
       );
@@ -359,7 +359,7 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
   }, [researchedCards, isLoading, myDeck, addCardsIntoDeck, handleShowDetails, t]);
 
   return (
-    <div className="bg-gray-200 col-span-3 p-2 rounded">
+    <div className="bg-gray-200 w-full p-1 sscreen:p-2 rounded">
       <div className="grid grid-cols-12 gap-1">
         <div className="col-span-12 relative">
           {isLoading && (
@@ -369,27 +369,24 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
           )}
         </div>
       </div>
-      <div
-        className="overflow-y-auto bg-white grid grid-cols-12"
-        style={{ height: "400px" }}
-      >
+      <div className="overflow-x-auto overflow-y-hidden sscreen:overflow-y-auto sscreen:overflow-x-hidden bg-white flex flex-row flex-nowrap sscreen:flex-wrap content-start gap-1 h-[5.5rem] sscreen:h-[400px] p-0.5">
         {renderedCards}
       </div>
 
-      <div className="flex justify-around items-center mt-2">
+      <div className="flex justify-around items-center mt-1 sscreen:mt-2">
         <FaAngleLeft
-          className={`h-8 transition-opacity ${pagination.currentPage <= 1 || isLoading
+          className={`h-6 sscreen:h-8 transition-opacity ${pagination.currentPage <= 1 || isLoading
             ? "invisible opacity-0 cursor-not-allowed"
             : "cursor-pointer hover:opacity-70"
             }`}
           onClick={decreasePage}
           aria-label={t("common.previousPage")}
         />
-        <p className="font-medium">
+        <p className="font-medium text-sm">
           {pagination.currentPage} / {pagination.totalPages || 1}
         </p>
         <FaAngleRight
-          className={`h-8 transition-opacity ${pagination.currentPage >= pagination.totalPages || isLoading
+          className={`h-6 sscreen:h-8 transition-opacity ${pagination.currentPage >= pagination.totalPages || isLoading
             ? "invisible opacity-0 cursor-not-allowed"
             : "cursor-pointer hover:opacity-70"
             }`}
