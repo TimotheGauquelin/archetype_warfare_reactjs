@@ -51,7 +51,7 @@ const SelectInput = <T extends Record<string, unknown>>({
   return (
     <div className={`flex flex-col col-span-${colSpanWidth} rounded-md space-y-2 mt-2`}>
       {label && (
-        <label htmlFor={selectId} className="font-medium">
+        <label htmlFor={selectId} className="font-bold">
           {label}: {required && <span className="text-red-500 font-bold">*</span>}
         </label>
       )}

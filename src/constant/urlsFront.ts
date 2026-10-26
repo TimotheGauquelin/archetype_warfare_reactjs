@@ -29,6 +29,9 @@ export const URL_FRONT_QUIZ = "/quiz";
 export const URL_FRONT_QUIZ_DAILY = "/quiz/daily";
 export const URL_FRONT_QUIZ_PLAY = (attemptId: string): string =>
   `/quiz/play/${attemptId}`;
+export const URL_FRONT_QUIZ_SEASON_RANKING = "/quiz/season/:seasonId";
+export const getQuizSeasonRankingPath = (seasonId: number | string = "current") =>
+  `/quiz/season/${seasonId}`;
 
 //Profil
 export const URL_FRONT_MY_PROFILE = "/my-profile";
@@ -50,7 +53,13 @@ export const URL_FRONT_ADMIN_BANLISTS = "/admin/banlists";
 export const URL_FRONT_ADMIN_BANLIST_UPDATE = "/admin/banlists/update/:banlistId";
 export const URL_FRONT_ADMIN_BANLIST_ADD = "/admin/banlists/add";
 export const URL_FRONT_ADMIN_USERS = "/admin/users";
+export const URL_FRONT_ADMIN_USERS_ALL = "/admin/users/all";
 export const URL_FRONT_ADMIN_TOURNAMENTS = "/admin/tournaments";
+export const URL_FRONT_ADMIN_TOURNAMENTS_BY_SCOPE =
+  "/admin/tournaments/scope/:scope";
+export const getAdminTournamentsByScopePath = (
+  scope: "in-progress" | "upcoming" | "past"
+) => `/admin/tournaments/scope/${scope}`;
 export const URL_FRONT_ADMIN_TOURNAMENT_ADD = "/admin/tournaments/add";
 export const URL_FRONT_ADMIN_TOURNAMENT_UPDATE = "/admin/tournaments/update/:tournamentId";
 export const getAdminTournamentUpdatePath = (tournamentId: number | string) => `/admin/tournaments/update/${tournamentId}`;

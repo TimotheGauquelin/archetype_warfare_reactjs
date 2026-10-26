@@ -10,9 +10,10 @@ interface ButtonProps {
   action?: () => void;
   loadingText?: string;
   ariaLabel?: string;
+  icon?: React.ReactNode;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, style, submit, disabled, buttonText, className, action, ariaLabel }) => {
+const Button: React.FC<ButtonProps> = ({ children, style, submit, disabled, buttonText, className, action, ariaLabel, icon }) => {
   return (
     <button
       style={style && style}
@@ -22,6 +23,7 @@ const Button: React.FC<ButtonProps> = ({ children, style, submit, disabled, butt
       aria-label={ariaLabel || buttonText}
       onClick={() => action && !disabled && action()}
     >
+      {icon && <span className="mr-2">{icon}</span>}
       {buttonText && <span>{buttonText}</span>}
       {children && children}
     </button>

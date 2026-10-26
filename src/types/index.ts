@@ -35,7 +35,52 @@ export interface UserForm {
   roles?: string[];
   is_active?: boolean;
   is_banned?: boolean;
+  send_invite_email?: boolean;
+  biography?: string | null;
+  country?: string | null;
+  loved_archetype_id?: number | string | null;
   [key: string]: unknown;
+}
+
+export interface AdminUserQuizAttempt {
+  id: string;
+  mode: string;
+  status: string;
+  score: number;
+  max_score: number;
+  daily_date: string | null;
+  started_at?: string | null;
+  finished_at: string | null;
+  theme: { id: number; label: string; slug?: string } | null;
+}
+
+export interface AdminUserQuizSummary {
+  quiz_points: number;
+  attempts: AdminUserQuizAttempt[];
+}
+
+export interface AdminUserTournamentParticipation {
+  tournament_player_id: number;
+  match_wins: number;
+  match_losses: number;
+  match_draws: number;
+  dropped: boolean;
+  disqualified_at: string | null;
+  deck_label: string | null;
+  archetype_name: string | null;
+  place: number | null;
+  players_count: number;
+}
+
+export interface AdminUserTournamentSummaryItem {
+  tournament_id: string;
+  name: string;
+  status: string;
+  event_date: string | null;
+  location: string | null;
+  is_official: boolean;
+  is_online: boolean;
+  participation: AdminUserTournamentParticipation;
 }
 
 export interface UserUpdateForm {
@@ -63,7 +108,13 @@ export interface ChangePasswordForm {
 
 // Types pour les critères de recherche d'utilisateurs
 export interface UserSearchCriteria {
+  /** Recherche libre (pseudo et/ou email) */
+  q?: string;
+  /** @deprecated utiliser q */
   username?: string;
+  is_active?: "" | "true" | "false";
+  is_banned?: "" | "true" | "false";
+  role?: string;
 }
 
 // Types pour l'authentification
@@ -336,6 +387,7 @@ export type SetStateCallback<T> = (value: T | ((prev: T) => T)) => void;
 export type SetErrorMessageCallback = SetStateCallback<string>;
 
 export type TournamentStatus =
+  | "not_visible"
   | "registration_open"
   | "registration_closed"
   | "tournament_beginning"
@@ -369,6 +421,7 @@ export interface Tournament {
   event_date: string;
   event_date_end: string;
   is_online: boolean;
+  is_official?: boolean;
   max_number_of_rounds?: number;
   matches_per_round?: number;
   match_resolution_mode?: MatchResolutionMode;

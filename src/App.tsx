@@ -17,6 +17,7 @@ import {
   URL_FRONT_ADMIN_HOME,
   URL_FRONT_ADMIN_USER_ADD,
   URL_FRONT_ADMIN_USERS,
+  URL_FRONT_ADMIN_USERS_ALL,
   URL_FRONT_ARCHETYPES,
   URL_FRONT_BANLIST,
   URL_FRONT_HOME,
@@ -41,8 +42,10 @@ import {
   URL_FRONT_TOURNAMENTS,
   URL_FRONT_QUIZ,
   URL_FRONT_QUIZ_DAILY,
+  URL_FRONT_QUIZ_SEASON_RANKING,
   URL_FRONT_MY_TOURNAMENTS,
   URL_FRONT_ADMIN_TOURNAMENTS,
+  URL_FRONT_ADMIN_TOURNAMENTS_BY_SCOPE,
   URL_FRONT_ADMIN_TOURNAMENT_ADD,
   URL_FRONT_ADMIN_TOURNAMENT_UPDATE,
   URL_FRONT_ADMIN_TOURNAMENT_MANAGE,
@@ -84,6 +87,9 @@ const QuizFrenchOnlyGate = lazy(() => import("./pages/user/quiz/QuizFrenchOnlyGa
 const QuizHubPage = lazy(() => import("./pages/user/quiz/QuizHubPage"));
 const QuizDailyPage = lazy(() => import("./pages/user/quiz/QuizDailyPage"));
 const QuizPlayPage = lazy(() => import("./pages/user/quiz/QuizPlayPage"));
+const QuizSeasonRankingPage = lazy(
+  () => import("./pages/user/quiz/QuizSeasonRankingPage")
+);
 
 const MyProfilePage = lazy(() => import("./pages/userProfil/myProfile/myProfileMain/MyProfilePage"));
 const UpdateMyProfilePage = lazy(() => import("./pages/userProfil/myProfile/updateMyProfile/UpdateMyProfilePage"));
@@ -101,6 +107,7 @@ const AdminBanlist = lazy(() => import("./pages/admin/adminBanlists/AdminBanlist
 const AdminAddBanlist = lazy(() => import("./pages/admin/adminBanlists/AdminAddBanlist"));
 const AdminUpdateBanlist = lazy(() => import("./pages/admin/adminBanlists/AdminUpdateBanlist"));
 const AdminUsers = lazy(() => import("./pages/admin/adminUsers/AdminUsers"));
+const AdminUsersAll = lazy(() => import("./pages/admin/adminUsers/AdminUsersAll"));
 const AdminUserAdd = lazy(() => import("./pages/admin/adminUsers/AdminUserAdd"));
 const AdminUserUpdate = lazy(() => import("./pages/admin/adminUsers/AdminUserUpdate"));
 const AdminFiles = lazy(() => import("./pages/admin/adminFiles/AdminFiles"));
@@ -110,6 +117,9 @@ const AdminCards = lazy(() => import("./pages/admin/adminCards/AdminCards"));
 const AdminCardDetail = lazy(() => import("./pages/admin/adminCards/AdminCardDetail"));
 const AdminOptions = lazy(() => import("./pages/admin/adminOptions/AdminOptions"));
 const AdminTournaments = lazy(() => import("./pages/admin/adminTournaments/adminAllTournaments/AdminTournaments"));
+const AdminTournamentsByScope = lazy(
+  () => import("./pages/admin/adminTournaments/adminAllTournaments/AdminTournamentsByScope")
+);
 const AdminAddTournament = lazy(() => import("./pages/admin/adminTournaments/adminAddTournament/AdminAddTournament"));
 const AdminUpdateTournament = lazy(() => import("./pages/admin/adminTournaments/adminUpdateTournament/AdminUpdateTournament"));
 const AdminManageTournament = lazy(() => import("./pages/admin/adminTournaments/adminManageTournement/AdminManageTournament"));
@@ -222,6 +232,10 @@ const AppContent: React.FC = () => {
               <Route path={URL_FRONT_QUIZ} element={<QuizHubPage />} />
               <Route path={URL_FRONT_QUIZ_DAILY} element={<QuizDailyPage />} />
               <Route path="/quiz/play/:attemptId" element={<QuizPlayPage />} />
+              <Route
+                path={URL_FRONT_QUIZ_SEASON_RANKING}
+                element={<QuizSeasonRankingPage />}
+              />
             </Route>
             <Route path={URL_FRONT_PASSWORD_LOST} element={<PasswordLostPage />} />
             <Route path={URL_FRONT_PASSWORD_RESET} element={<PasswordReset />} />
@@ -259,6 +273,9 @@ const AppContent: React.FC = () => {
               <Route path={URL_FRONT_ADMIN_USERS} element={<AdminUsers />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_USERS_ALL} element={<AdminUsersAll />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
               <Route path={URL_FRONT_ADMIN_USER_ADD} element={<AdminUserAdd />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
@@ -280,10 +297,16 @@ const AppContent: React.FC = () => {
               <Route path={URL_FRONT_ADMIN_OPTIONS} element={<AdminOptions />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-              <Route path={URL_FRONT_ADMIN_TOURNAMENTS} element={<AdminTournaments />} />
+              <Route path={URL_FRONT_ADMIN_TOURNAMENT_ADD} element={<AdminAddTournament />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
-              <Route path={URL_FRONT_ADMIN_TOURNAMENT_ADD} element={<AdminAddTournament />} />
+              <Route
+                path={URL_FRONT_ADMIN_TOURNAMENTS_BY_SCOPE}
+                element={<AdminTournamentsByScope />}
+              />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_TOURNAMENTS} element={<AdminTournaments />} />
             </Route>
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
               <Route path={URL_FRONT_ADMIN_TOURNAMENT_UPDATE} element={<AdminUpdateTournament />} />

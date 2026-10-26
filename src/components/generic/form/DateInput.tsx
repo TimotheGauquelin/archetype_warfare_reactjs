@@ -31,14 +31,14 @@ export const DateInput: React.FC<DateInputProps> = ({
     return (
         <div className={`flex flex-col col-span-${colSpanWidth}`}>
             {label && (
-                <label className="mt-2 font-medium">
+                <label className="mt-2 font-bold">
                     {label}:{" "}
                     {required && <span className="text-red-500 font-bold">*</span>}
                 </label>
             )}
             <input
                 required={required}
-                className="p-2 bg-gray-100 rounded-md"
+                className="mt-2 p-2 bg-white border border-slate-100 rounded-md outline-none focus:outline-none"
                 type={inputType}
                 name={inputName}
                 min={min}

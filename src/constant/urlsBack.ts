@@ -118,7 +118,30 @@ export const URL_BACK_DELETE_MY_DECK = (deckId: number | string) => `/decks/dele
 
 // USER
 
-export const URL_BACK_SEARCH_USERS = (size: number, pagination: number, username: string) => `/users/search?size=${size}&page=${pagination}&username=${username}`
+export const URL_BACK_SEARCH_USERS = (
+  size: number,
+  page: number,
+  criteria: {
+    q?: string;
+    is_active?: "" | "true" | "false";
+    is_banned?: "" | "true" | "false";
+    role?: string;
+  } = {}
+) => {
+  const params = new URLSearchParams();
+  params.set("size", String(size));
+  params.set("page", String(page));
+  if (criteria.q?.trim()) params.set("q", criteria.q.trim());
+  if (criteria.is_active === "true" || criteria.is_active === "false") {
+    params.set("is_active", criteria.is_active);
+  }
+  if (criteria.is_banned === "true" || criteria.is_banned === "false") {
+    params.set("is_banned", criteria.is_banned);
+  }
+  if (criteria.role?.trim()) params.set("role", criteria.role.trim());
+  return `/users/search?${params.toString()}`;
+};
+export const URL_BACK_GET_USER_ROLES = "/users/roles";
 export const URL_BACK_GET_ALL_USERS = '/users'
 export const URL_BACK_GET_NEW_USERS = '/users/getNewUsers'
 export const URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN = (resetToken: string) => `/users/getUserByResetPassword/${resetToken}`
@@ -128,6 +151,12 @@ export const URL_BACK_CREATE_USER_BY_ADMIN = '/users/admin/create'
 export const URL_BACK_SWITCH_USER_IS_ACTIVE = (userId: number | string) => `/users/${userId}/switchIsActive`
 export const URL_BACK_SWITCH_USER_IS_BANNED = (userId: number | string) => `/users/${userId}/switchIsBanned`
 export const URL_BACK_UPDATE_USER_BY_ADMIN = (userId: number | string) => `/users/${userId}/updateUserByAdmin`
+export const URL_BACK_ADMIN_SEND_PASSWORD_RESET = (userId: number | string) =>
+  `/users/${userId}/admin/send-password-reset`;
+export const URL_BACK_ADMIN_USER_QUIZ = (userId: number | string) =>
+  `/users/${userId}/admin/quiz`;
+export const URL_BACK_ADMIN_USER_TOURNAMENTS = (userId: number | string) =>
+  `/users/${userId}/admin/tournaments`;
 export const URL_BACK_DELETE_USER = (userId: number | string) => `/users/${userId}`
 export const URL_BACK_UPDATE_MY_PROFILE = (userId: number | string) => `/users/${userId}`
 export const URL_BACK_CHANGE_MY_PASSWORD = (userId: number | string) => `/users/${userId}/password`
@@ -165,6 +194,8 @@ export const URL_BACK_TOURNAMENT_NEXT_ROUND = (id: number | string) =>
   `/tournaments/${id}/rounds/next`;
 export const URL_BACK_TOURNAMENT_ROLLBACK_ROUND = (id: number | string) =>
   `/tournaments/${id}/rounds/rollback`;
+export const URL_BACK_TOURNAMENT_REPAIR_ROUND = (id: number | string) =>
+  `/tournaments/${id}/rounds/repair`;
 export const URL_BACK_TOURNAMENT_PLAYER_BAN = (
   tournamentId: number | string,
   tournamentPlayerId: number | string
@@ -173,6 +204,10 @@ export const URL_BACK_REMOVE_TOURNAMENT_PLAYER = (
   tournamentId: number | string,
   tournamentPlayerId: number | string
 ) => `/tournaments/${tournamentId}/players/${tournamentPlayerId}/remove`;
+export const URL_BACK_ADMIN_SET_TOURNAMENT_PLAYER_DROPPED = (
+  tournamentId: number | string,
+  tournamentPlayerId: number | string
+) => `/tournaments/${tournamentId}/players/${tournamentPlayerId}/drop`;
 export const URL_BACK_ADD_TOURNAMENT_PLAYER = (
   tournamentId: number | string,
   userId: number | string
@@ -194,6 +229,8 @@ export const URL_BACK_GET_ARCHETYPE_RANKING = (archetypeId: number | string) =>
 export const URL_BACK_GET_MY_ARCHETYPE_RANKINGS = `/archetype-rankings/me`;
 
 export const URL_BACK_QUIZ_HUB = `/quizzes/hub`;
+export const URL_BACK_QUIZ_SEASON_RANKING = (seasonId: number | string = "current") =>
+  `/quizzes/seasons/${seasonId}/ranking`;
 export const URL_BACK_QUIZ_MY_STATS = `/quizzes/me/stats`;
 export const URL_BACK_QUIZ_THEMES = `/quizzes/themes`;
 export const URL_BACK_QUIZ_START_FREE = `/quizzes/attempts/free`;

@@ -46,7 +46,7 @@ function Input<T extends Record<string, unknown> = Record<string, unknown>>({
   return (
     <div data-testid="text-input-container" className={`flex flex-col col-span-${colSpanWidth}`}>
       {label && (
-        <label htmlFor={inputId} className="mt-2 font-medium">
+        <label htmlFor={inputId} className="mt-2 font-bold">
           {label}:{" "}
           {required && <span className="text-red-500 font-bold">*</span>}
         </label>

@@ -27,7 +27,7 @@ function CheckboxInput<T extends Record<string, unknown>>({
 }: CheckboxInputProps<T>): JSX.Element {
   return (
     <div className="flex flex-col">
-      <label className="mt-2 font-medium">
+      <label className="mt-2 font-bold">
         {label}: {required && <span className="text-red-500 font-bold">*</span>}
       </label>
       <div className="flex grid grid-cols-12">
