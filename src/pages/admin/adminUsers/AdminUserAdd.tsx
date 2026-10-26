@@ -8,7 +8,7 @@ const AdminUserAdd = () => {
     <AdminStructure>
       <AdminBodyHeader
         label="Ajouter un utilisateur"
-        catchphrase=""
+        catchphrase="Créez un compte et assignez ses rôles"
         returnButton
       />
       <AdminUserFormik />

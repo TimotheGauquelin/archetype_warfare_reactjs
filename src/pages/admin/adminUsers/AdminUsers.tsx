@@ -1,97 +1,112 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../adminLayout";
 import AdminUserPagination from "../../../components/pages/admin/users/AdminUserPagination";
 import { searchUsers } from "../../../services/user";
-import { URL_FRONT_ADMIN_USER_ADD } from "../../../constant/urlsFront";
-import type { UserSearchResponse, Pagination } from "../../../types";
+import {
+  URL_FRONT_ADMIN_USER_ADD,
+  URL_FRONT_ADMIN_USERS_ALL,
+} from "../../../constant/urlsFront";
+import type { UserSearchResponse } from "../../../types";
+
+const PREVIEW_LIMIT = 10;
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<UserSearchResponse | null>(null);
   const [refresh, setRefresh] = useState(false);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10);
-
-  const [username, setUsername] = useState("");
-  const [debouncedUsername, setDebouncedUsername] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedUsername(username.trim()), 300);
-    return () => clearTimeout(t);
-  }, [username]);
-
-  const criteria = useMemo(() => ({ username: debouncedUsername }), [debouncedUsername]);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const pagination: Pagination = {
-        total: 0,
-        totalPages: 1,
-        currentPage,
-        pageSize
-      };
-      await searchUsers(pageSize, pagination, criteria, (v) => setUsers(prev => typeof v === 'function' ? (v as (p: UserSearchResponse | null) => UserSearchResponse | null)(prev) : v));
+      await searchUsers(
+        PREVIEW_LIMIT,
+        { total: 0, totalPages: 1, currentPage: 1, pageSize: PREVIEW_LIMIT },
+        { username: "" },
+        (v) =>
+          setUsers((prev) =>
+            typeof v === "function"
+              ? (v as (p: UserSearchResponse | null) => UserSearchResponse | null)(
+                  prev
+                )
+              : v
+          )
+      );
     } catch (e) {
       setError("Erreur lors du chargement des utilisateurs.");
       console.error(e);
     } finally {
       setLoading(false);
-      if (refresh) {
-        setRefresh(false);
-      }
+      if (refresh) setRefresh(false);
     }
-  }, [pageSize, currentPage, criteria, refresh]);
+  }, [refresh]);
 
   useEffect(() => {
-    loadUsers();
+    void loadUsers();
   }, [loadUsers]);
 
   return (
     <AdminStructure>
       <AdminBodyHeader
         label="Utilisateurs"
-        catchphrase="Interagissez avec vos invités"
-        buttonUrl={URL_FRONT_ADMIN_USER_ADD}
-        buttonLabel="Ajouter une utilisateur"
+        catchphrase="Derniers inscrits et gestion des comptes"
+
       />
 
-      <div className="flex flex-col bg-slate-200 rounded p-2">
-        <h2 className="mb-2">Filtres : </h2>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => {
-            setUsername(e.target.value);
-            if (currentPage !== 1) setCurrentPage(1);
-          }}
-          placeholder="Rechercher par pseudo..."
-          className="border rounded-md p-2 text-sm w-full max-w-xs bg-white"
-          aria-label="Rechercher un utilisateur par pseudo"
-        />
-      </div>
-
       {error && (
-        <div className="bg-red-100 text-red-600 p-3 rounded-md mb-3">
+        <div className="bg-red-100 text-red-600 border border-red-200 p-3 rounded-md mb-4">
           {error}
         </div>
       )}
 
-      <AdminUserPagination
-        setRefresh={setRefresh}
-        currentPage={users?.pagination?.currentPage ?? currentPage}
-        users={users ?? { data: [], pagination: { total: 0, totalPages: 1, currentPage: 1, pageSize } }}
-        setPagination={setCurrentPage}
-        usersTotalCount={users?.pagination?.total ?? 0}
-        totalPages={users?.pagination?.totalPages ?? 1}
-        pageSize={users?.pagination?.pageSize ?? pageSize}
-        loading={loading}
-      />
+      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
+        <div className="flex flex-col sscreen:flex-row sscreen:items-center sscreen:justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">
+              Gérer les utilisateurs
+            </h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              to={URL_FRONT_ADMIN_USER_ADD}
+              className="h-fit block text-white px-3 py-2 bg-blue-400 rounded hover:bg-blue-500 font-bold text-sm"
+            >
+              Ajouter un utilisateur
+            </Link>
+            <Link
+              to={URL_FRONT_ADMIN_USERS_ALL}
+              className="h-fit block text-blue-700 px-3 py-2 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 font-semibold text-sm"
+            >
+              Voir tous les utilisateurs
+            </Link>
+          </div>
+        </div>
+
+        <AdminUserPagination
+          setRefresh={setRefresh}
+          currentPage={1}
+          users={
+            users ?? {
+              data: [],
+              pagination: {
+                total: 0,
+                totalPages: 1,
+                currentPage: 1,
+                pageSize: PREVIEW_LIMIT,
+              },
+            }
+          }
+          setPagination={() => undefined}
+          usersTotalCount={users?.data?.length ?? 0}
+          totalPages={1}
+          pageSize={PREVIEW_LIMIT}
+          loading={loading}
+          showFooter={false}
+        />
+      </section>
     </AdminStructure>
   );
 };

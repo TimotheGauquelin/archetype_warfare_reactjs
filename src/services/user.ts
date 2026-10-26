@@ -1,8 +1,39 @@
 import api_aw from "../api/api_aw";
-import { URL_BACK_ADD_USER, URL_BACK_CHANGE_MY_PASSWORD, URL_BACK_CREATE_USER_BY_ADMIN, URL_BACK_DELETE_USER, URL_BACK_GET_ALL_USERS, URL_BACK_GET_USER_BY_ID, URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN, URL_BACK_SEARCH_USERS, URL_BACK_SWITCH_USER_IS_ACTIVE, URL_BACK_SWITCH_USER_IS_BANNED, URL_BACK_UPDATE_MY_PROFILE, URL_BACK_UPDATE_PASSWORD, URL_BACK_UPDATE_USER_BY_ADMIN } from "../constant/urlsBack";
+import {
+  URL_BACK_ADD_USER,
+  URL_BACK_ADMIN_SEND_PASSWORD_RESET,
+  URL_BACK_ADMIN_USER_QUIZ,
+  URL_BACK_ADMIN_USER_TOURNAMENTS,
+  URL_BACK_CHANGE_MY_PASSWORD,
+  URL_BACK_CREATE_USER_BY_ADMIN,
+  URL_BACK_DELETE_USER,
+  URL_BACK_GET_ALL_USERS,
+  URL_BACK_GET_USER_BY_ID,
+  URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN,
+  URL_BACK_GET_USER_ROLES,
+  URL_BACK_SEARCH_USERS,
+  URL_BACK_SWITCH_USER_IS_ACTIVE,
+  URL_BACK_SWITCH_USER_IS_BANNED,
+  URL_BACK_UPDATE_MY_PROFILE,
+  URL_BACK_UPDATE_PASSWORD,
+  URL_BACK_UPDATE_USER_BY_ADMIN,
+} from "../constant/urlsBack";
 import { URL_FRONT_ADMIN_USERS, URL_FRONT_HOME, URL_FRONT_LOGIN } from "../constant/urlsFront";
 import { logOut } from "./auth";
-import type { CardLocale, ChangePasswordForm, User, UserForm, PasswordUpdateForm, UserSearchCriteria, Pagination, PaginatedResponse, SetStateCallback, SetErrorMessageCallback } from "../types";
+import type {
+  AdminUserQuizSummary,
+  AdminUserTournamentSummaryItem,
+  CardLocale,
+  ChangePasswordForm,
+  User,
+  UserForm,
+  PasswordUpdateForm,
+  UserSearchCriteria,
+  Pagination,
+  PaginatedResponse,
+  SetStateCallback,
+  SetErrorMessageCallback,
+} from "../types";
 import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
 import type { NavigateFunction } from "react-router-dom";
 import type { AppDispatch } from "../redux/store";
@@ -36,14 +67,54 @@ export const searchUsers = async (
 ): Promise<void> => {
   try {
     const response = await api_aw.get(
-      URL_BACK_SEARCH_USERS(size, pagination.currentPage, criteria.username ?? '')
+      URL_BACK_SEARCH_USERS(size, pagination.currentPage, {
+        q: criteria.q ?? criteria.username ?? "",
+        is_active: criteria.is_active ?? "",
+        is_banned: criteria.is_banned ?? "",
+        role: criteria.role ?? "",
+      })
     );
     if (response.status === 200 && response.data) {
-      setUsers(response.data);
+      const raw = response.data as {
+        data?: User[];
+        pagination?: Pagination & { totalItems?: number };
+      };
+      const total =
+        raw.pagination?.total ??
+        raw.pagination?.totalItems ??
+        0;
+      setUsers({
+        data: raw.data ?? [],
+        pagination: {
+          total,
+          totalPages: raw.pagination?.totalPages ?? 1,
+          currentPage: raw.pagination?.currentPage ?? pagination.currentPage,
+          pageSize: raw.pagination?.pageSize ?? size,
+        },
+      });
     }
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, 'searchUsers');
+  }
+};
+
+export type UserRoleOption = {
+  id: number;
+  label: string;
+};
+
+export const getUserRoles = async (): Promise<UserRoleOption[]> => {
+  try {
+    const response = await api_aw.get(URL_BACK_GET_USER_ROLES);
+    if (response.status === 200 && Array.isArray(response.data)) {
+      return response.data as UserRoleOption[];
+    }
+    return [];
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getUserRoles");
+    return [];
   }
 };
 
@@ -124,16 +195,92 @@ export const addUser = async (
  */
 export const createUserByAdmin = async (
   newUser: UserForm,
-  navigate: NavigateFunction
-): Promise<void> => {
+  navigate: NavigateFunction,
+  toast?: ToastFunction
+): Promise<boolean> => {
   try {
     const response = await api_aw.post(URL_BACK_CREATE_USER_BY_ADMIN, newUser);
     if (response.status === 201) {
+      toast?.success(
+        (response.data as { message?: string })?.message ??
+          "Utilisateur créé avec succès"
+      );
       navigate(URL_FRONT_ADMIN_USERS);
+      return true;
     }
+    return false;
   } catch (error) {
     const appError = handleApiError(error);
-    logError(appError, 'createUserByAdmin');
+    logError(appError, "createUserByAdmin");
+    toast?.error(getErrorMessage(appError));
+    return false;
+  }
+};
+
+/**
+ * Envoie un email de réinitialisation de mot de passe (admin).
+ */
+export const adminSendPasswordReset = async (
+  userId: number | string,
+  toast: ToastFunction
+): Promise<boolean> => {
+  try {
+    const response = await api_aw.post(
+      URL_BACK_ADMIN_SEND_PASSWORD_RESET(userId)
+    );
+    if (response.status === 200) {
+      toast.success(
+        (response.data as { message?: string })?.message ??
+          "Email de réinitialisation envoyé"
+      );
+      return true;
+    }
+    toast.error("Impossible d'envoyer l'email");
+    return false;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "adminSendPasswordReset");
+    toast.error(getErrorMessage(appError));
+    return false;
+  }
+};
+
+/**
+ * Résumé quiz d'un utilisateur (admin).
+ */
+export const getAdminUserQuizSummary = async (
+  userId: number | string
+): Promise<AdminUserQuizSummary | null> => {
+  try {
+    const response = await api_aw.get(URL_BACK_ADMIN_USER_QUIZ(userId));
+    if (response.status === 200 && response.data) {
+      return response.data as AdminUserQuizSummary;
+    }
+    return null;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getAdminUserQuizSummary");
+    return null;
+  }
+};
+
+/**
+ * Tournois d'un utilisateur (admin).
+ */
+export const getAdminUserTournamentsSummary = async (
+  userId: number | string
+): Promise<AdminUserTournamentSummaryItem[] | null> => {
+  try {
+    const response = await api_aw.get(URL_BACK_ADMIN_USER_TOURNAMENTS(userId));
+    if (response.status === 200 && response.data) {
+      const raw = response.data as { tournaments?: AdminUserTournamentSummaryItem[] };
+      return Array.isArray(raw.tournaments) ? raw.tournaments : [];
+    }
+    return null;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getAdminUserTournamentsSummary");
+    return null;
   }
 };
 

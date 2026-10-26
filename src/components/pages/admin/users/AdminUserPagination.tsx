@@ -12,6 +12,7 @@ interface AdminUserPaginationProps {
   totalPages: number;
   pageSize: number;
   loading: boolean;
+  showFooter?: boolean;
 }
 
 const AdminUserPagination: React.FC<AdminUserPaginationProps> = ({
@@ -23,21 +24,25 @@ const AdminUserPagination: React.FC<AdminUserPaginationProps> = ({
   totalPages,
   pageSize,
   loading,
+  showFooter = true,
 }) => {
   const tableHeadItemArray = [
-    { colspan: "col-span-1", label: "Id" },
-    { colspan: "col-span-2", label: "Pseudo" },
+    { colspan: "col-span-4", label: "Pseudo" },
     { colspan: "col-span-4", label: "Email" },
-    { colspan: "col-span-1", label: "Is Active" },
-    { colspan: "col-span-1", label: "Is Forbidden" },
-    { colspan: "col-span-3", label: "Actions" },
+    { colspan: "col-span-1", label: "Actif" },
+    { colspan: "col-span-1", label: "Banni" },
+    { colspan: "col-span-2", label: "Actions" },
   ];
 
   const items = users?.data ?? [];
 
   return (
     <div className="">
-      <p className="mb-2">{users?.pagination?.total ?? 0} utilisateur(s) trouvé(s)</p>
+      <p className="mb-2 text-sm text-gray-600">
+        {showFooter
+          ? `${users?.pagination?.total ?? items.length} utilisateur(s) trouvé(s)`
+          : `${items.length} dernier(s) utilisateur(s)`}
+      </p>
 
       <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <PaginationTableHead tableHeadItem={tableHeadItemArray} />
@@ -46,19 +51,24 @@ const AdminUserPagination: React.FC<AdminUserPaginationProps> = ({
           {loading ? (
             <div className="p-4">Chargement...</div>
           ) : (
-            <AdminUserPaginationTableBody arrayItems={items} setRefresh={setRefresh} />
+            <AdminUserPaginationTableBody
+              arrayItems={items}
+              setRefresh={setRefresh}
+            />
           )}
         </div>
       </div>
 
-      <PaginationFooter
-        setRefresh={() => setRefresh((prev) => !prev)}
-        currentPage={currentPage ?? 1}
-        setPagination={setPagination}
-        itemsTotalCount={usersTotalCount ?? 0}
-        totalPages={totalPages ?? 1}
-        pageSize={pageSize ?? 10}
-      />
+      {showFooter && (
+        <PaginationFooter
+          setRefresh={() => setRefresh((prev) => !prev)}
+          currentPage={currentPage ?? 1}
+          setPagination={setPagination}
+          itemsTotalCount={usersTotalCount ?? 0}
+          totalPages={totalPages ?? 1}
+          pageSize={pageSize ?? 10}
+        />
+      )}
     </div>
   );
 };
