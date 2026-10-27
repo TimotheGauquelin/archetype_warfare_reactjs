@@ -40,6 +40,7 @@ const QuizPlayPage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const [hintUsed, setHintUsed] = useState(false);
   const timeoutSubmittedRef = useRef(false);
   const questionBlockRef = useRef<HTMLDivElement>(null);
 
@@ -87,6 +88,10 @@ const QuizPlayPage = () => {
     });
   }, [currentQuestion?.id, currentIndex, showResults]);
 
+  useEffect(() => {
+    setHintUsed(false);
+  }, [currentQuestion?.id]);
+
   const isDaily = attempt?.mode === "daily";
 
   // Zoom a son propre chrono (3 phases) : ne pas afficher le chrono daily global
@@ -124,10 +129,14 @@ const QuizPlayPage = () => {
       setIsSubmitting(true);
       setError(null);
       try {
+        const payload =
+          attempt.mode === "daily" && hintUsed
+            ? { ...answer, usedHint: true }
+            : answer;
         const updated = await submitQuizAnswer(
           attempt.id,
           currentQuestion.id,
-          answer
+          payload
         );
         // Daily : finaliser sans écran résultat (comportement d’origine)
         if (
@@ -151,7 +160,7 @@ const QuizPlayPage = () => {
         setIsSubmitting(false);
       }
     },
-    [attempt, currentQuestion, isSubmitting, t]
+    [attempt, currentQuestion, hintUsed, isSubmitting, t]
   );
 
   const handleSkip = useCallback(() => {
@@ -331,6 +340,8 @@ const QuizPlayPage = () => {
                 key={currentQuestion.id}
                 question={currentQuestion}
                 questionNumberLabel={freeQuestionNumberLabel}
+                forfeitPointsOnHint={isDaily}
+                onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
                 onAnswer={(selectedIndex) =>
                   handleAnswer({ selectedIndex })
@@ -343,6 +354,8 @@ const QuizPlayPage = () => {
                 key={currentQuestion.id}
                 question={currentQuestion}
                 questionNumberLabel={freeQuestionNumberLabel}
+                forfeitPointsOnHint={isDaily}
+                onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
                 onAnswer={(value) => handleAnswer({ value })}
               />
@@ -353,6 +366,8 @@ const QuizPlayPage = () => {
                 key={currentQuestion.id}
                 question={currentQuestion}
                 questionNumberLabel={freeQuestionNumberLabel}
+                forfeitPointsOnHint={isDaily}
+                onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
                 onAnswer={(order) => handleAnswer({ order })}
               />
@@ -363,6 +378,8 @@ const QuizPlayPage = () => {
                 key={currentQuestion.id}
                 question={currentQuestion}
                 questionNumberLabel={freeQuestionNumberLabel}
+                forfeitPointsOnHint={isDaily}
+                onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
                 onAnswer={(cardIds) => handleAnswer({ cardIds })}
               />
@@ -373,6 +390,8 @@ const QuizPlayPage = () => {
                 key={currentQuestion.id}
                 question={currentQuestion}
                 questionNumberLabel={freeQuestionNumberLabel}
+                forfeitPointsOnHint={isDaily}
+                onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
                 onAnswer={(cardIds) => handleAnswer({ cardIds })}
               />

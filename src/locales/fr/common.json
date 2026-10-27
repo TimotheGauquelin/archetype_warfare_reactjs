@@ -585,6 +585,11 @@
     "finalScore": "Score final : {{score}} / {{max}}",
     "showHint": "Afficher l'indice",
     "hint": "Indice",
+    "hintForfeitTitle": "Utiliser l'indice ?",
+    "hintForfeitMessage": "En Daily, regarder l'indice vous empêche de gagner des points sur cette question (QCM, Vrai/Faux, Dans l'ordre, Trouvez le nom, Invocateur).",
+    "hintForfeitConfirm": "Voir l'indice",
+    "hintForfeitCancel": "Annuler",
+    "hintForfeitActive": "Indice utilisé : aucun point sur cette question.",
     "explanation": "Explication",
     "badge": {
       "gameMode": "Mode de Jeu",

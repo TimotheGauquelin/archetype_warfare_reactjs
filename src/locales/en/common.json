@@ -585,6 +585,11 @@
     "finalScore": "Final score: {{score}} / {{max}}",
     "showHint": "Show hint",
     "hint": "Hint",
+    "hintForfeitTitle": "Use the hint?",
+    "hintForfeitMessage": "In Daily mode, viewing the hint means you earn no points on this question (QCM, True/False, In order, Find the name, Summoner).",
+    "hintForfeitConfirm": "Show hint",
+    "hintForfeitCancel": "Cancel",
+    "hintForfeitActive": "Hint used: no points for this question.",
     "explanation": "Explanation",
     "badge": {
       "gameMode": "Game Mode",
@@ -597,7 +602,7 @@
       "hard": "Hard"
     },
     "types": {
-      "mcq": "MCQ",
+      "mcq": "QCM",
       "true_false": "True / False",
       "order": "In order",
       "name_the_cards": "Find the name",
