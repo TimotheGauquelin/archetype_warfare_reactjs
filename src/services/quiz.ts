@@ -77,6 +77,7 @@ export type QuizPublicQuestion = {
   imageUrl?: string | null;
   hint?: string | null;
   explanation?: string | null;
+  explanationImageUrl?: string | null;
   theme?: { id: number; slug: string; label: string } | null;
   payload: {
     choices?: Array<string | QuizMcqChoice>;
@@ -341,7 +342,9 @@ export type AdminQuizQuestion = {
   };
   points: number;
   is_active: boolean;
-  /** Déjà sortie en Daily : jouable en libre, non replanifiable en Daily */
+  /** Intention : true = pool Daily, false = question libre */
+  for_daily: boolean;
+  /** Historique : déjà sortie au moins une fois en Daily */
   was_daily_question: boolean;
   /** Secondes pour le daily : 0 = pas de chrono, max 30 */
   daily_time_limit_seconds: number;
@@ -357,6 +360,7 @@ export type AdminQuizQuestion = {
   image_url?: string | null;
   hint?: string | null;
   explanation?: string | null;
+  explanation_image_url?: string | null;
   created_at?: string;
   updated_at?: string;
 };
@@ -407,6 +411,7 @@ export type AdminQuizQuestionInput = {
   };
   points?: number;
   is_active?: boolean;
+  for_daily?: boolean;
   was_daily_question?: boolean;
   daily_time_limit_seconds?: number;
   season_id?: number | null;
@@ -415,6 +420,7 @@ export type AdminQuizQuestionInput = {
   image_url?: string | null;
   hint?: string | null;
   explanation?: string | null;
+  explanation_image_url?: string | null;
 };
 
 export const getQuizThemes = async (): Promise<QuizTheme[]> => {
@@ -432,6 +438,7 @@ export const listAdminQuizQuestions = async (filters?: {
   theme?: string;
   type?: string;
   is_active?: boolean;
+  for_daily?: boolean;
   was_daily_question?: boolean;
   difficulty?: QuizDifficulty;
   season_id?: number;
@@ -444,6 +451,9 @@ export const listAdminQuizQuestions = async (filters?: {
     if (filters?.difficulty) params.difficulty = filters.difficulty;
     if (filters?.is_active !== undefined) {
       params.is_active = String(filters.is_active);
+    }
+    if (filters?.for_daily !== undefined) {
+      params.for_daily = String(filters.for_daily);
     }
     if (filters?.was_daily_question !== undefined) {
       params.was_daily_question = String(filters.was_daily_question);

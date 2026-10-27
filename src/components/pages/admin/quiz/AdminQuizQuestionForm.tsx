@@ -61,7 +61,7 @@ const DIFFICULTY_OPTIONS = [
 ];
 
 const TYPE_OPTIONS = [
-  { id: "mcq", label: "MCQ (4 choix)" },
+  { id: "mcq", label: "QCM (4 choix)" },
   { id: "true_false", label: "Vrai / Faux" },
   { id: "order", label: "Dans l'ordre" },
   { id: "name_the_cards", label: "Trouvez le nom" },
@@ -194,11 +194,10 @@ export type QuestionFormState = {
   hintLadder: HintLadderFormState;
   points: number;
   is_active: boolean;
-  /** Planifier pour un jour (UI) ; ne brûle pas la question tant qu'elle n'est pas sortie en Daily */
-  schedule_daily: boolean;
+  /** Intention : pool Daily vs question libre */
+  for_daily: boolean;
+  /** Historique : déjà sortie au moins une fois en Daily */
   was_daily_question: boolean;
-  /** Déjà sortie en Daily : non replanifiable */
-  daily_locked: boolean;
   daily_time_limit_seconds: number;
   season_id: number | null;
   scheduled_date: string | null;
@@ -208,6 +207,9 @@ export type QuestionFormState = {
   imageCardName: string | null;
   hint: string;
   explanation: string;
+  explanationImageMode: ImageMode;
+  explanation_image_url: string;
+  explanationImageCardName: string | null;
 } & Record<string, unknown>;
 
 export const emptyForm = (themeSlug = ""): QuestionFormState => ({
@@ -228,9 +230,8 @@ export const emptyForm = (themeSlug = ""): QuestionFormState => ({
   hintLadder: emptyHintLadderForm(),
   points: 1,
   is_active: true,
-  schedule_daily: false,
+  for_daily: false,
   was_daily_question: false,
-  daily_locked: false,
   daily_time_limit_seconds: 15,
   season_id: null,
   scheduled_date: null,
@@ -240,6 +241,9 @@ export const emptyForm = (themeSlug = ""): QuestionFormState => ({
   imageCardName: null,
   hint: "",
   explanation: "",
+  explanationImageMode: "upload",
+  explanation_image_url: "",
+  explanationImageCardName: null,
 });
 
 const normalizeCardAnswersFromQuestion = (
@@ -401,9 +405,8 @@ export const formFromQuestion = (q: AdminQuizQuestion): QuestionFormState => {
     points:
       q.type === "zoom" || q.type === "hint_ladder" ? 3 : q.points || 1,
     is_active: q.is_active,
-    schedule_daily: Boolean(q.season_id && q.scheduled_date),
+    for_daily: Boolean(q.for_daily),
     was_daily_question: Boolean(q.was_daily_question),
-    daily_locked: Boolean(q.was_daily_question),
     daily_time_limit_seconds: Math.max(
       0,
       Math.min(30, Number(q.daily_time_limit_seconds) || 0)
@@ -418,6 +421,12 @@ export const formFromQuestion = (q: AdminQuizQuestion): QuestionFormState => {
     imageCardName: detectImageMode(image_url) === "card" ? "Carte sélectionnée" : null,
     hint: q.hint ?? "",
     explanation: q.explanation ?? "",
+    explanationImageMode: detectImageMode(q.explanation_image_url),
+    explanation_image_url: q.explanation_image_url ?? "",
+    explanationImageCardName:
+      detectImageMode(q.explanation_image_url) === "card"
+        ? "Carte sélectionnée"
+        : null,
   };
 };
 
@@ -607,6 +616,8 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               prompt: "Quelle est cette carte ?",
               hint: "",
               explanation: "",
+              explanation_image_url: "",
+              explanationImageCardName: null,
               zoom: emptyZoomForm(),
             }
           : nextType === "hint_ladder"
@@ -614,6 +625,8 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                 prompt: "Trouvez le nom de la carte grâce aux indices",
                 hint: "",
                 explanation: "",
+                explanation_image_url: "",
+                explanationImageCardName: null,
                 hintLadder: emptyHintLadderForm(),
               }
             : {}),
@@ -621,13 +634,20 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
     });
   };
 
-  const setScheduleDailyForm: Dispatch<SetStateAction<QuestionFormState>> = (
+  const setForDailyForm: Dispatch<SetStateAction<QuestionFormState>> = (
     action
   ) => {
     setForm((prev) => {
       const next = typeof action === "function" ? action(prev) : action;
-      if (next.schedule_daily) return next;
-      return { ...next, season_id: null, scheduled_date: null };
+      const raw = next.for_daily as boolean | string;
+      const for_daily = raw === true || raw === "true";
+      if (for_daily) return { ...next, for_daily: true };
+      return {
+        ...next,
+        for_daily: false,
+        season_id: null,
+        scheduled_date: null,
+      };
     });
   };
 
@@ -645,12 +665,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
         if (initialQuestion) {
           setForm(formFromQuestion(initialQuestion));
         } else {
-          const currentSeason =
-            seasonList.find((s) => s.status === "current") ?? seasonList[0];
-          setForm({
-            ...emptyForm(filteredThemes[0]?.slug ?? ""),
-            season_id: currentSeason?.id ?? null,
-          });
+          setForm(emptyForm(filteredThemes[0]?.slug ?? ""));
         }
       } catch (error) {
         toast.error(
@@ -717,23 +732,16 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
       );
       return;
     }
-    if (form.daily_locked && form.schedule_daily) {
-      toast.error(
-        "Cette question a déjà été utilisée en Daily et ne peut plus être planifiée"
-      );
-      return;
-    }
-    if (form.schedule_daily && !form.season_id) {
-      toast.error(
-        "Sélectionnez une saison Daily Quizz pour une question du défi du jour"
-      );
-      return;
-    }
-    if (form.schedule_daily && !form.scheduled_date) {
-      toast.error(
-        "Choisissez le jour (date) auquel cette question sera le défi du jour"
-      );
-      return;
+    if (form.for_daily) {
+      const hasSeason =
+        form.season_id != null && String(form.season_id) !== "";
+      const hasDate = Boolean(form.scheduled_date);
+      if (hasSeason !== hasDate) {
+        toast.error(
+          "Pour un créneau précis, renseignez saison et date ensemble — sinon laissez les deux vides (pool Daily)"
+        );
+        return;
+      }
     }
 
     const payload: AdminQuizQuestionInput = {
@@ -748,7 +756,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
           ? 3
           : Math.max(1, Number(form.points) || 1),
       is_active: form.is_active,
-      // was_daily_question est posé côté API au passage réel en Daily (pas à la planification)
+      for_daily: form.for_daily,
       daily_time_limit_seconds:
         form.type === "zoom"
           ? 0
@@ -756,14 +764,12 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
             0,
             Math.min(30, Math.floor(Number(form.daily_time_limit_seconds) || 0))
           ),
-      season_id: form.schedule_daily
+      season_id: form.for_daily
         ? form.season_id != null && String(form.season_id) !== ""
           ? Number(form.season_id)
           : null
         : null,
-      scheduled_date: form.schedule_daily
-        ? form.scheduled_date || null
-        : null,
+      scheduled_date: form.for_daily ? form.scheduled_date || null : null,
       difficulty: form.difficulty,
       image_url:
         form.type === "zoom"
@@ -779,6 +785,10 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
         form.type === "zoom" || form.type === "hint_ladder"
           ? null
           : form.explanation.trim() || null,
+      explanation_image_url:
+        form.type === "zoom" || form.type === "hint_ladder"
+          ? null
+          : form.explanation_image_url.trim() || null,
     };
 
     setSaving(true);
@@ -1062,6 +1072,109 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                     }
                   />
                 </div>
+                <div className="border border-gray-200 bg-white rounded p-3 space-y-3">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="font-medium text-gray-800">
+                      Image d&apos;explication{" "}
+                      <span className="text-xs font-normal text-gray-500">
+                        (optionnel)
+                      </span>
+                    </p>
+                    <div className="flex flex-row items-center gap-2">
+                      <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
+                        Upload
+                      </span>
+                      <label className="inline-flex relative items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={form.explanationImageMode === "card"}
+                          onChange={() => {
+                            const nextMode: ImageMode =
+                              form.explanationImageMode === "card"
+                                ? "upload"
+                                : "card";
+                            setForm((prev) => ({
+                              ...prev,
+                              explanationImageMode: nextMode,
+                              explanation_image_url: "",
+                              explanationImageCardName: null,
+                            }));
+                          }}
+                        />
+                        <CheckboxSlider />
+                      </label>
+                      <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
+                        Carte
+                      </span>
+                    </div>
+                  </div>
+
+                  {form.explanation_image_url && (
+                    <img
+                      src={form.explanation_image_url}
+                      alt="Prévisualisation explication"
+                      className="max-h-32 rounded object-contain shadow-sm"
+                    />
+                  )}
+
+                  {form.explanationImageMode === "upload" ? (
+                    <label className="flex flex-col text-sm font-medium text-gray-800">
+                      Fichier image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="mt-1 font-normal"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const base64Img = await convertBase64(file);
+                          if (typeof base64Img === "string") {
+                            setForm((prev) => ({
+                              ...prev,
+                              explanation_image_url: base64Img,
+                              explanationImageCardName: null,
+                            }));
+                          }
+                        }}
+                      />
+                    </label>
+                  ) : (
+                    <QuizImageCardSearch
+                      selectedName={form.explanationImageCardName}
+                      onSelect={(artworkUrl, cardName) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          explanation_image_url: artworkUrl,
+                          explanationImageCardName: cardName,
+                        }))
+                      }
+                      onClear={() =>
+                        setForm((prev) => ({
+                          ...prev,
+                          explanation_image_url: "",
+                          explanationImageCardName: null,
+                        }))
+                      }
+                    />
+                  )}
+
+                  {form.explanation_image_url && (
+                    <button
+                      type="button"
+                      className="text-sm text-red-600 hover:underline"
+                      onClick={() =>
+                        setForm((prev) => ({
+                          ...prev,
+                          explanation_image_url: "",
+                          explanationImageCardName: null,
+                        }))
+                      }
+                    >
+                      Retirer l&apos;image d&apos;explication
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -1295,32 +1408,48 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
         </div>
 
         <div className={activeTab === "daily" ? "space-y-4" : "hidden"}>
-          {form.daily_locked ? (
-            <p className="text-sm text-amber-900 font-medium">
-              Cette question a déjà été utilisée en Daily et ne peut plus être
-              planifiée.
-            </p>
-          ) : (
-            <SwitchInput
-              label="Planifier pour le défi du jour"
-              attribute="schedule_daily"
-              data={form}
-              setAction={setScheduleDailyForm}
-              displayRow
-            />
-          )}
+          <div className="grid grid-cols-12 gap-4 max-w-2xl">
+            <div className="col-span-12 tablet:col-span-6">
+              <SelectInput
+                label="Destination de la question"
+                attribute="for_daily"
+                data={
+                  {
+                    ...form,
+                    for_daily: form.for_daily ? "true" : "false",
+                  } as unknown as QuestionFormState
+                }
+                setAction={setForDailyForm}
+                options={[
+                  { id: "false", label: "Question libre" },
+                  { id: "true", label: "Question pour le Daily" },
+                ]}
+                defaultOptionLabel="Sélectionner"
+                colSpanWidth="12"
+              />
+              <span className="mt-1 text-xs text-gray-600 font-normal">
+                « Pour le Daily » : pool, date possible plus tard dans le
+                planificateur. Après passage en Daily → redevient libre.
+              </span>
+              {form.was_daily_question && (
+                <span className="mt-1 block text-xs text-amber-800 font-medium">
+                  Déjà sortie en Daily au moins une fois — vous pouvez la
+                  remettre dans le pool.
+                </span>
+              )}
+            </div>
+          </div>
 
-          {form.schedule_daily && (
+          {form.for_daily && (
             <div className="grid grid-cols-12 gap-4 max-w-2xl">
               <div className="col-span-12 tablet:col-span-6">
                 <SelectInput
-                  label="Saison Daily Quizz"
+                  label="Saison Daily Quizz (optionnel)"
                   attribute="season_id"
                   data={form}
                   setAction={setSeasonForm}
                   options={seasonOptions}
-                  defaultOptionLabel="Sélectionner une saison"
-                  required
+                  defaultOptionLabel="Plus tard (pool)"
                   colSpanWidth="12"
                 />
                 {seasons.length === 0 && (
@@ -1331,7 +1460,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               </div>
               <div className="col-span-12 tablet:col-span-6">
                 <Input
-                  label="Jour du défi (1 question / jour)"
+                  label="Jour du défi (optionnel)"
                   attribute="scheduled_date"
                   data={form}
                   setAction={setForm}
@@ -1339,12 +1468,11 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                   min={selectedSeason?.startDate}
                   max={selectedSeason?.endDate}
                   disabled={!form.season_id}
-                  required
                   colSpanWidth="12"
                 />
                 <span className="mt-1 text-xs text-gray-600 font-normal">
-                  Ce jour-là, cette question sera le défi du jour (unique dans
-                  la saison).
+                  Laissez vide pour assigner la date dans le planificateur.
+                  Sinon : 1 question / jour dans la saison.
                 </span>
               </div>
             </div>

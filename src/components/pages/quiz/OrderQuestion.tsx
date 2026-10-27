@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QuizPublicQuestion } from "@/services/quiz";
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
+import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
+import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
 
 export type OrderItem = {
   id: string;
@@ -13,6 +15,8 @@ interface OrderQuestionProps {
   question: QuizPublicQuestion;
   disabled?: boolean;
   questionNumberLabel?: string | null;
+  forfeitPointsOnHint?: boolean;
+  onHintUsed?: () => void;
   onAnswer: (order: string[]) => void;
 }
 
@@ -29,10 +33,11 @@ const OrderQuestion = ({
   question,
   disabled,
   questionNumberLabel,
+  forfeitPointsOnHint,
+  onHintUsed,
   onAnswer,
 }: OrderQuestionProps) => {
   const { t } = useTranslation();
-  const [showHint, setShowHint] = useState(false);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const sourceItems = useMemo((): OrderItem[] => {
@@ -96,22 +101,11 @@ const OrderQuestion = ({
       <p className="text-sm text-gray-600">{t("quiz.orderHint")}</p>
 
       {question.hint && !hasAnswered && (
-        <div className="space-y-1">
-          {!showHint ? (
-            <button
-              type="button"
-              className="text-sm text-blue-700 hover:underline"
-              onClick={() => setShowHint(true)}
-            >
-              {t("quiz.showHint")}
-            </button>
-          ) : (
-            <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded p-2">
-              <span className="font-semibold">{t("quiz.hint")} :</span>{" "}
-              {question.hint}
-            </p>
-          )}
-        </div>
+        <QuizQuestionHint
+          hint={question.hint}
+          forfeitPointsOnHint={forfeitPointsOnHint}
+          onHintUsed={onHintUsed}
+        />
       )}
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -166,11 +160,11 @@ const OrderQuestion = ({
         </button>
       )}
 
-      {hasAnswered && question.explanation && (
-        <p className="text-sm text-gray-700 bg-slate-50 border border-slate-200 rounded p-3">
-          <span className="font-semibold">{t("quiz.explanation")} :</span>{" "}
-          {question.explanation}
-        </p>
+      {hasAnswered && (
+        <QuizExplanationBlock
+          explanation={question.explanation}
+          explanationImageUrl={question.explanationImageUrl}
+        />
       )}
     </div>
   );

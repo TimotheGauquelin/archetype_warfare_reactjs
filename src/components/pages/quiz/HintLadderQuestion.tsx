@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QuizPublicQuestion } from "@/services/quiz";
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
+import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
 import QuizChoiceCardPicker, {
   emptyChoiceCard,
   type ChoiceCard,
@@ -225,11 +226,11 @@ const HintLadderQuestion = ({
         </div>
       )}
 
-      {hasAnswered && question.explanation && (
-        <p className="text-sm text-gray-700 bg-slate-50 border border-slate-200 rounded p-3">
-          <span className="font-semibold">{t("quiz.explanation")} :</span>{" "}
-          {question.explanation}
-        </p>
+      {hasAnswered && (
+        <QuizExplanationBlock
+          explanation={question.explanation}
+          explanationImageUrl={question.explanationImageUrl}
+        />
       )}
     </div>
   );

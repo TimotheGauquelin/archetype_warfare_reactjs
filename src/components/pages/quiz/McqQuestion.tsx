@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import type { QuizMcqChoice, QuizPublicQuestion } from "@/services/quiz";
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
+import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
+import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
 
 const DEFAULT_QUESTION_ARTWORK = "/assets/question_artwork.png";
 
@@ -9,6 +9,8 @@ interface McqQuestionProps {
   question: QuizPublicQuestion;
   disabled?: boolean;
   questionNumberLabel?: string | null;
+  forfeitPointsOnHint?: boolean;
+  onHintUsed?: () => void;
   onAnswer: (selectedIndex: number) => void;
 }
 
@@ -28,10 +30,10 @@ const McqQuestion = ({
   question,
   disabled,
   questionNumberLabel,
+  forfeitPointsOnHint,
+  onHintUsed,
   onAnswer,
 }: McqQuestionProps) => {
-  const { t } = useTranslation();
-  const [showHint, setShowHint] = useState(false);
   const choices = (question.payload.choices ?? []).map(toChoice);
   const hasAnswered = Boolean(question.userAnswer);
   const selected =
@@ -60,22 +62,11 @@ const McqQuestion = ({
       <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
 
       {question.hint && !hasAnswered && (
-        <div className="space-y-1">
-          {!showHint ? (
-            <button
-              type="button"
-              className="text-sm text-blue-700 hover:underline"
-              onClick={() => setShowHint(true)}
-            >
-              {t("quiz.showHint")}
-            </button>
-          ) : (
-            <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded p-2">
-              <span className="font-semibold">{t("quiz.hint")} :</span>{" "}
-              {question.hint}
-            </p>
-          )}
-        </div>
+        <QuizQuestionHint
+          hint={question.hint}
+          forfeitPointsOnHint={forfeitPointsOnHint}
+          onHintUsed={onHintUsed}
+        />
       )}
 
       <div
@@ -125,11 +116,11 @@ const McqQuestion = ({
         })}
       </div>
 
-      {hasAnswered && question.explanation && (
-        <p className="text-sm text-gray-700 bg-slate-50 border border-slate-200 rounded p-3">
-          <span className="font-semibold">{t("quiz.explanation")} :</span>{" "}
-          {question.explanation}
-        </p>
+      {hasAnswered && (
+        <QuizExplanationBlock
+          explanation={question.explanation}
+          explanationImageUrl={question.explanationImageUrl}
+        />
       )}
     </div>
   );

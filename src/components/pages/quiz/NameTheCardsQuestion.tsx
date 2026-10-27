@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { QuizNameTheCardsAnswer, QuizPublicQuestion } from "@/services/quiz";
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
+import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
+import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
 import QuizChoiceCardPicker, {
   emptyChoiceCard,
   type ChoiceCard,
@@ -11,6 +13,8 @@ interface NameTheCardsQuestionProps {
   question: QuizPublicQuestion;
   disabled?: boolean;
   questionNumberLabel?: string | null;
+  forfeitPointsOnHint?: boolean;
+  onHintUsed?: () => void;
   onAnswer: (cardIds: string[]) => void;
 }
 
@@ -18,10 +22,11 @@ const NameTheCardsQuestion = ({
   question,
   disabled,
   questionNumberLabel,
+  forfeitPointsOnHint,
+  onHintUsed,
   onAnswer,
 }: NameTheCardsQuestionProps) => {
   const { t } = useTranslation();
-  const [showHint, setShowHint] = useState(false);
 
   const monsterCount = useMemo(() => {
     const raw = Number(question.payload.monsterCount) || 1;
@@ -110,22 +115,11 @@ const NameTheCardsQuestion = ({
       )}
 
       {question.hint && !hasAnswered && (
-        <div className="space-y-1">
-          {!showHint ? (
-            <button
-              type="button"
-              className="text-sm text-blue-700 hover:underline"
-              onClick={() => setShowHint(true)}
-            >
-              {t("quiz.showHint")}
-            </button>
-          ) : (
-            <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded p-2">
-              <span className="font-semibold">{t("quiz.hint")} :</span>{" "}
-              {question.hint}
-            </p>
-          )}
-        </div>
+        <QuizQuestionHint
+          hint={question.hint}
+          forfeitPointsOnHint={forfeitPointsOnHint}
+          onHintUsed={onHintUsed}
+        />
       )}
 
       <div className="space-y-3">
@@ -229,11 +223,11 @@ const NameTheCardsQuestion = ({
         </button>
       )}
 
-      {hasAnswered && question.explanation && (
-        <p className="text-sm text-gray-700 bg-slate-50 border border-slate-200 rounded p-3">
-          <span className="font-semibold">{t("quiz.explanation")} :</span>{" "}
-          {question.explanation}
-        </p>
+      {hasAnswered && (
+        <QuizExplanationBlock
+          explanation={question.explanation}
+          explanationImageUrl={question.explanationImageUrl}
+        />
       )}
     </div>
   );
