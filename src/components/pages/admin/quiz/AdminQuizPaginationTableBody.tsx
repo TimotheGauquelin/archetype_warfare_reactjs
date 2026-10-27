@@ -56,15 +56,15 @@ const AdminQuizPaginationTableBody: React.FC<AdminQuizPaginationTableBodyProps> 
                       ? "Zoom"
                       : item.type === "hint_ladder"
                         ? "Indices"
-                        : "MCQ"}
+                        : "QCM"}
           </div>
           <div className="col-span-3 p-1 line-clamp-2" title={item.prompt}>
             {item.prompt}
           </div>
           <div className="col-span-1 p-1">{difficultyLabel(item.difficulty)}</div>
           <div className="col-span-1 p-1">{item.points}</div>
-          <div className="col-span-1 p-1 text-center">
-            {item.was_daily_question ? "Oui" : "Non"}
+          <div className="col-span-1 p-1 text-center" title={item.was_daily_question ? "Déjà sortie en Daily" : undefined}>
+            {item.for_daily ? "Daily" : "Libre"}
           </div>
           <div className="col-span-1 p-1">
             <div className="flex justify-center">

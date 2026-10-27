@@ -26,6 +26,7 @@ const defaultFilters = (): AdminQuizFilters => ({
   type: "",
   difficulty: "",
   is_active: "",
+  for_daily: "",
   was_daily_question: "",
 });
 
@@ -50,6 +51,10 @@ const AdminQuizQuestions = () => {
           difficulty: filters.difficulty || undefined,
           is_active:
             filters.is_active === "" ? undefined : filters.is_active === "true",
+          for_daily:
+            filters.for_daily === ""
+              ? undefined
+              : filters.for_daily === "true",
           was_daily_question:
             filters.was_daily_question === ""
               ? undefined
@@ -71,6 +76,7 @@ const AdminQuizQuestions = () => {
     filters.type,
     filters.difficulty,
     filters.is_active,
+    filters.for_daily,
     filters.was_daily_question,
   ]);
 
@@ -86,6 +92,7 @@ const AdminQuizQuestions = () => {
     filters.type,
     filters.difficulty,
     filters.is_active,
+    filters.for_daily,
     filters.was_daily_question,
   ]);
 

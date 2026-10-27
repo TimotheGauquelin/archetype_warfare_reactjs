@@ -17,6 +17,7 @@ export type AdminQuizFilters = {
   type: string;
   difficulty: "" | QuizDifficulty;
   is_active: "" | "true" | "false";
+  for_daily: "" | "true" | "false";
   was_daily_question: "" | "true" | "false";
 } & Record<string, unknown>;
 
@@ -29,7 +30,7 @@ interface AdminQuizFilterProps {
 }
 
 const TYPE_OPTIONS = [
-  { id: "mcq", label: "MCQ" },
+  { id: "mcq", label: "QCM" },
   { id: "true_false", label: "Vrai / Faux" },
   { id: "order", label: "Dans l'ordre" },
   { id: "name_the_cards", label: "Trouvez le nom" },
@@ -49,7 +50,12 @@ const ACTIVE_OPTIONS = [
   { id: "false", label: "Inactives" },
 ];
 
-const DAILY_OPTIONS = [
+const FOR_DAILY_OPTIONS = [
+  { id: "true", label: "Pour le Daily" },
+  { id: "false", label: "Question libre" },
+];
+
+const WAS_DAILY_OPTIONS = [
   { id: "true", label: "Déjà sortie en Daily" },
   { id: "false", label: "Pas encore sortie" },
 ];
@@ -109,7 +115,7 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
     showConfirmDialog({
       title: "Libérer tous les créneaux Daily",
       message:
-        "Retirer toutes les questions de leur jour planifié ? Le statut « déjà sortie en Daily » est conservé (non replanifiable).",
+        "Retirer toutes les questions de leur jour planifié ? Elles restent dans le pool Daily si elles y étaient.",
       onConfirm: () => {
         void (async () => {
           try {
@@ -195,13 +201,22 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
           ariaLabel="Statut"
         />
         <SelectInput
+          attribute="for_daily"
+          data={criteria}
+          setAction={setCriteria}
+          defaultOptionLabel="-- Destination --"
+          options={FOR_DAILY_OPTIONS}
+          colSpanWidth="1"
+          ariaLabel="Destination"
+        />
+        <SelectInput
           attribute="was_daily_question"
           data={criteria}
           setAction={setCriteria}
-          defaultOptionLabel="-- Daily --"
-          options={DAILY_OPTIONS}
+          defaultOptionLabel="-- Historique Daily --"
+          options={WAS_DAILY_OPTIONS}
           colSpanWidth="1"
-          ariaLabel="Daily"
+          ariaLabel="Historique Daily"
         />
       </div>
 

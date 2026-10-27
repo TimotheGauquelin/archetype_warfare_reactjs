@@ -28,7 +28,7 @@ const typeLabel = (type: string) => {
     case "hint_ladder":
       return "Indices";
     default:
-      return "MCQ";
+      return "QCM";
   }
 };
 
@@ -237,10 +237,10 @@ const AdminQuizSeasonPoolTab = ({
       .sort((a, b) => a.label.localeCompare(b.label, "fr"));
   }, [allQuestions]);
 
-  /** Questions encore assignables (jamais brûlées Daily, pas déjà dans le brouillon). */
+  /** Questions du pool Daily pas encore placées sur un jour du brouillon. */
   const availablePool = useMemo(() => {
     return allQuestions.filter(
-      (q) => !q.was_daily_question && !draftAssignedIds.has(q.id)
+      (q) => q.for_daily && !draftAssignedIds.has(q.id)
     );
   }, [allQuestions, draftAssignedIds]);
 
@@ -311,12 +311,14 @@ const AdminQuizSeasonPoolTab = ({
     try {
       for (const questionId of toClear) {
         await updateAdminQuizQuestion(questionId, {
+          for_daily: true,
           season_id: null,
           scheduled_date: null,
         });
       }
       for (const { day, questionId } of toAssign) {
         await updateAdminQuizQuestion(questionId, {
+          for_daily: true,
           season_id: seasonId,
           scheduled_date: day,
         });
