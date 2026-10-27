@@ -50,8 +50,8 @@ const ACTIVE_OPTIONS = [
 ];
 
 const DAILY_OPTIONS = [
-  { id: "true", label: "Déjà utilisée" },
-  { id: "false", label: "Jamais utilisée" },
+  { id: "true", label: "Déjà sortie en Daily" },
+  { id: "false", label: "Pas encore sortie" },
 ];
 
 const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
@@ -109,7 +109,7 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
     showConfirmDialog({
       title: "Libérer tous les créneaux Daily",
       message:
-        "Retirer toutes les questions de leur jour planifié ? Le statut « déjà utilisée en Daily » est conservé (non replanifiable).",
+        "Retirer toutes les questions de leur jour planifié ? Le statut « déjà sortie en Daily » est conservé (non replanifiable).",
       onConfirm: () => {
         void (async () => {
           try {

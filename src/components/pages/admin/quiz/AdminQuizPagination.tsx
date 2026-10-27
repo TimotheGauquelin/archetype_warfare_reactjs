@@ -35,7 +35,7 @@ const AdminQuizPagination: React.FC<AdminQuizPaginationProps> = ({
     { colspan: "col-span-3", label: "Énoncé de la question" },
     { colspan: "col-span-1", label: "Difficulté" },
     { colspan: "col-span-1", label: "Points" },
-    { colspan: "col-span-1", label: "A été planifié en daily" },
+    { colspan: "col-span-1", label: "Déjà sortie en Daily" },
     { colspan: "col-span-1", label: "Active" },
     { colspan: "col-span-2", label: "Actions" },
   ];

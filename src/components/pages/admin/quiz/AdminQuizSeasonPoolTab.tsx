@@ -311,14 +311,12 @@ const AdminQuizSeasonPoolTab = ({
     try {
       for (const questionId of toClear) {
         await updateAdminQuizQuestion(questionId, {
-          was_daily_question: true,
           season_id: null,
           scheduled_date: null,
         });
       }
       for (const { day, questionId } of toAssign) {
         await updateAdminQuizQuestion(questionId, {
-          was_daily_question: true,
           season_id: seasonId,
           scheduled_date: day,
         });

@@ -341,7 +341,7 @@ export type AdminQuizQuestion = {
   };
   points: number;
   is_active: boolean;
-  /** Déjà utilisée / planifiée en Daily : non replanifiable ailleurs */
+  /** Déjà sortie en Daily : jouable en libre, non replanifiable en Daily */
   was_daily_question: boolean;
   /** Secondes pour le daily : 0 = pas de chrono, max 30 */
   daily_time_limit_seconds: number;

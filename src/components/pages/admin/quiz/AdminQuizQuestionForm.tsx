@@ -194,10 +194,10 @@ export type QuestionFormState = {
   hintLadder: HintLadderFormState;
   points: number;
   is_active: boolean;
-  /** Planifier pour un jour (UI) ; côté API, planifier pose was_daily_question */
+  /** Planifier pour un jour (UI) ; ne brûle pas la question tant qu'elle n'est pas sortie en Daily */
   schedule_daily: boolean;
   was_daily_question: boolean;
-  /** Déjà brûlée sans créneau (chargée ainsi) : non replanifiable */
+  /** Déjà sortie en Daily : non replanifiable */
   daily_locked: boolean;
   daily_time_limit_seconds: number;
   season_id: number | null;
@@ -403,7 +403,7 @@ export const formFromQuestion = (q: AdminQuizQuestion): QuestionFormState => {
     is_active: q.is_active,
     schedule_daily: Boolean(q.season_id && q.scheduled_date),
     was_daily_question: Boolean(q.was_daily_question),
-    daily_locked: Boolean(q.was_daily_question) && !q.season_id,
+    daily_locked: Boolean(q.was_daily_question),
     daily_time_limit_seconds: Math.max(
       0,
       Math.min(30, Number(q.daily_time_limit_seconds) || 0)
@@ -748,8 +748,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
           ? 3
           : Math.max(1, Number(form.points) || 1),
       is_active: form.is_active,
-      was_daily_question:
-        form.schedule_daily || form.was_daily_question ? true : undefined,
+      // was_daily_question est posé côté API au passage réel en Daily (pas à la planification)
       daily_time_limit_seconds:
         form.type === "zoom"
           ? 0
