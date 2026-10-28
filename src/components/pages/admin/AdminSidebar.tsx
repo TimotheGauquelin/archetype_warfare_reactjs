@@ -3,7 +3,17 @@ import "../../../styles/components/page/admin/AdminSideBar.scss";
 import React from "react";
 import { FaHome } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ADMIN_BANLISTS, URL_FRONT_ADMIN_CARDS, URL_FRONT_ADMIN_FILES, URL_FRONT_ADMIN_HOME, URL_FRONT_ADMIN_OPTIONS, URL_FRONT_ADMIN_QUIZZES, URL_FRONT_ADMIN_TOURNAMENTS, URL_FRONT_ADMIN_USERS } from "../../../constant/urlsFront";
+import {
+  URL_FRONT_ADMIN_ARCHETYPES,
+  URL_FRONT_ADMIN_BANLISTS,
+  URL_FRONT_ADMIN_CARDS,
+  URL_FRONT_ADMIN_FILES,
+  URL_FRONT_ADMIN_HOME,
+  URL_FRONT_ADMIN_OPTIONS,
+  URL_FRONT_ADMIN_QUIZZES,
+  URL_FRONT_ADMIN_TOURNAMENTS,
+  URL_FRONT_ADMIN_USERS,
+} from "../../../constant/urlsFront";
 
 const sideBarCategories = [
   {
@@ -50,43 +60,61 @@ const sideBarCategories = [
 
 interface AdminSideBarProps {
   displayedNavbar: boolean;
+  onNavigate?: () => void;
 }
 
-const AdminSideBar: React.FC<AdminSideBarProps> = ({ displayedNavbar }) => {
+const AdminSideBar: React.FC<AdminSideBarProps> = ({
+  displayedNavbar,
+  onNavigate,
+}) => {
   const location = useLocation();
   const navigate = useNavigate();
-
   const url = location.pathname;
 
   return (
     <aside
-      className={`sscreen:col-span-3 lscreen:col-span-2 flex flex-col sscreen:tabletAndDesktopHeight ${displayedNavbar ? "block" : "hidden"
-        }`}
+      className={`
+        fixed top-20 left-0 z-40 flex flex-col
+        h-[calc(100vh-5rem)] w-64 max-w-[85vw]
+        transform transition-transform duration-200 ease-out
+        sscreen:relative sscreen:top-0 sscreen:z-auto sscreen:w-auto sscreen:max-w-none
+        sscreen:col-span-3 lscreen:col-span-2 sscreen:tabletAndDesktopHeight sscreen:transition-none
+        ${
+          displayedNavbar
+            ? "translate-x-0"
+            : "-translate-x-full pointer-events-none sscreen:hidden sscreen:pointer-events-auto sscreen:translate-x-0"
+        }
+      `}
+      aria-hidden={!displayedNavbar}
     >
-      <div className="flex-grow flex flex-col justify-between text-gray-500 bg-gray-800">
-        <nav className="flex flex-col mx-4 my-6 space-y-4">
-          {sideBarCategories.map((category, index) => {
-            return (
-              <div key={index}>
-                <Link
-                  key={category.title + index}
-                  to={category.url}
-                  className={`w-full ${url.includes(category.url) && "bg-gray-600"
-                    } inline-flex items-center py-3 hover:text-gray-400 hover:bg-gray-500 focus:text-gray-400 focus:bg-gray-700 rounded-lg px-2`}
-                >
-                  {category.icon}
-                  <span className="ml-2" x-show="menu">
-                    {category.title}
-                  </span>
-                </Link>
-              </div>
-            );
-          })}
+      <div className="flex-grow flex flex-col justify-between text-gray-500 bg-gray-800 h-full shadow-xl sscreen:shadow-none">
+        <nav className="flex flex-col mx-4 my-6 space-y-4 overflow-y-auto">
+          {sideBarCategories.map((category, index) => (
+            <div key={index}>
+              <Link
+                to={category.url}
+                onClick={onNavigate}
+                className={`w-full ${
+                  url.includes(category.url) && "bg-gray-600"
+                } inline-flex items-center py-3 hover:text-gray-400 hover:bg-gray-500 focus:text-gray-400 focus:bg-gray-700 rounded-lg px-2`}
+              >
+                {category.icon}
+                <span className="ml-2">{category.title}</span>
+              </Link>
+            </div>
+          ))}
         </nav>
-        <div className="flex justify-end"
-          onClick={() => navigate(URL_FRONT_ADMIN_OPTIONS)}
+        <div
+          className="flex justify-end"
+          onClick={() => {
+            onNavigate?.();
+            navigate(URL_FRONT_ADMIN_OPTIONS);
+          }}
         >
-          <button className="inline-flex p-3 hover:text-gray-400 justify-center border-gray-700 h-15 w-full border-t hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 px-2">
+          <button
+            type="button"
+            className="inline-flex p-3 hover:text-gray-400 justify-center border-gray-700 h-15 w-full border-t hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 px-2"
+          >
             <svg
               aria-hidden="true"
               fill="none"
@@ -107,9 +135,7 @@ const AdminSideBar: React.FC<AdminSideBarProps> = ({ displayedNavbar }) => {
                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            <span className="ml-2" x-show="menu">
-              Options
-            </span>
+            <span className="ml-2">Options</span>
           </button>
         </div>
       </div>

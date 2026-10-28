@@ -10,9 +10,9 @@ const AdminBody: React.FC<AdminBodyProps> = ({ children, displayedNavbar }) => {
     <main
       className={`${
         displayedNavbar
-          ? "sscreen:col-span-9 lscreen:col-span-10"
+          ? "col-span-12 sscreen:col-span-9 lscreen:col-span-10"
           : "col-span-12"
-      } p-6 tablet:p-10 overflow-auto space-y-4`}
+      } p-4 tablet:p-6 sscreen:p-10 overflow-auto space-y-4 w-full`}
       style={{ height: "calc(100vh - 80px)" }}
     >
       {children}
