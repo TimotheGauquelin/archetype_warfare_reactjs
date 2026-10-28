@@ -22,14 +22,14 @@ interface HintLadderQuestionProps {
   question: QuizPublicQuestion;
   disabled?: boolean;
   questionNumberLabel?: string | null;
-  onAnswer: (payload: { cardId: string; level: HintLevel }) => void;
+  onDraftChange?: (draft: { cardId: string; level: HintLevel } | null) => void;
 }
 
 const HintLadderQuestion = ({
   question,
   disabled,
   questionNumberLabel,
-  onAnswer,
+  onDraftChange,
 }: HintLadderQuestionProps) => {
   const { t } = useTranslation();
   const [slot, setSlot] = useState<ChoiceCard>(emptyChoiceCard());
@@ -65,12 +65,28 @@ const HintLadderQuestion = ({
   useEffect(() => {
     setSlot(emptyChoiceCard());
     setRevealedIndex(0);
-  }, [question.id]);
+    onDraftChange?.(null);
+  }, [question.id, onDraftChange]);
 
   const currentLevel = LEVELS[Math.min(revealedIndex, LEVELS.length - 1)];
   const currentPoints = POINTS_BY_LEVEL[currentLevel];
   const canRevealMore = revealedIndex < LEVELS.length - 1;
   const correctAnswer = question.correctPayload?.answer ?? null;
+
+  useEffect(() => {
+    if (hasAnswered) {
+      onDraftChange?.(null);
+      return;
+    }
+    if (!slot.cardId) {
+      onDraftChange?.(null);
+      return;
+    }
+    onDraftChange?.({
+      cardId: String(slot.cardId),
+      level: currentLevel,
+    });
+  }, [hasAnswered, slot.cardId, currentLevel, onDraftChange]);
 
   const visibleLevels = LEVELS.slice(0, revealedIndex + 1);
 
@@ -209,20 +225,6 @@ const HintLadderQuestion = ({
             disabled={disabled}
             onChange={setSlot}
           />
-          <button
-            type="button"
-            disabled={disabled || !slot.cardId}
-            onClick={() => {
-              if (!slot.cardId) return;
-              onAnswer({
-                cardId: String(slot.cardId),
-                level: currentLevel,
-              });
-            }}
-            className="px-4 py-2 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50"
-          >
-            {t("quiz.validateHintLadder")}
-          </button>
         </div>
       )}
 

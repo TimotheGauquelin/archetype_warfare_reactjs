@@ -19,7 +19,7 @@ interface SummonerQuestionProps {
   questionNumberLabel?: string | null;
   forfeitPointsOnHint?: boolean;
   onHintUsed?: () => void;
-  onAnswer: (cardIds: string[]) => void;
+  onDraftChange?: (draft: { cardIds: string[] } | null) => void;
 }
 
 const SummonerQuestion = ({
@@ -28,7 +28,7 @@ const SummonerQuestion = ({
   questionNumberLabel,
   forfeitPointsOnHint,
   onHintUsed,
-  onAnswer,
+  onDraftChange,
 }: SummonerQuestionProps) => {
   const { t } = useTranslation();
 
@@ -55,9 +55,12 @@ const SummonerQuestion = ({
   useEffect(() => {
     if (answeredCardIds) {
       setSelected(new Set(answeredCardIds));
+      onDraftChange?.(null);
       return;
     }
     setSelected(new Set());
+    onDraftChange?.(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question.id, answeredCardIds?.join(",")]);
   const correctAnswers: QuizNameTheCardsAnswer[] = Array.isArray(
     question.correctPayload?.answers
@@ -72,6 +75,8 @@ const SummonerQuestion = ({
       const next = new Set(prev);
       if (next.has(cardId)) next.delete(cardId);
       else next.add(cardId);
+      if (next.size === 0) onDraftChange?.(null);
+      else onDraftChange?.({ cardIds: [...next] });
       return next;
     });
   };
@@ -179,17 +184,6 @@ const SummonerQuestion = ({
             ))}
           </div>
         </div>
-      )}
-
-      {!hasAnswered && (
-        <button
-          type="button"
-          disabled={disabled || selected.size === 0}
-          onClick={() => onAnswer([...selected])}
-          className="px-4 py-2 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50"
-        >
-          {t("quiz.validateSummoner")}
-        </button>
       )}
 
       {hasAnswered && (

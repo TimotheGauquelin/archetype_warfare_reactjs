@@ -41,8 +41,26 @@ const QuizPlayPage = () => {
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [hintUsed, setHintUsed] = useState(false);
+  const [draftAnswer, setDraftAnswer] = useState<Record<string, unknown> | null>(
+    null
+  );
   const timeoutSubmittedRef = useRef(false);
   const questionBlockRef = useRef<HTMLDivElement>(null);
+  const liveSubmitRef = useRef<(() => Record<string, unknown> | null) | null>(
+    null
+  );
+  const handleDraftChange = useCallback(
+    (draft: Record<string, unknown> | null) => {
+      setDraftAnswer(draft);
+    },
+    []
+  );
+  const handleRegisterSubmit = useCallback(
+    (submit: (() => Record<string, unknown> | null) | null) => {
+      liveSubmitRef.current = submit;
+    },
+    []
+  );
 
   const loadAttempt = useCallback(async () => {
     if (!attemptId) return;
@@ -90,6 +108,8 @@ const QuizPlayPage = () => {
 
   useEffect(() => {
     setHintUsed(false);
+    setDraftAnswer(null);
+    liveSubmitRef.current = null;
   }, [currentQuestion?.id]);
 
   const isDaily = attempt?.mode === "daily";
@@ -166,6 +186,26 @@ const QuizPlayPage = () => {
   const handleSkip = useCallback(() => {
     void handleAnswer({ skipped: true });
   }, [handleAnswer]);
+
+  const handleValidate = useCallback(() => {
+    if (currentQuestion?.type === "zoom") {
+      const payload = liveSubmitRef.current?.();
+      if (!payload) return;
+      void handleAnswer(payload);
+      return;
+    }
+    if (!draftAnswer) return;
+    void handleAnswer(draftAnswer);
+  }, [currentQuestion?.type, draftAnswer, handleAnswer]);
+
+  const usesSharedValidate =
+    currentQuestion?.type === "mcq" ||
+    currentQuestion?.type === "true_false" ||
+    currentQuestion?.type === "order" ||
+    currentQuestion?.type === "name_the_cards" ||
+    currentQuestion?.type === "summoner" ||
+    currentQuestion?.type === "zoom" ||
+    currentQuestion?.type === "hint_ladder";
 
   useEffect(() => {
     if (!isDailyTimerActive || secondsLeft === null || secondsLeft > 0) return;
@@ -343,9 +383,7 @@ const QuizPlayPage = () => {
                 forfeitPointsOnHint={isDaily}
                 onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
-                onAnswer={(selectedIndex) =>
-                  handleAnswer({ selectedIndex })
-                }
+                onDraftChange={handleDraftChange}
               />
             )}
 
@@ -357,7 +395,7 @@ const QuizPlayPage = () => {
                 forfeitPointsOnHint={isDaily}
                 onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
-                onAnswer={(value) => handleAnswer({ value })}
+                onDraftChange={handleDraftChange}
               />
             )}
 
@@ -369,7 +407,7 @@ const QuizPlayPage = () => {
                 forfeitPointsOnHint={isDaily}
                 onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
-                onAnswer={(order) => handleAnswer({ order })}
+                onDraftChange={handleDraftChange}
               />
             )}
 
@@ -381,7 +419,7 @@ const QuizPlayPage = () => {
                 forfeitPointsOnHint={isDaily}
                 onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
-                onAnswer={(cardIds) => handleAnswer({ cardIds })}
+                onDraftChange={handleDraftChange}
               />
             )}
 
@@ -393,7 +431,7 @@ const QuizPlayPage = () => {
                 forfeitPointsOnHint={isDaily}
                 onHintUsed={() => setHintUsed(true)}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
-                onAnswer={(cardIds) => handleAnswer({ cardIds })}
+                onDraftChange={handleDraftChange}
               />
             )}
 
@@ -404,6 +442,8 @@ const QuizPlayPage = () => {
                 questionNumberLabel={freeQuestionNumberLabel}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
                 onAnswer={(payload) => handleAnswer(payload)}
+                onDraftChange={handleDraftChange}
+                onRegisterSubmit={handleRegisterSubmit}
               />
             )}
 
@@ -413,20 +453,33 @@ const QuizPlayPage = () => {
                 question={currentQuestion}
                 questionNumberLabel={freeQuestionNumberLabel}
                 disabled={isSubmitting || (isDailyTimerActive && secondsLeft === 0)}
-                onAnswer={(payload) => handleAnswer(payload)}
+                onDraftChange={handleDraftChange}
               />
             )}
 
-            {!isDaily && !currentQuestion.userAnswer && (
-              <div className="flex justify-end pt-1">
-                <button
-                  type="button"
-                  onClick={handleSkip}
-                  disabled={isSubmitting}
-                  className="px-4 py-2 rounded border border-gray-300 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 disabled:opacity-50"
-                >
-                  {t("quiz.skip")}
-                </button>
+            {!currentQuestion.userAnswer &&
+              (usesSharedValidate || !isDaily) && (
+              <div className="flex justify-end gap-2 pt-1">
+                {usesSharedValidate && (
+                  <button
+                    type="button"
+                    onClick={handleValidate}
+                    disabled={isSubmitting || !draftAnswer}
+                    className="px-4 py-2 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50"
+                  >
+                    {t("quiz.validateAnswer")}
+                  </button>
+                )}
+                {!isDaily && (
+                  <button
+                    type="button"
+                    onClick={handleSkip}
+                    disabled={isSubmitting}
+                    className="px-4 py-2 rounded border border-gray-300 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    {t("quiz.skip")}
+                  </button>
+                )}
               </div>
             )}
 

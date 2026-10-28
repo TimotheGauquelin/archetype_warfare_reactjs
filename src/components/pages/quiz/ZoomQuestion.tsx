@@ -11,16 +11,20 @@ import QuizChoiceCardPicker, {
 const PHASE_SCALES = [4.5, 2.2, 1] as const;
 const PHASE_POINTS = [3, 2, 1] as const;
 
+type ZoomAnswerPayload = {
+  cardId?: string;
+  phase?: number;
+  elapsedMs?: number;
+  timedOut?: boolean;
+};
+
 interface ZoomQuestionProps {
   question: QuizPublicQuestion;
   disabled?: boolean;
   questionNumberLabel?: string | null;
-  onAnswer: (payload: {
-    cardId?: string;
-    phase?: number;
-    elapsedMs?: number;
-    timedOut?: boolean;
-  }) => void;
+  onAnswer: (payload: ZoomAnswerPayload) => void;
+  onDraftChange?: (draft: Record<string, unknown> | null) => void;
+  onRegisterSubmit?: (submit: (() => ZoomAnswerPayload | null) | null) => void;
 }
 
 const ZoomQuestion = ({
@@ -28,6 +32,8 @@ const ZoomQuestion = ({
   disabled,
   questionNumberLabel,
   onAnswer,
+  onDraftChange,
+  onRegisterSubmit,
 }: ZoomQuestionProps) => {
   const { t } = useTranslation();
   const [showHint, setShowHint] = useState(false);
@@ -66,7 +72,8 @@ const ZoomQuestion = ({
     setSlot(emptyChoiceCard());
     setShowHint(false);
     timeoutSubmittedRef.current = false;
-  }, [question.id]);
+    onDraftChange?.(null);
+  }, [question.id, onDraftChange]);
 
   useEffect(() => {
     if (hasAnswered || disabled) return;
@@ -99,11 +106,46 @@ const ZoomQuestion = ({
   );
   const timerUrgent = secondsLeftInPhase <= 5 || timeExpired;
 
+  useEffect(() => {
+    if (hasAnswered || timeExpired || !slot.cardId) {
+      onDraftChange?.(null);
+    } else {
+      onDraftChange?.({ cardId: String(slot.cardId) });
+    }
+  }, [hasAnswered, timeExpired, slot.cardId, onDraftChange]);
+
+  useEffect(() => {
+    if (!onRegisterSubmit) return;
+    onRegisterSubmit(() => {
+      if (!slot.cardId || timeExpired || hasAnswered) return null;
+      const elapsed = Date.now() - startedAtRef.current;
+      if (elapsed >= totalDurationMs) return null;
+      const currentPhase = Math.min(
+        3,
+        Math.floor(Math.min(elapsed, totalDurationMs - 1) / phaseDurationMs) + 1
+      );
+      return {
+        cardId: String(slot.cardId),
+        phase: currentPhase,
+        elapsedMs: elapsed,
+      };
+    });
+    return () => onRegisterSubmit(null);
+  }, [
+    onRegisterSubmit,
+    slot.cardId,
+    timeExpired,
+    hasAnswered,
+    totalDurationMs,
+    phaseDurationMs,
+  ]);
+
   // À 0 s : plus de réponse possible, soumission auto (révèle la bonne réponse)
   useEffect(() => {
     if (!timeExpired || hasAnswered || disabled) return;
     if (timeoutSubmittedRef.current) return;
     timeoutSubmittedRef.current = true;
+    onDraftChange?.(null);
     onAnswer({
       timedOut: true,
       phase: 3,
@@ -114,6 +156,7 @@ const ZoomQuestion = ({
     hasAnswered,
     disabled,
     onAnswer,
+    onDraftChange,
     totalDurationMs,
   ]);
 
@@ -264,32 +307,6 @@ const ZoomQuestion = ({
           disabled={disabled || timeExpired}
           onChange={setSlot}
         />
-      )}
-
-      {!hasAnswered && (
-        <button
-          type="button"
-          disabled={disabled || timeExpired || !slot.cardId}
-          onClick={() => {
-            if (!slot.cardId || timeExpired) return;
-            const elapsed = Date.now() - startedAtRef.current;
-            const durationMs = phaseDurationSeconds * 1000;
-            const totalMs = durationMs * 3;
-            if (elapsed >= totalMs) return;
-            const currentPhase = Math.min(
-              3,
-              Math.floor(Math.min(elapsed, totalMs - 1) / durationMs) + 1
-            );
-            onAnswer({
-              cardId: String(slot.cardId),
-              phase: currentPhase,
-              elapsedMs: elapsed,
-            });
-          }}
-          className="px-4 py-2 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50"
-        >
-          {t("quiz.validateZoom")}
-        </button>
       )}
 
       {hasAnswered && (

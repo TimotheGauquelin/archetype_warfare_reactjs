@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { QuizPublicQuestion } from "@/services/quiz";
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
 import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
@@ -11,7 +12,7 @@ interface TrueFalseQuestionProps {
   questionNumberLabel?: string | null;
   forfeitPointsOnHint?: boolean;
   onHintUsed?: () => void;
-  onAnswer: (value: boolean) => void;
+  onDraftChange?: (draft: { value: boolean } | null) => void;
 }
 
 const TrueFalseQuestion = ({
@@ -20,15 +21,28 @@ const TrueFalseQuestion = ({
   questionNumberLabel,
   forfeitPointsOnHint,
   onHintUsed,
-  onAnswer,
+  onDraftChange,
 }: TrueFalseQuestionProps) => {
   const hasAnswered = Boolean(question.userAnswer);
-  const selected =
+  const answeredSelected =
     typeof question.userAnswer?.value === "boolean"
       ? question.userAnswer.value
       : null;
+  const [pendingValue, setPendingValue] = useState<boolean | null>(null);
   const correct = question.correctPayload?.correct;
   const imageSrc = question.imageUrl?.trim() || DEFAULT_QUESTION_ARTWORK;
+  const selected = hasAnswered ? answeredSelected : pendingValue;
+
+  useEffect(() => {
+    setPendingValue(null);
+    onDraftChange?.(null);
+  }, [question.id, onDraftChange]);
+
+  const selectValue = (value: boolean) => {
+    if (disabled || hasAnswered) return;
+    setPendingValue(value);
+    onDraftChange?.({ value });
+  };
 
   const buttonClass = (value: boolean) => {
     let style = "border-gray-200 bg-white hover:bg-gray-50";
@@ -38,6 +52,8 @@ const TrueFalseQuestion = ({
       } else if (selected === value) {
         style = "border-red-400 bg-red-50";
       }
+    } else if (pendingValue === value) {
+      style = "border-blue-500 bg-blue-50 ring-1 ring-blue-300";
     }
     return style;
   };
@@ -69,7 +85,7 @@ const TrueFalseQuestion = ({
         <button
           type="button"
           disabled={disabled || hasAnswered}
-          onClick={() => onAnswer(true)}
+          onClick={() => selectValue(true)}
           className={`px-4 py-3 rounded-lg border font-semibold disabled:cursor-default ${buttonClass(true)}`}
         >
           Vrai
@@ -77,7 +93,7 @@ const TrueFalseQuestion = ({
         <button
           type="button"
           disabled={disabled || hasAnswered}
-          onClick={() => onAnswer(false)}
+          onClick={() => selectValue(false)}
           className={`px-4 py-3 rounded-lg border font-semibold disabled:cursor-default ${buttonClass(false)}`}
         >
           Faux

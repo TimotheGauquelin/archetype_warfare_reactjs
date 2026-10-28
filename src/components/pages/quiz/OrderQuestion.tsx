@@ -17,7 +17,7 @@ interface OrderQuestionProps {
   questionNumberLabel?: string | null;
   forfeitPointsOnHint?: boolean;
   onHintUsed?: () => void;
-  onAnswer: (order: string[]) => void;
+  onDraftChange?: (draft: { order: string[] } | null) => void;
 }
 
 const shuffle = <T,>(items: T[]): T[] => {
@@ -35,7 +35,7 @@ const OrderQuestion = ({
   questionNumberLabel,
   forfeitPointsOnHint,
   onHintUsed,
-  onAnswer,
+  onDraftChange,
 }: OrderQuestionProps) => {
   const { t } = useTranslation();
   const [dragIndex, setDragIndex] = useState<number | null>(null);
@@ -65,6 +65,7 @@ const OrderQuestion = ({
           .map((id) => map.get(String(id)))
           .filter((item): item is OrderItem => Boolean(item))
       );
+      onDraftChange?.(null);
       return;
     }
     if (hasAnswered && correctOrder && correctOrder.length > 0) {
@@ -74,19 +75,23 @@ const OrderQuestion = ({
           .map((id) => map.get(String(id)))
           .filter((item): item is OrderItem => Boolean(item))
       );
+      onDraftChange?.(null);
       return;
     }
-    setOrdered(shuffle(sourceItems));
+    const shuffled = shuffle(sourceItems);
+    setOrdered(shuffled);
+    onDraftChange?.({ order: shuffled.map((item) => item.id) });
     // Shuffle once per question load (not on every items identity change)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question.id, hasAnswered, answeredOrder?.join(","), correctOrder?.join(",")]);
 
   const moveItem = (from: number, to: number) => {
-    if (from === to || from < 0 || to < 0) return;
+    if (from === to || from < 0 || to < 0 || hasAnswered || disabled) return;
     setOrdered((prev) => {
       const next = [...prev];
       const [item] = next.splice(from, 1);
       next.splice(to, 0, item);
+      onDraftChange?.({ order: next.map((entry) => entry.id) });
       return next;
     });
   };
@@ -148,17 +153,6 @@ const OrderQuestion = ({
           </div>
         ))}
       </div>
-
-      {!hasAnswered && (
-        <button
-          type="button"
-          disabled={disabled}
-          onClick={() => onAnswer(ordered.map((item) => item.id))}
-          className="px-4 py-2 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50"
-        >
-          {t("quiz.validateOrder")}
-        </button>
-      )}
 
       {hasAnswered && (
         <QuizExplanationBlock

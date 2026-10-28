@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { QuizMcqChoice, QuizPublicQuestion } from "@/services/quiz";
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
 import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
@@ -11,7 +12,7 @@ interface McqQuestionProps {
   questionNumberLabel?: string | null;
   forfeitPointsOnHint?: boolean;
   onHintUsed?: () => void;
-  onAnswer: (selectedIndex: number) => void;
+  onDraftChange?: (draft: { selectedIndex: number } | null) => void;
 }
 
 const toChoice = (raw: string | QuizMcqChoice): QuizMcqChoice => {
@@ -32,17 +33,30 @@ const McqQuestion = ({
   questionNumberLabel,
   forfeitPointsOnHint,
   onHintUsed,
-  onAnswer,
+  onDraftChange,
 }: McqQuestionProps) => {
   const choices = (question.payload.choices ?? []).map(toChoice);
   const hasAnswered = Boolean(question.userAnswer);
-  const selected =
+  const answeredSelected =
     typeof question.userAnswer?.selectedIndex === "number"
       ? question.userAnswer.selectedIndex
       : null;
+  const [pendingIndex, setPendingIndex] = useState<number | null>(null);
   const correctIndex = question.correctPayload?.correctIndex;
   const imageSrc = question.imageUrl?.trim() || DEFAULT_QUESTION_ARTWORK;
   const hasChoiceArtworks = choices.some((c) => Boolean(c.artworkUrl));
+  const selected = hasAnswered ? answeredSelected : pendingIndex;
+
+  useEffect(() => {
+    setPendingIndex(null);
+    onDraftChange?.(null);
+  }, [question.id, onDraftChange]);
+
+  const selectChoice = (index: number) => {
+    if (disabled || hasAnswered) return;
+    setPendingIndex(index);
+    onDraftChange?.({ selectedIndex: index });
+  };
 
   return (
     <div className="space-y-3">
@@ -84,6 +98,8 @@ const McqQuestion = ({
             } else if (selected === index) {
               style = "border-red-400 bg-red-50";
             }
+          } else if (pendingIndex === index) {
+            style = "border-blue-500 bg-blue-50 ring-1 ring-blue-300";
           }
 
           const label = choice.name || choice.text || `Option ${index + 1}`;
@@ -93,7 +109,7 @@ const McqQuestion = ({
               key={`${question.id}-${index}`}
               type="button"
               disabled={disabled || hasAnswered}
-              onClick={() => onAnswer(index)}
+              onClick={() => selectChoice(index)}
               className={`w-full text-left px-3 py-3 rounded-lg border transition-colors disabled:cursor-default ${style}`}
             >
               <div className="flex items-center gap-3">

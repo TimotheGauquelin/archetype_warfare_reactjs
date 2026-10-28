@@ -15,7 +15,7 @@ interface NameTheCardsQuestionProps {
   questionNumberLabel?: string | null;
   forfeitPointsOnHint?: boolean;
   onHintUsed?: () => void;
-  onAnswer: (cardIds: string[]) => void;
+  onDraftChange?: (draft: { cardIds: string[] } | null) => void;
 }
 
 const NameTheCardsQuestion = ({
@@ -24,7 +24,7 @@ const NameTheCardsQuestion = ({
   questionNumberLabel,
   forfeitPointsOnHint,
   onHintUsed,
-  onAnswer,
+  onDraftChange,
 }: NameTheCardsQuestionProps) => {
   const { t } = useTranslation();
 
@@ -51,8 +51,10 @@ const NameTheCardsQuestion = ({
   useEffect(() => {
     if (!hasAnswered) {
       setSlots(emptySlots(monsterCount));
+      onDraftChange?.(null);
       return;
     }
+    onDraftChange?.(null);
     if (answeredCardIds && answeredCardIds.length > 0) {
       setSlots((prev) =>
         answeredCardIds.map((cardId, index) => {
@@ -93,7 +95,20 @@ const NameTheCardsQuestion = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question.id, monsterCount, hasAnswered, answeredCardIds?.join(",")]);
 
-  const allFilled = slots.every((slot) => Boolean(slot.cardId));
+  const publishDraft = (nextSlots: ChoiceCard[]) => {
+    if (hasAnswered) {
+      onDraftChange?.(null);
+      return;
+    }
+    const filled = nextSlots.every((slot) => Boolean(slot.cardId));
+    if (!filled) {
+      onDraftChange?.(null);
+      return;
+    }
+    onDraftChange?.({
+      cardIds: nextSlots.map((slot) => String(slot.cardId ?? "")),
+    });
+  };
 
   return (
     <div className="space-y-3">
@@ -201,6 +216,7 @@ const NameTheCardsQuestion = ({
                       const updated = [...slots];
                       updated[index] = next;
                       setSlots(updated);
+                      publishDraft(updated);
                     }}
                   />
                 )}
@@ -209,19 +225,6 @@ const NameTheCardsQuestion = ({
           );
         })}
       </div>
-
-      {!hasAnswered && (
-        <button
-          type="button"
-          disabled={disabled || !allFilled}
-          onClick={() =>
-            onAnswer(slots.map((slot) => String(slot.cardId ?? "")))
-          }
-          className="px-4 py-2 rounded bg-blue-700 text-white text-sm font-semibold hover:bg-blue-800 disabled:opacity-50"
-        >
-          {t("quiz.validateNameTheCards")}
-        </button>
-      )}
 
       {hasAnswered && (
         <QuizExplanationBlock
