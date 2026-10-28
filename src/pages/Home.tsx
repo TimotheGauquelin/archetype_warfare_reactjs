@@ -84,22 +84,24 @@ const Home: React.FC = () => {
         <Header />
         <Slider array={slidesToDisplay} slidesPerView={1} />
       </div>
-      <PageContentBlock>
-        <ArchetypeList
-          dataArray={fiveMostFamousArchetypes}
-          subTitleDividerText={t("home.popularArchetypes")}
-          haveMedal
-          isFetching={isListsLoading}
-          skeletonItemCount={8}
-        />
-        <ArchetypeList
-          dataArray={eightMostRecentArchetypes}
-          subTitleDividerText={t("home.newArchetypes")}
-          isFetching={isListsLoading}
-          skeletonItemCount={8}
-          displayDate
-        />
-      </PageContentBlock>
+      <main>
+        <PageContentBlock>
+          <ArchetypeList
+            dataArray={fiveMostFamousArchetypes}
+            subTitleDividerText={t("home.popularArchetypes")}
+            haveMedal
+            isFetching={isListsLoading}
+            skeletonItemCount={8}
+          />
+          <ArchetypeList
+            dataArray={eightMostRecentArchetypes}
+            subTitleDividerText={t("home.newArchetypes")}
+            isFetching={isListsLoading}
+            skeletonItemCount={8}
+            displayDate
+          />
+        </PageContentBlock>
+      </main>
       <Footer />
     </div>
   );

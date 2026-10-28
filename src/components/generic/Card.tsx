@@ -65,13 +65,7 @@ const Card: React.FC<CardProps> = ({ card, index = 0 }) => {
           />
           {card.card_status && (
             <img
-              className="absolute z-10 pointer-events-none"
-              style={{
-                top: "4px",
-                right: "4px",
-                width: "30px",
-                height: "30px",
-              }}
+              className="absolute z-10 pointer-events-none top-1 right-1 w-5 h-5 tablet:w-[30px] tablet:h-[30px]"
               width={30}
               height={30}
               loading="lazy"

@@ -87,21 +87,25 @@ const BanlistPage = () => {
       subTitle={t("hero.banlist.subtitle")}
     >
       <AbsoluteInput>
-        <input
-          type="text"
-          className="col-span-8 bg-gray-100 rounded-md p-2"
-          placeholder={t("common.searchCard")}
-          value={filters.banlistSearchInput}
-          onChange={handleSearchChange}
-          aria-label={t("common.searchCardAria")}
-        />
-        <SwitchInput
-          label={t("banlist.showArchetypeCards")}
-          attribute="showArchetypeCards"
-          data={filters}
-          setAction={setFilters}
-          displayRow={true}
-        />
+        <div className="col-span-12 tablet:col-span-8 flex items-end">
+          <input
+            type="text"
+            className="w-full bg-gray-100 rounded-md p-2 mt-2"
+            placeholder={t("common.searchCard")}
+            value={filters.banlistSearchInput}
+            onChange={handleSearchChange}
+            aria-label={t("common.searchCardAria")}
+          />
+        </div>
+        <div className="col-span-12 tablet:col-span-4">
+          <SwitchInput
+            label={t("banlist.showArchetypeCards")}
+            attribute="showArchetypeCards"
+            data={filters}
+            setAction={setFilters}
+            displayRow={true}
+          />
+        </div>
       </AbsoluteInput>
       <PageContentBlock>
           <CardsSection

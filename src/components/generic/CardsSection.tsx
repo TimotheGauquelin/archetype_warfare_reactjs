@@ -17,14 +17,14 @@ const CardsSection: React.FC<CardsSectionProps> = ({ title, cards, isFetching, s
   const { t } = useTranslation();
 
   return (
-    <div className="mb-10">
+    <div className="mb-6 tablet:mb-10">
       <SubtitleDivider
         label={`${title} (${cards.length})`}
         displayDivider
       />
       {cards.length > 0
         ? (
-          <div className="bg-gray-100 p-4 grid grid-cols-12 gap-4 border border-gray-200 rounded-lg">
+          <div className="bg-gray-100 p-2.5 tablet:p-4 grid grid-cols-12 gap-2 tablet:gap-3 sscreen:gap-4 border border-gray-200 rounded-lg">
             {
               cards.map((card, index) => (
                 <Card key={`${card.card.id}-${index}`} card={card} index={index} />

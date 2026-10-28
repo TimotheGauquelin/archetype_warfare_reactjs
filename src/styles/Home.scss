@@ -14,7 +14,11 @@
 }
 
 .whiteVeilText {
-  -webkit-text-stroke: 1px white;
+  -webkit-text-stroke: 0.5px white;
+
+  @media (min-width: 769px) {
+    -webkit-text-stroke: 1px white;
+  }
 }
 
 .cardShadow {

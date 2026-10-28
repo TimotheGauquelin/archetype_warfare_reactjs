@@ -51,20 +51,20 @@ const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMe
           alt={archetype?.name ?? ""}
           width={280}
           height={280}
-          sizes="(max-width: 640px) 90vw, (max-width: 1024px) 30vw, 280px"
+          sizes="(max-width: 768px) 45vw, (max-width: 1024px) 30vw, 280px"
           loading={isLcpCandidate ? "eager" : "lazy"}
           decoding={isLcpCandidate ? "sync" : "async"}
           onError={handleImageError}
         />
       </div>
-      <div className="font-bold pt-3 text-center ellipsisText flex justify-center items-center">
+      <div className="font-bold pt-2 tablet:pt-3 text-center ellipsisText flex justify-center items-center text-sm tablet:text-base">
         {medalPath && (
-          <div style={{ width: "30px" }}>
-            <img src={medalPath} alt="" width={30} height={30} loading="lazy" decoding="async" />
+          <div className="w-5 tablet:w-[30px] shrink-0">
+            <img src={medalPath} alt="" width={30} height={30} className="w-full h-auto" loading="lazy" decoding="async" />
           </div>
         )}
-        <p className={`${index < 3 && "pl-2"} flex flex-col`}>
-          <span>{archetype?.name}</span>
+        <p className={`${index < 3 && "pl-1.5 tablet:pl-2"} flex flex-col min-w-0`}>
+          <span className="truncate">{archetype?.name}</span>
           <span className="text-xs">{displayDate && ` (${databaseDateToCalendarDate(archetype?.in_aw_date)})`}</span></p>
       </div>
     </div>

@@ -10,10 +10,9 @@ const AbsoluteInput: React.FC<AbsoluteInputProps> = ({ children }) => {
       <div className="hidden tablet:block h-[56px] w-full" aria-hidden />
       <div
         data-testid="absolute-input"
-        className="w-full z-10 absoluteShadowSearchBlock mx-auto tablet:absolute tablet:left-0 tablet:right-0 tablet:m-auto bg-white rounded-md"
-        style={{ top: "-40px" }}
+        className="w-[calc(100%-1.5rem)] tablet:w-full z-10 absoluteShadowSearchBlock mx-auto relative tablet:absolute tablet:left-0 tablet:right-0 tablet:m-auto tablet:top-[-40px] bg-white rounded-md mt-3 tablet:mt-0"
       >
-        <div className="w-full tablet:m-auto flex flex-col align-center grid grid-cols-12 gap-1 p-3 rounded-md">
+        <div className="w-full tablet:m-auto grid grid-cols-12 gap-2 tablet:gap-1 p-2.5 tablet:p-3 rounded-md items-end">
           {children}
         </div>
       </div>

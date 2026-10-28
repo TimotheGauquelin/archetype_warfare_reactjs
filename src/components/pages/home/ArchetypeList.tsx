@@ -36,13 +36,13 @@ const ArchetypeList: React.FC<ArchetypeListProps> = ({
   }
 
   return (
-    <div className="w-full px-4 lscreen:px-0 m-auto min-h-[640px]">
+    <div className="w-full m-auto">
       {subTitleDividerText && (
         <SubtitleDivider displayDivider label={subTitleDividerText} />
       )}
 
       {dataArray.length > 0 ? (
-        <div className="grid pb-5 grid-cols-12 gap-4">
+        <div className="grid pb-4 grid-cols-2 sscreen:grid-cols-3 lscreen:grid-cols-4 gap-2.5 tablet:gap-3 sscreen:gap-4">
           {dataArray.map((archetype, index) => {
             const archetypePath = getArchetypePublicPath(archetype);
             if (!archetypePath) return null;
@@ -50,11 +50,10 @@ const ArchetypeList: React.FC<ArchetypeListProps> = ({
             return (
             <div
               key={`${archetype?.slug ?? archetype?.id}-${index}`}
-              className="col-span-12 sscreen:col-span-4 lscreen:col-span-3"
             >
               <Link
                 to={archetypePath}
-                className="bg-white p-3 rounded-lg aspect-square cardShadow hover:shadow-lg transition-shadow duration-200 block"
+                className="bg-white p-2 tablet:p-3 rounded-lg aspect-square cardShadow hover:shadow-lg transition-shadow duration-200 block"
               >
                 <ArchetypeCard
                   archetype={archetype}

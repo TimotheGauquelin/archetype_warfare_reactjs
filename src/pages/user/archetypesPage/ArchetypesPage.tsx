@@ -122,29 +122,33 @@ const ArchetypesPage = () => {
       subTitle={t("hero.archetypes.subtitle")}
     >
       <AbsoluteInput>
-        <Input
-          inputType="text"
-          inputName="name"
-          colSpanWidth="6"
-          attribute="name"
-          data={filters}
-          setAction={setFilters}
-          placeholder={t("archetypesPage.searchPlaceholder")}
-        />
-        <SelectInput
-          options={eraOptions}
-          inputName="era"
-          colSpanWidth="4"
-          attribute="era"
-          data={filters as Record<string, unknown>}
-          defaultOptionLabel={t("archetypesPage.eraPlaceholder")}
-          ariaLabel={t("archetypesPage.eraLabel")}
-          setAction={setFilters as React.Dispatch<React.SetStateAction<Record<string, unknown>>>}
-        />
-        <div className="col-span-2">
+        <div className="col-span-12 tablet:col-span-6">
+          <Input
+            inputType="text"
+            inputName="name"
+            colSpanWidth="12"
+            attribute="name"
+            data={filters}
+            setAction={setFilters}
+            placeholder={t("archetypesPage.searchPlaceholder")}
+          />
+        </div>
+        <div className="col-span-9 tablet:col-span-4">
+          <SelectInput
+            options={eraOptions}
+            inputName="era"
+            colSpanWidth="12"
+            attribute="era"
+            data={filters as Record<string, unknown>}
+            defaultOptionLabel={t("archetypesPage.eraPlaceholder")}
+            ariaLabel={t("archetypesPage.eraLabel")}
+            setAction={setFilters as React.Dispatch<React.SetStateAction<Record<string, unknown>>>}
+          />
+        </div>
+        <div className="col-span-3 tablet:col-span-2 flex">
           <Button
             style={{ backgroundColor: "#F95757" }}
-            className="h-full w-full p-2 rounded-md flex justify-center items-center text-white"
+            className="h-10 tablet:h-[42px] w-full mt-2 p-2 rounded-md flex justify-center items-center text-white"
             action={handleRandomArchetype}
             disabled={isLoading || isRandomButtonDisabled}
             ariaLabel={t("archetypesPage.randomArchetype")}

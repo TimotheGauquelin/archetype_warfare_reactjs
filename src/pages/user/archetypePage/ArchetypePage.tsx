@@ -152,7 +152,7 @@ const ArchetypePage = () => {
           itemSubTitle={typeof archetype.main_info === "string" ? archetype.main_info : ""}
           itemImg={archetype.slider_img_url}
         />
-        <div className="relative px-3 pb-3 sscreen:p-0 lscreen:max-w-containerSize m-auto lscreen:pb-20">
+        <div className="relative px-3 pb-3 sscreen:px-3 lscreen:px-0 lscreen:max-w-containerSize m-auto lscreen:pb-20">
           <MainInformationsBlock archetype={archetype} />
         </div>
       </div>
@@ -161,25 +161,25 @@ const ArchetypePage = () => {
         <PageContentBlock>
           <div
             className={`flex flex-col w-full justify-center max-w-containerSize m-auto ${
-              archetype.comment ? "pt-8" : ""
+              archetype.comment ? "pt-4 tablet:pt-8" : ""
             }`}
           >
             {archetype.comment != null && String(archetype.comment) && (
-              <div className="bg-blue-100 flex-col text-blue-500 p-3 font-medium rounded-lg flex mb-4">
+              <div className="bg-blue-100 flex-col text-blue-500 p-2.5 tablet:p-3 text-sm tablet:text-base font-medium rounded-lg flex mb-3 tablet:mb-4">
                 <span data-testid="archetype-comment">
                   {t("archetypePage.infoPrefix", { comment: String(archetype.comment) })}
                 </span>
-                <p className="text-right text-sm">{t("archetypePage.staffSignature")}</p>
+                <p className="text-right text-xs tablet:text-sm">{t("archetypePage.staffSignature")}</p>
               </div>
             )}
-            <div className="pt-5">
+            <div className="pt-2 tablet:pt-5">
               <SubtitleDivider
                 label={t("archetypePage.allCards", { count: sortedCards.length })}
                 displayDivider
               />
             </div>
             {sortedCards.length > 0 ? (
-              <div className="bg-gray-100 p-4 grid grid-cols-12 gap-4 mb-4 border border-gray-200 rounded-lg">
+              <div className="bg-gray-100 p-2.5 tablet:p-4 grid grid-cols-12 gap-2 tablet:gap-3 sscreen:gap-4 mb-4 border border-gray-200 rounded-lg">
                 {sortedCards.map((card, index) => (
                   <Card key={card.card.id} card={card} index={index} />
                 ))}
