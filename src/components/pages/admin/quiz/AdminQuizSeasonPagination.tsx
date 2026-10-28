@@ -43,19 +43,21 @@ const AdminQuizSeasonPagination: React.FC<AdminQuizSeasonPaginationProps> = ({
 
   return (
     <div className="bg-white">
-
-      <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <PaginationTableHead tableHeadItem={TABLE_HEAD} />
-
-        <div className="">
-          {loading ? (
-            <div className="p-4">Chargement...</div>
-          ) : (
-            <AdminQuizSeasonPaginationTableBody
-              arrayItems={seasons}
-              onDelete={onDelete}
-            />
-          )}
+      <div className="w-full text-sm text-left text-gray-500 overflow-x-auto">
+        <div className="min-w-0 sscreen:min-w-[800px]">
+          <div className="hidden sscreen:block">
+            <PaginationTableHead tableHeadItem={TABLE_HEAD} />
+          </div>
+          <div>
+            {loading ? (
+              <div className="p-4">Chargement...</div>
+            ) : (
+              <AdminQuizSeasonPaginationTableBody
+                arrayItems={seasons}
+                onDelete={onDelete}
+              />
+            )}
+          </div>
         </div>
       </div>
 

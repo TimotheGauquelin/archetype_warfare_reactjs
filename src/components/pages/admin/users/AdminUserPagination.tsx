@@ -37,25 +37,28 @@ const AdminUserPagination: React.FC<AdminUserPaginationProps> = ({
   const items = users?.data ?? [];
 
   return (
-    <div className="">
-      <p className="mb-2 text-sm text-gray-600">
+    <div>
+      <p className="mb-2 text-xs tablet:text-sm text-gray-600">
         {showFooter
           ? `${users?.pagination?.total ?? items.length} utilisateur(s) trouvé(s)`
           : `${items.length} dernier(s) utilisateur(s)`}
       </p>
 
-      <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <PaginationTableHead tableHeadItem={tableHeadItemArray} />
-
-        <div>
-          {loading ? (
-            <div className="p-4">Chargement...</div>
-          ) : (
-            <AdminUserPaginationTableBody
-              arrayItems={items}
-              setRefresh={setRefresh}
-            />
-          )}
+      <div className="w-full text-sm text-left text-gray-500 overflow-x-auto">
+        <div className="min-w-0 sscreen:min-w-[700px]">
+          <div className="hidden sscreen:block">
+            <PaginationTableHead tableHeadItem={tableHeadItemArray} />
+          </div>
+          <div>
+            {loading ? (
+              <div className="p-4">Chargement...</div>
+            ) : (
+              <AdminUserPaginationTableBody
+                arrayItems={items}
+                setRefresh={setRefresh}
+              />
+            )}
+          </div>
         </div>
       </div>
 

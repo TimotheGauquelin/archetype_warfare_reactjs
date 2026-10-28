@@ -160,7 +160,7 @@ const AdminQuizQuestions = () => {
         returnButton
       />
 
-      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm mb-10 space-y-3">
+      <section className="bg-white border border-gray-200 rounded-lg p-2.5 tablet:p-4 shadow-sm mb-6 tablet:mb-10 space-y-3 overflow-hidden">
         <AdminQuizFilter
           themes={themes}
           criteria={filters}

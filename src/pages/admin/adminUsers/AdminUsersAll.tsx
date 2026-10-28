@@ -111,7 +111,7 @@ const AdminUsersAll = () => {
         </div>
       )}
 
-      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-4">
+      <section className="bg-white border border-gray-200 rounded-lg p-2.5 tablet:p-4 shadow-sm space-y-3 tablet:space-y-4 overflow-hidden">
         <AdminUserFilter
           roles={roles}
           criteria={filters}

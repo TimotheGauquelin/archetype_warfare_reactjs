@@ -99,7 +99,7 @@ const AdminUserDecksTab: React.FC<AdminUserDecksTabProps> = ({ userId }) => {
 
   return (
     <>
-      <div className="grid grid-cols-12 gap-3">
+      <div className="grid grid-cols-12 gap-2 tablet:gap-3">
         {decks
           .filter(
             (deck): deck is DeckWithArchetypeDetails & { id: string } =>
@@ -115,9 +115,9 @@ const AdminUserDecksTab: React.FC<AdminUserDecksTabProps> = ({ userId }) => {
                 key={deck.id}
                 type="button"
                 onClick={() => void handleOpenDeck(deck.id)}
-                className="text-left p-2 space-y-1.5 bg-gray-50 border border-gray-200 rounded-lg col-span-4 sscreen:col-span-3 lscreen:col-span-2 hover:bg-gray-100 hover:shadow-sm transition-all"
+                className="text-left p-2 space-y-1.5 bg-gray-50 border border-gray-200 rounded-lg col-span-6 tablet:col-span-4 sscreen:col-span-3 lscreen:col-span-2 hover:bg-gray-100 hover:shadow-sm transition-all"
               >
-                <div className="mx-auto w-20 h-20 sscreen:w-24 sscreen:h-24 rounded-md overflow-hidden bg-gray-300">
+                <div className="mx-auto w-16 h-16 tablet:w-20 tablet:h-20 sscreen:w-24 sscreen:h-24 rounded-md overflow-hidden bg-gray-300">
                   {archetypeImg ? (
                     <img
                       className="rounded-md w-full h-full object-cover"

@@ -206,7 +206,7 @@ const AdminCards = () => {
         actionButton={() => {
           updateDatabase();
         }}
-        actionButtonColor={`h-fit ${
+        actionButtonColor={`h-fit w-full sscreen:w-auto text-sm tablet:text-base ${
           databaseUpdateLoader
             ? "bg-gray-200"
             : "bg-green-500 hover:bg-green-600"
@@ -216,7 +216,7 @@ const AdminCards = () => {
       />
 
       {databaseUpdateLoader === false ? (
-        <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm mb-10 space-y-3">
+        <section className="bg-white border border-gray-200 rounded-lg p-2.5 tablet:p-4 shadow-sm mb-6 tablet:mb-10 space-y-3 overflow-hidden">
           <AdminCardsFilter
             cardTypes={cardTypes}
             criteria={criteria}
@@ -226,30 +226,32 @@ const AdminCards = () => {
           />
 
           {cards?.length > 0 ? (
-            <div className="bg-gray-100 border border-gray-200 rounded p-3">
-              <div className="grid grid-cols-10 gap-2">
+            <div className="bg-gray-100 border border-gray-200 rounded p-2 tablet:p-3">
+              <div className="grid grid-cols-3 tablet:grid-cols-5 sscreen:grid-cols-8 lscreen:grid-cols-10 gap-1.5 tablet:gap-2">
                 {cards.map((card) => (
-                  <div
+                  <button
+                    type="button"
                     key={card.id}
-                    className="col-span-1 cursor-pointer hover:opacity-80 transition-opacity"
+                    className="cursor-pointer hover:opacity-80 transition-opacity text-left min-w-0"
                     onClick={() => {
                       navigate(`/admin/cards/${card.id}`);
                     }}
                   >
                     <img
-                      className="w-full rounded"
+                      className="w-full rounded aspect-[59/86] object-cover bg-gray-200"
                       src={card.img_url}
                       alt={card.name}
+                      loading="lazy"
                     />
-                    <span className="text-xs line-clamp-1 text-gray-700">
+                    <span className="text-xs line-clamp-1 text-gray-700 mt-0.5 block">
                       {card.name}
                     </span>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="p-4 border border-gray-200 rounded text-center text-gray-500 text-sm">
+            <div className="p-3 tablet:p-4 border border-gray-200 rounded text-center text-gray-500 text-sm">
               Aucune carte trouvée.
             </div>
           )}

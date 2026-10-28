@@ -59,53 +59,62 @@ const AdminUserFilter: React.FC<AdminUserFilterProps> = ({
   };
 
   return (
-    <div className="border border-gray-200 bg-slate-100 rounded p-2">
-      <div className="flex justify-between">
-        <h2 className="text-md font-semibold">Filtres : </h2>
-        <p
-          className="hover:text-red-500 cursor-pointer"
+    <div className="border border-gray-200 bg-slate-100 rounded p-2 tablet:p-3">
+      <div className="flex flex-col tablet:flex-row tablet:justify-between gap-2">
+        <h2 className="text-md font-semibold">Filtres :</h2>
+        <button
+          type="button"
+          className="hover:text-red-500 cursor-pointer text-sm text-left tablet:text-right"
           onClick={() => handleResetAllFiltersButton()}
         >
           Reset les filtres
-        </p>
+        </button>
       </div>
 
-      <div className="grid grid-cols-12 gap-4 items-end pt-2">
-        <Input
-          attribute="q"
-          data={criteria}
-          setAction={setCriteria}
-          placeholder="Pseudo ou email…"
-          inputType="text"
-          colSpanWidth="4"
-        />
-        <SelectInput
-          attribute="is_active"
-          data={criteria}
-          setAction={setCriteria}
-          defaultOptionLabel="-- Actif --"
-          options={ACTIVE_OPTIONS}
-          colSpanWidth="2"
-          ariaLabel="Actif"
-        />
-        <SelectInput
-          attribute="is_banned"
-          data={criteria}
-          setAction={setCriteria}
-          defaultOptionLabel="-- Banni --"
-          options={BANNED_OPTIONS}
-          colSpanWidth="2"
-          ariaLabel="Banni"
-        />
-        <SelectInput
-          attribute="role"
-          data={criteria}
-          setAction={setCriteria}
-          defaultOptionLabel="-- Rôle --"
-          options={roleOptions}
-          colSpanWidth="2"
-          ariaLabel="Rôle"
-        />
+      <div className="grid grid-cols-12 gap-2 tablet:gap-3 sscreen:gap-4 items-end pt-2">
+        <div className="col-span-12 tablet:col-span-6 sscreen:col-span-4">
+          <Input
+            attribute="q"
+            data={criteria}
+            setAction={setCriteria}
+            placeholder="Pseudo ou email…"
+            inputType="text"
+            colSpanWidth="12"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-3 sscreen:col-span-2">
+          <SelectInput
+            attribute="is_active"
+            data={criteria}
+            setAction={setCriteria}
+            defaultOptionLabel="-- Actif --"
+            options={ACTIVE_OPTIONS}
+            colSpanWidth="12"
+            ariaLabel="Actif"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-3 sscreen:col-span-2">
+          <SelectInput
+            attribute="is_banned"
+            data={criteria}
+            setAction={setCriteria}
+            defaultOptionLabel="-- Banni --"
+            options={BANNED_OPTIONS}
+            colSpanWidth="12"
+            ariaLabel="Banni"
+          />
+        </div>
+        <div className="col-span-12 tablet:col-span-6 sscreen:col-span-2">
+          <SelectInput
+            attribute="role"
+            data={criteria}
+            setAction={setCriteria}
+            defaultOptionLabel="-- Rôle --"
+            options={roleOptions}
+            colSpanWidth="12"
+            ariaLabel="Rôle"
+          />
+        </div>
       </div>
 
       <PopUp

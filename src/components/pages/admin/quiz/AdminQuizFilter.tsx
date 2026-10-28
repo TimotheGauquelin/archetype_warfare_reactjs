@@ -134,108 +134,124 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
   };
 
   return (
-    <div className="border border-gray-200 bg-slate-100 rounded p-2">
-      <div className="flex justify-between">
-        <h2 className="text-md font-semibold">Filtres : </h2>
-        <div className="flex flex-col items-center gap-2">
-          <p
-            className="hover:text-red-500 cursor-pointer"
+    <div className="border border-gray-200 bg-slate-100 rounded p-2 tablet:p-3">
+      <div className="flex flex-col tablet:flex-row tablet:justify-between gap-2">
+        <h2 className="text-md font-semibold">Filtres :</h2>
+        <div className="flex flex-row tablet:flex-col flex-wrap tablet:items-end gap-x-4 gap-y-1 text-sm">
+          <button
+            type="button"
+            className="hover:text-red-500 cursor-pointer text-left"
             onClick={() => handleResetAllFiltersButton()}
           >
             Reset les filtres
-          </p>
-          <p
-            className="hover:text-blue-500 cursor-pointer"
+          </button>
+          <button
+            type="button"
+            className="hover:text-blue-500 cursor-pointer text-left"
             onClick={() => {
               setDisplayGeneralActions(!displayGeneralActions);
             }}
           >
             Actions générales
-          </p>
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-4 items-end pt-2">
-        <Input
-          attribute="prompt"
-          data={criteria}
-          setAction={setCriteria}
-          placeholder="Quelle question recherchez-vous ?"
-          inputType="text"
-          colSpanWidth="3"
-        />
-        <SelectInput
-          attribute="theme"
-          data={criteria}
-          setAction={setCriteria}
-          defaultOptionLabel="-- Aucun thème --"
-          options={themeOptions}
-          colSpanWidth="2"
-          ariaLabel="Thème"
-        />
-        <SelectInput
-          attribute="type"
-          data={criteria}
-          setAction={setCriteria}
-          defaultOptionLabel="-- Aucun type --"
-          options={TYPE_OPTIONS}
-          colSpanWidth="2"
-          ariaLabel="Type"
-        />
-        <SelectInput
-          attribute="difficulty"
-          data={criteria}
-          setAction={setCriteria}
-          defaultOptionLabel="-- Aucune difficulté --"
-          options={DIFFICULTY_OPTIONS}
-          colSpanWidth="2"
-          ariaLabel="Difficulté"
-        />
-        <SelectInput
-          attribute="is_active"
-          data={criteria}
-          setAction={setCriteria}
-          defaultOptionLabel="-- Statut --"
-          options={ACTIVE_OPTIONS}
-          colSpanWidth="1"
-          ariaLabel="Statut"
-        />
-        <SelectInput
-          attribute="for_daily"
-          data={criteria}
-          setAction={setCriteria}
-          defaultOptionLabel="-- Destination --"
-          options={FOR_DAILY_OPTIONS}
-          colSpanWidth="1"
-          ariaLabel="Destination"
-        />
-        <SelectInput
-          attribute="was_daily_question"
-          data={criteria}
-          setAction={setCriteria}
-          defaultOptionLabel="-- Historique Daily --"
-          options={WAS_DAILY_OPTIONS}
-          colSpanWidth="1"
-          ariaLabel="Historique Daily"
-        />
+      <div className="grid grid-cols-12 gap-2 tablet:gap-3 sscreen:gap-4 items-end pt-2">
+        <div className="col-span-12 tablet:col-span-6 sscreen:col-span-3">
+          <Input
+            attribute="prompt"
+            data={criteria}
+            setAction={setCriteria}
+            placeholder="Quelle question recherchez-vous ?"
+            inputType="text"
+            colSpanWidth="12"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-3 sscreen:col-span-2">
+          <SelectInput
+            attribute="theme"
+            data={criteria}
+            setAction={setCriteria}
+            defaultOptionLabel="-- Aucun thème --"
+            options={themeOptions}
+            colSpanWidth="12"
+            ariaLabel="Thème"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-3 sscreen:col-span-2">
+          <SelectInput
+            attribute="type"
+            data={criteria}
+            setAction={setCriteria}
+            defaultOptionLabel="-- Aucun type --"
+            options={TYPE_OPTIONS}
+            colSpanWidth="12"
+            ariaLabel="Type"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-4 sscreen:col-span-2">
+          <SelectInput
+            attribute="difficulty"
+            data={criteria}
+            setAction={setCriteria}
+            defaultOptionLabel="-- Aucune difficulté --"
+            options={DIFFICULTY_OPTIONS}
+            colSpanWidth="12"
+            ariaLabel="Difficulté"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-4 sscreen:col-span-1">
+          <SelectInput
+            attribute="is_active"
+            data={criteria}
+            setAction={setCriteria}
+            defaultOptionLabel="-- Statut --"
+            options={ACTIVE_OPTIONS}
+            colSpanWidth="12"
+            ariaLabel="Statut"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-4 sscreen:col-span-1">
+          <SelectInput
+            attribute="for_daily"
+            data={criteria}
+            setAction={setCriteria}
+            defaultOptionLabel="-- Destination --"
+            options={FOR_DAILY_OPTIONS}
+            colSpanWidth="12"
+            ariaLabel="Destination"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-4 sscreen:col-span-1">
+          <SelectInput
+            attribute="was_daily_question"
+            data={criteria}
+            setAction={setCriteria}
+            defaultOptionLabel="-- Historique Daily --"
+            options={WAS_DAILY_OPTIONS}
+            colSpanWidth="12"
+            ariaLabel="Historique Daily"
+          />
+        </div>
       </div>
 
       {displayGeneralActions && (
-        <div className="flex bg-white border border-gray-200 rounded-lg p-2 mt-2 space-x-2">
+        <div className="flex flex-col tablet:flex-row flex-wrap bg-white border border-gray-200 rounded-lg p-2 mt-2 gap-2">
           <button
             type="button"
-            className="flex items-center bg-orange-100 hover:bg-orange-200 p-1 rounded text-orange-500 font-semibold"
+            className="flex items-center justify-center tablet:justify-start bg-orange-100 hover:bg-orange-200 p-2 tablet:p-1 rounded text-orange-500 font-semibold text-sm"
             onClick={handleSwitchAllToNonDaily}
           >
-            <FaCalendar className="mr-2" />
+            <FaCalendar className="mr-2 shrink-0" />
             Changer toutes les questions en « non-planifiées » pour le daily
           </button>
           <button
             type="button"
-            className="flex items-center bg-red-100 hover:bg-red-200 p-1 rounded text-red-500 font-semibold"
+            className="flex items-center justify-center tablet:justify-start bg-red-100 hover:bg-red-200 p-2 tablet:p-1 rounded text-red-500 font-semibold text-sm"
             onClick={handleSwitchAllToInactive}
           >
-            <FaEyeSlash className="mr-2" />
+            <FaEyeSlash className="mr-2 shrink-0" />
             Changer toutes les questions en « inactives »
           </button>
         </div>

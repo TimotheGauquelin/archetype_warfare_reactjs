@@ -62,23 +62,21 @@ const AdminUsers = () => {
         </div>
       )}
 
-      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
-        <div className="flex flex-col sscreen:flex-row sscreen:items-center sscreen:justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              Gérer les utilisateurs
-            </h2>
-          </div>
-          <div className="flex flex-wrap gap-2">
+      <section className="bg-white border border-gray-200 rounded-lg p-2.5 tablet:p-4 shadow-sm space-y-3 overflow-hidden">
+        <div className="flex flex-col sscreen:flex-row sscreen:items-center sscreen:justify-between gap-2 tablet:gap-3">
+          <h2 className="text-lg tablet:text-xl font-semibold text-gray-900 leading-snug">
+            Gérer les utilisateurs
+          </h2>
+          <div className="flex flex-col tablet:flex-row flex-wrap gap-2 w-full sscreen:w-auto">
             <Link
               to={URL_FRONT_ADMIN_USER_ADD}
-              className="h-fit block text-white px-3 py-2 bg-blue-400 rounded hover:bg-blue-500 font-bold text-sm"
+              className="h-fit block text-center text-white px-3 py-2 bg-blue-400 rounded hover:bg-blue-500 font-bold text-sm"
             >
               Ajouter un utilisateur
             </Link>
             <Link
               to={URL_FRONT_ADMIN_USERS_ALL}
-              className="h-fit block text-blue-700 px-3 py-2 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 font-semibold text-sm"
+              className="h-fit block text-center text-blue-700 px-3 py-2 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 font-semibold text-sm"
             >
               Voir tous les utilisateurs
             </Link>

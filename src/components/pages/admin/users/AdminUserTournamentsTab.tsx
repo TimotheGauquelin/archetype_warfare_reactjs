@@ -209,58 +209,67 @@ const AdminUserTournamentsTab: React.FC<AdminUserTournamentsTabProps> = ({
 
   return (
     <div className="space-y-3">
-      <div className="border border-gray-200 bg-slate-100 rounded p-2">
-        <div className="flex justify-between items-center">
+      <div className="border border-gray-200 bg-slate-100 rounded p-2 tablet:p-3">
+        <div className="flex flex-col tablet:flex-row tablet:justify-between gap-2">
           <h2 className="text-md font-semibold">Filtres :</h2>
-          <p
-            className="hover:text-red-500 cursor-pointer text-sm"
+          <button
+            type="button"
+            className="hover:text-red-500 cursor-pointer text-sm text-left tablet:text-right"
             onClick={() => setFilters(EMPTY_FILTERS)}
           >
             Reset les filtres
-          </p>
+          </button>
         </div>
-        <div className="grid grid-cols-12 gap-4 items-end pt-2">
-          <SelectInput
-            attribute="deck"
-            data={filters}
-            setAction={setFilters}
-            label="Deck"
-            defaultOptionLabel="-- Tous les decks --"
-            options={deckOptions}
-            colSpanWidth="3"
-            ariaLabel="Deck utilisé"
-          />
-          <Input
-            attribute="location"
-            data={filters}
-            setAction={setFilters}
-            placeholder="Lille, Paris, etc."
-            inputType="text"
-            colSpanWidth="3"
-            label="Lieu"
-          />
-          <Input
-            attribute="event_date"
-            data={filters}
-            setAction={setFilters}
-            inputType="date"
-            colSpanWidth="3"
-            label="Date"
-          />
-          <SelectInput
-            attribute="is_official"
-            data={filters}
-            setAction={setFilters}
-            label="Type"
-            defaultOptionLabel="-- Officiel / Communautaire --"
-            options={OFFICIAL_OPTIONS}
-            colSpanWidth="3"
-            ariaLabel="Type de tournoi"
-          />
+        <div className="grid grid-cols-12 gap-2 tablet:gap-3 sscreen:gap-4 items-end pt-2">
+          <div className="col-span-12 tablet:col-span-6 sscreen:col-span-3">
+            <SelectInput
+              attribute="deck"
+              data={filters}
+              setAction={setFilters}
+              label="Deck"
+              defaultOptionLabel="-- Tous les decks --"
+              options={deckOptions}
+              colSpanWidth="12"
+              ariaLabel="Deck utilisé"
+            />
+          </div>
+          <div className="col-span-12 tablet:col-span-6 sscreen:col-span-3">
+            <Input
+              attribute="location"
+              data={filters}
+              setAction={setFilters}
+              placeholder="Lille, Paris, etc."
+              inputType="text"
+              colSpanWidth="12"
+              label="Lieu"
+            />
+          </div>
+          <div className="col-span-6 tablet:col-span-6 sscreen:col-span-3">
+            <Input
+              attribute="event_date"
+              data={filters}
+              setAction={setFilters}
+              inputType="date"
+              colSpanWidth="12"
+              label="Date"
+            />
+          </div>
+          <div className="col-span-6 tablet:col-span-6 sscreen:col-span-3">
+            <SelectInput
+              attribute="is_official"
+              data={filters}
+              setAction={setFilters}
+              label="Type"
+              defaultOptionLabel="-- Officiel / Communautaire --"
+              options={OFFICIAL_OPTIONS}
+              colSpanWidth="12"
+              ariaLabel="Type de tournoi"
+            />
+          </div>
         </div>
       </div>
 
-      <p className="text-sm text-gray-600">
+      <p className="text-xs tablet:text-sm text-gray-600">
         {filteredTournaments.length} participation
         {filteredTournaments.length > 1 ? "s" : ""}
       </p>
@@ -268,78 +277,151 @@ const AdminUserTournamentsTab: React.FC<AdminUserTournamentsTabProps> = ({
       {filteredTournaments.length === 0 ? (
         <NoItemMessage message="Aucune participation à un tournoi." />
       ) : (
-        <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <PaginationTableHead tableHeadItem={TABLE_HEAD_ITEMS} />
-          <div className="grid grid-cols-12">
-            {filteredTournaments.map((item) => {
-              const p = item.participation;
-              const record = `${p.match_wins}V / ${p.match_losses}D / ${p.match_draws}N`;
-              const place = placeLabel(p.place, p.players_count);
-              const deckLabel = p.deck_label?.trim();
-              return (
-                <div
-                  className="grid grid-cols-12 col-span-12 flex items-center border-b border-l border-r hover:bg-slate-200"
-                  key={`${item.tournament_id}-${p.tournament_player_id}`}
-                >
-                  <div className="col-span-3 p-1">
-                    <div>{item.name}</div>
-                    <div className="text-xs text-gray-500">
-                      {item.is_official ? "Officiel" : "Communautaire"}
-                      {item.is_online ? " · En ligne" : ""}
+        <div className="w-full text-sm text-left text-gray-500 overflow-x-auto">
+          <div className="min-w-0 sscreen:min-w-[800px]">
+            <div className="hidden sscreen:block">
+              <PaginationTableHead tableHeadItem={TABLE_HEAD_ITEMS} />
+            </div>
+            <div className="grid grid-cols-12">
+              {filteredTournaments.map((item) => {
+                const p = item.participation;
+                const record = `${p.match_wins}V / ${p.match_losses}D / ${p.match_draws}N`;
+                const place = placeLabel(p.place, p.players_count);
+                const deckLabel = p.deck_label?.trim();
+                const key = `${item.tournament_id}-${p.tournament_player_id}`;
+
+                return (
+                  <div
+                    className="col-span-12 border-b border-l border-r hover:bg-slate-200"
+                    key={key}
+                  >
+                    <div className="sscreen:hidden p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-gray-900 leading-snug">
+                            {item.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {item.is_official ? "Officiel" : "Communautaire"}
+                            {item.is_online ? " · En ligne" : ""}
+                          </p>
+                        </div>
+                        <Link
+                          to={getAdminTournamentManagePath(item.tournament_id)}
+                          className="shrink-0 font-medium text-blue-600 hover:underline text-sm"
+                        >
+                          Voir
+                        </Link>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                        <div>
+                          <span className="font-semibold text-gray-800">Date</span>
+                          <p>{verbalDate(toDateKey(item.event_date))}</p>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-800">Lieu</span>
+                          <p>{item.location ?? "—"}</p>
+                        </div>
+                        <div className="col-span-2">
+                          <span className="font-semibold text-gray-800">Bilan</span>
+                          <p>{record}</p>
+                          {place && <p>Position : {place}</p>}
+                          {p.dropped && (
+                            <p className="text-red-600 font-medium">Abandon</p>
+                          )}
+                          {p.disqualified_at && (
+                            <p className="text-red-600 font-medium">Disqualifié</p>
+                          )}
+                        </div>
+                        <div className="col-span-2">
+                          <span className="font-semibold text-gray-800">Deck</span>
+                          {deckLabel ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                void handleOpenDeck(p.tournament_player_id)
+                              }
+                              disabled={deckLoading}
+                              className="block text-blue-600 hover:underline font-medium text-left disabled:opacity-50"
+                            >
+                              {deckLabel}
+                            </button>
+                          ) : (
+                            <p>—</p>
+                          )}
+                          {p.archetype_name && (
+                            <p className="text-gray-500">{p.archetype_name}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="hidden sscreen:grid grid-cols-12 items-center">
+                      <div className="col-span-3 p-1">
+                        <div>{item.name}</div>
+                        <div className="text-xs text-gray-500">
+                          {item.is_official ? "Officiel" : "Communautaire"}
+                          {item.is_online ? " · En ligne" : ""}
+                        </div>
+                      </div>
+                      <div className="col-span-2 p-1">
+                        {verbalDate(toDateKey(item.event_date))}
+                      </div>
+                      <div className="col-span-2 p-1">
+                        {item.location ?? "—"}
+                      </div>
+                      <div className="col-span-2 p-1">
+                        <div>{record}</div>
+                        {place && (
+                          <div className="text-xs text-gray-600 font-medium">
+                            Position : {place}
+                          </div>
+                        )}
+                        {p.dropped && (
+                          <span className="text-xs text-red-600 font-medium block">
+                            Abandon
+                          </span>
+                        )}
+                        {p.disqualified_at && (
+                          <span className="text-xs text-red-600 font-medium block">
+                            Disqualifié
+                          </span>
+                        )}
+                      </div>
+                      <div className="col-span-1 p-1">
+                        {deckLabel ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              void handleOpenDeck(p.tournament_player_id)
+                            }
+                            disabled={deckLoading}
+                            className="text-blue-600 hover:text-blue-800 hover:underline font-medium text-left disabled:opacity-50"
+                          >
+                            {deckLabel}
+                          </button>
+                        ) : (
+                          <div>—</div>
+                        )}
+                        {p.archetype_name && (
+                          <div className="text-xs text-gray-500">
+                            {p.archetype_name}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-col col-span-2 bg-gray-100 p-1 text-right border-l">
+                        <Link
+                          to={getAdminTournamentManagePath(item.tournament_id)}
+                          className="font-medium text-blue-600 hover:text-yellow-600 hover:underline cursor-pointer"
+                        >
+                          Voir
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                  <div className="col-span-2 p-1">
-                    {verbalDate(toDateKey(item.event_date))}
-                  </div>
-                  <div className="col-span-2 p-1">{item.location ?? "—"}</div>
-                  <div className="col-span-2 p-1">
-                    <div>{record}</div>
-                    {place && (
-                      <div className="text-xs text-gray-600 font-medium">
-                        Position : {place}
-                      </div>
-                    )}
-                    {p.dropped && (
-                      <span className="text-xs text-red-600 font-medium block">
-                        Abandon
-                      </span>
-                    )}
-                    {p.disqualified_at && (
-                      <span className="text-xs text-red-600 font-medium block">
-                        Disqualifié
-                      </span>
-                    )}
-                  </div>
-                  <div className="col-span-1 p-1">
-                    {deckLabel ? (
-                      <button
-                        type="button"
-                        onClick={() => void handleOpenDeck(p.tournament_player_id)}
-                        disabled={deckLoading}
-                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium text-left disabled:opacity-50"
-                      >
-                        {deckLabel}
-                      </button>
-                    ) : (
-                      <div>—</div>
-                    )}
-                    {p.archetype_name && (
-                      <div className="text-xs text-gray-500">
-                        {p.archetype_name}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col col-span-2 bg-gray-100 p-1 text-right border-l">
-                    <Link
-                      to={getAdminTournamentManagePath(item.tournament_id)}
-                      className="font-medium text-blue-600 hover:text-yellow-600 hover:underline cursor-pointer"
-                    >
-                      Voir
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       )}

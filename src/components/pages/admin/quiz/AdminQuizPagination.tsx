@@ -41,20 +41,23 @@ const AdminQuizPagination: React.FC<AdminQuizPaginationProps> = ({
   ];
 
   return (
-    <div className="">
-      <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <PaginationTableHead tableHeadItem={tableHeadItemArray} />
-
-        <div>
-          {loading ? (
-            <div className="p-4">Chargement...</div>
-          ) : (
-            <AdminQuizPaginationTableBody
-              arrayItems={questions}
-              onDelete={onDelete}
-              onToggleActive={onToggleActive}
-            />
-          )}
+    <div>
+      <div className="w-full text-sm text-left text-gray-500 overflow-x-auto">
+        <div className="min-w-0 sscreen:min-w-[900px]">
+          <div className="hidden sscreen:block">
+            <PaginationTableHead tableHeadItem={tableHeadItemArray} />
+          </div>
+          <div>
+            {loading ? (
+              <div className="p-4">Chargement...</div>
+            ) : (
+              <AdminQuizPaginationTableBody
+                arrayItems={questions}
+                onDelete={onDelete}
+                onToggleActive={onToggleActive}
+              />
+            )}
+          </div>
         </div>
       </div>
 

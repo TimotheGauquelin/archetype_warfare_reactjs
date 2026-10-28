@@ -817,9 +817,10 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
   }
 
   const tabClass = (tab: QuestionTab) =>
-    `py-2 px-4 rounded-t-md cursor-pointer ${activeTab === tab
-      ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
-      : "text-gray-700 bg-gray-200 hover:bg-gray-300"
+    `flex-1 text-center py-2 px-2 tablet:px-4 rounded-t-md cursor-pointer text-sm tablet:text-base ${
+      activeTab === tab
+        ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
+        : "text-gray-700 bg-gray-200 hover:bg-gray-300"
     }`;
 
   const pointsFormData: QuestionFormState =
@@ -833,32 +834,34 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
 
   return (
     <div>
-      <div className="flex">
-        <span
+      <div className="flex gap-1">
+        <button
+          type="button"
           className={tabClass("informations")}
           onClick={() => setActiveTab("informations")}
         >
           Informations générales
-        </span>
-        <span
+        </button>
+        <button
+          type="button"
           className={tabClass("daily")}
           onClick={() => setActiveTab("daily")}
         >
           Mode Défi du jour
-        </span>
+        </button>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white border border-t-0 border-gray-200 rounded-b-lg p-4 space-y-4"
+        className="bg-white border border-t-0 border-gray-200 rounded-b-lg p-2.5 tablet:p-4 space-y-4"
       >
         <div
           className={
             activeTab === "informations" ? "space-y-4" : "hidden"
           }
         >
-          <div className="bg-gray-100 rounded p-3 flex flex-col gap-2">
-            <div className="flex justify-end">
+          <div className="bg-gray-100 rounded p-2.5 tablet:p-3 flex flex-col gap-2">
+            <div className="flex justify-start tablet:justify-end">
               <SwitchInput
                 label="Question active"
                 attribute="is_active"
@@ -867,8 +870,8 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                 displayRow
               />
             </div>
-            <div className="grid grid-cols-12 gap-4 items-end">
-              <div className="col-span-12 tablet:col-span-3">
+            <div className="grid grid-cols-12 gap-2 tablet:gap-4 items-end">
+              <div className="col-span-12 tablet:col-span-6 sscreen:col-span-3">
                 <SelectInput
                   label="Thème"
                   attribute="themeSlug"
@@ -882,29 +885,33 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                 />
               </div>
 
-              <SelectInput
-                label="Type de question"
-                attribute="type"
-                data={form}
-                setAction={setTypeForm}
-                options={TYPE_OPTIONS}
-                defaultOptionLabel="-- Choisir un type --"
-                required
-                colSpanWidth="3"
-              />
+              <div className="col-span-12 tablet:col-span-6 sscreen:col-span-3">
+                <SelectInput
+                  label="Type de question"
+                  attribute="type"
+                  data={form}
+                  setAction={setTypeForm}
+                  options={TYPE_OPTIONS}
+                  defaultOptionLabel="-- Choisir un type --"
+                  required
+                  colSpanWidth="12"
+                />
+              </div>
 
-              <SelectInput
-                label="Difficulté"
-                required
-                attribute="difficulty"
-                data={form}
-                setAction={setForm}
-                options={DIFFICULTY_OPTIONS}
-                defaultOptionLabel="-- Difficulté --"
-                colSpanWidth="2"
-              />
+              <div className="col-span-6 tablet:col-span-6 sscreen:col-span-2">
+                <SelectInput
+                  label="Difficulté"
+                  required
+                  attribute="difficulty"
+                  data={form}
+                  setAction={setForm}
+                  options={DIFFICULTY_OPTIONS}
+                  defaultOptionLabel="-- Difficulté --"
+                  colSpanWidth="12"
+                />
+              </div>
 
-              <div className="col-span-12 tablet:col-span-2">
+              <div className="col-span-6 tablet:col-span-6 sscreen:col-span-2">
                 <Input
                   label="Points"
                   attribute="points"
@@ -944,9 +951,9 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
             </label>
           </div>
 
-          <div className="grid grid-cols-12 gap-4">
+          <div className="grid grid-cols-12 gap-2 tablet:gap-4">
             {form.type !== "zoom" && form.type !== "hint_ladder" && (
-              <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-3 space-y-3">
+              <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-2.5 tablet:p-3 space-y-3">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <p className="font-medium text-gray-800">Image <span className="font-semibold text-red-600">*</span></p>
                   <div className="flex flex-row items-center gap-2">
@@ -1045,7 +1052,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
             )}
 
             {form.type !== "zoom" && form.type !== "hint_ladder" && (
-              <div className="flex flex-col border border-gray-200 bg-gray-100 rounded p-3 space-y-3 col-span-12 tablet:col-span-6 space-y-3">
+              <div className="flex flex-col border border-gray-200 bg-gray-100 rounded p-2.5 tablet:p-3 space-y-3 col-span-12 tablet:col-span-6">
                 <div className="flex flex-col gap-2">
                   <label className="font-medium text-gray-800">
                     Donner un indice pour trouver le nom de la carte
@@ -1180,7 +1187,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
           </div>
 
           {form.type === "order" ? (
-            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+            <fieldset className="space-y-3 tablet:space-y-4 bg-gray-100 rounded p-2.5 tablet:p-4">
               <legend className="text-sm font-medium text-gray-800 mb-2">
                 Dans l&apos;ordre — 4 propositions à classer
               </legend>
@@ -1196,7 +1203,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               />
             </fieldset>
           ) : form.type === "name_the_cards" ? (
-            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+            <fieldset className="space-y-3 tablet:space-y-4 bg-gray-100 rounded p-2.5 tablet:p-4">
               <legend className="text-sm font-medium text-gray-800 mb-2">
                 Trouvez le nom — réponses dans l&apos;ordre de l&apos;image
               </legend>
@@ -1231,7 +1238,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               />
             </fieldset>
           ) : form.type === "summoner" ? (
-            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+            <fieldset className="space-y-3 tablet:space-y-4 bg-gray-100 rounded p-2.5 tablet:p-4">
               <legend className="text-sm font-medium text-gray-800 mb-2">
                 Invocateur — propositions &amp; matériaux
               </legend>
@@ -1268,7 +1275,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               />
             </fieldset>
           ) : form.type === "zoom" ? (
-            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+            <fieldset className="space-y-3 tablet:space-y-4 bg-gray-100 rounded p-2.5 tablet:p-4">
               <legend className="text-sm font-medium text-gray-800 mb-2">
                 Zoom — focus progressif (3 → 2 → 1 points)
               </legend>
@@ -1283,7 +1290,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               />
             </fieldset>
           ) : form.type === "hint_ladder" ? (
-            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+            <fieldset className="space-y-3 tablet:space-y-4 bg-gray-100 rounded p-2.5 tablet:p-4">
               <legend className="text-sm font-medium text-gray-800 mb-2">
                 Indices — Difficile 3 → Moyen 2 → Facile 1 → Newbie 0
               </legend>
@@ -1300,7 +1307,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               />
             </fieldset>
           ) : form.type === "mcq" ? (
-            <fieldset className="space-y-4 bg-gray-100 rounded p-4">
+            <fieldset className="space-y-3 tablet:space-y-4 bg-gray-100 rounded p-2.5 tablet:p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <legend className="text-sm font-medium text-gray-800">
                   Propositions (cochez la bonne réponse)
@@ -1408,7 +1415,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
         </div>
 
         <div className={activeTab === "daily" ? "space-y-4" : "hidden"}>
-          <div className="grid grid-cols-12 gap-4 max-w-2xl">
+          <div className="grid grid-cols-12 gap-2 tablet:gap-4 max-w-2xl">
             <div className="col-span-12 tablet:col-span-6">
               <SelectInput
                 label="Destination de la question"
@@ -1441,7 +1448,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
           </div>
 
           {form.for_daily && (
-            <div className="grid grid-cols-12 gap-4 max-w-2xl">
+            <div className="grid grid-cols-12 gap-2 tablet:gap-4 max-w-2xl">
               <div className="col-span-12 tablet:col-span-6">
                 <SelectInput
                   label="Saison Daily Quizz (optionnel)"
@@ -1506,7 +1513,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
           <button
             type="submit"
             disabled={saving}
-            className="text-white p-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer disabled:opacity-50"
+            className="w-full sscreen:w-auto text-white p-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer disabled:opacity-50"
           >
             {saving
               ? "Enregistrement…"

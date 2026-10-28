@@ -11,7 +11,7 @@ import AdminUserQuizTab from "../../../components/pages/admin/users/AdminUserQui
 type UserUpdateTab = "general" | "decks" | "tournaments" | "quiz";
 
 const TAB_CLASS = (active: boolean) =>
-  `py-2 px-4 rounded-t-md cursor-pointer ${
+  `flex-1 min-w-[calc(50%-0.25rem)] tablet:min-w-0 tablet:flex-none text-center py-2 px-2 tablet:px-4 rounded-t-md cursor-pointer text-sm tablet:text-base ${
     active
       ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
       : "text-gray-700 bg-gray-200 hover:bg-gray-300"
@@ -29,34 +29,38 @@ const AdminUserUpdate = () => {
         returnButton
       />
       <div>
-        <div className="flex flex-wrap">
-          <span
+        <div className="flex flex-wrap gap-1">
+          <button
+            type="button"
             className={TAB_CLASS(activeTab === "general")}
             onClick={() => setActiveTab("general")}
           >
-            Informations générales
-          </span>
-          <span
+            Infos
+          </button>
+          <button
+            type="button"
             className={TAB_CLASS(activeTab === "decks")}
             onClick={() => setActiveTab("decks")}
           >
-            Ses decks
-          </span>
-          <span
+            Decks
+          </button>
+          <button
+            type="button"
             className={TAB_CLASS(activeTab === "tournaments")}
             onClick={() => setActiveTab("tournaments")}
           >
-            Ses tournois
-          </span>
-          <span
+            Tournois
+          </button>
+          <button
+            type="button"
             className={TAB_CLASS(activeTab === "quiz")}
             onClick={() => setActiveTab("quiz")}
           >
             Quizz
-          </span>
+          </button>
         </div>
 
-        <div className="bg-white border border-t-0 border-gray-200 rounded-b-lg p-4 shadow-sm">
+        <div className="bg-white border border-t-0 border-gray-200 rounded-b-lg p-2.5 tablet:p-4 shadow-sm overflow-hidden">
           {activeTab === "general" && <AdminUserUpdateForm />}
           {activeTab === "decks" &&
             (userId ? (

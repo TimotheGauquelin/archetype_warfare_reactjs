@@ -140,12 +140,12 @@ const AdminUserUpdateForm = () => {
 
   return (
     <div className="space-y-4 max-w-3xl">
-      <div className="bg-gray-100 rounded p-3 flex flex-col gap-2">
-        <div className="flex flex-row justify-between items-center">
-          <h2 className="font-semibold text-lg text-gray-900">
+      <div className="bg-gray-100 rounded p-2.5 tablet:p-3 flex flex-col gap-2">
+        <div className="flex flex-col tablet:flex-row tablet:justify-between tablet:items-center gap-2">
+          <h2 className="font-semibold text-base tablet:text-lg text-gray-900">
             Informations générales
           </h2>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <SwitchInput
               label="Actif"
               attribute="is_active"
@@ -163,48 +163,54 @@ const AdminUserUpdateForm = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-4">
-          <Input
-            label="Pseudo"
-            required
-            inputType="text"
-            inputName="username"
-            colSpanWidth="6"
-            attribute="username"
-            data={form}
-            setAction={setForm}
-          />
-          <Input
-            label="Email"
-            required
-            inputType="email"
-            inputName="email"
-            colSpanWidth="6"
-            attribute="email"
-            data={form}
-            setAction={setForm}
-          />
-          <MultiSelectInput
-            colSpanWidth="6"
-            label="Rôles"
-            required
-            array={roles}
-            data={{ roles: form.roles }}
-            setAction={(value) => {
-              if (typeof value === "function") {
-                const next = value({ roles: form.roles });
-                setForm((prev) => ({ ...prev, roles: next.roles }));
-              } else {
-                setForm((prev) => ({ ...prev, roles: value.roles }));
-              }
-            }}
-          />
+        <div className="grid grid-cols-12 gap-2 tablet:gap-4">
+          <div className="col-span-12 tablet:col-span-6">
+            <Input
+              label="Pseudo"
+              required
+              inputType="text"
+              inputName="username"
+              colSpanWidth="12"
+              attribute="username"
+              data={form}
+              setAction={setForm}
+            />
+          </div>
+          <div className="col-span-12 tablet:col-span-6">
+            <Input
+              label="Email"
+              required
+              inputType="email"
+              inputName="email"
+              colSpanWidth="12"
+              attribute="email"
+              data={form}
+              setAction={setForm}
+            />
+          </div>
+          <div className="col-span-12 tablet:col-span-6">
+            <MultiSelectInput
+              colSpanWidth="12"
+              label="Rôles"
+              required
+              array={roles}
+              data={{ roles: form.roles }}
+              setAction={(value) => {
+                if (typeof value === "function") {
+                  const next = value({ roles: form.roles });
+                  setForm((prev) => ({ ...prev, roles: next.roles }));
+                } else {
+                  setForm((prev) => ({ ...prev, roles: value.roles }));
+                }
+              }}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="bg-gray-100 rounded p-3 flex flex-col gap-2">
-        <h2 className="font-semibold text-lg text-gray-900">Profil</h2>
-        <div className="grid grid-cols-12 gap-4">
+      <div className="bg-gray-100 rounded p-2.5 tablet:p-3 flex flex-col gap-2">
+        <h2 className="font-semibold text-base tablet:text-lg text-gray-900">Profil</h2>
+        <div className="grid grid-cols-12 gap-2 tablet:gap-4">
           <div className="col-span-12">
             <TextArea
               label="Biographie"
@@ -215,19 +221,21 @@ const AdminUserUpdateForm = () => {
               }
             />
           </div>
-          <SelectInput
-            defaultOptionLabel="-- Archétype préféré --"
-            label="Archétype préféré"
-            options={archetypes.map((archetype) => ({
-              id: archetype.id,
-              label: archetype.name,
-            }))}
-            data={form}
-            attribute="loved_archetype_id"
-            setAction={setForm}
-            colSpanWidth="6"
-          />
-          <div className="col-span-6">
+          <div className="col-span-12 tablet:col-span-6">
+            <SelectInput
+              defaultOptionLabel="-- Archétype préféré --"
+              label="Archétype préféré"
+              options={archetypes.map((archetype) => ({
+                id: archetype.id,
+                label: archetype.name,
+              }))}
+              data={form}
+              attribute="loved_archetype_id"
+              setAction={setForm}
+              colSpanWidth="12"
+            />
+          </div>
+          <div className="col-span-12 tablet:col-span-6">
             <CountrySelect
               label="Pays"
               value={form.country}
@@ -239,31 +247,35 @@ const AdminUserUpdateForm = () => {
         </div>
       </div>
 
-      <div className="bg-gray-100 rounded p-3 flex flex-col gap-2">
-        <h2 className="font-semibold text-lg text-gray-900">Mot de passe</h2>
-        <p className="text-sm text-gray-600">
+      <div className="bg-gray-100 rounded p-2.5 tablet:p-3 flex flex-col gap-2">
+        <h2 className="font-semibold text-base tablet:text-lg text-gray-900">Mot de passe</h2>
+        <p className="text-xs tablet:text-sm text-gray-600 leading-snug">
           Forcez un nouveau mot de passe, ou envoyez un email de
           réinitialisation.
         </p>
-        <div className="grid grid-cols-12 gap-4">
-          <InputPassword
-            label="Nouveau mot de passe"
-            attribute="password"
-            data={form}
-            setAction={setForm}
-            colSpanWidth="6"
-          />
-          <InputPassword
-            label="Confirmer"
-            attribute="confirmPassword"
-            data={form}
-            setAction={setForm}
-            colSpanWidth="6"
-          />
+        <div className="grid grid-cols-12 gap-2 tablet:gap-4">
+          <div className="col-span-12 tablet:col-span-6">
+            <InputPassword
+              label="Nouveau mot de passe"
+              attribute="password"
+              data={form}
+              setAction={setForm}
+              colSpanWidth="12"
+            />
+          </div>
+          <div className="col-span-12 tablet:col-span-6">
+            <InputPassword
+              label="Confirmer"
+              attribute="confirmPassword"
+              data={form}
+              setAction={setForm}
+              colSpanWidth="12"
+            />
+          </div>
         </div>
         <div>
           <Button
-            className="bg-orange-100 hover:bg-orange-200 text-orange-700 px-3 py-2 rounded font-semibold disabled:opacity-50"
+            className="w-full sscreen:w-auto bg-orange-100 hover:bg-orange-200 text-orange-700 px-3 py-2 rounded font-semibold disabled:opacity-50 text-sm"
             buttonText={
               isSendingReset
                 ? "Envoi…"
@@ -277,7 +289,7 @@ const AdminUserUpdateForm = () => {
 
       <div className="pt-2">
         <Button
-          className="text-white px-4 py-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer disabled:opacity-50"
+          className="w-full sscreen:w-auto text-white px-4 py-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer disabled:opacity-50"
           buttonText="Modifier l'utilisateur"
           action={handleSave}
           disabled={isLoading}

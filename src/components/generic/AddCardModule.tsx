@@ -148,15 +148,16 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
   }, [filters, locale]);
 
   return (
-    <div className="col-span-4 grid grid-cols-12 mt-2">
-      <div className="bg-gray-400 col-span-12 ml-1 p-2 rounded">
+    <div className="col-span-12 sscreen:col-span-4 grid grid-cols-12 mt-0 sscreen:mt-2 order-1 sscreen:order-2">
+      <div className="bg-gray-400 col-span-12 sscreen:ml-1 p-2 rounded">
         <div className="flex justify-end mb-2">
-          <div
+          <button
+            type="button"
             className="text-sm bg-yellow-300 hover:bg-yellow-400 shadow-md px-3 py-1 rounded text-white font-bold text-center cursor-pointer"
             onClick={addAllCardsToArchetype}
           >
             Ajouter tout
-          </div>
+          </button>
         </div>
         <AdminCardsFilter
           cardTypes={cardTypes}
@@ -177,9 +178,9 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
             );
 
             return (
-              <div className="col-span-3 relative" key={index}>
+              <div className="col-span-4 tablet:col-span-3 relative" key={index}>
                 <img
-                  className={`hover:saturate-150 cursor-pointer ${isCardAlreadyInArchetype ? 'opacity-50' : ''
+                  className={`w-full h-auto hover:saturate-150 cursor-pointer ${isCardAlreadyInArchetype ? 'opacity-50' : ''
                     }`}
                   src={`${card?.img_url}`}
                   alt=""
@@ -189,7 +190,7 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
                 {isCardAlreadyInArchetype && (
                   <p
                     style={{ fontSize: "8px", padding: "2px" }}
-                    className="absolute top-20 left-0 text-center w-full text-sm bg-yellow-500 text-white rounded"
+                    className="absolute top-1/2 left-0 -translate-y-1/2 text-center w-full text-sm bg-yellow-500 text-white rounded"
                   >
                     Déjà ajoutée
                   </p>

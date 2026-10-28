@@ -61,12 +61,12 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="bg-gray-100 rounded p-3 flex flex-col gap-2">
-        <div className="flex flex-row justify-between items-center">
-          <h2 className="font-semibold text-lg text-gray-900">
+      <div className="bg-gray-100 rounded p-2.5 tablet:p-3 flex flex-col gap-2">
+        <div className="flex flex-col tablet:flex-row tablet:justify-between tablet:items-center gap-2">
+          <h2 className="font-semibold text-base tablet:text-lg text-gray-900">
             Informations générales
           </h2>
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <SwitchInput
               label="Slider"
               attribute="is_highlighted"
@@ -84,18 +84,20 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
           </div>
         </div>
 
-        <div className="tablet:grid tablet:grid-cols-12 tablet:gap-4">
-          <Input
-            label="Nom"
-            required
-            inputType="text"
-            inputName="nom"
-            colSpanWidth="6"
-            attribute="name"
-            data={newArchetype}
-            setAction={setNewArchetype}
-          />
-          <div className="flex flex-col col-span-3">
+        <div className="grid grid-cols-12 gap-2 tablet:gap-4">
+          <div className="col-span-12 tablet:col-span-6">
+            <Input
+              label="Nom"
+              required
+              inputType="text"
+              inputName="nom"
+              colSpanWidth="12"
+              attribute="name"
+              data={newArchetype}
+              setAction={setNewArchetype}
+            />
+          </div>
+          <div className="col-span-12 tablet:col-span-3 flex flex-col">
             <label className="mt-2 font-bold">
               <span>Ère:</span>
               <span className="text-red-500 font-bold">*</span>
@@ -126,44 +128,50 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
               ))}
             </select>
           </div>
-          <Input
-            label="Point de popularité"
-            required
-            inputType="number"
-            inputName="popularityPoll"
-            colSpanWidth="3"
-            attribute="popularity_poll"
-            min={0}
-            data={newArchetype}
-            setAction={setNewArchetype}
-          />
+          <div className="col-span-12 tablet:col-span-3">
+            <Input
+              label="Point de popularité"
+              required
+              inputType="number"
+              inputName="popularityPoll"
+              colSpanWidth="12"
+              attribute="popularity_poll"
+              min={0}
+              data={newArchetype}
+              setAction={setNewArchetype}
+            />
+          </div>
         </div>
 
-        <div className="tablet:grid tablet:grid-cols-12 tablet:gap-4">
-          <Input
-            label="Date d'apparition TCG"
-            required
-            inputType="date"
-            inputName="inTCGDate"
-            colSpanWidth="6"
-            attribute="in_tcg_date"
-            min="2002-01-01"
-            max={today}
-            data={newArchetype}
-            setAction={setNewArchetype}
-          />
-          <Input
-            label="Date d'apparition AW"
-            required
-            inputType="date"
-            inputName="inAWDate"
-            colSpanWidth="6"
-            attribute="in_aw_date"
-            min="2025-01-01"
-            max={today}
-            data={newArchetype}
-            setAction={setNewArchetype}
-          />
+        <div className="grid grid-cols-12 gap-2 tablet:gap-4">
+          <div className="col-span-12 tablet:col-span-6">
+            <Input
+              label="Date d'apparition TCG"
+              required
+              inputType="date"
+              inputName="inTCGDate"
+              colSpanWidth="12"
+              attribute="in_tcg_date"
+              min="2002-01-01"
+              max={today}
+              data={newArchetype}
+              setAction={setNewArchetype}
+            />
+          </div>
+          <div className="col-span-12 tablet:col-span-6">
+            <Input
+              label="Date d'apparition AW"
+              required
+              inputType="date"
+              inputName="inAWDate"
+              colSpanWidth="12"
+              attribute="in_aw_date"
+              min="2025-01-01"
+              max={today}
+              data={newArchetype}
+              setAction={setNewArchetype}
+            />
+          </div>
         </div>
 
         <TextArea
@@ -199,8 +207,8 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
         />
       </div>
 
-      <div className="bg-gray-100 rounded p-3 flex flex-col gap-2">
-        <h2 className="font-semibold text-lg text-gray-900">Traduction EN</h2>
+      <div className="bg-gray-100 rounded p-2.5 tablet:p-3 flex flex-col gap-2">
+        <h2 className="font-semibold text-base tablet:text-lg text-gray-900">Traduction EN</h2>
         <Input
           label="Nom (EN)"
           inputType="text"
@@ -245,8 +253,8 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
         />
       </div>
 
-      <div className="bg-gray-100 rounded p-3 flex flex-col gap-2">
-        <h2 className="font-semibold text-lg text-gray-900">
+      <div className="bg-gray-100 rounded p-2.5 tablet:p-3 flex flex-col gap-2">
+        <h2 className="font-semibold text-base tablet:text-lg text-gray-900">
           Caractéristiques de jeu
         </h2>
         <CheckboxInput
@@ -278,14 +286,14 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
         />
       </div>
 
-      <div className="grid grid-cols-12 gap-4">
-        <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-3 space-y-3">
+      <div className="grid grid-cols-12 gap-2 tablet:gap-4">
+        <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-2.5 tablet:p-3 space-y-3">
           <p className="font-bold text-gray-800">Image du jumbotron</p>
           {newArchetype.slider_img_url && (
             <img
               src={newArchetype.slider_img_url}
               alt="Prévisualisation jumbotron"
-              className="max-h-40 rounded object-contain shadow-sm"
+              className="max-h-32 tablet:max-h-40 w-full rounded object-contain shadow-sm"
             />
           )}
           <label className="flex flex-col text-sm font-bold text-gray-800">
@@ -323,13 +331,13 @@ const AdminArchetypeData: React.FC<AdminArchetypeDataProps> = ({
           )}
         </div>
 
-        <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-3 space-y-3">
+        <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-2.5 tablet:p-3 space-y-3">
           <p className="font-bold text-gray-800">Image de la carte</p>
           {newArchetype.card_img_url && (
             <img
               src={newArchetype.card_img_url}
               alt="Prévisualisation carte"
-              className="max-h-40 rounded object-contain shadow-sm"
+              className="max-h-32 tablet:max-h-40 w-full rounded object-contain shadow-sm"
             />
           )}
           <label className="flex flex-col text-sm font-bold text-gray-800">

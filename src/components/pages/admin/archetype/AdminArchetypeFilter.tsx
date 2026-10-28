@@ -140,98 +140,110 @@ const AdminArchetypeFilter: React.FC<AdminArchetypeFilterProps> = ({
   };
 
   return (
-    <div className="border border-gray-200 bg-slate-100 rounded p-2">
-      <div className="flex justify-between">
-        <h2 className="text-md font-semibold">Filtres : </h2>
-        <div className="flex flex-col items-center gap-2">
-          <p
-            className="hover:text-red-500 cursor-pointer"
+    <div className="border border-gray-200 bg-slate-100 rounded p-2 tablet:p-3">
+      <div className="flex flex-col tablet:flex-row tablet:justify-between gap-2">
+        <h2 className="text-md font-semibold">Filtres :</h2>
+        <div className="flex flex-row tablet:flex-col flex-wrap tablet:items-end gap-x-4 gap-y-1 text-sm">
+          <button
+            type="button"
+            className="hover:text-red-500 cursor-pointer text-left"
             onClick={() => handleResetAllFiltersButton()}
           >
             Reset les filtres
-          </p>
-          <p
-            className="hover:text-blue-500 cursor-pointer"
+          </button>
+          <button
+            type="button"
+            className="hover:text-blue-500 cursor-pointer text-left"
             onClick={() => {
               setDisplayGeneralActions(!displayGeneralActions);
             }}
           >
             Actions générales
-          </p>
+          </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-4 items-end pt-2">
-        <Input
-          attribute="name"
-          data={filterData}
-          setAction={setFilterData}
-          placeholder="Quel archetype recherchez-vous ?"
-          inputType="text"
-          colSpanWidth="3"
-        />
-        <SelectInput
-          attribute="era"
-          data={filterData}
-          setAction={setFilterData}
-          defaultOptionLabel="-- Aucune Ère --"
-          options={eraOptions}
-          colSpanWidth="2"
-          ariaLabel="Ère"
-        />
-        <SelectInput
-          attribute="attribute"
-          data={filterData}
-          setAction={setFilterData}
-          defaultOptionLabel="-- Aucun Attribut --"
-          options={attributeOptions}
-          colSpanWidth="2"
-          ariaLabel="Attribut"
-        />
-        <SelectInput
-          attribute="type"
-          data={filterData}
-          setAction={setFilterData}
-          defaultOptionLabel="-- Aucun Type --"
-          options={typeOptions}
-          colSpanWidth="2"
-          ariaLabel="Type"
-        />
-        <SelectInput
-          attribute="summonmechanic"
-          data={filterData}
-          setAction={setFilterData}
-          defaultOptionLabel="-- Aucune Méthode d'invocation --"
-          options={summonMechanicOptions}
-          colSpanWidth="2"
-          ariaLabel="Méthode d'invocation"
-        />
+      <div className="grid grid-cols-12 gap-2 tablet:gap-3 sscreen:gap-4 items-end pt-2">
+        <div className="col-span-12 tablet:col-span-6 sscreen:col-span-3">
+          <Input
+            attribute="name"
+            data={filterData}
+            setAction={setFilterData}
+            placeholder="Quel archetype recherchez-vous ?"
+            inputType="text"
+            colSpanWidth="12"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-3 sscreen:col-span-2">
+          <SelectInput
+            attribute="era"
+            data={filterData}
+            setAction={setFilterData}
+            defaultOptionLabel="-- Aucune Ère --"
+            options={eraOptions}
+            colSpanWidth="12"
+            ariaLabel="Ère"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-3 sscreen:col-span-2">
+          <SelectInput
+            attribute="attribute"
+            data={filterData}
+            setAction={setFilterData}
+            defaultOptionLabel="-- Aucun Attribut --"
+            options={attributeOptions}
+            colSpanWidth="12"
+            ariaLabel="Attribut"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-6 sscreen:col-span-2">
+          <SelectInput
+            attribute="type"
+            data={filterData}
+            setAction={setFilterData}
+            defaultOptionLabel="-- Aucun Type --"
+            options={typeOptions}
+            colSpanWidth="12"
+            ariaLabel="Type"
+          />
+        </div>
+        <div className="col-span-6 tablet:col-span-6 sscreen:col-span-3">
+          <SelectInput
+            attribute="summonmechanic"
+            data={filterData}
+            setAction={setFilterData}
+            defaultOptionLabel="-- Aucune Méthode d'invocation --"
+            options={summonMechanicOptions}
+            colSpanWidth="12"
+            ariaLabel="Méthode d'invocation"
+          />
+        </div>
       </div>
 
       {displayGeneralActions && (
-        <div className="flex flex-wrap bg-white border border-gray-200 rounded-lg p-2 mt-2 gap-2">
+        <div className="flex flex-col tablet:flex-row flex-wrap bg-white border border-gray-200 rounded-lg p-2 mt-2 gap-2">
           <button
             type="button"
-            className="flex items-center bg-orange-100 hover:bg-orange-200 p-1 rounded text-orange-500 font-semibold"
+            className="flex items-center justify-center tablet:justify-start bg-orange-100 hover:bg-orange-200 p-2 tablet:p-1 rounded text-orange-500 font-semibold text-sm"
             onClick={handleResetAllArchetypesToIsNotHighlightedButton}
           >
-            <FaImage className="mr-2" />
+            <FaImage className="mr-2 shrink-0" />
             Retirer tous les archétypes du slider
           </button>
           <button
             type="button"
-            className="flex items-center bg-red-100 hover:bg-red-200 p-1 rounded text-red-500 font-semibold"
+            className="flex items-center justify-center tablet:justify-start bg-red-100 hover:bg-red-200 p-2 tablet:p-1 rounded text-red-500 font-semibold text-sm"
             onClick={handleResetAllArchetypesToIsUnactiveButton}
           >
-            <FaEyeSlash className="mr-2" />
+            <FaEyeSlash className="mr-2 shrink-0" />
             Mettre tous les archétypes hors-ligne
           </button>
           <button
             type="button"
-            className="flex items-center bg-amber-100 hover:bg-amber-200 p-1 rounded text-amber-700 font-semibold"
+            className="flex items-center justify-center tablet:justify-start bg-amber-100 hover:bg-amber-200 p-2 tablet:p-1 rounded text-amber-700 font-semibold text-sm"
             onClick={handleResetPopularityPointsToZeroButton}
           >
-            <FaRedo className="mr-2" />
+            <FaRedo className="mr-2 shrink-0" />
             Remettre les points de popularité à 0
           </button>
         </div>

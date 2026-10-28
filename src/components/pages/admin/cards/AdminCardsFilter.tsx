@@ -111,48 +111,50 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
     });
   };
 
-  // Mobile : uniquement nom / niveau / type / attribut en 2×2 ; ATK/DEF masqués
+  // Mobile : nom plein / niveau+type+attribut ; ATK/DEF dès sscreen
   const nameWrap = compact
     ? "col-span-6 sscreen:col-span-4"
-    : "col-span-6 sscreen:col-span-3";
+    : "col-span-12 tablet:col-span-6 sscreen:col-span-3";
   const levelWrap = compact
     ? "col-span-6 sscreen:col-span-4 flex flex-col"
-    : "col-span-6 sscreen:col-span-1 flex flex-col";
+    : "col-span-4 tablet:col-span-3 sscreen:col-span-1 flex flex-col";
   const atkDefWrap = compact
     ? "hidden sscreen:flex sscreen:flex-col col-span-6 sscreen:col-span-4"
     : "hidden sscreen:flex sscreen:flex-col col-span-6 sscreen:col-span-1";
   const typeWrap = compact
     ? "col-span-6 sscreen:col-span-4"
-    : "col-span-6 sscreen:col-span-2";
+    : "col-span-4 tablet:col-span-3 sscreen:col-span-2";
   const attributeWrap = compact
     ? "col-span-6 sscreen:col-span-4"
-    : "col-span-6 sscreen:col-span-2";
+    : "col-span-4 tablet:col-span-6 sscreen:col-span-2";
 
   return (
-    <div className="border border-gray-200 bg-slate-100 rounded p-2">
-      <div className="flex justify-between">
+    <div className="border border-gray-200 bg-slate-100 rounded p-2 tablet:p-3">
+      <div className="flex flex-col tablet:flex-row tablet:justify-between gap-2">
         <h2 className="text-md font-semibold">{t("filters.title")}</h2>
-        <div className="flex flex-col items-end gap-1">
-          <p
-            className="hover:text-red-500 cursor-pointer"
+        <div className="flex flex-row tablet:flex-col flex-wrap tablet:items-end gap-x-4 gap-y-1 text-sm">
+          <button
+            type="button"
+            className="hover:text-red-500 cursor-pointer text-left"
             onClick={() => handleResetAllFiltersButton()}
           >
             {t("filters.reset")}
-          </p>
+          </button>
           {onClearAllDeckCards && (
-            <p
-              className="hover:text-blue-500 cursor-pointer"
+            <button
+              type="button"
+              className="hover:text-blue-500 cursor-pointer text-left"
               onClick={() => setDisplayGeneralActions((prev) => !prev)}
             >
               {t("filters.generalActions")}
-            </p>
+            </button>
           )}
         </div>
       </div>
 
       <div
-        className={`grid grid-cols-12 items-end pt-1 sscreen:pt-2 gap-1 ${
-          compact ? "sscreen:gap-2" : "sscreen:gap-4"
+        className={`grid grid-cols-12 items-end pt-2 gap-2 ${
+          compact ? "sscreen:gap-2" : "tablet:gap-3 sscreen:gap-4"
         } [&_input]:mt-0 sscreen:[&_input]:mt-2 [&>div>div]:mt-0 sscreen:[&>div>div]:mt-2 [&>div>div]:space-y-0`}
       >
         <div className={nameWrap}>

@@ -95,21 +95,25 @@ const AdminArchetypePagination: React.FC<AdminArchetypePaginationProps> = ({
   };
 
   return (
-    <div className="">
-      <div className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <PaginationTableHead tableHeadItem={tableHeadItemArray} />
-        <div>
-          {loading ? (
-            <div className="p-4">Chargement...</div>
-          ) : (
-            <AdminArchetypePaginationTableBody
-              arrayItems={archetypes}
-              switchIsHighlighted={switchIsHighlighted}
-              switchIsActive={switchIsActive}
-              deleteArchetype={handleDeleteArchetypeButton}
-              setRefresh={setRefresh}
-            />
-          )}
+    <div>
+      <div className="w-full text-sm text-left text-gray-500 overflow-x-auto">
+        <div className="min-w-0 sscreen:min-w-[900px]">
+          <div className="hidden sscreen:block">
+            <PaginationTableHead tableHeadItem={tableHeadItemArray} />
+          </div>
+          <div>
+            {loading ? (
+              <div className="p-4">Chargement...</div>
+            ) : (
+              <AdminArchetypePaginationTableBody
+                arrayItems={archetypes}
+                switchIsHighlighted={switchIsHighlighted}
+                switchIsActive={switchIsActive}
+                deleteArchetype={handleDeleteArchetypeButton}
+                setRefresh={setRefresh}
+              />
+            )}
+          </div>
         </div>
       </div>
       <PaginationFooter
