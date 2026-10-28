@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { getMyDecks } from "../../../../services/deck";
@@ -92,13 +91,6 @@ const MyDecksPage = () => {
             )}
           </div>
         )}
-        <Link
-          to={URL_FRONT_MY_DECK_ADD}
-          className="block bg-blue-200 absolute right-0 p-5 shadow rounded-full sscreen:hidden"
-          aria-label={t("profile.addDeck")}
-        >
-          <FaPlus />
-        </Link>
       </div>
     </UserProfilLayout>
   );

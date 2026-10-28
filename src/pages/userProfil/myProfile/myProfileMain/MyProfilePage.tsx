@@ -75,7 +75,7 @@ const MyProfile = () => {
           )}
         </div>
 
-        <div className="flex mb-4">
+        <div className="flex">
           <span
             className={`py-2 px-4 rounded-t-md cursor-pointer ${
               activeTab === "informations"
@@ -98,7 +98,7 @@ const MyProfile = () => {
           </span>
         </div>
 
-        <div className={activeTab === "informations" ? "" : "hidden"}>
+        <div className={`border border-gray-200 rounded-b-lg rounded-tr-lg p-4 ${activeTab === "informations" ? "" : "hidden"}`}>
           <div className="space-y-2 mb-4">
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
