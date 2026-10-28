@@ -1,5 +1,5 @@
 import api_aw from "../api/api_aw";
-import { URL_BACK_ADD_ARCHETYPE, URL_BACK_DELETE_ARCHETYPE, URL_BACK_GET_ARCHETYPE_BY_ID, URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES, URL_BACK_GET_EIGHT_MOST_FAMOUS_ARCHETYPES, URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES, URL_BACK_GET_RANDOM_ARCHETYPE, URL_BACK_RESET_POPULARITY, URL_BACK_SEARCH_ARCHETYPES, URL_BACK_SWITCH_ALL_TO_IS_NOT_HIGHLIGHTED, URL_BACK_SWITCH_ALL_TO_IS_UNACTIVE, URL_BACK_SWITCH_IS_ACTIVE, URL_BACK_SWITCH_IS_HIGHLIGHTED, URL_BACK_UPDATE_ARCHETYPE } from "../constant/urlsBack";
+import { URL_BACK_ADD_ARCHETYPE, URL_BACK_DELETE_ARCHETYPE, URL_BACK_GET_ADMIN_ARCHETYPE_BY_ID, URL_BACK_GET_ARCHETYPE_BY_ID, URL_BACK_GET_EIGHT_MOST_RECENT_ARCHETYPES, URL_BACK_GET_EIGHT_MOST_FAMOUS_ARCHETYPES, URL_BACK_GET_FIVE_RANDOM_HIGHLIGHTED_ARCHETYPES, URL_BACK_GET_RANDOM_ARCHETYPE, URL_BACK_RESET_POPULARITY, URL_BACK_SEARCH_ARCHETYPES, URL_BACK_SWITCH_ALL_TO_IS_NOT_HIGHLIGHTED, URL_BACK_SWITCH_ALL_TO_IS_UNACTIVE, URL_BACK_SWITCH_IS_ACTIVE, URL_BACK_SWITCH_IS_HIGHLIGHTED, URL_BACK_UPDATE_ARCHETYPE } from "../constant/urlsBack";
 import { URL_FRONT_ADMIN_ARCHETYPES, URL_FRONT_ARCHETYPE } from "../constant/urlsFront";
 import type { Archetype, SearchCriteria, Pagination, SetStateCallback, SetErrorMessageCallback } from "../types";
 import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
@@ -54,11 +54,19 @@ export const getArchetypesWithCriteria = async (
 export const getArchetypeById = async (
   archetypeId: number | string,
   setArchetype: SetStateCallback<Archetype>,
-  options?: { locale?: "fr" | "en"; withAdminTranslations?: boolean }
+  options?: {
+    locale?: "fr" | "en";
+    withAdminTranslations?: boolean;
+    /** Admin édition : autorise les archétypes hors ligne */
+    admin?: boolean;
+  }
 ): Promise<void> => {
   try {
     const query = options?.locale ? `?locale=${options.locale}` : "";
-    const response = await api_aw.get(`${URL_BACK_GET_ARCHETYPE_BY_ID(archetypeId)}${query}`);
+    const baseUrl = options?.admin
+      ? URL_BACK_GET_ADMIN_ARCHETYPE_BY_ID(archetypeId)
+      : URL_BACK_GET_ARCHETYPE_BY_ID(archetypeId);
+    const response = await api_aw.get(`${baseUrl}${query}`);
     if (response.data) {
       const data = response.data as Archetype;
 

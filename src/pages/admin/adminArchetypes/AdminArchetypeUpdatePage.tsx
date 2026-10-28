@@ -37,6 +37,7 @@ const AdminArchetypeUpdatePage = () => {
       getArchetypeById(archetypeId, setArchetype, {
         locale: "fr",
         withAdminTranslations: true,
+        admin: true,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
