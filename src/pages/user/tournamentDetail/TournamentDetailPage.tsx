@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import UserBasicLayout from "../layout";
-import { getTournamentById, getTournamentStandings, registerToTournament, unregisterFromTournament, type TournamentStanding } from "../../../services/tournament";
+import { getOverlappingTournament, getTournamentById, getTournamentStandings, registerToTournament, unregisterFromTournament, type TournamentStanding } from "../../../services/tournament";
 import type { Tournament, TournamentPlayer } from "../../../types";
 import type { RootState } from "../../../redux/store";
-import { URL_FRONT_TOURNAMENTS } from "../../../constant/urlsFront";
+import { URL_FRONT_TOURNAMENT, URL_FRONT_TOURNAMENTS } from "../../../constant/urlsFront";
+import { AppError } from "../../../utils/errorHandler";
 import { TournamentDetailsMatchMaking } from "@/components/pages/user/tournaments/TournamentDetailsMatchMaking";
 import TournamentDetailsPlayers from "../../../components/pages/user/tournaments/TournamentDetailsPlayers";
 import TournamentDetailsMainInfo from "../../../components/pages/user/tournaments/TournamentDetailsMainInfo";
@@ -19,7 +20,7 @@ const TournamentDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const [registerSuccessMessage, setRegisterSuccessMessage] = useState<string | null>(null);
-  const [registerErrorMessage, setRegisterErrorMessage] = useState<string | null>(null);
+  const [registerErrorMessage, setRegisterErrorMessage] = useState<React.ReactNode | null>(null);
   const [isUnregistering, setIsUnregistering] = useState(false);
   const [unregisterErrorMessage, setUnregisterErrorMessage] = useState<string | null>(null);
   const [standings, setStandings] = useState<TournamentStanding[] | null>(null);
@@ -64,7 +65,27 @@ const TournamentDetailPage: React.FC = () => {
       setRegisterSuccessMessage("Inscription enregistrée.");
       await loadTournament();
     } catch (err) {
-      setRegisterErrorMessage(err instanceof Error ? err.message : "Inscription impossible.");
+      const overlapping = getOverlappingTournament(err);
+      if (overlapping) {
+        setRegisterErrorMessage(
+          <>
+            Vous êtes déjà inscrit au tournoi{" "}
+            <Link
+              to={URL_FRONT_TOURNAMENT(overlapping.id)}
+              className="underline font-semibold text-red-700 hover:text-red-800"
+            >
+              {overlapping.name}
+            </Link>
+            . Abandonnez-le pour vous inscrire ici.
+          </>
+        );
+      } else {
+        setRegisterErrorMessage(
+          err instanceof AppError || err instanceof Error
+            ? err.message
+            : "Inscription impossible."
+        );
+      }
     } finally {
       setIsRegistering(false);
     }

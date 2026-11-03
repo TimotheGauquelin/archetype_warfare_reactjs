@@ -7,6 +7,7 @@ import { TOURNAMENT_STATUS } from "@/utils/trad/tournamentStatus";
 import { verbalDate } from "@/utils/date/verbalDate";
 import { deadlineWindow } from "@/utils/functions/deadlineWindow/deadlineWindow";
 import { getWinsNeeded } from "@/utils/tournament/bestOfScore";
+import TournamentLocationMap from "@/components/pages/user/tournaments/TournamentLocationMap";
 
 function getMatchTypeLabel(matchType: number | undefined): string {
   if (matchType === 3) return "Best of 3";
@@ -57,7 +58,7 @@ interface TournamentDetailProps {
   onRegister: () => void;
   isRegistering: boolean;
   registerSuccessMessage: string | null;
-  registerErrorMessage: string | null;
+  registerErrorMessage: React.ReactNode | null;
   onUnregister: () => void;
   isUnregistering: boolean;
   unregisterErrorMessage: string | null;
@@ -75,11 +76,14 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
   isUnregistering,
   unregisterErrorMessage,
 }) => {
-  const REGISTRATION_DEADLINE_HOURS = 48;
+  const registrationCloseHours =
+    Number(tournament.registration_close_hours_before) > 0
+      ? Number(tournament.registration_close_hours_before)
+      : 48;
   const players = tournament.players ?? [];
   const withinWindow = deadlineWindow(
     tournament.event_date,
-    REGISTRATION_DEADLINE_HOURS
+    registrationCloseHours
   );
   const isRegistered = players.some(
     (player: TournamentPlayer) =>
@@ -135,69 +139,164 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
         </span>
       </p>
 
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-        <div>
-          <dt className="text-gray-500">Joueurs inscrits</dt>
-          <dd className="font-medium text-gray-900">
-            {players.length}
-            {tournament.max_players != null ? ` / ${tournament.max_players}` : ""}
-          </dd>
+      {tournament.location?.trim() ? (
+        <div className="grid grid-cols-1 sscreen:grid-cols-2 gap-4 sscreen:gap-6 items-start">
+          <dl className="space-y-3 text-sm">
+            <div>
+              <dt className="text-gray-500">Joueurs inscrits</dt>
+              <dd className="font-medium text-gray-900">
+                {players.length}
+                {tournament.max_players != null
+                  ? ` / ${tournament.max_players}`
+                  : ""}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Lieu</dt>
+              <dd className="font-medium text-gray-900">
+                {tournament.location}
+              </dd>
+            </div>
+            {hasDates && (
+              <div>
+                <dt className="text-gray-500">Dates</dt>
+                <dd className="font-medium text-gray-900 flex flex-wrap items-center gap-x-2 gap-y-1">
+                  {tournament.event_date != null && (
+                    <span>
+                      <span className="text-gray-500 font-normal">Début : </span>
+                      {verbalDate(tournament.event_date, true)}
+                    </span>
+                  )}
+                  {tournament.event_date != null &&
+                    tournament.event_date_end != null && (
+                      <span className="text-gray-400" aria-hidden>
+                        —
+                      </span>
+                    )}
+                  {tournament.event_date_end != null && (
+                    <span>
+                      <span className="text-gray-500 font-normal">Fin : </span>
+                      {verbalDate(tournament.event_date_end, true)}
+                    </span>
+                  )}
+                </dd>
+              </div>
+            )}
+            {tournament.max_number_of_rounds != null && (
+              <div>
+                <dt className="text-gray-500">Nb. de rondes</dt>
+                <dd className="font-medium text-gray-900">
+                  {tournament.max_number_of_rounds}
+                </dd>
+              </div>
+            )}
+            <div>
+              <dt className="text-gray-500">Type de match</dt>
+              <dd className="font-medium text-gray-900">
+                {getMatchTypeLabel(tournament.matches_per_round)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Résolution</dt>
+              <dd className="font-medium text-gray-900">
+                {getResolutionModeDescription(
+                  tournament.match_resolution_mode,
+                  tournament.matches_per_round
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Deck list obligatoire</dt>
+              <dd className="font-medium text-gray-900">
+                {tournament.require_deck_list ? "Oui" : "Non"}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Pénalités</dt>
+              <dd className="font-medium text-gray-900">
+                {tournament.allow_penalities ? "Oui" : "Non"}
+              </dd>
+            </div>
+          </dl>
+          <TournamentLocationMap location={tournament.location} />
         </div>
-        <div>
-          <dt className="text-gray-500">Lieu</dt>
-          <dd className="font-medium text-gray-900">
-            {tournament.location?.trim() ? tournament.location : "En ligne"}
-          </dd>
-        </div>
-        {hasDates && (
-          <div className="col-span-2">
-            <dt className="text-gray-500">Dates</dt>
-            <dd className="font-medium text-gray-900 flex flex-wrap items-center gap-x-2 gap-y-1">
-              {tournament.event_date != null && (
-                <span>
-                  <span className="text-gray-500 font-normal">Début : </span>
-                  {verbalDate(tournament.event_date, true)}
-                </span>
-              )}
-              {tournament.event_date != null &&
-                tournament.event_date_end != null && (
-                  <span className="text-gray-400" aria-hidden>
-                    —
+      ) : (
+        <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+          <div>
+            <dt className="text-gray-500">Joueurs inscrits</dt>
+            <dd className="font-medium text-gray-900">
+              {players.length}
+              {tournament.max_players != null
+                ? ` / ${tournament.max_players}`
+                : ""}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-gray-500">Lieu</dt>
+            <dd className="font-medium text-gray-900">En ligne</dd>
+          </div>
+          {hasDates && (
+            <div className="col-span-2">
+              <dt className="text-gray-500">Dates</dt>
+              <dd className="font-medium text-gray-900 flex flex-wrap items-center gap-x-2 gap-y-1">
+                {tournament.event_date != null && (
+                  <span>
+                    <span className="text-gray-500 font-normal">Début : </span>
+                    {verbalDate(tournament.event_date, true)}
                   </span>
                 )}
-              {tournament.event_date_end != null && (
-                <span>
-                  <span className="text-gray-500 font-normal">Fin : </span>
-                  {verbalDate(tournament.event_date_end, true)}
-                </span>
+                {tournament.event_date != null &&
+                  tournament.event_date_end != null && (
+                    <span className="text-gray-400" aria-hidden>
+                      —
+                    </span>
+                  )}
+                {tournament.event_date_end != null && (
+                  <span>
+                    <span className="text-gray-500 font-normal">Fin : </span>
+                    {verbalDate(tournament.event_date_end, true)}
+                  </span>
+                )}
+              </dd>
+            </div>
+          )}
+          {tournament.max_number_of_rounds != null && (
+            <div>
+              <dt className="text-gray-500">Nb. de rondes</dt>
+              <dd className="font-medium text-gray-900">
+                {tournament.max_number_of_rounds}
+              </dd>
+            </div>
+          )}
+          <div>
+            <dt className="text-gray-500">Type de match</dt>
+            <dd className="font-medium text-gray-900">
+              {getMatchTypeLabel(tournament.matches_per_round)}
+            </dd>
+          </div>
+          <div className="col-span-2">
+            <dt className="text-gray-500">Résolution</dt>
+            <dd className="font-medium text-gray-900">
+              {getResolutionModeDescription(
+                tournament.match_resolution_mode,
+                tournament.matches_per_round
               )}
             </dd>
           </div>
-        )}
-        {tournament.max_number_of_rounds != null && (
           <div>
-            <dt className="text-gray-500">Nb. de rondes</dt>
+            <dt className="text-gray-500">Deck list obligatoire</dt>
             <dd className="font-medium text-gray-900">
-              {tournament.max_number_of_rounds}
+              {tournament.require_deck_list ? "Oui" : "Non"}
             </dd>
           </div>
-        )}
-        <div>
-          <dt className="text-gray-500">Type de match</dt>
-          <dd className="font-medium text-gray-900">
-            {getMatchTypeLabel(tournament.matches_per_round)}
-          </dd>
-        </div>
-        <div className="col-span-2">
-          <dt className="text-gray-500">Résolution</dt>
-          <dd className="font-medium text-gray-900">
-            {getResolutionModeDescription(
-              tournament.match_resolution_mode,
-              tournament.matches_per_round
-            )}
-          </dd>
-        </div>
-      </dl>
+          <div>
+            <dt className="text-gray-500">Pénalités</dt>
+            <dd className="font-medium text-gray-900">
+              {tournament.allow_penalities ? "Oui" : "Non"}
+            </dd>
+          </div>
+        </dl>
+      )}
 
       <div className="border-t border-gray-200 pt-4 space-y-3">
         {!isLoggedIn && tournament.status === "registration_open" && (
@@ -210,7 +309,7 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
         )}
         {showRegistrationClosedMessage && (
           <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2">
-            Inscriptions closes 48 h avant le début.
+            Inscriptions closes {registrationCloseHours} h avant le début.
           </p>
         )}
         {canRegisterToTournament && (
@@ -236,7 +335,8 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
         {showUnregisterClosedMessage &&
           !tournament.status.includes("tournament") && (
             <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2">
-              Désinscription impossible 48 h avant le début.
+              Désinscription impossible {registrationCloseHours} h avant le
+              début.
             </p>
           )}
         {canUnregisterToTournament && (
