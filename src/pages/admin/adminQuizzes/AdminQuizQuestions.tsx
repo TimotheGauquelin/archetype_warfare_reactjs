@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../adminLayout";
@@ -17,6 +17,7 @@ import {
   updateAdminQuizQuestion,
 } from "../../../services/quiz";
 import { URL_FRONT_ADMIN_QUIZ_ADD } from "../../../constant/urlsFront";
+import usePersistedListPage from "../../../hooks/usePersistedListPage";
 
 const PAGE_SIZE = 30;
 
@@ -36,7 +37,9 @@ const AdminQuizQuestions = () => {
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
   const [filters, setFilters] = useState<AdminQuizFilters>(defaultFilters());
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = usePersistedListPage(
+    "admin-quiz-questions"
+  );
 
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
 
@@ -84,7 +87,12 @@ const AdminQuizQuestions = () => {
     void load();
   }, [load, refresh]);
 
+  const skipFilterPageReset = useRef(true);
   useEffect(() => {
+    if (skipFilterPageReset.current) {
+      skipFilterPageReset.current = false;
+      return;
+    }
     setCurrentPage(1);
   }, [
     filters.prompt,

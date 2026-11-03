@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { QuizPublicQuestion } from "@/services/quiz";
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
 import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
 import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
+import { shuffle } from "@/utils/shuffle";
 
 const DEFAULT_QUESTION_ARTWORK = "/assets/question_artwork.png";
 
@@ -23,6 +24,12 @@ const TrueFalseQuestion = ({
   onHintUsed,
   onDraftChange,
 }: TrueFalseQuestionProps) => {
+  const optionOrder = useMemo(
+    () => shuffle([true, false] as const),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [question.id]
+  );
+
   const hasAnswered = Boolean(question.userAnswer);
   const answeredSelected =
     typeof question.userAnswer?.value === "boolean"
@@ -82,22 +89,17 @@ const TrueFalseQuestion = ({
       )}
 
       <div className="grid grid-cols-2 gap-3">
-        <button
-          type="button"
-          disabled={disabled || hasAnswered}
-          onClick={() => selectValue(true)}
-          className={`px-4 py-3 rounded-lg border font-semibold disabled:cursor-default ${buttonClass(true)}`}
-        >
-          Vrai
-        </button>
-        <button
-          type="button"
-          disabled={disabled || hasAnswered}
-          onClick={() => selectValue(false)}
-          className={`px-4 py-3 rounded-lg border font-semibold disabled:cursor-default ${buttonClass(false)}`}
-        >
-          Faux
-        </button>
+        {optionOrder.map((value) => (
+          <button
+            key={String(value)}
+            type="button"
+            disabled={disabled || hasAnswered}
+            onClick={() => selectValue(value)}
+            className={`px-4 py-3 rounded-lg border font-semibold disabled:cursor-default ${buttonClass(value)}`}
+          >
+            {value ? "Vrai" : "Faux"}
+          </button>
+        ))}
       </div>
 
       {hasAnswered && (

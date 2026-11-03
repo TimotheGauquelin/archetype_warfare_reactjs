@@ -158,18 +158,20 @@ const QuizPlayPage = () => {
           currentQuestion.id,
           payload
         );
-        // Daily : finaliser sans écran résultat (comportement d’origine)
-        if (
-          updated.mode === "daily" &&
-          updated.status !== "finished" &&
-          updated.questions.every((q) => q.userAnswer)
-        ) {
-          try {
-            const finished = await finishQuizAttempt(updated.id);
-            setAttempt(finished);
-          } catch {
+        // Daily multi : passer à la question suivante ; sinon finaliser
+        if (updated.mode === "daily" && updated.status !== "finished") {
+          const nextIdx = updated.questions.findIndex((q) => !q.userAnswer);
+          if (nextIdx >= 0) {
             setAttempt(updated);
-            setError(t("quiz.finishError"));
+            setCurrentIndex(nextIdx);
+          } else {
+            try {
+              const finished = await finishQuizAttempt(updated.id);
+              setAttempt(finished);
+            } catch {
+              setAttempt(updated);
+              setError(t("quiz.finishError"));
+            }
           }
         } else {
           setAttempt(updated);
@@ -240,7 +242,7 @@ const QuizPlayPage = () => {
   const timerUrgent = secondsLeft !== null && secondsLeft <= 5;
 
   const freeQuestionNumberLabel =
-    !isDaily && attempt
+    attempt && attempt.totalCount > 1
       ? t("quiz.questionNumber", {
           current: Math.min(currentIndex + 1, attempt.totalCount),
           total: attempt.totalCount,
@@ -258,11 +260,12 @@ const QuizPlayPage = () => {
       navigate(URL_FRONT_QUIZ);
       return;
     }
-    if (attempt.status === "in_progress") {
+    // Daily : on ne clôture pas — reprise possible depuis le hub
+    if (attempt.status === "in_progress" && attempt.mode !== "daily") {
       try {
         await finishQuizAttempt(attempt.id);
       } catch {
-        // On quitte quand même le hub même si la finalisation échoue.
+        // On quitte quand même même si la finalisation échoue.
       }
     }
     navigate(URL_FRONT_QUIZ);
@@ -273,11 +276,13 @@ const QuizPlayPage = () => {
       navigate(URL_FRONT_QUIZ);
       return;
     }
+    if (isDaily) {
+      void leaveToHub();
+      return;
+    }
     showConfirmDialog({
       title: t("quiz.leaveConfirmTitle"),
-      message: isDaily
-        ? t("quiz.leaveConfirmDaily")
-        : t("quiz.leaveConfirmFree"),
+      message: t("quiz.leaveConfirmFree"),
       confirmText: t("quiz.leaveConfirmYes"),
       cancelText: t("quiz.leaveConfirmNo"),
       onConfirm: () => {

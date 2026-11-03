@@ -359,6 +359,7 @@ const normalizeHintLadderFromQuestion = (
   };
 };
 
+
 export const formFromQuestion = (q: AdminQuizQuestion): QuestionFormState => {
   const image_url = q.image_url ?? "";
   const type: QuestionType =
@@ -538,6 +539,7 @@ const hintLadderAreValid = (form: QuestionFormState): boolean => {
     hard.trim() && medium.trim() && easy.trim() && newbie.trim()
   );
 };
+
 
 interface AdminQuizQuestionFormProps {
   mode: "create" | "edit";
@@ -952,7 +954,8 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
           </div>
 
           <div className="grid grid-cols-12 gap-2 tablet:gap-4">
-            {form.type !== "zoom" && form.type !== "hint_ladder" && (
+            {form.type !== "zoom" &&
+              form.type !== "hint_ladder" && (
               <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-2.5 tablet:p-3 space-y-3">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <p className="font-medium text-gray-800">Image <span className="font-semibold text-red-600">*</span></p>
@@ -1436,7 +1439,8 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               />
               <span className="mt-1 text-xs text-gray-600 font-normal">
                 « Pour le Daily » : pool, date possible plus tard dans le
-                planificateur. Après passage en Daily → redevient libre.
+                planificateur. Après passage en Daily → question libre, créneau
+                conservé dans le planificateur.
               </span>
               {form.was_daily_question && (
                 <span className="mt-1 block text-xs text-amber-800 font-medium">

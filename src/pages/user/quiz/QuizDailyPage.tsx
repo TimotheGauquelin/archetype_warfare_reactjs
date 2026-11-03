@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import UserBasicLayout from "../layout";
@@ -15,8 +15,9 @@ import Loader from "@/components/generic/Loader";
 const QuizDailyPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { seasonId: seasonIdParam } = useParams<{ seasonId?: string }>();
   const isAuthenticated = useSelector(
-    (state: RootState) => state.user.isAuthenticated
+    (state: RootState) => state.user.isAuthenticated,
   );
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +30,13 @@ const QuizDailyPage = () => {
     let cancelled = false;
     (async () => {
       try {
-        const attempt = await startDailyQuiz();
+        const seasonId =
+          seasonIdParam != null && seasonIdParam !== ""
+            ? Number(seasonIdParam)
+            : null;
+        const attempt = await startDailyQuiz(
+          Number.isFinite(seasonId) && seasonId! > 0 ? seasonId : null,
+        );
         if (!cancelled) {
           navigate(URL_FRONT_QUIZ_PLAY(attempt.id), { replace: true });
         }
@@ -41,7 +48,7 @@ const QuizDailyPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated, navigate, t]);
+  }, [isAuthenticated, navigate, seasonIdParam, t]);
 
   return (
     <UserBasicLayout

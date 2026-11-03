@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { QuizMcqChoice, QuizPublicQuestion } from "@/services/quiz";
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
 import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
 import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
+import { shuffle } from "@/utils/shuffle";
 
 const DEFAULT_QUESTION_ARTWORK = "/assets/question_artwork.png";
 
@@ -14,6 +15,8 @@ interface McqQuestionProps {
   onHintUsed?: () => void;
   onDraftChange?: (draft: { selectedIndex: number } | null) => void;
 }
+
+type DisplayChoice = QuizMcqChoice & { originalIndex: number };
 
 const toChoice = (raw: string | QuizMcqChoice): QuizMcqChoice => {
   if (typeof raw === "string") {
@@ -35,27 +38,38 @@ const McqQuestion = ({
   onHintUsed,
   onDraftChange,
 }: McqQuestionProps) => {
-  const choices = (question.payload.choices ?? []).map(toChoice);
+  const shuffledChoices = useMemo((): DisplayChoice[] => {
+    const mapped = (question.payload.choices ?? []).map((raw, index) => ({
+      ...toChoice(raw),
+      originalIndex: index,
+    }));
+    return shuffle(mapped);
+    // Shuffle once per question id
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question.id]);
+
   const hasAnswered = Boolean(question.userAnswer);
   const answeredSelected =
     typeof question.userAnswer?.selectedIndex === "number"
       ? question.userAnswer.selectedIndex
       : null;
-  const [pendingIndex, setPendingIndex] = useState<number | null>(null);
+  const [pendingOriginalIndex, setPendingOriginalIndex] = useState<number | null>(
+    null
+  );
   const correctIndex = question.correctPayload?.correctIndex;
   const imageSrc = question.imageUrl?.trim() || DEFAULT_QUESTION_ARTWORK;
-  const hasChoiceArtworks = choices.some((c) => Boolean(c.artworkUrl));
-  const selected = hasAnswered ? answeredSelected : pendingIndex;
+  const hasChoiceArtworks = shuffledChoices.some((c) => Boolean(c.artworkUrl));
+  const selectedOriginal = hasAnswered ? answeredSelected : pendingOriginalIndex;
 
   useEffect(() => {
-    setPendingIndex(null);
+    setPendingOriginalIndex(null);
     onDraftChange?.(null);
   }, [question.id, onDraftChange]);
 
-  const selectChoice = (index: number) => {
+  const selectChoice = (originalIndex: number) => {
     if (disabled || hasAnswered) return;
-    setPendingIndex(index);
-    onDraftChange?.({ selectedIndex: index });
+    setPendingOriginalIndex(originalIndex);
+    onDraftChange?.({ selectedIndex: originalIndex });
   };
 
   return (
@@ -90,26 +104,27 @@ const McqQuestion = ({
             : "grid gap-2"
         }
       >
-        {choices.map((choice, index) => {
+        {shuffledChoices.map((choice, displayIndex) => {
           let style = "border-gray-200 bg-white hover:bg-gray-50";
           if (hasAnswered) {
-            if (correctIndex != null && index === correctIndex) {
+            if (correctIndex != null && choice.originalIndex === correctIndex) {
               style = "border-green-400 bg-green-50";
-            } else if (selected === index) {
+            } else if (selectedOriginal === choice.originalIndex) {
               style = "border-red-400 bg-red-50";
             }
-          } else if (pendingIndex === index) {
+          } else if (pendingOriginalIndex === choice.originalIndex) {
             style = "border-blue-500 bg-blue-50 ring-1 ring-blue-300";
           }
 
-          const label = choice.name || choice.text || `Option ${index + 1}`;
+          const label =
+            choice.name || choice.text || `Option ${displayIndex + 1}`;
 
           return (
             <button
-              key={`${question.id}-${index}`}
+              key={`${question.id}-${choice.originalIndex}`}
               type="button"
               disabled={disabled || hasAnswered}
-              onClick={() => selectChoice(index)}
+              onClick={() => selectChoice(choice.originalIndex)}
               className={`w-full text-left px-3 py-3 rounded-lg border transition-colors disabled:cursor-default ${style}`}
             >
               <div className="flex items-center gap-3">
@@ -122,7 +137,7 @@ const McqQuestion = ({
                 )}
                 <div className="min-w-0">
                   <span className="font-semibold text-gray-500 mr-2">
-                    {String.fromCharCode(65 + index)}.
+                    {String.fromCharCode(65 + displayIndex)}.
                   </span>
                   <span className="font-medium text-gray-900">{label}</span>
                 </div>

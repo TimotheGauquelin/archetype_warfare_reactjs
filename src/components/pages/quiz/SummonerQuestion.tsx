@@ -4,6 +4,7 @@ import type { QuizNameTheCardsAnswer, QuizPublicQuestion } from "@/services/quiz
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
 import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
 import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
+import { shuffle } from "@/utils/shuffle";
 
 type SummonerProposition = {
   id: string;
@@ -34,14 +35,16 @@ const SummonerQuestion = ({
 
   const propositions = useMemo((): SummonerProposition[] => {
     const raw = question.payload.propositions ?? [];
-    return raw.map((item, index) => ({
+    const mapped = raw.map((item, index) => ({
       id: String(item.id ?? index),
       cardId: String(item.cardId ?? ""),
       label: item.label ?? item.name ?? "",
       name: item.name ?? null,
       artworkUrl: item.artworkUrl ?? null,
     }));
-  }, [question.payload.propositions]);
+    return shuffle(mapped);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question.id]);
 
   const materialCountHint = Number(question.payload.materialCount) || null;
 

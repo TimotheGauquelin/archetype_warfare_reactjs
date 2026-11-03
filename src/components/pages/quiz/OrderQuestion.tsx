@@ -4,6 +4,7 @@ import type { QuizPublicQuestion } from "@/services/quiz";
 import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
 import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
 import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
+import { shuffle } from "@/utils/shuffle";
 
 export type OrderItem = {
   id: string;
@@ -18,15 +19,6 @@ interface OrderQuestionProps {
   forfeitPointsOnHint?: boolean;
   onHintUsed?: () => void;
   onDraftChange?: (draft: { order: string[] } | null) => void;
-}
-
-const shuffle = <T,>(items: T[]): T[] => {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
 };
 
 const OrderQuestion = ({
