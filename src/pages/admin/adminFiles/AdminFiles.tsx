@@ -4,9 +4,17 @@ import { useNavigate } from "react-router-dom";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../adminLayout";
 import { getImagesFromCloudinaryFolder, type CloudinaryImage } from "../../../services/file";
-import { URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD, URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON } from "../../../constant/urlsFront";
+import {
+  URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD,
+  URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON,
+  URL_FRONT_ADMIN_FILES_PROFILE_DEFAULTS,
+} from "../../../constant/urlsFront";
 import Button from "../../../components/generic/buttons/classicButton/Button";
-import { FOLDER_INTRODUCTION, FOLDER_JUMBOTRON } from "../../../utils/const/cloudinary";
+import {
+  FOLDER_INTRODUCTION,
+  FOLDER_JUMBOTRON,
+  FOLDER_PROFILE_DEFAULT,
+} from "../../../utils/const/cloudinary";
 import PopUp from "../../../components/generic/PopUp";
 import { FaTrash } from "react-icons/fa";
 import { api_aw_token } from "../../../api/api_aw_token";
@@ -16,6 +24,7 @@ import { optimizeImageUrl } from "../../../utils/image/optimizeImageUrl";
 const AdminFiles = () => {
   const [archetypeJumbotronsImages, setArchetypeJumbotronsImages] = useState<CloudinaryImage[]>([]);
   const [archetypeCardsImages, setArchetypeCardsImages] = useState<CloudinaryImage[]>([]);
+  const [profileDefaultImages, setProfileDefaultImages] = useState<CloudinaryImage[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -30,6 +39,7 @@ const AdminFiles = () => {
       await Promise.all([
         getImagesFromCloudinaryFolder(FOLDER_INTRODUCTION, setArchetypeCardsImages),
         getImagesFromCloudinaryFolder(FOLDER_JUMBOTRON, setArchetypeJumbotronsImages),
+        getImagesFromCloudinaryFolder(FOLDER_PROFILE_DEFAULT, setProfileDefaultImages),
       ]);
     } catch (err) {
       console.error("Erreur lors du chargement des images:", err);
@@ -158,6 +168,60 @@ const AdminFiles = () => {
             className="block w-fit mt-2 bg-blue-500 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
             action={() => {
               navigate(URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON);
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="mt-6">
+        <p className="text-xl font-bold">
+          Photos de profil par défaut :
+        </p>
+        <div className="flex flex-col items-end">
+          <div className="grid grid-cols-12 gap-1 bg-gray-200 rounded p-1 my-2 w-full">
+            {isFetching ? (
+              <div className="w-full h-[100px] bg-gray-200 rounded animate-pulse" />
+            ) : profileDefaultImages.length > 0 ? (
+              profileDefaultImages.slice(0, 6).map((img) => {
+                const imageUrl = img.secure_url || img.url || "";
+                return (
+                  <div
+                    key={img.public_id}
+                    className="relative col-span-2 border-2 border-black rounded aspect-square overflow-hidden group"
+                  >
+                    <img
+                      src={optimizeImageUrl(imageUrl, "thumb")}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      width={120}
+                      height={120}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <button
+                      type="button"
+                      className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-600 text-white p-1 rounded-full shadow"
+                      onClick={() => setImageToDelete(imageUrl)}
+                    >
+                      <FaTrash className="w-4 h-4" />
+                    </button>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="col-span-12 text-sm text-gray-600 p-2">
+                Aucune image dans{" "}
+                <code className="text-xs bg-white px-1 rounded">
+                  {FOLDER_PROFILE_DEFAULT}
+                </code>
+              </p>
+            )}
+          </div>
+          <Button
+            buttonText="Voir toutes les photos de profil"
+            className="block w-fit mt-2 bg-blue-500 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
+            action={() => {
+              navigate(URL_FRONT_ADMIN_FILES_PROFILE_DEFAULTS);
             }}
           />
         </div>

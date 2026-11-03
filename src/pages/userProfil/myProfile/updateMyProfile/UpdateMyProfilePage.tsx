@@ -13,9 +13,15 @@ import UserProfilLayout from "../../layout";
 import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 import { getArchetypesNames } from "@/services/archetype";
 import { changeMyPassword, getUserById, updateMyProfile } from "@/services/user";
+import {
+  getImagesFromCloudinaryFolder,
+  type CloudinaryImage,
+} from "@/services/file";
 import { updateUser } from "@/redux/slice/userSlice";
 import type { RootState } from "@/redux/store";
 import type { Archetype, ChangePasswordForm, User, UserUpdateForm } from "@/types";
+import { FOLDER_PROFILE_DEFAULT } from "@/utils/const/cloudinary";
+import { optimizeImageUrl } from "@/utils/image/optimizeImageUrl";
 
 const UpdateMyProfilePage = () => {
   const { t } = useTranslation();
@@ -30,6 +36,7 @@ const UpdateMyProfilePage = () => {
     biography: "",
     country: "",
     loved_archetype_id: "",
+    profile_picture_url: "",
   });
   const [passwordForm, setPasswordForm] = useState<ChangePasswordForm>({
     currentPassword: "",
@@ -37,11 +44,13 @@ const UpdateMyProfilePage = () => {
     confirmPassword: "",
   });
   const [archetypes, setArchetypes] = useState<Archetype[]>([]);
+  const [defaultAvatars, setDefaultAvatars] = useState<CloudinaryImage[]>([]);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isSavingPassword, setIsSavingPassword] = useState(false);
 
   useEffect(() => {
     getArchetypesNames(setArchetypes);
+    void getImagesFromCloudinaryFolder(FOLDER_PROFILE_DEFAULT, setDefaultAvatars);
   }, []);
 
   useEffect(() => {
@@ -56,6 +65,7 @@ const UpdateMyProfilePage = () => {
         country: user.country || "",
         loved_archetype_id:
           user.loved_archetype_id != null ? String(user.loved_archetype_id) : "",
+        profile_picture_url: user.profile_picture_url || "",
       });
     });
   }, [id, initialUsername, initialEmail]);
@@ -69,6 +79,7 @@ const UpdateMyProfilePage = () => {
         biography: profile.biography.trim() || null,
         country: profile.country || null,
         loved_archetype_id: profile.loved_archetype_id || null,
+        profile_picture_url: profile.profile_picture_url.trim() || null,
       },
       token,
       toast
@@ -80,6 +91,7 @@ const UpdateMyProfilePage = () => {
           country: updated.country ?? null,
           loved_archetype_id: updated.loved_archetype_id ?? null,
           loved_archetype: updated.loved_archetype ?? null,
+          profile_picture_url: updated.profile_picture_url ?? null,
         })
       );
     }
@@ -114,6 +126,80 @@ const UpdateMyProfilePage = () => {
     <UserProfilLayout>
       <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
         <UserProfileLayoutTitle title={t("profile.editProfile")} returnButton={true} />
+
+        <div className="mb-4">
+          <p className="text-sm font-semibold text-gray-800 mb-2">
+            {t("profile.profilePictureLabel")}
+          </p>
+          <div className="flex flex-col sscreen:flex-row sscreen:items-start justify-between gap-4">
+            <div className="flex flex-col items-start gap-2 shrink-0">
+              <div className="w-16 h-16 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-100 flex items-center justify-center">
+                {profile.profile_picture_url ? (
+                  <img
+                    src={optimizeImageUrl(profile.profile_picture_url, "thumb")}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-gray-400 text-xs text-center px-1">
+                    {t("profile.noProfilePicture")}
+                  </span>
+                )}
+              </div>
+              {profile.profile_picture_url && (
+                <button
+                  type="button"
+                  className="text-sm text-red-600 hover:underline font-medium"
+                  onClick={() =>
+                    setProfile((prev) => ({ ...prev, profile_picture_url: "" }))
+                  }
+                  disabled={isSavingProfile}
+                >
+                  {t("profile.clearProfilePicture")}
+                </button>
+              )}
+            </div>
+
+            <div className="bg-slate-100 min-w-0 flex justify-end p-2 rounded-md border border-gray-200">
+              {defaultAvatars.length === 0 ? (
+                <p className="text-sm text-gray-500">{t("profile.noDefaultAvatars")}</p>
+              ) : (
+                <div className="grid grid-cols-3 gap-1.5 max-w-[9rem]">
+                  {defaultAvatars.map((img) => {
+                    const url = img.secure_url || img.url || "";
+                    const selected = profile.profile_picture_url === url;
+                    return (
+                      <button
+                        key={img.public_id}
+                        type="button"
+                        onClick={() =>
+                          setProfile((prev) => ({
+                            ...prev,
+                            profile_picture_url: url,
+                          }))
+                        }
+                        className={`aspect-square rounded overflow-hidden border-2 transition-colors ${
+                          selected
+                            ? "border-blue-600 ring-2 ring-blue-300"
+                            : "border-gray-200 hover:border-gray-400"
+                        }`}
+                        disabled={isSavingProfile}
+                        aria-pressed={selected}
+                        aria-label={t("profile.selectProfilePicture")}
+                      >
+                        <img
+                          src={optimizeImageUrl(url, "thumb")}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
         <div className="grid grid-cols-12 gap-4">
           <Input

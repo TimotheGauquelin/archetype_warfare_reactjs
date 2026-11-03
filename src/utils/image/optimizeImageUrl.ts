@@ -19,10 +19,12 @@ export const optimizeImageUrl = (
   if (!url) return "";
 
   if (url.includes("images.ygoprodeck.com")) {
-    if (preset === "card" || preset === "thumb") {
-      return url
-        .replace("/images/cards/", "/images/cards_small/")
-        .replace("/images/cards_cropped/", "/images/cards_small/");
+    // Ne jamais convertir cards_cropped → cards_small (artwork → carte entière).
+    if (
+      (preset === "card" || preset === "thumb") &&
+      !url.includes("/images/cards_cropped/")
+    ) {
+      return url.replace("/images/cards/", "/images/cards_small/");
     }
     return url;
   }

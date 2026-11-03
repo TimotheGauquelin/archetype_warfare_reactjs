@@ -12,18 +12,24 @@ export interface CloudinaryImage {
 
 /**
  * Récupère toutes les images d'un dossier Cloudinary
+ * (supporte les dossiers imbriqués via /images/by-folder).
  */
 export const getImagesFromCloudinaryFolder = async (
   folderName: string,
   setState: SetStateCallback<CloudinaryImage[]>
 ): Promise<void> => {
   try {
-    const response = await api_aw.get(`/images/${folderName}/all`);
-    if (response.status === 200 && response.data?.data) {
+    const response = await api_aw.get(`/images/by-folder`, {
+      params: { folder: folderName },
+    });
+    if (response.status === 200 && Array.isArray(response.data?.data)) {
       setState(response.data.data);
+      return;
     }
+    setState([]);
   } catch (error) {
     const appError = handleApiError(error);
-    logError(appError, 'getImagesFromCloudinaryFolder');
+    logError(appError, "getImagesFromCloudinaryFolder");
+    setState([]);
   }
 };
