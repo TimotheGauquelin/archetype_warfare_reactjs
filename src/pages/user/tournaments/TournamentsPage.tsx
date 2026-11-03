@@ -6,6 +6,7 @@ import PageContentBlock from "../../../components/generic/PageContentBlock";
 import SelectInput from "../../../components/generic/form/SelectInput";
 import { Input } from "../../../components/generic/form/input/Input";
 import TournamentTable from "../../../components/pages/user/tournaments/TournamentTable";
+import OfficialTournamentHighlight from "../../../components/pages/user/tournaments/OfficialTournamentHighlight";
 import { getTournaments } from "../../../services/tournament";
 import { useDebounce } from "@/utils/functions/debounce/useDebounce";
 import {
@@ -190,6 +191,12 @@ const TournamentsPage: React.FC = () => {
       </AbsoluteInput>
 
       <PageContentBlock>
+        {!isLoading && (
+          <OfficialTournamentHighlight
+            tournaments={tournaments}
+            className="mb-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+          />
+        )}
         {isLoading ? (
           <p className="text-sm text-gray-500 text-center py-6">
             {t("tournamentsPage.loading")}
