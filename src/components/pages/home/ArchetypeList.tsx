@@ -42,7 +42,7 @@ const ArchetypeList: React.FC<ArchetypeListProps> = ({
       )}
 
       {dataArray.length > 0 ? (
-        <div className="grid pb-4 grid-cols-2 sscreen:grid-cols-3 lscreen:grid-cols-4 gap-2.5 tablet:gap-3 sscreen:gap-4">
+        <div className="grid pb-1 grid-cols-2 sscreen:grid-cols-3 lscreen:grid-cols-4 gap-2 sscreen:gap-2.5">
           {dataArray.map((archetype, index) => {
             const archetypePath = getArchetypePublicPath(archetype);
             if (!archetypePath) return null;
@@ -53,7 +53,7 @@ const ArchetypeList: React.FC<ArchetypeListProps> = ({
             >
               <Link
                 to={archetypePath}
-                className="bg-white p-2 tablet:p-3 rounded-lg aspect-square cardShadow hover:shadow-lg transition-shadow duration-200 block"
+                className="bg-white p-1.5 rounded-lg aspect-square cardShadow hover:shadow-lg transition-shadow duration-200 block"
               >
                 <ArchetypeCard
                   archetype={archetype}

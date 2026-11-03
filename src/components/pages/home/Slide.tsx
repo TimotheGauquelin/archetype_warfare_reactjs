@@ -31,7 +31,7 @@ const Slide: React.FC<SlideProps> = ({
   const imageOpacityClass = imageVisible ? "opacity-100" : "opacity-0";
 
   return (
-    <div className="w-full overflow-visible bg-cover sscreen:bg-contain bg-no-repeat bg-center sscreen:bg-right-bottom h-[430px] tablet:h-[520px] relative">
+    <div className="w-full overflow-visible bg-cover sscreen:bg-contain bg-no-repeat bg-center sscreen:bg-right-bottom h-[340px] tablet:h-[420px] relative">
       {/* Mobile : image en arrière-plan plein écran */}
       <div
         className={`sscreen:hidden absolute inset-0 pointer-events-none transition-opacity duration-300 ${imageOpacityClass}`}
@@ -71,7 +71,7 @@ const Slide: React.FC<SlideProps> = ({
           />
         ) : (
           <div
-            className="w-[800px] h-[520px] max-w-full bg-transparent"
+            className="w-[800px] h-[420px] max-w-full bg-transparent"
             aria-hidden
           />
         )}
@@ -80,7 +80,7 @@ const Slide: React.FC<SlideProps> = ({
       <div className="relative z-10 flex flex-row h-full max-w-containerSize m-auto overflow-visible px-4 sscreen:px-0">
         <div className="flex flex-col items-start justify-end sscreen:justify-center h-full w-full sscreen:w-1/2 pb-8 sscreen:pb-0">
           <h2
-            className={`whiteVeilText leading-none font-bold text-4xl tablet:text-7xl mb-5 transition-all duration-700 ease-out ${
+            className={`whiteVeilText leading-none font-bold text-3xl tablet:text-5xl lscreen:text-6xl mb-4 transition-all duration-700 ease-out ${
               showText
                 ? "translate-x-0 opacity-100"
                 : "-translate-x-full opacity-0"
@@ -98,7 +98,7 @@ const Slide: React.FC<SlideProps> = ({
             )}
           </h2>
           <p
-            className={`whiteVeilText leading-none font-bold text-lg tablet:text-2xl mb-5 transition-all duration-700 ease-out ${
+            className={`whiteVeilText leading-snug font-semibold text-base tablet:text-xl mb-4 transition-all duration-700 ease-out ${
               showText
                 ? "translate-x-0 opacity-100"
                 : "-translate-x-full opacity-0"
