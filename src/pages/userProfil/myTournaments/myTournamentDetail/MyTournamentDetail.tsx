@@ -289,6 +289,23 @@ const MyTournamentDetail: React.FC = () => {
 
                 {tournament && (
                     <div className="space-y-4 flex flex-col">
+                        {tournament.require_deck_list &&
+                            !tournament.tournament_player?.deck_id &&
+                            !String(tournament.status).includes("finished") &&
+                            tournament.status !== "tournament_cancelled" &&
+                            tournament.status !== "tournament_did_not_happen" && (
+                                <div
+                                    role="status"
+                                    className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+                                >
+                                    <p className="font-semibold">
+                                        {t("profile.deckRequiredReminderTitle")}
+                                    </p>
+                                    <p className="mt-1">
+                                        {t("profile.deckRequiredReminderInline")}
+                                    </p>
+                                </div>
+                            )}
                         <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
                             <h2 className="text-xl font-semibold text-gray-900">
                                 Informations générales
