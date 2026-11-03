@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import UserBasicLayout from "../layout";
 import Loader from "@/components/generic/Loader";
@@ -10,14 +11,20 @@ import {
   type QuizSeasonPodiumEntry,
   type AdminQuizSeason,
 } from "@/services/quiz";
-import { URL_FRONT_QUIZ } from "@/constant/urlsFront";
+import {
+  getUserProfilePath,
+  URL_FRONT_MY_PROFILE,
+  URL_FRONT_QUIZ,
+} from "@/constant/urlsFront";
 import { verbalDate } from "@/utils/date/verbalDate";
 import { getSeasonMedalSrc } from "@/utils/quiz/seasonMedal";
+import type { RootState } from "@/types";
 
 const PAGE_SIZE = 20;
 
 const QuizSeasonRankingPage = () => {
   const { t } = useTranslation();
+  const currentUserId = useSelector((state: RootState) => state.user.id);
   const { seasonId = "current" } = useParams<{ seasonId: string }>();
   const [season, setSeason] = useState<AdminQuizSeason | null>(null);
   const [podium, setPodium] = useState<QuizSeasonPodiumEntry[]>([]);
@@ -158,7 +165,20 @@ const QuizSeasonRankingPage = () => {
                           <span>#{entry.rank}</span>
                         </div>
                         <div className="col-span-5 p-2 text-gray-900">
-                          {entry.username}
+                          {entry.userId ? (
+                            <Link
+                              to={
+                                String(entry.userId) === String(currentUserId)
+                                  ? URL_FRONT_MY_PROFILE
+                                  : getUserProfilePath(entry.userId)
+                              }
+                              className="hover:underline font-medium"
+                            >
+                              {entry.username}
+                            </Link>
+                          ) : (
+                            entry.username
+                          )}
                         </div>
                         <div className="col-span-3 p-2 text-center text-gray-800">
                           {entry.totalScore}

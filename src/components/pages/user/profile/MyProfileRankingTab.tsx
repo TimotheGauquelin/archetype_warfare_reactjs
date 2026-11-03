@@ -2,12 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
+import { FaChevronDown, FaTrophy } from "react-icons/fa";
 import {
   getMyQuizStats,
-  type MyQuizTypeStats,
+  getUserQuizStats,
+  type MyQuizSeasonStats,
 } from "@/services/quiz";
 import {
   getMyArchetypeRankings,
+  getUserArchetypeRankings,
   type MyArchetypeRankingEntry,
   type MyArchetypeTournamentResult,
 } from "@/services/archetypeRanking";
@@ -15,7 +18,12 @@ import {
   getTournamentPlayerDeckSnapshot,
   type TournamentPlayerDeckSnapshot,
 } from "@/services/tournament";
-import { getArchetypePublicPath, URL_FRONT_MY_TOURNAMENT_DETAIL } from "@/constant/urlsFront";
+import {
+  getArchetypePublicPath,
+  getQuizSeasonRankingPath,
+  URL_FRONT_MY_TOURNAMENT_DETAIL,
+  URL_FRONT_TOURNAMENT,
+} from "@/constant/urlsFront";
 import NoItemMessage from "@/components/generic/NoItemMessage";
 import PopUp from "@/components/generic/PopUp";
 import type { DeckCard, RootState } from "@/types";
@@ -24,33 +32,91 @@ import { sortedDeck } from "@/utils/functions/sortedDeck";
 import { EXTRA_DECK_LABELS } from "@/utils/const/extraDeckConst";
 import DeckSection from "@/components/pages/userProfil/deckCommon/DeckSection";
 import DeckCardsGrid from "@/components/pages/userProfil/deckCommon/DeckCardsGrid";
+import { optimizeImageUrl } from "@/utils/image/optimizeImageUrl";
 
-const MyProfileRankingTab = () => {
-  const { t } = useTranslation();
+type MyProfileRankingTabProps = {
+  /** Sans bordures d’onglet (carte profil). */
+  embedded?: boolean;
+  /** Profil public d’un autre joueur (`/users/:id`). */
+  userId?: string | null;
+};
+
+const formatShortDate = (iso: string, locale: string) => {
+  try {
+    return new Date(`${iso}T12:00:00`).toLocaleDateString(locale, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+};
+
+const todayIsoLocal = () => {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
+const seasonStatusFromDates = (
+  startDate: string,
+  endDate: string,
+): "past" | "current" | "upcoming" => {
+  const today = todayIsoLocal();
+  if (endDate < today) return "past";
+  if (startDate <= today && endDate >= today) return "current";
+  return "upcoming";
+};
+
+const seasonStatusBadgeClass = (status: "past" | "current" | "upcoming") => {
+  if (status === "current") return "bg-emerald-100 text-emerald-800";
+  if (status === "past") return "bg-slate-100 text-slate-600";
+  return "bg-amber-100 text-amber-800";
+};
+
+const MyProfileRankingTab = ({
+  embedded = false,
+  userId = null,
+}: MyProfileRankingTabProps) => {
+  const { t, i18n } = useTranslation();
   const token = useSelector((state: RootState) => state.user.token);
+  const currentUserId = useSelector((state: RootState) => state.user.id);
+  const isOwnProfile =
+    !userId || String(userId) === String(currentUserId);
   const { cardTypes } = useCardTypes();
   const [isLoading, setIsLoading] = useState(true);
   const [quizPoints, setQuizPoints] = useState(0);
-  const [byType, setByType] = useState<MyQuizTypeStats[]>([]);
+  const [quizSeasons, setQuizSeasons] = useState<MyQuizSeasonStats[]>([]);
   const [archetypeTotal, setArchetypeTotal] = useState(0);
   const [archetypes, setArchetypes] = useState<MyArchetypeRankingEntry[]>([]);
+  const [openArchetypeId, setOpenArchetypeId] = useState<number | null>(null);
   const [selectedDeck, setSelectedDeck] = useState<TournamentPlayerDeckSnapshot | null>(null);
   const [deckLoading, setDeckLoading] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     setIsLoading(true);
-    Promise.all([getMyQuizStats(), getMyArchetypeRankings()])
+    const quizPromise = isOwnProfile
+      ? getMyQuizStats()
+      : getUserQuizStats(userId!);
+    const archetypePromise = isOwnProfile
+      ? getMyArchetypeRankings()
+      : getUserArchetypeRankings(userId!);
+    Promise.all([quizPromise, archetypePromise])
       .then(([quizStats, archetypeStats]) => {
         if (cancelled) return;
         setQuizPoints(quizStats.quizPoints ?? 0);
-        setByType(quizStats.byType ?? []);
+        setQuizSeasons(quizStats.seasons ?? []);
         setArchetypeTotal(archetypeStats.totalPoints ?? 0);
         setArchetypes(archetypeStats.archetypes ?? []);
       })
       .catch(() => {
         if (cancelled) return;
-        setByType([]);
+        setQuizPoints(0);
+        setQuizSeasons([]);
         setArchetypes([]);
       })
       .finally(() => {
@@ -59,10 +125,10 @@ const MyProfileRankingTab = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isOwnProfile, userId]);
 
   const handleOpenDeck = async (tournament: MyArchetypeTournamentResult) => {
-    if (!token) return;
+    if (!token || !isOwnProfile) return;
     setDeckLoading(true);
     try {
       const snapshot = await getTournamentPlayerDeckSnapshot(
@@ -127,135 +193,174 @@ const MyProfileRankingTab = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <section>
-        <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-          <h3 className="text-lg font-bold text-gray-900">
-            {t("profile.rankingQuizTitle")}
-          </h3>
-          <p className="text-sm text-gray-600">
-            {t("profile.rankingQuizTotal", { count: quizPoints })}
-          </p>
-        </div>
-        {byType.length > 0 ? (
-          <ul className="divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden">
-            {byType.map((row) => (
-              <li
-                key={row.type}
-                className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 bg-gray-50"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900">
-                    {t(`quiz.types.${row.type}`, { defaultValue: row.type })}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    {t("profile.rankingQuizAccuracy", {
-                      accuracy: row.accuracy,
-                      correct: row.correctCount,
-                      total: row.answersCount,
-                    })}
-                  </p>
-                </div>
-                <p className="text-sm font-medium text-gray-800 shrink-0">
-                  {t("profile.rankingPoints", { count: row.points })}
-                </p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <NoItemMessage
-            message={t("profile.rankingQuizEmpty")}
-            textPosition="center"
-          />
-        )}
-      </section>
-
-      <section>
-        <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-          <h3 className="text-lg font-bold text-gray-900">
+    <div className={embedded ? "space-y-5" : "space-y-6"}>
+      <section className="space-y-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className={`${embedded ? "text-sm" : "text-lg"} font-bold text-gray-900`}>
             {t("profile.rankingArchetypesTitle")}
           </h3>
-          <p className="text-sm text-gray-600">
+          <span className="inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">
             {t("profile.rankingArchetypesTotal", { count: archetypeTotal })}
-          </p>
+          </span>
         </div>
+
         {archetypes.length > 0 ? (
-          <ul className="space-y-3">
+          <ul className="space-y-2.5">
             {archetypes.map((row) => {
               const path = getArchetypePublicPath({
                 id: row.archetypeId,
                 slug: row.slug,
               });
+              const isOpen = openArchetypeId === row.archetypeId;
+              const img = row.cardImgUrl
+                ? optimizeImageUrl(row.cardImgUrl, "thumb")
+                : null;
+
               return (
                 <li
                   key={row.archetypeId}
-                  className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50"
+                  className="rounded-lg border border-gray-200 bg-white overflow-hidden shadow-sm"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-gray-200 bg-white">
-                    <div className="min-w-0">
+                  <div className="flex items-center gap-3 p-2.5">
+                    <div className="relative shrink-0">
+                      <div className="h-14 w-14 rounded-md overflow-hidden bg-gray-100 border border-gray-200">
+                        {img ? (
+                          <img
+                            src={img}
+                            alt=""
+                            className="h-full w-full object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-gray-400">
+                            <FaTrophy className="w-5 h-5" aria-hidden />
+                          </div>
+                        )}
+                      </div>
+                      <span className="absolute -top-1.5 -left-1.5 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-amber-500 px-1 text-[11px] font-bold text-white shadow">
+                        #{row.rank}
+                      </span>
+                    </div>
+
+                    <div className="min-w-0 flex-1">
                       {path ? (
                         <Link
                           to={path}
-                          className="font-semibold text-blue-800 hover:underline"
+                          className="font-semibold text-gray-900 hover:text-blue-700 hover:underline line-clamp-1"
                         >
                           {row.archetypeName}
                         </Link>
                       ) : (
-                        <span className="font-semibold text-gray-900">
+                        <p className="font-semibold text-gray-900 line-clamp-1">
                           {row.archetypeName}
-                        </span>
+                        </p>
                       )}
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xs text-gray-500 mt-0.5">
                         {t("profile.rankingArchetypeRank", {
                           rank: row.rank,
                           total: row.playersCount,
                         })}
                       </p>
                     </div>
-                    <p className="text-sm font-medium text-gray-800 shrink-0">
-                      {t("profile.rankingPoints", { count: row.points })}
-                    </p>
+
+                    <div className="shrink-0 text-right space-y-1">
+                      <p className="text-sm font-bold text-emerald-700">
+                        {t("profile.rankingPoints", { count: row.points })}
+                      </p>
+                      {(row.tournaments ?? []).length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setOpenArchetypeId(isOpen ? null : row.archetypeId)
+                          }
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-gray-600 hover:text-gray-900"
+                          aria-expanded={isOpen}
+                        >
+                          {isOpen
+                            ? t("profile.rankingHideTournaments")
+                            : t("profile.rankingToggleTournaments")}
+                          <FaChevronDown
+                            className={`w-2.5 h-2.5 transition-transform ${
+                              isOpen ? "rotate-180" : ""
+                            }`}
+                            aria-hidden
+                          />
+                        </button>
+                      )}
+                    </div>
                   </div>
 
-                  {(row.tournaments ?? []).length > 0 ? (
-                    <ul className="divide-y divide-gray-200">
-                      {(row.tournaments ?? []).map((tournament) => (
+                  {isOpen && (row.tournaments ?? []).length > 0 && (
+                    <ul className="border-t border-gray-100 divide-y divide-gray-100 bg-gray-50">
+                      {[...(row.tournaments ?? [])]
+                        .sort((a, b) => {
+                          const da = a.eventDate
+                            ? new Date(a.eventDate).getTime()
+                            : 0;
+                          const db = b.eventDate
+                            ? new Date(b.eventDate).getTime()
+                            : 0;
+                          return db - da;
+                        })
+                        .map((tournament) => (
                         <li
                           key={`${row.archetypeId}-${tournament.tournamentId}`}
-                          className="px-4 py-3 text-sm space-y-1"
+                          className="px-3 py-2.5 text-sm space-y-1"
                         >
                           <div className="flex flex-wrap items-baseline justify-between gap-2">
-                            <Link
-                              to={URL_FRONT_MY_TOURNAMENT_DETAIL(
-                                tournament.tournamentId
+                            <div className="min-w-0">
+                              <Link
+                                to={
+                                  isOwnProfile
+                                    ? URL_FRONT_MY_TOURNAMENT_DETAIL(
+                                        tournament.tournamentId
+                                      )
+                                    : URL_FRONT_TOURNAMENT(
+                                        tournament.tournamentId
+                                      )
+                                }
+                                className="font-medium text-gray-900 hover:underline"
+                              >
+                                {tournament.tournamentName}
+                              </Link>
+                              {tournament.eventDate && (
+                                <p className="text-xs text-gray-500 mt-0.5">
+                                  {formatShortDate(
+                                    String(tournament.eventDate).slice(0, 10),
+                                    i18n.language
+                                  )}
+                                </p>
                               )}
-                              className="font-medium text-gray-900 hover:underline"
-                            >
-                              {tournament.tournamentName}
-                            </Link>
-                            <span className="text-gray-800 shrink-0 font-medium">
+                            </div>
+                            <span className="text-emerald-700 shrink-0 font-semibold text-xs">
                               {t("profile.rankingPoints", {
                                 count: tournament.points,
                               })}
                             </span>
                           </div>
-                          <p className="text-gray-600">
+                          <p className="text-xs text-gray-600">
                             {t("profile.rankingArchetypeTournamentPlace", {
                               place: tournament.place,
                               total: tournament.playersCount,
                             })}
                           </p>
-                          <p className="text-gray-600">
+                          <p className="text-xs text-gray-600">
                             {t("profile.rankingArchetypeTournamentDeck")}{" "}
                             {tournament.deckLabel ? (
-                              <button
-                                type="button"
-                                onClick={() => void handleOpenDeck(tournament)}
-                                disabled={deckLoading}
-                                className="text-blue-700 hover:underline font-medium disabled:opacity-50"
-                              >
-                                {tournament.deckLabel}
-                              </button>
+                              isOwnProfile ? (
+                                <button
+                                  type="button"
+                                  onClick={() => void handleOpenDeck(tournament)}
+                                  disabled={deckLoading}
+                                  className="text-blue-700 hover:underline font-medium disabled:opacity-50"
+                                >
+                                  {tournament.deckLabel}
+                                </button>
+                              ) : (
+                                <span className="font-medium text-gray-800">
+                                  {tournament.deckLabel}
+                                </span>
+                              )
                             ) : (
                               <span className="italic text-gray-500">
                                 {t("profile.rankingArchetypeTournamentNoDeck")}
@@ -263,12 +368,8 @@ const MyProfileRankingTab = () => {
                             )}
                           </p>
                         </li>
-                      ))}
+                        ))}
                     </ul>
-                  ) : (
-                    <p className="px-4 py-3 text-sm text-gray-500">
-                      {t("profile.rankingArchetypeTournamentsEmpty")}
-                    </p>
                   )}
                 </li>
               );
@@ -277,6 +378,103 @@ const MyProfileRankingTab = () => {
         ) : (
           <NoItemMessage
             message={t("profile.rankingArchetypesEmpty")}
+            textPosition="center"
+          />
+        )}
+      </section>
+
+      <section className="space-y-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className={`${embedded ? "text-sm" : "text-lg"} font-bold text-gray-900`}>
+            {t("profile.rankingQuizTitle")}
+          </h3>
+          <span className="inline-flex items-center rounded-md bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-800">
+            {t("profile.rankingQuizTotal", { count: quizPoints })}
+          </span>
+        </div>
+
+        {quizSeasons.length > 0 ? (
+          <ul className="space-y-2">
+            {quizSeasons.map((season) => (
+              <li
+                key={season.seasonId}
+                className="relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm"
+              >
+                {season.imageUrl && (
+                  <div
+                    className="pointer-events-none absolute inset-y-0 right-0 w-[48%] sm:w-[42%] overflow-hidden"
+                    aria-hidden
+                  >
+                    <img
+                      src={optimizeImageUrl(season.imageUrl, "thumb")}
+                      alt=""
+                      className="h-full w-full object-cover opacity-55"
+                      style={{
+                        objectPosition: `${season.imageFocalX ?? 50}% ${
+                          season.imageFocalY ?? 50
+                        }%`,
+                        transform: `scale(${(season.imageZoom ?? 100) / 100})`,
+                        transformOrigin: `${season.imageFocalX ?? 50}% ${
+                          season.imageFocalY ?? 50
+                        }%`,
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-white via-white/70 to-white/15" />
+                  </div>
+                )}
+                <div className="relative z-10 flex flex-wrap items-center justify-between gap-3 p-3">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-semibold text-gray-900">{season.name}</p>
+                      {(() => {
+                        const status = seasonStatusFromDates(
+                          season.startDate,
+                          season.endDate,
+                        );
+                        if (status === "upcoming") return null;
+                        return (
+                          <span
+                            className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${seasonStatusBadgeClass(status)}`}
+                          >
+                            {t(
+                              status === "current"
+                                ? "quiz.seasonStatusCurrent"
+                                : "quiz.seasonStatusPast",
+                            )}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {t("profile.rankingQuizSeasonDates", {
+                        start: formatShortDate(season.startDate, i18n.language),
+                        end: formatShortDate(season.endDate, i18n.language),
+                      })}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {t("profile.rankingQuizSeasonAttempts", {
+                        count: season.attemptsCount,
+                      })}
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right space-y-1">
+                    <p className="text-base font-bold text-sky-700">
+                      {t("profile.rankingPoints", { count: season.points })}
+                    </p>
+                    <Link
+                      to={getQuizSeasonRankingPath(season.seasonId)}
+                      className="text-[11px] font-semibold text-blue-700 hover:underline"
+                    >
+                      {t("profile.rankingQuizSeasonView")}
+                    </Link>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <NoItemMessage
+            message={t("profile.rankingQuizSeasonEmpty")}
             textPosition="center"
           />
         )}

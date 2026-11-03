@@ -11,6 +11,7 @@ import {
   URL_BACK_QUIZ_HUB,
   URL_BACK_QUIZ_SEASON_RANKING,
   URL_BACK_QUIZ_MY_STATS,
+  URL_BACK_QUIZ_USER_STATS,
   URL_BACK_QUIZ_START_DAILY,
   URL_BACK_QUIZ_START_FREE,
   URL_BACK_QUIZ_SUBMIT_ANSWER,
@@ -151,6 +152,11 @@ export type AdminQuizSeason = {
   name: string;
   startDate: string;
   endDate: string;
+  imageUrl?: string | null;
+  imageFocalX?: number;
+  imageFocalY?: number;
+  imageZoom?: number;
+  allowsOverlap?: boolean;
   dayCount: number;
   questionCount: number;
   status: "past" | "current" | "upcoming";
@@ -158,37 +164,62 @@ export type AdminQuizSeason = {
   updatedAt?: string | null;
 };
 
+export type QuizFreePlayQuota = {
+  unlimited: boolean;
+  limit: number | null;
+  used: number;
+  remaining: number | null;
+};
+
+export type QuizHubDailyEntry = {
+  quizDate: string;
+  questionCount: number;
+  seasonId?: number | null;
+  theme: QuizTheme | null;
+  season?: AdminQuizSeason | null;
+  myAttempt: {
+    id: string;
+    status: string;
+    score: number;
+    max_score: number;
+  } | null;
+};
+
 export type QuizHubResponse = {
   themes: QuizTheme[];
   today: string;
-  daily: {
-    quizDate: string;
-    questionCount: number;
-    theme: QuizTheme | null;
-    myAttempt: {
-      id: string;
-      status: string;
-      score: number;
-      max_score: number;
-    } | null;
-  } | null;
+  daily: QuizHubDailyEntry | null;
+  /** Un daily par saison active (normale + exceptionnelle). */
+  dailies?: QuizHubDailyEntry[];
   seasonPodium?: {
     season: AdminQuizSeason;
     podium: QuizSeasonPodiumEntry[];
   } | null;
+  /** Saisons en cours (normale puis exceptionnelle(s)). */
+  seasonPodiums?: Array<{
+    season: AdminQuizSeason;
+    podium: QuizSeasonPodiumEntry[];
+  }>;
+  /** Quota parties libres (illimité pour Admin / Premium). */
+  freePlay?: QuizFreePlayQuota;
 };
 
-export type MyQuizTypeStats = {
-  type: string;
-  answersCount: number;
-  correctCount: number;
+export type MyQuizSeasonStats = {
+  seasonId: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  imageUrl?: string | null;
+  imageFocalX?: number;
+  imageFocalY?: number;
+  imageZoom?: number;
   points: number;
-  accuracy: number;
+  attemptsCount: number;
 };
 
 export type MyQuizStatsResponse = {
   quizPoints: number;
-  byType: MyQuizTypeStats[];
+  seasons: MyQuizSeasonStats[];
 };
 
 export const getQuizHub = async (): Promise<QuizHubResponse> => {
@@ -221,14 +252,36 @@ export const getQuizSeasonRanking = async (
   }
 };
 
-/** Stats quiz de l'utilisateur (points daily + perf par mode de jeu). */
+/** Stats quiz de l'utilisateur (points daily + par saison). */
 export const getMyQuizStats = async (): Promise<MyQuizStatsResponse> => {
   try {
     const response = await api_aw.get(URL_BACK_QUIZ_MY_STATS);
-    return response.data as MyQuizStatsResponse;
+    const data = response.data as MyQuizStatsResponse;
+    return {
+      quizPoints: data.quizPoints ?? 0,
+      seasons: Array.isArray(data.seasons) ? data.seasons : [],
+    };
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "getMyQuizStats");
+    throw appError;
+  }
+};
+
+/** Stats quiz publiques d'un joueur. */
+export const getUserQuizStats = async (
+  userId: number | string
+): Promise<MyQuizStatsResponse> => {
+  try {
+    const response = await api_aw.get(URL_BACK_QUIZ_USER_STATS(userId));
+    const data = response.data as MyQuizStatsResponse;
+    return {
+      quizPoints: data.quizPoints ?? 0,
+      seasons: Array.isArray(data.seasons) ? data.seasons : [],
+    };
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getUserQuizStats");
     throw appError;
   }
 };
@@ -250,9 +303,14 @@ export const startFreeQuiz = async (
   }
 };
 
-export const startDailyQuiz = async (): Promise<QuizAttempt> => {
+export const startDailyQuiz = async (
+  seasonId?: number | null,
+): Promise<QuizAttempt> => {
   try {
-    const response = await api_aw.post(URL_BACK_QUIZ_START_DAILY);
+    const response = await api_aw.post(
+      URL_BACK_QUIZ_START_DAILY,
+      seasonId != null ? { seasonId } : {},
+    );
     return response.data as QuizAttempt;
   } catch (error) {
     const appError = handleApiError(error);
@@ -369,6 +427,11 @@ export type AdminQuizSeasonInput = {
   name: string;
   startDate: string;
   endDate?: string;
+  imageUrl?: string | null;
+  imageFocalX?: number;
+  imageFocalY?: number;
+  imageZoom?: number;
+  allowsOverlap?: boolean;
 };
 
 export type AdminQuizQuestionInput = {

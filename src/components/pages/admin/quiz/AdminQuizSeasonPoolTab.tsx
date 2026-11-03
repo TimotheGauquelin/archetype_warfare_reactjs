@@ -491,6 +491,11 @@ const AdminQuizSeasonPoolTab = ({
                             <span className="inline-flex items-center px-2 py-0.5 text-white text-xs font-bold rounded bg-slate-600">
                               {assigned.theme?.label ?? "—"}
                             </span>
+                            {assigned.was_daily_question && (
+                              <span className="inline-flex items-center px-2 py-0.5 text-white text-xs font-bold rounded bg-emerald-700">
+                                Joué
+                              </span>
+                            )}
                             <span className="text-xs text-gray-500">
                               #{assigned.id}
                             </span>
@@ -557,6 +562,11 @@ const AdminQuizSeasonPoolTab = ({
                         >
                           {difficultyLabel(selectedQuestion.difficulty)}
                         </span>
+                        {selectedQuestion.was_daily_question && (
+                          <span className="inline-flex items-center px-2 py-0.5 text-white text-xs font-bold rounded bg-emerald-700">
+                            Joué
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-gray-700 line-clamp-3">
                         {selectedQuestion.prompt}

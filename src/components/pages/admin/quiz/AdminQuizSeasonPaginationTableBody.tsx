@@ -84,6 +84,11 @@ const AdminQuizSeasonPaginationTableBody: React.FC<
               <div className="flex items-start justify-between gap-2">
                 <p className="font-semibold text-gray-900 leading-snug min-w-0 break-words">
                   {item.name}
+                  {item.allowsOverlap && (
+                    <span className="ml-2 inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-white align-middle">
+                      Exceptionnelle
+                    </span>
+                  )}
                 </p>
                 {badge}
               </div>
@@ -112,6 +117,11 @@ const AdminQuizSeasonPaginationTableBody: React.FC<
             <div className="hidden sscreen:grid grid-cols-12 items-center cursor-pointer">
               <div className="col-span-3 p-1 font-medium text-gray-800">
                 {item.name}
+                {item.allowsOverlap && (
+                  <span className="ml-2 inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-white">
+                    Exceptionnelle
+                  </span>
+                )}
               </div>
               <div className="col-span-2 p-1">{formatDate(item.startDate)}</div>
               <div className="col-span-2 p-1">{formatDate(item.endDate)}</div>

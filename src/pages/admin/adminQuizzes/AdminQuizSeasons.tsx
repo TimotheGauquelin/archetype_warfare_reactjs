@@ -11,6 +11,7 @@ import {
   listAdminQuizSeasons,
 } from "../../../services/quiz";
 import { URL_FRONT_ADMIN_QUIZ_SEASON_ADD } from "../../../constant/urlsFront";
+import usePersistedListPage from "../../../hooks/usePersistedListPage";
 
 const PAGE_SIZE = 30;
 
@@ -18,7 +19,9 @@ const AdminQuizSeasons = () => {
   const [seasons, setSeasons] = useState<AdminQuizSeason[]>([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = usePersistedListPage(
+    "admin-quiz-seasons"
+  );
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
 
   const load = useCallback(async () => {
