@@ -14,6 +14,7 @@ export interface User {
   is_banned?: boolean;
   biography?: string | null;
   country?: string | null;
+  profile_picture_url?: string | null;
   loved_archetype_id?: number | string | null;
   loved_archetype?: {
     id: number;
@@ -89,6 +90,7 @@ export interface UserUpdateForm {
   biography: string;
   country: string;
   loved_archetype_id: string;
+  profile_picture_url: string;
   [key: string]: unknown;
 }
 
@@ -279,6 +281,8 @@ export interface CardSearchCriteria {
   min_def?: number;
   max_def?: number;
   attribute?: string;
+  /** Admin cards : n’afficher que les cartes sans traduction FR. */
+  missing_fr?: boolean;
 }
 
 // Types pour les decks
@@ -327,6 +331,16 @@ export interface DeckWithArchetypeDetails extends Deck {
   } | null;
 }
 
+export interface BanlistReason {
+  id: number;
+  slug: string;
+  label: string;
+  text: string;
+  logo_url?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
 // Types pour les cartes de banlist
 export interface BanlistCard {
   id: number;
@@ -336,7 +350,9 @@ export interface BanlistCard {
     label: string;
     limit?: number;
   };
-  explanation_text?: string;
+  explanation_text?: string | null;
+  reasons?: BanlistReason[];
+  reason_ids?: number[];
   card_status_id?: number;
   banlist?: { id: number };
   [key: string]: unknown;
@@ -371,7 +387,8 @@ export interface CardWithBanlistStatus {
     label: string;
     limit?: number;
   };
-  explanation_text?: string;
+  explanation_text?: string | null;
+  reasons?: BanlistReason[];
   cardData?: {
     card: Card;
     [key: string]: unknown;
@@ -402,6 +419,7 @@ export interface TournamentPlayerUser {
   id?: string;
   username?: string;
   email?: string;
+  country?: string | null;
   [key: string]: unknown;
 }
 
@@ -422,9 +440,18 @@ export interface Tournament {
   event_date_end: string;
   is_online: boolean;
   is_official?: boolean;
+  require_deck_list?: boolean;
+  allow_penalities?: boolean;
   max_number_of_rounds?: number;
   matches_per_round?: number;
   match_resolution_mode?: MatchResolutionMode;
+  /** Heures avant event_date pour fermer inscriptions / désinscriptions. */
+  registration_close_hours_before?: number;
+  /** Image cropped d'illustration pour le highlight officiel. */
+  image_url?: string | null;
+  image_focal_x?: number;
+  image_focal_y?: number;
+  image_zoom?: number;
   players?: TournamentPlayer[];
   [key: string]: unknown;
 }

@@ -24,7 +24,9 @@ export const URL_BACK_GET_MONSTER_TYPES = `/public/types`;
 export const URL_BACK_GET_CARD_ATTRIBUTES = `/public/attributes`;
 
 //USER
-export const URL_BACK_GET_USER = (id: number | string) => `/public/users/${id}`;
+export const URL_BACK_GET_USER = (id: number | string) => `/users/${id}/public`;
+export const URL_BACK_GET_USER_PUBLIC_PROFILE = (id: number | string) =>
+  `/users/${id}/public`;
 
 //TOKEN
 
@@ -87,6 +89,12 @@ export const URL_BACK_GET_BANLISTS = `/banlists`;
 export const URL_BACK_ADD_BANLIST = `/banlists`;    
 export const URL_BACK_UPDATE_BANLIST = (banlistId: number | string) => `/banlists/${banlistId}`;
 export const URL_BACK_DELETE_BANLIST = (banlistId: number | string) => `/banlists/${banlistId}`;
+
+export const URL_BACK_GET_BANLIST_REASONS = `/banlist-reasons`;
+export const URL_BACK_GET_BANLIST_REASON = (id: number | string) => `/banlist-reasons/${id}`;
+export const URL_BACK_ADD_BANLIST_REASON = `/banlist-reasons`;
+export const URL_BACK_UPDATE_BANLIST_REASON = (id: number | string) => `/banlist-reasons/${id}`;
+export const URL_BACK_DELETE_BANLIST_REASON = (id: number | string) => `/banlist-reasons/${id}`;
 
 // ERA
 
@@ -229,11 +237,15 @@ export const URL_BACK_ASSIGN_TOURNAMENT_PLAYER_DECK = (
 export const URL_BACK_GET_ARCHETYPE_RANKING = (archetypeId: number | string) =>
   `/archetype-rankings/archetype/${archetypeId}`;
 export const URL_BACK_GET_MY_ARCHETYPE_RANKINGS = `/archetype-rankings/me`;
+export const URL_BACK_GET_USER_ARCHETYPE_RANKINGS = (userId: number | string) =>
+  `/archetype-rankings/users/${userId}`;
 
 export const URL_BACK_QUIZ_HUB = `/quizzes/hub`;
 export const URL_BACK_QUIZ_SEASON_RANKING = (seasonId: number | string = "current") =>
   `/quizzes/seasons/${seasonId}/ranking`;
 export const URL_BACK_QUIZ_MY_STATS = `/quizzes/me/stats`;
+export const URL_BACK_QUIZ_USER_STATS = (userId: number | string) =>
+  `/quizzes/users/${userId}/stats`;
 export const URL_BACK_QUIZ_THEMES = `/quizzes/themes`;
 export const URL_BACK_QUIZ_START_FREE = `/quizzes/attempts/free`;
 export const URL_BACK_QUIZ_START_DAILY = `/quizzes/attempts/daily`;
@@ -256,3 +268,8 @@ export const URL_BACK_QUIZ_ADMIN_SEASON_PODIUM = (seasonId: number | string) =>
 export const URL_BACK_QUIZ_ADMIN_SEASON_AUTO_SCHEDULE = (
   seasonId: number | string
 ) => `/quizzes/admin/seasons/${seasonId}/auto-schedule`;
+
+export const URL_BACK_MEDALS_ME = `/medals/me`;
+export const URL_BACK_MEDALS_ME_SYNC = `/medals/me/sync`;
+export const URL_BACK_MEDALS_USER = (userId: number | string) =>
+  `/medals/users/${userId}`;

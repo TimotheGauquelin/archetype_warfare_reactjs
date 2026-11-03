@@ -27,6 +27,11 @@ export const URL_FRONT_TOURNAMENTS = "/tournaments";
 export const URL_FRONT_TOURNAMENT = (id: number | string): string => `/tournaments/${id}`;
 export const URL_FRONT_QUIZ = "/quiz";
 export const URL_FRONT_QUIZ_DAILY = "/quiz/daily";
+export const URL_FRONT_QUIZ_DAILY_SEASON = "/quiz/daily/:seasonId";
+export const getQuizDailyPath = (seasonId?: number | string | null): string =>
+  seasonId != null && String(seasonId).trim() !== ""
+    ? `/quiz/daily/${seasonId}`
+    : URL_FRONT_QUIZ_DAILY;
 export const URL_FRONT_QUIZ_PLAY = (attemptId: string): string =>
   `/quiz/play/${attemptId}`;
 export const URL_FRONT_QUIZ_SEASON_RANKING = "/quiz/season/:seasonId";
@@ -36,6 +41,9 @@ export const getQuizSeasonRankingPath = (seasonId: number | string = "current") 
 //Profil
 export const URL_FRONT_MY_PROFILE = "/my-profile";
 export const URL_FRONT_MY_PROFILE_EDIT = "/my-profile/edit";
+export const URL_FRONT_USER_PROFILE = "/users/:userId";
+export const getUserProfilePath = (userId: number | string): string =>
+  `/users/${userId}`;
 export const URL_FRONT_MY_DECKS = "/my-decks";
 export const URL_FRONT_MY_DECK_ADD = "/my-decks/add";
 export const URL_FRONT_MY_DECK_UPDATE = "/my-decks/update/:deckId";
@@ -85,4 +93,5 @@ export const URL_FRONT_ADMIN_OPTIONS = "/admin/options";
 export const URL_FRONT_ADMIN_FILES = "/admin/files";
 export const URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON = "/admin/files/archetypes/jumbotron";
 export const URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD = "/admin/files/archetypes/introduction-card";
+export const URL_FRONT_ADMIN_FILES_PROFILE_DEFAULTS = "/admin/files/profile/defaults";
 

@@ -36,12 +36,15 @@ import {
   URL_FRONT_MY_DECK_UPDATE,
   URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD,
   URL_FRONT_ADMIN_FILES_ARCHETYPES_JUMBOTRON,
+  URL_FRONT_ADMIN_FILES_PROFILE_DEFAULTS,
   URL_FRONT_ROAD_MAP,
   URL_FRONT_ADMIN_OPTIONS,
   URL_FRONT_MY_PROFILE_EDIT,
+  URL_FRONT_USER_PROFILE,
   URL_FRONT_TOURNAMENTS,
   URL_FRONT_QUIZ,
   URL_FRONT_QUIZ_DAILY,
+  URL_FRONT_QUIZ_DAILY_SEASON,
   URL_FRONT_QUIZ_SEASON_RANKING,
   URL_FRONT_MY_TOURNAMENTS,
   URL_FRONT_ADMIN_TOURNAMENTS,
@@ -83,6 +86,9 @@ const ArchetypesPage = lazy(() => import("./pages/user/archetypesPage/Archetypes
 const ArchetypePage = lazy(() => import("./pages/user/archetypePage/ArchetypePage"));
 const TournamentsPage = lazy(() => import("./pages/user/tournaments/TournamentsPage"));
 const TournamentDetailPage = lazy(() => import("./pages/user/tournamentDetail/TournamentDetailPage"));
+const PublicUserProfilePage = lazy(
+  () => import("./pages/user/users/PublicUserProfilePage")
+);
 const QuizFrenchOnlyGate = lazy(() => import("./pages/user/quiz/QuizFrenchOnlyGate"));
 const QuizHubPage = lazy(() => import("./pages/user/quiz/QuizHubPage"));
 const QuizDailyPage = lazy(() => import("./pages/user/quiz/QuizDailyPage"));
@@ -113,6 +119,7 @@ const AdminUserUpdate = lazy(() => import("./pages/admin/adminUsers/AdminUserUpd
 const AdminFiles = lazy(() => import("./pages/admin/adminFiles/AdminFiles"));
 const AdminFilesJumbotron = lazy(() => import("./pages/admin/adminFiles/AdminFilesJumbotron"));
 const AdminFilesIntroductionCard = lazy(() => import("./pages/admin/adminFiles/ArchetypeFileIntroductionCard"));
+const AdminFilesProfileDefaults = lazy(() => import("./pages/admin/adminFiles/AdminFilesProfileDefaults"));
 const AdminCards = lazy(() => import("./pages/admin/adminCards/AdminCards"));
 const AdminCardDetail = lazy(() => import("./pages/admin/adminCards/AdminCardDetail"));
 const AdminOptions = lazy(() => import("./pages/admin/adminOptions/AdminOptions"));
@@ -231,6 +238,10 @@ const AppContent: React.FC = () => {
             <Route element={<QuizFrenchOnlyGate />}>
               <Route path={URL_FRONT_QUIZ} element={<QuizHubPage />} />
               <Route path={URL_FRONT_QUIZ_DAILY} element={<QuizDailyPage />} />
+              <Route
+                path={URL_FRONT_QUIZ_DAILY_SEASON}
+                element={<QuizDailyPage />}
+              />
               <Route path="/quiz/play/:attemptId" element={<QuizPlayPage />} />
               <Route
                 path={URL_FRONT_QUIZ_SEASON_RANKING}
@@ -242,6 +253,10 @@ const AppContent: React.FC = () => {
 
             <Route path={URL_FRONT_MY_PROFILE} element={<MyProfilePage />} />
             <Route path={URL_FRONT_MY_PROFILE_EDIT} element={<UpdateMyProfilePage />} />
+            <Route
+              path={URL_FRONT_USER_PROFILE}
+              element={<PublicUserProfilePage />}
+            />
             <Route path={URL_FRONT_MY_DECKS} element={<MyDecksPage />} />
             <Route path={URL_FRONT_MY_DECK_ADD} element={<MyDeckAdd />} />
             <Route path={URL_FRONT_MY_DECK_UPDATE} element={<UpdateMyDeckPage />} />
@@ -286,6 +301,10 @@ const AppContent: React.FC = () => {
             <Route
               path={URL_FRONT_ADMIN_FILES_ARCHETYPES_INTRODUCTION_CARD}
               element={<AdminFilesIntroductionCard />}
+            />
+            <Route
+              path={URL_FRONT_ADMIN_FILES_PROFILE_DEFAULTS}
+              element={<AdminFilesProfileDefaults />}
             />
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
               <Route path={URL_FRONT_ADMIN_CARDS} element={<AdminCards />} />
