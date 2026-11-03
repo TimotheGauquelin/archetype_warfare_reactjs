@@ -1,14 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { SwitchInput } from "../../../generic/form/SwitchInput";
 import { Input } from "../../../generic/form/input/Input";
 import { CheckboxInput } from "../../../generic/form/CheckboxInput";
 import { DateInput } from "../../../generic/form/DateInput";
 import TextArea from "../../../generic/form/textArea/TextArea";
+import CheckboxSlider from "../../../generic/CheckboxSlider";
 import { summonMechanicsToFrench } from "../../../../utils/trad/summonMechanics";
 import { monsterTypeToFrench } from "../../../../utils/trad/monsterType";
 import { attributeToFrench } from "../../../../utils/trad/attribute";
 import { convertBase64 } from "../../../../utils/img/convertBase";
 import type { Archetype } from "../../../../types";
+import QuizImageCardSearch from "../quiz/QuizImageCardSearch";
 
 interface Option {
   id: number;
@@ -55,6 +57,8 @@ const AdminArchetypeUpdateFormikData: React.FC<
   const hasValidSlider = Boolean(archetype.slider_img_url?.trim());
   const canHighlight = Boolean(archetype.is_highlighted) || hasValidSlider;
   const canGoOnline = Boolean(archetype.is_active) || cardCount >= 5;
+  const [cardImageMode, setCardImageMode] = useState<"upload" | "card">("upload");
+  const [cardImageName, setCardImageName] = useState<string | null>(null);
 
   const sortedTypes = useMemo(
     () => sortByTranslatedLabel(types, monsterTypeToFrench),
@@ -354,7 +358,35 @@ const AdminArchetypeUpdateFormikData: React.FC<
         </div>
 
         <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-2.5 tablet:p-3 space-y-3">
-          <p className="font-bold text-gray-800">Image de la carte</p>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-bold text-gray-800">Image de la carte</p>
+            <div className="flex flex-row items-center gap-2">
+              <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
+                Depuis mon PC
+              </span>
+              <label className="inline-flex relative items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="sr-only peer"
+                  checked={cardImageMode === "card"}
+                  onChange={() => {
+                    const nextMode =
+                      cardImageMode === "card" ? "upload" : "card";
+                    setCardImageMode(nextMode);
+                    setCardImageName(null);
+                    setArchetype((prev) => ({
+                      ...prev,
+                      card_img_url: "",
+                    }));
+                  }}
+                />
+                <CheckboxSlider />
+              </label>
+              <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
+                Depuis une carte
+              </span>
+            </div>
+          </div>
           {archetype.card_img_url && (
             <img
               className="max-h-32 tablet:max-h-40 w-full rounded object-contain shadow-sm"
@@ -362,36 +394,58 @@ const AdminArchetypeUpdateFormikData: React.FC<
               alt="Présentation de l'archetype"
             />
           )}
-          <label className="flex flex-col text-sm font-bold text-gray-800">
-            Fichier image
-            <input
-              className="mt-1 font-normal"
-              type="file"
-              accept="image/*"
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const base64Img = await convertBase64(file);
-                  if (base64Img && typeof base64Img === "string") {
-                    setArchetype((prevState: Archetype) => ({
-                      ...prevState,
-                      card_img_url: base64Img,
-                    }));
+          {cardImageMode === "upload" ? (
+            <label className="flex flex-col text-sm font-bold text-gray-800">
+              Fichier image
+              <input
+                className="mt-1 font-normal"
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const base64Img = await convertBase64(file);
+                    if (base64Img && typeof base64Img === "string") {
+                      setCardImageName(null);
+                      setArchetype((prevState: Archetype) => ({
+                        ...prevState,
+                        card_img_url: base64Img,
+                      }));
+                    }
                   }
-                }
+                }}
+              />
+            </label>
+          ) : (
+            <QuizImageCardSearch
+              selectedName={cardImageName}
+              onSelect={(artworkUrl, cardName) => {
+                setCardImageName(cardName);
+                setArchetype((prev) => ({
+                  ...prev,
+                  card_img_url: artworkUrl,
+                }));
+              }}
+              onClear={() => {
+                setCardImageName(null);
+                setArchetype((prev) => ({
+                  ...prev,
+                  card_img_url: "",
+                }));
               }}
             />
-          </label>
+          )}
           {archetype.card_img_url && (
             <button
               type="button"
               className="text-sm text-red-600 hover:underline text-left"
-              onClick={() =>
+              onClick={() => {
+                setCardImageName(null);
                 setArchetype((prev) => ({
                   ...prev,
                   card_img_url: "",
-                }))
-              }
+                }));
+              }}
             >
               Retirer l&apos;image
             </button>

@@ -14,6 +14,20 @@ import type { Card, CardSearchCriteria, Pagination } from "../../../types";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../types";
+import usePersistedListPage from "../../../hooks/usePersistedListPage";
+import usePersistedListFilters from "../../../hooks/usePersistedListFilters";
+
+const DEFAULT_CARD_CRITERIA: CardSearchCriteria = {
+  name: "",
+  card_type: "",
+  level: undefined,
+  min_atk: undefined,
+  max_atk: undefined,
+  min_def: undefined,
+  max_def: undefined,
+  attribute: "",
+  missing_fr: false,
+};
 
 interface ApiCard {
   id: number;
@@ -43,16 +57,10 @@ interface Attribute {
 
 const AdminCards = () => {
   const [cards, setCards] = useState<Card[]>([]);
-  const [criteria, setCriteria] = useState<CardSearchCriteria>({
-    name: "",
-    card_type: "",
-    level: undefined,
-    min_atk: undefined,
-    max_atk: undefined,
-    min_def: undefined,
-    max_def: undefined,
-    attribute: "",
-  });
+  const [criteria, setCriteria] = usePersistedListFilters(
+    "admin-cards",
+    DEFAULT_CARD_CRITERIA
+  );
 
   const [pagination, setPagination] = useState<Pagination>({
     total: 0,
@@ -61,7 +69,7 @@ const AdminCards = () => {
     pageSize: 30,
   });
   const [size] = useState(30);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = usePersistedListPage("admin-cards");
 
   const [cardTypes, setCardTypes] = useState<CardType[]>([]);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
@@ -163,16 +171,7 @@ const AdminCards = () => {
   };
 
   const resetAllFilters = () => {
-    setCriteria({
-      name: "",
-      min_atk: undefined,
-      max_atk: undefined,
-      min_def: undefined,
-      max_def: undefined,
-      level: undefined,
-      card_type: "",
-      attribute: "",
-    });
+    setCriteria({ ...DEFAULT_CARD_CRITERIA });
     setPage(1);
     toast.success("Vous avez mis les filtres à leur état d'origine.");
   };
@@ -190,7 +189,9 @@ const AdminCards = () => {
       criteria.max_atk,
       criteria.min_def,
       criteria.max_def,
-      criteria.attribute
+      criteria.attribute,
+      undefined,
+      Boolean(criteria.missing_fr)
     );
     getCardTypes(setCardTypes);
     getAttributes(setAttributes);
@@ -223,6 +224,8 @@ const AdminCards = () => {
             setCriteria={setCriteria}
             resetAllFilters={resetAllFilters}
             attributes={attributes}
+            showTranslationFilter
+            onPageReset={() => setPage(1)}
           />
 
           {cards?.length > 0 ? (
@@ -243,7 +246,10 @@ const AdminCards = () => {
                       alt={card.name}
                       loading="lazy"
                     />
-                    <span className="text-xs line-clamp-1 text-gray-700 mt-0.5 block">
+                    <span
+                      className="text-xs text-gray-700 mt-0.5 block truncate min-w-0"
+                      title={card.name}
+                    >
                       {card.name}
                     </span>
                   </button>

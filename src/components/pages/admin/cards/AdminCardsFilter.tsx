@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FaTrash } from "react-icons/fa";
+import { FaLanguage, FaTrash } from "react-icons/fa";
 import usePopup from "../../../../hooks/usePopup";
 import PopUp from "../../../generic/PopUp";
 import { Input } from "../../../generic/form/input/Input";
@@ -19,6 +19,10 @@ interface AdminCardsFilterProps {
   compact?: boolean;
   /** Affiche « Actions générales » (ex. vider le deck utilisateur). */
   onClearAllDeckCards?: () => void;
+  /** Admin /cards : action « Sans texte FR » dans Actions générales. */
+  showTranslationFilter?: boolean;
+  /** Remet la pagination à 1 quand un filtre change. */
+  onPageReset?: () => void;
 }
 
 type FilterForm = CardSearchCriteria & Record<string, unknown>;
@@ -34,16 +38,23 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
   resetAllFilters,
   compact = false,
   onClearAllDeckCards,
+  showTranslationFilter = false,
+  onPageReset,
 }) => {
   const { t, i18n } = useTranslation();
   const isFrench = i18n.language?.startsWith("fr");
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
-  const [displayGeneralActions, setDisplayGeneralActions] = useState(false);
+  const [displayGeneralActions, setDisplayGeneralActions] = useState(
+    Boolean(criteria.missing_fr)
+  );
 
   const filterData = criteria as FilterForm;
   const setFilterData = setCriteria as React.Dispatch<
     React.SetStateAction<FilterForm>
   >;
+
+  const showGeneralActionsToggle =
+    Boolean(onClearAllDeckCards) || showTranslationFilter;
 
   const cardTypeOptions = useMemo(
     () =>
@@ -97,6 +108,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
       [field]: value,
       page: 1,
     }));
+    onPageReset?.();
   };
 
   const setFilterWithPageReset: React.Dispatch<
@@ -109,6 +121,16 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
           : v;
       return { ...next, page: 1 };
     });
+    onPageReset?.();
+  };
+
+  const toggleMissingFr = () => {
+    setCriteria((prev) => ({
+      ...prev,
+      missing_fr: !prev.missing_fr,
+      page: 1,
+    }));
+    onPageReset?.();
   };
 
   // Mobile : nom plein / niveau+type+attribut ; ATK/DEF dès sscreen
@@ -140,7 +162,7 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
           >
             {t("filters.reset")}
           </button>
-          {onClearAllDeckCards && (
+          {showGeneralActionsToggle && (
             <button
               type="button"
               className="hover:text-blue-500 cursor-pointer text-left"
@@ -253,16 +275,33 @@ const AdminCardsFilter: React.FC<AdminCardsFilterProps> = ({
         </div>
       </div>
 
-      {onClearAllDeckCards && displayGeneralActions && (
+      {displayGeneralActions && showGeneralActionsToggle && (
         <div className="flex flex-wrap bg-white border border-gray-200 rounded-lg p-2 mt-2 gap-2">
-          <button
-            type="button"
-            className="flex items-center bg-red-100 hover:bg-red-200 p-1 rounded text-red-500 font-semibold text-sm"
-            onClick={handleClearAllDeckCards}
-          >
-            <FaTrash className="mr-2 shrink-0" />
-            {t("profile.clearAllDeckCards")}
-          </button>
+          {showTranslationFilter && (
+            <button
+              type="button"
+              className={`flex items-center p-1 rounded font-semibold text-sm ${
+                criteria.missing_fr
+                  ? "bg-indigo-100 hover:bg-indigo-200 text-indigo-700"
+                  : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+              }`}
+              onClick={toggleMissingFr}
+              aria-pressed={Boolean(criteria.missing_fr)}
+            >
+              <FaLanguage className="mr-2 shrink-0" />
+              {t("filters.missingFr")}
+            </button>
+          )}
+          {onClearAllDeckCards && (
+            <button
+              type="button"
+              className="flex items-center bg-red-100 hover:bg-red-200 p-1 rounded text-red-500 font-semibold text-sm"
+              onClick={handleClearAllDeckCards}
+            >
+              <FaTrash className="mr-2 shrink-0" />
+              {t("profile.clearAllDeckCards")}
+            </button>
+          )}
         </div>
       )}
 

@@ -145,7 +145,7 @@ const AdminUserUpdateForm = () => {
           <h2 className="font-semibold text-base tablet:text-lg text-gray-900">
             Informations générales
           </h2>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex gap-3">
             <SwitchInput
               label="Actif"
               attribute="is_active"

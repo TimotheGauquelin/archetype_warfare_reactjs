@@ -31,8 +31,9 @@ const Card: React.FC<CardProps> = ({ card, index = 0 }) => {
     setDetailCard({
       ...card.card,
       card_status: card.card_status,
-    });
-  }, [card.card, card.card_status]);
+      reasons: card.reasons,
+    } as CardType & { reasons?: typeof card.reasons });
+  }, [card.card, card.card_status, card.reasons]);
 
   const { handlers, wasLongPress } = useLongPress(openDetails);
 
@@ -89,7 +90,29 @@ const Card: React.FC<CardProps> = ({ card, index = 0 }) => {
                 <p className="text-red-400 font-bold mb-1">
                   Pourquoi cette carte est {cardStatusToFrench(card.card_status.label).toLowerCase()} :
                 </p>
-                <p className="text-gray-200">{card.explanation_text || ""}</p>
+                {card.reasons && card.reasons.length > 0 ? (
+                  <ul className="space-y-2">
+                    {card.reasons.map((reason) => (
+                      <li key={reason.id} className="flex items-start gap-2">
+                        {reason.logo_url ? (
+                          <img
+                            src={reason.logo_url}
+                            alt=""
+                            className="w-5 h-5 object-contain shrink-0 mt-0.5"
+                          />
+                        ) : null}
+                        <span>
+                          <span className="font-semibold text-white">{reason.label}</span>
+                          {reason.text ? (
+                            <span className="block text-gray-300">{reason.text}</span>
+                          ) : null}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-200">{card.explanation_text || ""}</p>
+                )}
               </div>
               <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-x-[6px] border-x-transparent border-t-[6px] border-t-gray-900" />
             </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../adminLayout";
 import AdminUserPagination from "../../../components/pages/admin/users/AdminUserPagination";
@@ -8,6 +8,7 @@ import AdminUserFilter, {
 import { getUserRoles, searchUsers, type UserRoleOption } from "../../../services/user";
 import { URL_FRONT_ADMIN_USER_ADD } from "../../../constant/urlsFront";
 import type { UserSearchResponse, Pagination } from "../../../types";
+import usePersistedListPage from "../../../hooks/usePersistedListPage";
 
 const defaultFilters = (): AdminUserFilters => ({
   q: "",
@@ -20,7 +21,7 @@ const AdminUsersAll = () => {
   const [users, setUsers] = useState<UserSearchResponse | null>(null);
   const [roles, setRoles] = useState<UserRoleOption[]>([]);
   const [refresh, setRefresh] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = usePersistedListPage("admin-users");
   const [pageSize] = useState(10);
   const [filters, setFilters] = useState<AdminUserFilters>(defaultFilters());
   const [debouncedQ, setDebouncedQ] = useState("");
@@ -36,7 +37,12 @@ const AdminUsersAll = () => {
     void getUserRoles().then(setRoles);
   }, []);
 
+  const skipFilterPageReset = useRef(true);
   useEffect(() => {
+    if (skipFilterPageReset.current) {
+      skipFilterPageReset.current = false;
+      return;
+    }
     setCurrentPage(1);
   }, [debouncedQ, filters.is_active, filters.is_banned, filters.role]);
 

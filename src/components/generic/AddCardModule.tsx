@@ -148,12 +148,13 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
   }, [filters, locale]);
 
   return (
-    <div className="col-span-12 sscreen:col-span-4 grid grid-cols-12 mt-0 sscreen:mt-2 order-1 sscreen:order-2">
-      <div className="bg-gray-400 col-span-12 sscreen:ml-1 p-2 rounded">
-        <div className="flex justify-end mb-2">
+    <div className="w-full">
+      <div className="bg-slate-700 p-2.5 tablet:p-3 rounded-lg space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold text-white">Ajouter des cartes</h3>
           <button
             type="button"
-            className="text-sm bg-yellow-300 hover:bg-yellow-400 shadow-md px-3 py-1 rounded text-white font-bold text-center cursor-pointer"
+            className="text-sm bg-amber-300 hover:bg-amber-400 shadow-md px-3 py-1 rounded text-slate-900 font-bold text-center cursor-pointer"
             onClick={addAllCardsToArchetype}
           >
             Ajouter tout
@@ -168,8 +169,8 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
           compact
         />
         <div
-          className="overflow-y-auto bg-white grid grid-cols-12 gap-1 p-1"
-          style={{ maxHeight: "400px" }}
+          className="overflow-y-auto bg-white grid grid-cols-12 gap-1 p-1 rounded"
+          style={{ maxHeight: "420px" }}
         >
           {cards && cards.length > 0 ? cards.map((card, index) => {
             const archetypeCards = (newArchetype.cards as BanlistCard[] | undefined) || [];
@@ -200,15 +201,18 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
           }) : null}
         </div>
 
-        <div className="flex justify-around items-center">
+        <div className="flex justify-around items-center text-white">
           <FaAngleLeft
             className={`h-8 cursor-pointer ${pagination.currentPage <= 1 && "invisible"}`}
             onClick={() => decreasePage()}
           />
-          <p>{pagination.currentPage}</p>
+          <p className="text-sm">
+            {pagination.currentPage} / {Math.max(pagination.totalPages, 1)}
+          </p>
           <FaAngleRight
-            className={`h-8 cursor-pointer ${pagination.currentPage >= pagination.totalPages && "invisible"
-              }`}
+            className={`h-8 cursor-pointer ${
+              pagination.currentPage >= pagination.totalPages && "invisible"
+            }`}
             onClick={() => {
               increasePage();
             }}
@@ -216,7 +220,7 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
         </div>
       </div>
     </div>
-  )
+  );
 };
 
 export default AddCardModule;

@@ -8,7 +8,8 @@ export class AppError extends Error {
     message: string,
     public code: string,
     public statusCode?: number,
-    public originalError?: unknown
+    public originalError?: unknown,
+    public details?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'AppError';
@@ -38,6 +39,13 @@ export interface ApiErrorResponse {
   message: string;
   errors?: Record<string, string[]>;
   statusCode?: number;
+  details?: Record<string, unknown>;
+}
+
+function getApiDetails(errorData: ApiErrorResponse | undefined): Record<string, unknown> | undefined {
+  return errorData?.details && typeof errorData.details === "object"
+    ? errorData.details
+    : undefined;
 }
 
 /**
@@ -78,28 +86,32 @@ export const handleApiError = (error: unknown): AppError => {
           errorData?.message || 'Non autorisé. Veuillez vous connecter.',
           ErrorCode.UNAUTHORIZED,
           401,
-          error
+          error,
+          getApiDetails(errorData)
         );
       case 403:
         return new AppError(
           errorData?.message || 'Accès interdit.',
           ErrorCode.FORBIDDEN,
           403,
-          error
+          error,
+          getApiDetails(errorData)
         );
       case 404:
         return new AppError(
           errorData?.message || 'Ressource non trouvée.',
           ErrorCode.NOT_FOUND,
           404,
-          error
+          error,
+          getApiDetails(errorData)
         );
       case 400:
         return new AppError(
           errorData?.message || 'Données invalides.',
           ErrorCode.VALIDATION_ERROR,
           400,
-          error
+          error,
+          getApiDetails(errorData)
         );
       case 500:
       case 502:
@@ -108,14 +120,16 @@ export const handleApiError = (error: unknown): AppError => {
           errorData?.message || 'Erreur serveur. Veuillez réessayer plus tard',
           ErrorCode.SERVER_ERROR,
           statusCode,
-          error
+          error,
+          getApiDetails(errorData)
         );
       default:
         return new AppError(
           errorData?.message || 'Une erreur est survenue',
           ErrorCode.UNKNOWN_ERROR,
           statusCode,
-          error
+          error,
+          getApiDetails(errorData)
         );
     }
   }

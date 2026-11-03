@@ -2,6 +2,7 @@ import api_aw from "../api/api_aw";
 import {
   URL_BACK_GET_ARCHETYPE_RANKING,
   URL_BACK_GET_MY_ARCHETYPE_RANKINGS,
+  URL_BACK_GET_USER_ARCHETYPE_RANKINGS,
 } from "../constant/urlsBack";
 import { handleApiError, logError } from "../utils/errorHandler";
 
@@ -34,6 +35,7 @@ export interface MyArchetypeRankingEntry {
   archetypeId: number;
   archetypeName: string;
   slug: string | null;
+  cardImgUrl?: string | null;
   points: number;
   rank: number;
   playersCount: number;
@@ -77,3 +79,19 @@ export const getMyArchetypeRankings =
       throw appError;
     }
   };
+
+/** Classements archétypes publics d'un joueur. */
+export const getUserArchetypeRankings = async (
+  userId: number | string
+): Promise<MyArchetypeRankingsResponse> => {
+  try {
+    const response = await api_aw.get(
+      URL_BACK_GET_USER_ARCHETYPE_RANKINGS(userId)
+    );
+    return response.data as MyArchetypeRankingsResponse;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getUserArchetypeRankings");
+    throw appError;
+  }
+};

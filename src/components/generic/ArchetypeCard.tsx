@@ -57,13 +57,13 @@ const ArchetypeCard: React.FC<ArchetypeCardProps> = ({ archetype, index, haveAMe
           onError={handleImageError}
         />
       </div>
-      <div className="font-bold pt-2 tablet:pt-3 text-center ellipsisText flex justify-center items-center text-sm tablet:text-base">
+      <div className="font-bold pt-1.5 tablet:pt-2 text-center ellipsisText flex justify-center items-center text-sm">
         {medalPath && (
-          <div className="w-5 tablet:w-[30px] shrink-0">
-            <img src={medalPath} alt="" width={30} height={30} className="w-full h-auto" loading="lazy" decoding="async" />
+          <div className="w-5 tablet:w-6 shrink-0">
+            <img src={medalPath} alt="" width={24} height={24} className="w-full h-auto" loading="lazy" decoding="async" />
           </div>
         )}
-        <p className={`${index < 3 && "pl-1.5 tablet:pl-2"} flex flex-col min-w-0`}>
+        <p className={`${index < 3 && "pl-1.5"} flex flex-col min-w-0`}>
           <span className="truncate">{archetype?.name}</span>
           <span className="text-xs">{displayDate && ` (${databaseDateToCalendarDate(archetype?.in_aw_date)})`}</span></p>
       </div>

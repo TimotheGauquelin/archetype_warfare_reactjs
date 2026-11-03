@@ -8,9 +8,11 @@ import { getArchetypesWithCriteria } from "../../../services/archetype";
 import { URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM } from "../../../constant/urlsFront";
 import PopUp from "../../../components/generic/PopUp";
 import usePopup from "../../../hooks/usePopup";
+import usePersistedListPage from "../../../hooks/usePersistedListPage";
 import type { Archetype, SearchCriteria } from "../../../types";
 
 const AdminArchetype = () => {
+  const [currentPage, setCurrentPage] = usePersistedListPage("admin-archetypes");
   const [archetypes, setArchetypes] = useState<Archetype[]>([]);
   const [pagination, setPagination] = useState({
     total: 0,
@@ -18,20 +20,27 @@ const AdminArchetype = () => {
     currentPage: 1,
     pageSize: 30,
   });
-  const [filters, setFilters] = useState<SearchCriteria>({
+  const [filters, setFilters] = useState<SearchCriteria>(() => ({
     name: "",
     era: "",
     type: "",
     attribute: "",
     summonmechanic: "",
-    page: 1,
+    page: currentPage,
     size: 30,
-  });
+  }));
   const [_errorMessage, setErrorMessage] = useState("");
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    setFilters((prev) =>
+      prev.page === currentPage ? prev : { ...prev, page: currentPage }
+    );
+  }, [currentPage]);
+
   const resetAllFilters = () => {
+    setCurrentPage(1);
     setFilters({
       name: "",
       era: "",
@@ -83,7 +92,7 @@ const AdminArchetype = () => {
           currentPage={pagination?.currentPage}
           archetypes={archetypes}
           setPagination={(page: number) => {
-            setFilters((prev) => ({ ...prev, page }));
+            setCurrentPage(page);
             setPagination((prev) => ({ ...prev, currentPage: page }));
           }}
           archetypesTotalCount={pagination?.total}

@@ -18,7 +18,8 @@ export const searchCards = async (
   min_def?: number,
   max_def?: number,
   attribute?: string,
-  signal?: AbortSignal | null
+  signal?: AbortSignal | null,
+  missing_fr?: boolean
 ): Promise<void> => {
   const params = new URLSearchParams();
 
@@ -32,6 +33,7 @@ export const searchCards = async (
   if (min_def !== undefined) params.append("min_def", min_def.toString());
   if (max_def !== undefined) params.append("max_def", max_def.toString());
   if (attribute) params.append("attribute", attribute);
+  if (missing_fr) params.append("missing_fr", "true");
 
   const config = signal ? { signal } : {};
 
