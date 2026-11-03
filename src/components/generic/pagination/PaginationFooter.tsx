@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 interface PaginationFooterProps {
   currentPage: number;
@@ -15,18 +15,40 @@ const Pagination: React.FC<PaginationFooterProps> = ({
   setRefresh,
   itemsTotalCount,
   totalPages,
-  pageSize
+  pageSize,
 }) => {
+  const [pageInput, setPageInput] = useState(String(currentPage));
+
+  useEffect(() => {
+    setPageInput(String(currentPage));
+  }, [currentPage]);
+
+  const goToPage = (page: number) => {
+    const max = Math.max(1, totalPages || 1);
+    const next = Math.min(Math.max(1, page), max);
+    if (next === currentPage) {
+      setPageInput(String(currentPage));
+      return;
+    }
+    setPagination(next);
+    setRefresh();
+  };
+
+  const commitPageInput = () => {
+    const parsed = Number.parseInt(pageInput, 10);
+    if (!Number.isFinite(parsed)) {
+      setPageInput(String(currentPage));
+      return;
+    }
+    goToPage(parsed);
+  };
 
   const prevButton =
     currentPage > 1 ? (
       <button
         type="button"
         className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-        onClick={() => {
-          setPagination(currentPage - 1);
-          setRefresh();
-        }}
+        onClick={() => goToPage(currentPage - 1)}
         aria-label="Page précédente"
       >
         <svg
@@ -50,10 +72,7 @@ const Pagination: React.FC<PaginationFooterProps> = ({
       <button
         type="button"
         className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 cursor-pointer"
-        onClick={() => {
-          setPagination(currentPage + 1);
-          setRefresh();
-        }}
+        onClick={() => goToPage(currentPage + 1)}
         aria-label="Page suivante"
       >
         <svg
@@ -74,13 +93,35 @@ const Pagination: React.FC<PaginationFooterProps> = ({
 
   const pageNav = (
     <nav
-      className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+      className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px items-center"
       aria-label="Pagination"
     >
       {prevButton}
-      <span className="relative inline-flex items-center px-3 tablet:px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
-        {currentPage}
-        {totalPages > 0 ? ` / ${totalPages}` : ""}
+      <span className="relative inline-flex items-center gap-1 px-2 tablet:px-3 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+        <label className="sr-only" htmlFor="pagination-page-input">
+          Numéro de page
+        </label>
+        <input
+          id="pagination-page-input"
+          type="number"
+          min={1}
+          max={Math.max(1, totalPages || 1)}
+          inputMode="numeric"
+          value={pageInput}
+          onChange={(e) => setPageInput(e.target.value)}
+          onBlur={commitPageInput}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              (e.target as HTMLInputElement).blur();
+            }
+          }}
+          className="w-12 tablet:w-14 text-center border border-gray-300 rounded px-1 py-0.5 text-sm font-medium text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-400"
+          aria-label="Aller à la page"
+        />
+        {totalPages > 0 ? (
+          <span className="text-gray-500 whitespace-nowrap">/ {totalPages}</span>
+        ) : null}
       </span>
       {nextButton}
     </nav>

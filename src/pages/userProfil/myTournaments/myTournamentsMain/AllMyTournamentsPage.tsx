@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 import UserProfilLayout from "../../layout";
 import TournamentTable from "@/components/pages/user/tournaments/TournamentTable";
+import ProfileSection from "@/components/pages/userProfil/ProfileSection";
 import SelectInput from "@/components/generic/form/SelectInput";
 import { Input } from "@/components/generic/form/input/Input";
 import type { Tournament, RootState } from "@/types";
@@ -118,10 +118,8 @@ const AllMyTournamentsPage: React.FC = () => {
 
   return (
     <UserProfilLayout>
-      <div className="bg-white rounded-lg shadow-sm p-3 tablet:p-4 mb-2">
-        <UserProfileLayoutTitle title={t("profile.allMyTournaments")} />
-
-        <div className="grid grid-cols-12 gap-2 tablet:gap-3 mb-4 mt-3">
+      <ProfileSection title={t("profile.allMyTournaments")}>
+        <div className="grid grid-cols-12 gap-2 tablet:gap-3 mb-4">
           <div className="col-span-12 tablet:col-span-4">
             <Input
               inputType="text"
@@ -190,7 +188,7 @@ const AllMyTournamentsPage: React.FC = () => {
             showActions={false}
           />
         )}
-      </div>
+      </ProfileSection>
     </UserProfilLayout>
   );
 };

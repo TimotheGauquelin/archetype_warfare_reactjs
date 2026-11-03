@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -22,6 +22,7 @@ import {
   filterTournamentsByScope,
   isAdminTournamentScope,
 } from "@/utils/tournament/adminTournamentScope";
+import usePersistedListPage from "@/hooks/usePersistedListPage";
 
 const PAGE_SIZE = 30;
 
@@ -53,7 +54,9 @@ const AdminTournamentsByScope = () => {
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = usePersistedListPage(
+    "admin-tournaments"
+  );
   const [refresh, setRefresh] = useState(false);
   const [filters, setFilters] = useState<ScopeFilterForm>(EMPTY_FILTERS);
 
@@ -86,11 +89,16 @@ const AdminTournamentsByScope = () => {
   useEffect(() => {
     setCurrentPage(1);
     setFilters(EMPTY_FILTERS);
-  }, [scope]);
+  }, [scope, setCurrentPage]);
 
+  const skipFilterPageReset = useRef(true);
   useEffect(() => {
+    if (skipFilterPageReset.current) {
+      skipFilterPageReset.current = false;
+      return;
+    }
     setCurrentPage(1);
-  }, [filters]);
+  }, [filters, setCurrentPage]);
 
   const filtered = useMemo(() => {
     if (!scope) return [];

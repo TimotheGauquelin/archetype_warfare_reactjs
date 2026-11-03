@@ -7,9 +7,9 @@ import { URL_FRONT_MY_DECK_ADD, getMyDeckUpdatePath } from "../../../../constant
 import type { DeckWithArchetypeDetails, RootState } from "../../../../types";
 import UserProfilLayout from "../../layout";
 import NoItemMessage from "@/components/generic/NoItemMessage";
-import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
 import MyDecksDivSkeleton from "@/components/skeletons/MyDecksDivSkeleton";
 import { optimizeImageUrl } from "../../../../utils/image/optimizeImageUrl";
+import ProfileSection from "@/components/pages/userProfil/ProfileSection";
 
 const MyDecksPage = () => {
   const { t } = useTranslation();
@@ -26,13 +26,17 @@ const MyDecksPage = () => {
 
   return (
     <UserProfilLayout>
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-4 relative">
-        <UserProfileLayoutTitle
-          title={t("profile.allMyDecks")}
-          buttonText={t("profile.createDeck")}
-          buttonUrl={URL_FRONT_MY_DECK_ADD}
-          buttonClassName="bg-blue-500 hover:bg-blue-600"
-        />
+      <ProfileSection
+        title={t("profile.allMyDecks")}
+        action={
+          <Link
+            to={URL_FRONT_MY_DECK_ADD}
+            className="text-xs font-semibold text-white bg-blue-500 hover:bg-blue-600 px-2.5 py-1 rounded"
+          >
+            {t("profile.createDeck")}
+          </Link>
+        }
+      >
         {error && (
           <p className="text-red-600 bg-red-50 rounded-lg p-2 mb-2" role="alert">
             {error}
@@ -53,7 +57,7 @@ const MyDecksPage = () => {
                   return (
                     <Link
                       key={deck.id}
-                      className="p-4 space-y-2 bg-white cardShadow rounded-lg col-span-6 lscreen:col-span-2"
+                      className="p-3 space-y-2 bg-slate-50 border border-slate-200 rounded-lg col-span-6 lscreen:col-span-2 hover:border-slate-400"
                       to={getMyDeckUpdatePath(deck.id)}
                     >
                       <div className="rounded-md aspect-square overflow-hidden bg-gray-300">
@@ -75,10 +79,10 @@ const MyDecksPage = () => {
                           />
                         )}
                       </div>
-                      <p className="flex flex-col justify-between items-center">
-                        <span className="font-bold line-clamp-1">{deck.label}</span>
+                      <p className="flex flex-col justify-between items-center gap-1">
+                        <span className="font-bold line-clamp-1 text-sm">{deck.label}</span>
                         <span
-                          className={`text-white text-sm p-1 rounded-sm ${isPlayable ? "bg-green-500" : "bg-red-500"}`}
+                          className={`text-white text-xs px-1.5 py-0.5 rounded-sm ${isPlayable ? "bg-green-500" : "bg-red-500"}`}
                         >
                           {isPlayable ? t("profile.playable") : t("profile.notPlayable")}
                         </span>
@@ -91,7 +95,7 @@ const MyDecksPage = () => {
             )}
           </div>
         )}
-      </div>
+      </ProfileSection>
     </UserProfilLayout>
   );
 };
