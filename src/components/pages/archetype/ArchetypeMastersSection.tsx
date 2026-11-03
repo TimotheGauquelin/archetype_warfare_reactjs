@@ -1,10 +1,17 @@
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import SubtitleDivider from "../../generic/SubtitleDivider";
 import NoItemMessage from "../../generic/NoItemMessage";
 import CountryFlagLabel from "../../generic/CountryFlagLabel";
 import PaginationTableHead from "../../generic/pagination/PaginationTableHead";
 import type { ArchetypeRankingPlayer } from "../../../services/archetypeRanking";
+import type { RootState } from "@/types";
+import {
+  getUserProfilePath,
+  URL_FRONT_MY_PROFILE,
+} from "@/constant/urlsFront";
 
 const MEDAL_TYPES = ["gold", "silver", "bronze"] as const;
 
@@ -21,13 +28,15 @@ const ArchetypeMastersSection = ({
   isLoading = false,
 }: ArchetypeMastersSectionProps) => {
   const { t } = useTranslation();
+  const currentUserId = useSelector((state: RootState) => state.user.id);
   const topThree = masters.slice(0, 3);
 
   const tableHead = useMemo(
     () => [
       { colspan: "col-span-2", label: t("archetypePage.masterColRank") },
-      { colspan: "col-span-7", label: t("archetypePage.masterColPlayer") },
+      { colspan: "col-span-4", label: t("archetypePage.masterColPlayer") },
       { colspan: "col-span-3", label: t("archetypePage.masterColPoints") },
+      { colspan: "col-span-3", label: t("archetypePage.masterColActions") },
     ],
     [t]
   );
@@ -44,7 +53,7 @@ const ArchetypeMastersSection = ({
       ) : topThree.length > 0 ? (
         <div className="w-full text-xs tablet:text-sm text-left text-gray-500 mb-4 overflow-x-auto rounded-lg border border-gray-200">
           <PaginationTableHead tableHeadItem={tableHead} />
-          <div className="grid grid-cols-12 bg-white min-w-[280px]">
+          <div className="grid grid-cols-12 bg-white min-w-[320px]">
             {topThree.map((player, index) => (
               <div
                 key={player.userId}
@@ -62,7 +71,7 @@ const ArchetypeMastersSection = ({
                   />
                   <span>#{index + 1}</span>
                 </div>
-                <div className="col-span-7 p-1.5 tablet:p-2 flex items-center gap-1.5 tablet:gap-2 min-w-0 text-gray-900">
+                <div className="col-span-4 p-1.5 tablet:p-2 flex items-center gap-1.5 tablet:gap-2 min-w-0 text-gray-900">
                   <span className="font-medium truncate">
                     {player.username?.trim() || t("archetypePage.masterUnknown")}
                   </span>
@@ -70,6 +79,22 @@ const ArchetypeMastersSection = ({
                 </div>
                 <div className="col-span-3 p-1.5 tablet:p-2 text-center text-gray-800">
                   {t("archetypePage.masterPoints", { count: player.points })}
+                </div>
+                <div className="col-span-3 p-1.5 tablet:p-2 text-right">
+                  {player.userId ? (
+                    <Link
+                      to={
+                        String(player.userId) === String(currentUserId)
+                          ? URL_FRONT_MY_PROFILE
+                          : getUserProfilePath(player.userId)
+                      }
+                      className="inline-flex items-center justify-center px-2.5 py-1 rounded bg-blue-700 text-white text-[11px] tablet:text-xs font-semibold hover:bg-blue-800"
+                    >
+                      {t("archetypePage.masterViewProfile")}
+                    </Link>
+                  ) : (
+                    <span className="text-gray-400 text-xs">—</span>
+                  )}
                 </div>
               </div>
             ))}

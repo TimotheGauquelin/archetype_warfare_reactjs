@@ -9,6 +9,7 @@ import {
   URL_BACK_DELETE_USER,
   URL_BACK_GET_ALL_USERS,
   URL_BACK_GET_USER_BY_ID,
+  URL_BACK_GET_USER_PUBLIC_PROFILE,
   URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN,
   URL_BACK_GET_USER_ROLES,
   URL_BACK_SEARCH_USERS,
@@ -169,6 +170,20 @@ export const getUserById = async (
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, 'getUserById');
+  }
+};
+
+/** Profil public (sans email) pour la page /users/:userId. */
+export const getPublicUserProfile = async (
+  userId: number | string
+): Promise<User> => {
+  try {
+    const response = await api_aw.get(URL_BACK_GET_USER_PUBLIC_PROFILE(userId));
+    return response.data as User;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getPublicUserProfile");
+    throw appError;
   }
 };
 
@@ -423,6 +438,7 @@ export const updateMyProfile = async (
     biography?: string | null;
     country?: string | null;
     loved_archetype_id?: number | string | null;
+    profile_picture_url?: string | null;
     locale?: CardLocale;
   },
   token: string,

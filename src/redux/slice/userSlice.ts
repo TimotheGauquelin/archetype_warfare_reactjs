@@ -10,6 +10,7 @@ const initialState: User = {
   token: null,
   biography: null,
   country: null,
+  profile_picture_url: null,
   loved_archetype_id: null,
   loved_archetype: null,
   quiz_points: 0,
@@ -27,6 +28,7 @@ interface SetUserPayload {
 interface UpdateUserPayload {
   biography?: string | null;
   country?: string | null;
+  profile_picture_url?: string | null;
   loved_archetype_id?: number | string | null;
   loved_archetype?: User["loved_archetype"];
   quiz_points?: number;
@@ -53,6 +55,7 @@ const userSlice = createSlice({
       state.token = null;
       state.biography = null;
       state.country = null;
+      state.profile_picture_url = null;
       state.loved_archetype_id = null;
       state.loved_archetype = null;
       state.quiz_points = 0;
@@ -63,6 +66,9 @@ const userSlice = createSlice({
       }
       if (action.payload.country !== undefined) {
         state.country = action.payload.country;
+      }
+      if (action.payload.profile_picture_url !== undefined) {
+        state.profile_picture_url = action.payload.profile_picture_url;
       }
       if (action.payload.loved_archetype_id !== undefined) {
         state.loved_archetype_id = action.payload.loved_archetype_id;
