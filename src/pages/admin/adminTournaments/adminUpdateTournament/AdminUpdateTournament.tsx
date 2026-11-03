@@ -6,6 +6,8 @@ import AdminLayout from "../../adminLayout";
 import { Input } from "@/components/generic/form/input/Input";
 import { SwitchInput } from "@/components/generic/form/SwitchInput";
 import SelectInput from "@/components/generic/form/SelectInput";
+import QuizImageCardSearch from "@/components/pages/admin/quiz/QuizImageCardSearch";
+import ImageFocalZoomEditor from "@/components/pages/admin/ImageFocalZoomEditor";
 import Button from "@/components/generic/buttons/classicButton/Button";
 import {
   getTournamentById,
@@ -43,7 +45,13 @@ const AdminUpdateTournament = () => {
     is_official: false,
     until_winner: false,
     allow_penalities: false,
+    registration_close_hours_before: 48,
+    image_url: null as string | null,
+    image_focal_x: 50,
+    image_focal_y: 50,
+    image_zoom: 100,
   });
+  const [imageCardName, setImageCardName] = useState<string | null>(null);
 
   const matchesPerRoundOptions = [
     { id: "1", label: "1 Duel" },
@@ -55,6 +63,15 @@ const AdminUpdateTournament = () => {
     id: o.id,
     label: o.label,
   }));
+
+  const registrationCloseHoursOptions = [
+    { id: "1", label: "1 heure avant" },
+    { id: "6", label: "6 heures avant" },
+    { id: "12", label: "12 heures avant" },
+    { id: "24", label: "24 heures avant" },
+    { id: "48", label: "48 heures avant" },
+    { id: "72", label: "72 heures avant" },
+  ];
 
   const statusOptions = [
     { id: "not_visible", label: "Non visible" },
@@ -93,7 +110,14 @@ const AdminUpdateTournament = () => {
           event_date_end: formatDateForInputWithHours(data.event_date_end),
           is_online: data.is_online,
           allow_penalities: data.allow_penalities as boolean,
+          registration_close_hours_before:
+            data.registration_close_hours_before ?? 48,
+          image_url: data.image_url ?? null,
+          image_focal_x: data.image_focal_x ?? 50,
+          image_focal_y: data.image_focal_y ?? 50,
+          image_zoom: data.image_zoom ?? 100,
         });
+        setImageCardName(data.image_url ? "Image actuelle" : null);
       })
       .catch(() => {
         if (!cancelled) toast.error("Impossible de charger le tournoi.");
@@ -143,6 +167,24 @@ const AdminUpdateTournament = () => {
             ? "highest_score"
             : "strict_wins",
         allow_penalities: tournament.allow_penalities as boolean,
+        registration_close_hours_before:
+          Number(tournament.registration_close_hours_before) || 48,
+        image_url:
+          typeof tournament.image_url === "string" && tournament.image_url.trim()
+            ? tournament.image_url.trim()
+            : null,
+        image_focal_x:
+          typeof tournament.image_url === "string" && tournament.image_url.trim()
+            ? Number(tournament.image_focal_x) || 50
+            : 50,
+        image_focal_y:
+          typeof tournament.image_url === "string" && tournament.image_url.trim()
+            ? Number(tournament.image_focal_y) || 50
+            : 50,
+        image_zoom:
+          typeof tournament.image_url === "string" && tournament.image_url.trim()
+            ? Number(tournament.image_zoom) || 100
+            : 100,
       };
       setIsLoading(true);
       try {
@@ -315,6 +357,62 @@ const AdminUpdateTournament = () => {
             min={tournament.event_date || undefined}
             colSpanWidth="6"
           />
+          <SelectInput
+            defaultOptionLabel="Choisir le délai de fermeture"
+            label="Fermeture des inscriptions"
+            required
+            attribute="registration_close_hours_before"
+            data={tournament}
+            setAction={setTournament}
+            options={registrationCloseHoursOptions}
+            colSpanWidth="6"
+          />
+        </div>
+
+        <div className="space-y-2 rounded border border-gray-200 bg-gray-50 p-3">
+          <QuizImageCardSearch
+            selectedName={imageCardName}
+            onSelect={(artworkUrl, cardName) => {
+              setImageCardName(cardName);
+              setTournament((prev) => ({
+                ...prev,
+                image_url: artworkUrl,
+                image_focal_x: 50,
+                image_focal_y: 50,
+                image_zoom: 100,
+              }));
+            }}
+            onClear={() => {
+              setImageCardName(null);
+              setTournament((prev) => ({
+                ...prev,
+                image_url: null,
+                image_focal_x: 50,
+                image_focal_y: 50,
+                image_zoom: 100,
+              }));
+            }}
+          />
+          {typeof tournament.image_url === "string" && tournament.image_url ? (
+            <ImageFocalZoomEditor
+              imageUrl={tournament.image_url}
+              focalX={Number(tournament.image_focal_x) || 50}
+              focalY={Number(tournament.image_focal_y) || 50}
+              zoom={Number(tournament.image_zoom) || 100}
+              onFocalChange={(image_focal_x, image_focal_y) =>
+                setTournament((prev) => ({
+                  ...prev,
+                  image_focal_x,
+                  image_focal_y,
+                }))
+              }
+              onZoomChange={(image_zoom) =>
+                setTournament((prev) => ({ ...prev, image_zoom }))
+              }
+              previewTone="amber"
+              previewHint="Aperçu highlight officiel (droite)"
+            />
+          ) : null}
         </div>
 
         <div className="flex gap-3 pt-2">

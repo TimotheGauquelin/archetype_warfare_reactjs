@@ -27,9 +27,27 @@ import {
   URL_BACK_ADD_TOURNAMENT_PLAYER,
   URL_BACK_TOGGLE_TOURNAMENT_REGISTRATION,
 } from "../constant/urlsBack";
+import { createElement } from "react";
 import type { Tournament } from "../types";
-import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
+import { URL_FRONT_TOURNAMENT } from "../constant/urlsFront";
+import { AppError, handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
 import { toast } from "react-toastify";
+
+export type OverlappingTournamentInfo = {
+  id: string | number;
+  name: string;
+};
+
+export function getOverlappingTournament(
+  error: unknown
+): OverlappingTournamentInfo | null {
+  if (!(error instanceof AppError) || !error.details) return null;
+  const raw = error.details.overlappingTournament;
+  if (!raw || typeof raw !== "object") return null;
+  const { id, name } = raw as { id?: unknown; name?: unknown };
+  if (id == null || typeof name !== "string" || !name.trim()) return null;
+  return { id: id as string | number, name: name.trim() };
+}
 
 /**
  * Types spécifiques au détail de MON tournoi (/tournaments/:id/my-details)
@@ -419,7 +437,27 @@ export const registerToTournament = async (
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "registerToTournament");
-    toast.error(getErrorMessage(appError));
+    const overlapping = getOverlappingTournament(appError);
+    if (overlapping) {
+      toast.error(
+        createElement(
+          "span",
+          null,
+          "Vous êtes déjà inscrit au tournoi « ",
+          createElement(
+            "a",
+            {
+              href: URL_FRONT_TOURNAMENT(overlapping.id),
+              className: "underline font-semibold text-inherit",
+            },
+            overlapping.name
+          ),
+          " ». Abandonnez-le pour vous inscrire ici."
+        )
+      );
+    } else {
+      toast.error(getErrorMessage(appError));
+    }
     throw appError;
   }
 };
@@ -461,6 +499,11 @@ export interface CreateTournamentPayload {
   until_winner?: boolean;
   is_official?: boolean;
   allow_penalities?: boolean;
+  registration_close_hours_before?: number;
+  image_url?: string | null;
+  image_focal_x?: number;
+  image_focal_y?: number;
+  image_zoom?: number;
 }
 
 /**
@@ -502,6 +545,11 @@ export interface UpdateTournamentPayload {
   matches_per_round: number;
   match_resolution_mode?: "strict_wins" | "highest_score";
   allow_penalities: boolean;
+  registration_close_hours_before?: number;
+  image_url?: string | null;
+  image_focal_x?: number;
+  image_focal_y?: number;
+  image_zoom?: number;
 }
 
 /**

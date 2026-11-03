@@ -11,6 +11,8 @@ import { URL_FRONT_ADMIN_TOURNAMENTS } from "@/constant/urlsFront";
 import type { RootState } from "@/redux/store";
 import { toast } from "react-toastify";
 import SelectInput from "@/components/generic/form/SelectInput";
+import QuizImageCardSearch from "@/components/pages/admin/quiz/QuizImageCardSearch";
+import ImageFocalZoomEditor from "@/components/pages/admin/ImageFocalZoomEditor";
 import { MATCH_RESOLUTION_MODE_OPTIONS } from "@/utils/tournament/bestOfScore";
 
 function toDatetimeLocal(date: Date): string {
@@ -32,7 +34,21 @@ type TournamentFormState = {
   until_winner: boolean;
   is_official: boolean;
   allow_penalities: boolean;
+  registration_close_hours_before: string;
+  image_url: string;
+  image_focal_x: number;
+  image_focal_y: number;
+  image_zoom: number;
 } & Record<string, unknown>;
+
+const REGISTRATION_CLOSE_HOURS_OPTIONS = [
+  { id: "1", label: "1 heure avant" },
+  { id: "6", label: "6 heures avant" },
+  { id: "12", label: "12 heures avant" },
+  { id: "24", label: "24 heures avant" },
+  { id: "48", label: "48 heures avant" },
+  { id: "72", label: "72 heures avant" },
+];
 
 const defaultStart = () => {
   const d = new Date();
@@ -74,7 +90,13 @@ const AdminAddTournament = () => {
     until_winner: false,
     is_official: false,
     allow_penalities: false,
+    registration_close_hours_before: "48",
+    image_url: "",
+    image_focal_x: 50,
+    image_focal_y: 50,
+    image_zoom: 100,
   });
+  const [imageCardName, setImageCardName] = useState<string | null>(null);
 
   const matchesPerRoundOptions = [
     { id: "1", label: "1 Duel" },
@@ -127,6 +149,12 @@ const AdminAddTournament = () => {
         until_winner: form.until_winner,
         is_official: form.is_official,
         allow_penalities: form.allow_penalities,
+        registration_close_hours_before:
+          Number(form.registration_close_hours_before) || 48,
+        image_url: form.image_url.trim() || null,
+        image_focal_x: form.image_url.trim() ? form.image_focal_x : 50,
+        image_focal_y: form.image_url.trim() ? form.image_focal_y : 50,
+        image_zoom: form.image_url.trim() ? form.image_zoom : 100,
       };
       setIsLoading(true);
       try {
@@ -282,6 +310,58 @@ const AdminAddTournament = () => {
             min={form.event_date || undefined}
             colSpanWidth="6"
           />
+          <SelectInput
+            defaultOptionLabel="Choisir le délai de fermeture"
+            label="Fermeture des inscriptions"
+            required
+            attribute="registration_close_hours_before"
+            data={form}
+            setAction={setForm}
+            options={REGISTRATION_CLOSE_HOURS_OPTIONS}
+            colSpanWidth="6"
+          />
+        </div>
+
+        <div className="space-y-2 rounded border border-gray-200 bg-gray-50 p-3">
+          <QuizImageCardSearch
+            selectedName={imageCardName}
+            onSelect={(artworkUrl, cardName) => {
+              setImageCardName(cardName);
+              setForm((prev) => ({
+                ...prev,
+                image_url: artworkUrl,
+                image_focal_x: 50,
+                image_focal_y: 50,
+                image_zoom: 100,
+              }));
+            }}
+            onClear={() => {
+              setImageCardName(null);
+              setForm((prev) => ({
+                ...prev,
+                image_url: "",
+                image_focal_x: 50,
+                image_focal_y: 50,
+                image_zoom: 100,
+              }));
+            }}
+          />
+          {form.image_url ? (
+            <ImageFocalZoomEditor
+              imageUrl={form.image_url}
+              focalX={form.image_focal_x}
+              focalY={form.image_focal_y}
+              zoom={form.image_zoom}
+              onFocalChange={(image_focal_x, image_focal_y) =>
+                setForm((prev) => ({ ...prev, image_focal_x, image_focal_y }))
+              }
+              onZoomChange={(image_zoom) =>
+                setForm((prev) => ({ ...prev, image_zoom }))
+              }
+              previewTone="amber"
+              previewHint="Aperçu highlight officiel (droite)"
+            />
+          ) : null}
         </div>
 
         <p className="text-sm text-gray-600 bg-amber-50 border border-amber-200 rounded-md p-2">
