@@ -28,19 +28,19 @@ const AdminBodyHeader: React.FC<AdminBodyHeaderProps> = ({
   const history = useNavigate();
 
   return (
-    <div className="flex flex-col sscreen:flex-row sscreen:justify-between sscreen:items-start gap-3 mb-4">
-      <div className="sscreen:mr-6 min-w-0">
-        <h1 className="text-xl tablet:text-2xl font-semibold mb-1 tablet:mb-2">{label}</h1>
+    <div className="flex flex-col sscreen:flex-row sscreen:justify-between sscreen:items-start gap-2 mb-3">
+      <div className="sscreen:mr-4 min-w-0">
+        <h1 className="text-lg tablet:text-xl font-semibold mb-0.5">{label}</h1>
         {catchphrase && (
-          <h2 className="text-gray-600 text-sm tablet:text-base ml-0.5 leading-snug">
+          <h2 className="text-gray-600 text-xs tablet:text-sm ml-0.5 leading-snug">
             {catchphrase}
           </h2>
         )}
       </div>
-      <div className="flex flex-col items-stretch sscreen:items-end gap-2 shrink-0">
+      <div className="flex flex-col items-stretch sscreen:items-end gap-1.5 shrink-0">
         {returnButton && (
           <div
-            className="flex items-center cursor-pointer hover:text-green-400 self-start sscreen:self-end"
+            className="flex items-center gap-0.5 text-sm cursor-pointer hover:text-green-400 self-start sscreen:self-end"
             onClick={() => history(-1)}
           >
             <FaAngleLeft />
@@ -50,7 +50,7 @@ const AdminBodyHeader: React.FC<AdminBodyHeaderProps> = ({
         {buttonUrl && (
           <Link
             to={buttonUrl}
-            className="h-fit block text-center text-white p-2 bg-blue-400 rounded hover:bg-blue-500 font-bold cursor-pointer text-sm tablet:text-base"
+            className="h-fit block text-center text-white px-2.5 py-1.5 bg-blue-400 rounded hover:bg-blue-500 font-semibold cursor-pointer text-sm"
           >
             {buttonLabel}
           </Link>

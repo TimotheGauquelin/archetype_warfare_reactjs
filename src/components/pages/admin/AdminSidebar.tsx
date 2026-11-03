@@ -18,42 +18,42 @@ import {
 const sideBarCategories = [
   {
     title: "Accueil",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_HOME,
   },
   {
     title: "Cartes",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_CARDS,
   },
   {
     title: "Archetypes",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_ARCHETYPES,
   },
   {
     title: "Banlists",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_BANLISTS,
   },
   {
     title: "Utilisateurs",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_USERS,
   },
   {
     title: "Tournois",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_TOURNAMENTS,
   },
   {
     title: "Quizz",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_QUIZZES,
   },
   {
     title: "Fichiers",
-    icon: <FaHome className="h-8 w-auto flex-shrink-0 text-white" />,
+    icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_FILES,
   },
 ];
@@ -61,34 +61,47 @@ const sideBarCategories = [
 interface AdminSideBarProps {
   displayedNavbar: boolean;
   onNavigate?: () => void;
+  contentHeight?: number;
+  headerBottom?: number;
 }
 
 const AdminSideBar: React.FC<AdminSideBarProps> = ({
   displayedNavbar,
   onNavigate,
+  contentHeight = 0,
+  headerBottom = 56,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const url = location.pathname;
 
+  const heightPx =
+    contentHeight > 0 ? `${contentHeight}px` : "calc(100dvh - 5rem)";
+
   return (
     <aside
       className={`
-        fixed top-20 left-0 z-40 flex flex-col
-        h-[calc(100vh-5rem)] w-64 max-w-[85vw]
+        admin-sidebar fixed left-0 z-40 flex flex-col
+        w-64 max-w-[85vw]
         transform transition-transform duration-200 ease-out
-        sscreen:relative sscreen:top-0 sscreen:z-auto sscreen:w-auto sscreen:max-w-none
-        sscreen:col-span-3 lscreen:col-span-2 sscreen:tabletAndDesktopHeight sscreen:transition-none
+        sscreen:relative sscreen:z-auto sscreen:w-auto sscreen:max-w-none
+        sscreen:col-span-3 lscreen:col-span-2 sscreen:transition-none
         ${
           displayedNavbar
             ? "translate-x-0"
             : "-translate-x-full pointer-events-none sscreen:hidden sscreen:pointer-events-auto sscreen:translate-x-0"
         }
       `}
+      style={
+        {
+          height: heightPx,
+          ["--admin-sidebar-top" as string]: `${headerBottom}px`,
+        } as React.CSSProperties
+      }
       aria-hidden={!displayedNavbar}
     >
-      <div className="flex-grow flex flex-col justify-between text-gray-500 bg-gray-800 h-full shadow-xl sscreen:shadow-none">
-        <nav className="flex flex-col mx-4 my-6 space-y-4 overflow-y-auto">
+      <div className="flex-grow flex flex-col justify-between text-gray-500 bg-gray-800 h-full min-h-0 shadow-xl sscreen:shadow-none">
+        <nav className="flex flex-col mx-3 my-3 space-y-1 overflow-y-auto min-h-0">
           {sideBarCategories.map((category, index) => (
             <div key={index}>
               <Link
@@ -96,7 +109,7 @@ const AdminSideBar: React.FC<AdminSideBarProps> = ({
                 onClick={onNavigate}
                 className={`w-full ${
                   url.includes(category.url) && "bg-gray-600"
-                } inline-flex items-center py-3 hover:text-gray-400 hover:bg-gray-500 focus:text-gray-400 focus:bg-gray-700 rounded-lg px-2`}
+                } inline-flex items-center py-1.5 text-sm hover:text-gray-400 hover:bg-gray-500 focus:text-gray-400 focus:bg-gray-700 rounded-lg px-2`}
               >
                 {category.icon}
                 <span className="ml-2">{category.title}</span>
@@ -105,7 +118,7 @@ const AdminSideBar: React.FC<AdminSideBarProps> = ({
           ))}
         </nav>
         <div
-          className="flex justify-end"
+          className="flex justify-end shrink-0"
           onClick={() => {
             onNavigate?.();
             navigate(URL_FRONT_ADMIN_OPTIONS);
@@ -113,14 +126,14 @@ const AdminSideBar: React.FC<AdminSideBarProps> = ({
         >
           <button
             type="button"
-            className="inline-flex p-3 hover:text-gray-400 justify-center border-gray-700 h-15 w-full border-t hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 px-2"
+            className="inline-flex items-center p-2 hover:text-gray-400 justify-center border-gray-700 w-full border-t hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 px-2 text-sm"
           >
             <svg
               aria-hidden="true"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              className="h-6 w-6"
+              className="h-5 w-5"
             >
               <path
                 strokeLinecap="round"

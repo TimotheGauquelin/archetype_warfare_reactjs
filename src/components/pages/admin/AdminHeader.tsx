@@ -16,13 +16,13 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ displayedNavbar, setDisplayed
   const authUser = useSelector((state: RootState) => state.user);
 
   return (
-    <div className="flex items-center h-20 px-6 tablet:px-10 bg-white">
+    <div className="flex items-center h-14 px-4 tablet:px-6 bg-white text-sm">
       <div
-        className="mr-8 cursor-pointer"
+        className="mr-4 cursor-pointer"
         onClick={() => setDisplayedNavbar(!displayedNavbar)}
       >
         <svg
-          className="w-8 h-8"
+          className="w-6 h-6"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -40,8 +40,8 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ displayedNavbar, setDisplayed
         <LanguageSwitch />
         <button className="relative inline-flex items-center p-2 hover:bg-gray-100 focus:bg-gray-100 rounded-lg">
           <div className="hidden sscreen:flex sscreen:flex-col sscreen:items-end sscreen:leading-tight">
-            <span className="font-semibold">{authUser.username}</span>
-            <span className="text-sm text-gray-600">Administrateur</span>
+            <span className="font-semibold text-sm">{authUser.username}</span>
+            <span className="text-xs text-gray-600">Administrateur</span>
           </div>
         </button>
         <div className="border-l pl-3 ml-3 space-x-1">

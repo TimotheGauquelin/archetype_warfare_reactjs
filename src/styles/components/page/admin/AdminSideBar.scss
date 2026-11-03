@@ -1,3 +1,14 @@
+.admin-sidebar {
+  top: var(--admin-sidebar-top, 5rem);
+}
+
+@media (min-width: 769px) {
+  .admin-sidebar {
+    top: 0;
+  }
+}
+
+/* Fallback si la mesure JS n’est pas encore prête */
 .tabletAndDesktopHeight {
-  height: calc(100vh - 80px);
+  height: calc(100dvh - 5rem);
 }

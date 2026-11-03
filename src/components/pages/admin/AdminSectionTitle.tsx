@@ -8,10 +8,10 @@ interface AdminSectionTitleProps {
 
 const AdminSectionTitle: React.FC<AdminSectionTitleProps> = ({ sectionTitle, isCollapsed, setIsCollapsed }) => (
     <div className="flex justify-between items-center border-b border-gray-200 pb-1 mb-2">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-sm font-semibold">
             {sectionTitle}
         </h2>
-        <span className="text-xl cursor-pointer text-gray-500" onClick={() => setIsCollapsed(!isCollapsed)}>
+        <span className="text-base cursor-pointer text-gray-500" onClick={() => setIsCollapsed(!isCollapsed)}>
             {isCollapsed ? <FaAngleDown /> : <FaAngleUp />}
         </span>
     </div>

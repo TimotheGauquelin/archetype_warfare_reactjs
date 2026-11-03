@@ -135,7 +135,7 @@ const AdminHome = () => {
         label="Tableau de Bord"
         catchphrase={`Bonjour ${username}, comment allez-vous aujourd'hui ?`}
       />
-      <h2 className="text-2xl font-semibold mb-2">Alertes:</h2>
+      <h2 className="text-base font-semibold mb-2">Alertes:</h2>
       <div className="space-y-3">
         {newUsers.length > 0 && (
           <div className="flex flex-col bg-red-100 p-2 rounded-lg">
