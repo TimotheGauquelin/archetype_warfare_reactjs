@@ -92,7 +92,9 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
                             id: 1,
                             label: STATUS_FORBIDDEN,
                         },
-                        explanation_text: banlistCard.explanation_text || "Trop Versatile",
+                        explanation_text: banlistCard.explanation_text || null,
+                        reasons: banlistCard.reasons ?? [],
+                        reason_ids: banlistCard.reason_ids ?? [],
                         card: cardWithoutArchetype,
                     } as unknown as BanlistCard;
                 });
@@ -108,7 +110,9 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
         const newCard = {
             id: Date.now(),
             card_status_id: 1,
-            explanation_text: "Trop Versatile",
+            explanation_text: null,
+            reasons: [],
+            reason_ids: [],
             card: cardWithoutArchetype,
             card_status: {
                 id: 1,
@@ -130,26 +134,25 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
     }, [filters, locale]);
 
     return (
-        <div className="col-span-4 grid grid-cols-12 mt-2">
-            <div className="bg-gray-400 col-span-12 ml-1 p-3 rounded">
-                <div className="grid grid-cols-12 gap-1">
-                    <input
-                        className={`w-full p-1 col-span-12 mb-2`}
-                        value={filters.name}
-                        type="text"
-                        placeholder="Quelle carte recherchez-vous ?"
-                        onChange={(e) => {
-                            setFilters(prev => ({
-                                ...prev,
-                                name: e.target.value,
-                                page: 1
-                            }));
-                        }}
-                    />
-                </div>
+        <div className="w-full">
+            <div className="bg-slate-700 p-2.5 tablet:p-3 rounded-lg space-y-2">
+                <h3 className="text-sm font-semibold text-white">Ajouter des cartes</h3>
+                <input
+                    className="w-full p-2 rounded border border-slate-500 bg-white text-sm"
+                    value={filters.name}
+                    type="text"
+                    placeholder="Quelle carte recherchez-vous ?"
+                    onChange={(e) => {
+                        setFilters((prev) => ({
+                            ...prev,
+                            name: e.target.value,
+                            page: 1,
+                        }));
+                    }}
+                />
                 <div
-                    className="overflow-y-auto bg-white grid grid-cols-12"
-                    style={{ height: "400px" }}
+                    className="overflow-y-auto bg-white grid grid-cols-12 gap-1 p-1 rounded"
+                    style={{ maxHeight: "420px" }}
                 >
                     {cards?.map((card, index) => {
                         const alreadyListed = isAlreadyListedAsGenericRestricted(card.id);
@@ -157,21 +160,22 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
                         const isDisabled = alreadyListed || isArchetypeCard;
 
                         return (
-                            <div className="col-span-3 p-1 relative" key={index}>
+                            <div className="col-span-4 tablet:col-span-3 relative" key={index}>
                                 <img
                                     className={
                                         isDisabled
-                                            ? "opacity-40 cursor-not-allowed"
-                                            : "hover:saturate-150 cursor-pointer"
+                                            ? "opacity-40 cursor-not-allowed w-full"
+                                            : "hover:saturate-150 cursor-pointer w-full"
                                     }
                                     src={`${card?.img_url}`}
                                     alt=""
+                                    loading="lazy"
                                     onClick={() => !isDisabled && addCardToBanlist(card)}
                                 />
                                 {alreadyListed && (
                                     <p
                                         style={{ fontSize: "8px", padding: "2px" }}
-                                        className="absolute top-20 left-0 text-center w-full text-sm bg-yellow-500 text-white rounded"
+                                        className="absolute top-1/2 left-0 -translate-y-1/2 text-center w-full bg-yellow-500 text-white rounded"
                                     >
                                         Déjà ajoutée
                                     </p>
@@ -179,7 +183,7 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
                                 {!alreadyListed && isArchetypeCard && (
                                     <p
                                         style={{ fontSize: "8px", padding: "2px" }}
-                                        className="absolute top-20 left-0 text-center w-full text-sm bg-slate-600 text-white rounded"
+                                        className="absolute top-1/2 left-0 -translate-y-1/2 text-center w-full bg-slate-600 text-white rounded"
                                     >
                                         Archétype
                                     </p>
@@ -189,15 +193,18 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
                     })}
                 </div>
 
-                <div className="flex justify-around items-center">
+                <div className="flex justify-around items-center text-white">
                     <FaAngleLeft
                         className={`h-8 cursor-pointer ${pagination.currentPage <= 1 && "invisible"}`}
                         onClick={() => decreasePage()}
                     />
-                    <p>{pagination.currentPage}</p>
+                    <p className="text-sm">
+                        {pagination.currentPage} / {Math.max(pagination.totalPages, 1)}
+                    </p>
                     <FaAngleRight
-                        className={`h-8 cursor-pointer ${pagination.currentPage >= pagination.totalPages && "invisible"
-                            }`}
+                        className={`h-8 cursor-pointer ${
+                            pagination.currentPage >= pagination.totalPages && "invisible"
+                        }`}
                         onClick={() => {
                             increasePage();
                         }}
@@ -205,6 +212,7 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
                 </div>
             </div>
         </div>
-    )
-}
-export default AdminBanlistAddCard
+    );
+};
+
+export default AdminBanlistAddCard;

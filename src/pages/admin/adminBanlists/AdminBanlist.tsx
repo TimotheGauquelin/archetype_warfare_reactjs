@@ -6,6 +6,7 @@ import AdminStructure from "../adminLayout";
 import AdminBanlistPagination from "../../../components/pages/admin/AdminBanlistPagination";
 import PaginationTableHead from "../../../components/generic/pagination/PaginationTableHead";
 import AdminBanlistPaginationTableBody from "../../../components/pages/admin/AdminBanlistPaginationTableBody";
+import AdminBanlistReasons from "../../../components/pages/admin/banlist/AdminBanlistReasons";
 import {
   deleteBanlist,
   getBanlists,
@@ -110,7 +111,7 @@ const AdminBanlist = () => {
         </div>
       </section>
 
-      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
+      <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3 mb-10">
         <h2 className="text-xl font-semibold text-gray-900">
           Toutes les banlists
         </h2>
@@ -121,6 +122,8 @@ const AdminBanlist = () => {
           handleDeleteBanlist={handleDeleteBanlist}
         />
       </section>
+
+      <AdminBanlistReasons />
 
       <PopUp
         isOpen={isOpen}
