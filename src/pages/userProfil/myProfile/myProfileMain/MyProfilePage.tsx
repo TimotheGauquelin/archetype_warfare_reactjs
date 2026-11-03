@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "../../../../components/generic/buttons/classicButton/Button";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -6,38 +6,30 @@ import { useTranslation } from "react-i18next";
 import usePopup from "../../../../hooks/usePopup";
 import PopUp from "../../../../components/generic/PopUp";
 import { deleteUser, getUserById } from "../../../../services/user";
-import { FaCrown } from "react-icons/fa";
-import type { RootState, User } from "../../../../types";
+import { getMyTournaments } from "@/services/tournament";
+import type { RootState, Tournament, User } from "../../../../types";
 import UserProfilLayout from "../../layout";
-import UserProfileLayoutTitle from "@/components/generic/UserProfileLayoutTitle";
-import { URL_FRONT_MY_PROFILE_EDIT } from "@/constant/urlsFront";
 import { updateUser } from "@/redux/slice/userSlice";
-import { getCountryFlagUrl, getCountryName } from "@/utils/country";
 import MyProfileRankingTab from "@/components/pages/user/profile/MyProfileRankingTab";
-
-type ProfileTab = "informations" | "ranking";
+import MyProfileMedalsTab from "@/components/pages/user/profile/MyProfileMedalsTab";
+import ProfileSection from "@/components/pages/userProfil/ProfileSection";
+import TournamentDeckRequiredReminder from "@/components/pages/userProfil/TournamentDeckRequiredReminder";
+import { tournamentsNeedingDeckSelection } from "@/utils/tournament/tournamentsNeedingDeck";
 
 const MyProfile = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id, username, roles, biography, country, loved_archetype } =
-    useSelector((state: RootState) => state.user);
-  const [activeTab, setActiveTab] = useState<ProfileTab>("informations");
+  const { id, biography, token } = useSelector((state: RootState) => state.user);
   const [profileBio, setProfileBio] = useState(biography || "");
-  const [profileCountry, setProfileCountry] = useState(country || "");
-  const [favoriteArchetypeName, setFavoriteArchetypeName] = useState(
-    loved_archetype?.name || ""
-  );
+  const [myTournaments, setMyTournaments] = useState<Tournament[]>([]);
 
   useEffect(() => {
     if (!id) return;
     getUserById(id, (userData) => {
       const user = userData as User;
       setProfileBio(user.biography || "");
-      setProfileCountry(user.country || "");
-      setFavoriteArchetypeName(user.loved_archetype?.name || "");
       dispatch(
         updateUser({
           biography: user.biography ?? null,
@@ -49,6 +41,26 @@ const MyProfile = () => {
       );
     });
   }, [id, dispatch]);
+
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+    getMyTournaments(token)
+      .then((list) => {
+        if (!cancelled) setMyTournaments(list);
+      })
+      .catch(() => {
+        if (!cancelled) setMyTournaments([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  const deckReminders = useMemo(
+    () => tournamentsNeedingDeckSelection(myTournaments, id),
+    [myTournaments, id]
+  );
 
   const handleDeleteUser = () => {
     if (!id) return;
@@ -63,115 +75,45 @@ const MyProfile = () => {
 
   return (
     <UserProfilLayout>
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-2">
-        <div className="flex flex-row justify-between items-start gap-2 mb-2">
-          <UserProfileLayoutTitle title={t("profile.accountInfo")} />
-          {activeTab === "informations" && (
-            <Button
-              className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded font-semibold shadow-sm"
-              buttonText={t("profile.editProfile")}
-              action={() => navigate(URL_FRONT_MY_PROFILE_EDIT)}
+      <div className="grid grid-cols-1 lscreen:grid-cols-12 gap-3">
+        <div className="lscreen:col-span-8 space-y-3">
+          {deckReminders.map((tournament) => (
+            <TournamentDeckRequiredReminder
+              key={tournament.id}
+              tournamentId={tournament.id}
+              tournamentName={tournament.name}
             />
-          )}
+          ))}
+
+          <ProfileSection title={t("profile.presentationTitle")} collapsible>
+            <p className="text-sm text-slate-800 whitespace-pre-wrap min-h-[3rem]">
+              {profileBio || t("profile.noBiography")}
+            </p>
+          </ProfileSection>
+
+          <ProfileSection title={t("profile.tabRanking")} collapsible>
+            <MyProfileRankingTab embedded />
+          </ProfileSection>
         </div>
 
-        <div className="flex">
-          <span
-            className={`py-2 px-4 rounded-t-md cursor-pointer ${
-              activeTab === "informations"
-                ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
-                : "text-gray-700 bg-gray-200 hover:bg-gray-300"
-            }`}
-            onClick={() => setActiveTab("informations")}
-          >
-            {t("profile.tabGeneral")}
-          </span>
-          <span
-            className={`py-2 px-4 rounded-t-md cursor-pointer ${
-              activeTab === "ranking"
-                ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
-                : "text-gray-700 bg-gray-200 hover:bg-gray-300"
-            }`}
-            onClick={() => setActiveTab("ranking")}
-          >
-            {t("profile.tabRanking")}
-          </span>
-        </div>
+        <aside className="lscreen:col-span-4 space-y-3">
+          <ProfileSection title={t("profile.tabMedals")} collapsible>
+            <MyProfileMedalsTab embedded />
+          </ProfileSection>
 
-        <div className={`border border-gray-200 rounded-b-lg rounded-tr-lg p-4 ${activeTab === "informations" ? "" : "hidden"}`}>
-          <div className="space-y-2 mb-4">
-            <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-                <p className="font-semibold text-black mb-1">{t("profile.username")}</p>
-                <p className="text-black">{username}</p>
-              </div>
-              <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-                <p className="font-semibold text-black">{t("profile.roles")}</p>
-                <div className="flex flex-wrap gap-1">
-                  {roles?.map((role: string, index: number) => {
-                    return (
-                      <div
-                        key={index}
-                        className={`flex items-center gap-1 px-3 py-1 ${role?.toLowerCase() === "admin" ? "bg-red-500" : "bg-green-500"} text-white font-bold rounded-md shadow-sm`}
-                      >
-                        {role?.toLowerCase() === "admin" && <FaCrown className="text-xs" />}
-                        <span>{role}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-                <p className="font-semibold text-black mb-1">{t("profile.favoriteArchetypeLabel")}</p>
-                <p className="text-black">
-                  {favoriteArchetypeName || t("profile.noFavoriteArchetype")}
-                </p>
-              </div>
-
-              <div className="col-span-12 md:col-span-6 flex flex-col space-y-1">
-                <p className="font-semibold text-black mb-1">{t("profile.countryLabel")}</p>
-                {profileCountry ? (
-                  <p className="text-black inline-flex items-center gap-2">
-                    <img
-                      src={getCountryFlagUrl(profileCountry)}
-                      alt=""
-                      className="w-6 h-4 object-cover rounded-sm"
-                      width={24}
-                      height={18}
-                    />
-                    <span>
-                      {getCountryName(profileCountry, i18n.language) ?? profileCountry}
-                    </span>
-                  </p>
-                ) : (
-                  <p className="text-black">{t("profile.noCountry")}</p>
-                )}
-              </div>
-              <div className="col-span-12 flex flex-col space-y-1">
-                <p className="font-semibold text-black mb-1">{t("profile.biographyLabel")}</p>
-                <p className="text-black whitespace-pre-wrap">
-                  {profileBio || t("profile.noBiography")}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-red-200 rounded-lg p-4 space-y-2">
-            <h3 className="text-lg font-bold text-red-500 flex items-center gap-1">
-              {t("profile.dangerZone")}
-            </h3>
-            <p className="text-base">{t("profile.dangerZoneDesc")}</p>
+          <ProfileSection title={t("profile.dangerZone")}>
+            <p className="text-sm text-slate-700 mb-3">
+              {t("profile.dangerZoneDesc")}
+            </p>
             <Button
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-semibold transition-all duration-200 shadow-sm"
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded font-semibold text-sm shadow-sm"
               buttonText={t("profile.deleteAccount")}
               action={handleDeleteUser}
             />
-          </div>
-        </div>
-
-        <div className={activeTab === "ranking" ? "" : "hidden"}>
-          {activeTab === "ranking" && <MyProfileRankingTab />}
-        </div>
+          </ProfileSection>
+        </aside>
       </div>
+
       <PopUp
         isOpen={isOpen}
         onClose={closePopup}
