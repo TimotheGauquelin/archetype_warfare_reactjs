@@ -5,7 +5,6 @@ import Header from "../components/generic/header/Header";
 import Slider from "../components/generic/Slider";
 
 import "../styles/Home.scss";
-import PageContentBlock from "../components/generic/PageContentBlock";
 import ArchetypeList from "../components/pages/home/ArchetypeList";
 import {
   getEightMostRecentArchetypes,
@@ -13,7 +12,9 @@ import {
   getFiveRandomHighlightedArchetypes,
 } from "../services/archetype";
 import Footer from "../components/generic/footer/Footer";
-import type { Archetype, RootState } from "../types";
+import OfficialTournamentHighlight from "../components/pages/user/tournaments/OfficialTournamentHighlight";
+import { getTournaments } from "../services/tournament";
+import type { Archetype, RootState, Tournament } from "../types";
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -21,6 +22,7 @@ const Home: React.FC = () => {
   const [fiveMostFamousArchetypes, setFiveMostFamousArchetypes] = useState<Archetype[]>([]);
   const [eightMostRecentArchetypes, setEightMostRecentArchetypes] = useState<Archetype[]>([]);
   const [archetypesForSlider, setArchetypesForSlider] = useState<Archetype[]>([]);
+  const [highlightTournaments, setHighlightTournaments] = useState<Tournament[]>([]);
   const [, setHasError] = useState<boolean>(false);
   const [isListsLoading, setIsListsLoading] = useState<boolean>(true);
 
@@ -45,9 +47,12 @@ const Home: React.FC = () => {
       getEightMostFamousArchetypes(setFiveMostFamousArchetypes, () => {}),
       getEightMostRecentArchetypes(setEightMostRecentArchetypes, () => {}),
     ]);
+    const tournamentsPromise = getTournaments()
+      .then(setHighlightTournaments)
+      .catch(() => setHighlightTournaments([]));
 
     try {
-      await Promise.all([sliderPromise, listsPromise]);
+      await Promise.all([sliderPromise, listsPromise, tournamentsPromise]);
     } catch {
       setHasError(true);
     } finally {
@@ -85,7 +90,11 @@ const Home: React.FC = () => {
         <Slider array={slidesToDisplay} slidesPerView={1} />
       </div>
       <main>
-        <PageContentBlock>
+        <div className="flex flex-col justify-center space-y-8 tablet:space-y-10 py-6 tablet:py-8 lscreen:py-10 max-w-containerSize mx-auto px-3 tablet:px-4 w-full">
+          <OfficialTournamentHighlight
+            tournaments={highlightTournaments}
+            homeSectionTitle
+          />
           <ArchetypeList
             dataArray={fiveMostFamousArchetypes}
             subTitleDividerText={t("home.popularArchetypes")}
@@ -100,7 +109,7 @@ const Home: React.FC = () => {
             skeletonItemCount={8}
             displayDate
           />
-        </PageContentBlock>
+        </div>
       </main>
       <Footer />
     </div>
