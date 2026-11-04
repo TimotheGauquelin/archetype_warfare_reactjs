@@ -26,6 +26,7 @@ import {
 } from "@/constant/urlsFront";
 import NoItemMessage from "@/components/generic/NoItemMessage";
 import PopUp from "@/components/generic/PopUp";
+import PaginationTableHead from "@/components/generic/pagination/PaginationTableHead";
 import type { DeckCard, RootState } from "@/types";
 import { useCardTypes } from "@/hooks/useCardTypes";
 import { sortedDeck } from "@/utils/functions/sortedDeck";
@@ -183,6 +184,17 @@ const MyProfileRankingTab = ({
     return { mainDisplayCards: main, extraDisplayCards: extra };
   }, [sortedDeckCards]);
 
+  const tournamentTableHead = useMemo(
+    () => [
+      { colspan: "col-span-4", label: t("profile.rankingTournamentColTournament") },
+      { colspan: "col-span-2", label: t("profile.rankingTournamentColDate") },
+      { colspan: "col-span-2", label: t("profile.rankingTournamentColPlace") },
+      { colspan: "col-span-2", label: t("profile.rankingTournamentColPoints") },
+      { colspan: "col-span-2", label: t("profile.rankingTournamentColDeck") },
+    ],
+    [t]
+  );
+
   if (isLoading) {
     return (
       <div className="space-y-4 animate-pulse">
@@ -291,85 +303,97 @@ const MyProfileRankingTab = ({
                   </div>
 
                   {isOpen && (row.tournaments ?? []).length > 0 && (
-                    <ul className="border-t border-gray-100 divide-y divide-gray-100 bg-gray-50">
-                      {[...(row.tournaments ?? [])]
-                        .sort((a, b) => {
-                          const da = a.eventDate
-                            ? new Date(a.eventDate).getTime()
-                            : 0;
-                          const db = b.eventDate
-                            ? new Date(b.eventDate).getTime()
-                            : 0;
-                          return db - da;
-                        })
-                        .map((tournament) => (
-                        <li
-                          key={`${row.archetypeId}-${tournament.tournamentId}`}
-                          className="px-3 py-2.5 text-sm space-y-1"
-                        >
-                          <div className="flex flex-wrap items-baseline justify-between gap-2">
-                            <div className="min-w-0">
-                              <Link
-                                to={
-                                  isOwnProfile
-                                    ? URL_FRONT_MY_TOURNAMENT_DETAIL(
-                                        tournament.tournamentId
-                                      )
-                                    : URL_FRONT_TOURNAMENT(
-                                        tournament.tournamentId
-                                      )
-                                }
-                                className="font-medium text-gray-900 hover:underline"
+                    <div className="border-t border-gray-100 bg-white p-2">
+                      <div className="w-full text-xs tablet:text-sm text-left text-gray-500 overflow-x-auto rounded-lg border border-gray-200">
+                        <PaginationTableHead tableHeadItem={tournamentTableHead} />
+                        <div className="grid grid-cols-12 bg-white min-w-[480px]">
+                          {[...(row.tournaments ?? [])]
+                            .sort((a, b) => {
+                              const da = a.eventDate
+                                ? new Date(a.eventDate).getTime()
+                                : 0;
+                              const db = b.eventDate
+                                ? new Date(b.eventDate).getTime()
+                                : 0;
+                              return db - da;
+                            })
+                            .map((tournament) => (
+                              <div
+                                key={`${row.archetypeId}-${tournament.tournamentId}`}
+                                className="grid grid-cols-12 col-span-12 items-center border-b border-l border-r last:border-b-0 hover:bg-slate-200"
                               >
-                                {tournament.tournamentName}
-                              </Link>
-                              {tournament.eventDate && (
-                                <p className="text-xs text-gray-500 mt-0.5">
-                                  {formatShortDate(
-                                    String(tournament.eventDate).slice(0, 10),
-                                    i18n.language
+                                <div className="col-span-4 p-1.5 tablet:p-2 min-w-0">
+                                  <Link
+                                    to={
+                                      isOwnProfile
+                                        ? URL_FRONT_MY_TOURNAMENT_DETAIL(
+                                            tournament.tournamentId
+                                          )
+                                        : URL_FRONT_TOURNAMENT(
+                                            tournament.tournamentId
+                                          )
+                                    }
+                                    className="font-medium text-gray-900 hover:underline line-clamp-2"
+                                  >
+                                    {tournament.tournamentName}
+                                  </Link>
+                                </div>
+                                <div className="col-span-2 p-1.5 tablet:p-2 text-center text-gray-600">
+                                  {tournament.eventDate
+                                    ? formatShortDate(
+                                        String(tournament.eventDate).slice(
+                                          0,
+                                          10
+                                        ),
+                                        i18n.language
+                                      )
+                                    : "—"}
+                                </div>
+                                <div className="col-span-2 p-1.5 tablet:p-2 text-center text-gray-700">
+                                  {t(
+                                    "profile.rankingArchetypeTournamentPlace",
+                                    {
+                                      place: tournament.place,
+                                      total: tournament.playersCount,
+                                    }
                                   )}
-                                </p>
-                              )}
-                            </div>
-                            <span className="text-emerald-700 shrink-0 font-semibold text-xs">
-                              {t("profile.rankingPoints", {
-                                count: tournament.points,
-                              })}
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-600">
-                            {t("profile.rankingArchetypeTournamentPlace", {
-                              place: tournament.place,
-                              total: tournament.playersCount,
-                            })}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {t("profile.rankingArchetypeTournamentDeck")}{" "}
-                            {tournament.deckLabel ? (
-                              isOwnProfile ? (
-                                <button
-                                  type="button"
-                                  onClick={() => void handleOpenDeck(tournament)}
-                                  disabled={deckLoading}
-                                  className="text-blue-700 hover:underline font-medium disabled:opacity-50"
-                                >
-                                  {tournament.deckLabel}
-                                </button>
-                              ) : (
-                                <span className="font-medium text-gray-800">
-                                  {tournament.deckLabel}
-                                </span>
-                              )
-                            ) : (
-                              <span className="italic text-gray-500">
-                                {t("profile.rankingArchetypeTournamentNoDeck")}
-                              </span>
-                            )}
-                          </p>
-                        </li>
-                        ))}
-                    </ul>
+                                </div>
+                                <div className="col-span-2 p-1.5 tablet:p-2 text-center font-semibold text-emerald-700">
+                                  {t("profile.rankingPoints", {
+                                    count: tournament.points,
+                                  })}
+                                </div>
+                                <div className="col-span-2 p-1.5 tablet:p-2 text-right min-w-0">
+                                  {tournament.deckLabel ? (
+                                    isOwnProfile ? (
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          void handleOpenDeck(tournament)
+                                        }
+                                        disabled={deckLoading}
+                                        className="text-blue-700 hover:underline font-medium disabled:opacity-50 truncate max-w-full"
+                                      >
+                                        {tournament.deckLabel}
+                                      </button>
+                                    ) : (
+                                      <span className="font-medium text-gray-800 truncate block">
+                                        {tournament.deckLabel}
+                                      </span>
+                                    )
+                                  ) : (
+                                    <span className="italic text-gray-500">
+                                      {t(
+                                        "profile.rankingArchetypeTournamentNoDeck"
+                                      )}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </li>
               );
