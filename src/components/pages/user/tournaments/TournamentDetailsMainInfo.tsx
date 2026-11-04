@@ -211,12 +211,6 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
                 {tournament.require_deck_list ? "Oui" : "Non"}
               </dd>
             </div>
-            <div>
-              <dt className="text-gray-500">Pénalités</dt>
-              <dd className="font-medium text-gray-900">
-                {tournament.allow_penalities ? "Oui" : "Non"}
-              </dd>
-            </div>
           </dl>
           <TournamentLocationMap location={tournament.location} />
         </div>
@@ -287,12 +281,6 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
             <dt className="text-gray-500">Deck list obligatoire</dt>
             <dd className="font-medium text-gray-900">
               {tournament.require_deck_list ? "Oui" : "Non"}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-gray-500">Pénalités</dt>
-            <dd className="font-medium text-gray-900">
-              {tournament.allow_penalities ? "Oui" : "Non"}
             </dd>
           </div>
         </dl>

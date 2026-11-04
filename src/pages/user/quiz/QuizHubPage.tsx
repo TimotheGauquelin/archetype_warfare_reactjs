@@ -283,7 +283,7 @@ const QuizHubPage = () => {
                           }}
                           className={`relative overflow-hidden rounded-lg border p-4 shadow-md cursor-pointer transition-all hover:shadow-lg ${
                             isExceptional
-                              ? "border-amber-300 bg-amber-50/40 hover:bg-amber-50"
+                              ? "border-amber-300 bg-amber-50"
                               : "border-gray-200 bg-white hover:bg-slate-50"
                           }`}
                         >

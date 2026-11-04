@@ -52,7 +52,6 @@ const TournamentDetailsPlayers = ({
                 typeof player.user?.country === "string"
                   ? player.user.country
                   : null;
-
               return (
                 <div
                   key={player.id ?? userId ?? index}
@@ -68,7 +67,7 @@ const TournamentDetailsPlayers = ({
                       <span className="text-gray-400">—</span>
                     )}
                   </div>
-                  <div className="col-span-3 p-2 text-right">
+                  <div className="col-span-3 p-2 text-right border-l bg-gray-100 self-stretch flex items-center justify-end">
                     {userId ? (
                       <Link
                         to={
@@ -76,7 +75,7 @@ const TournamentDetailsPlayers = ({
                             ? URL_FRONT_MY_PROFILE
                             : getUserProfilePath(userId)
                         }
-                        className="inline-flex items-center justify-center px-3 py-1.5 rounded bg-blue-700 text-white text-xs font-semibold hover:bg-blue-800"
+                        className="font-medium text-blue-600 hover:text-yellow-600 hover:underline"
                       >
                         {t("tournamentDetail.playersViewProfile")}
                       </Link>

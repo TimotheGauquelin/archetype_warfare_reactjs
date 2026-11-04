@@ -85,7 +85,7 @@ const OfficialTournamentHighlightCard: React.FC<{
           goToTournament();
         }
       }}
-      className="relative overflow-hidden rounded-lg border border-amber-300 bg-amber-50/40 p-4 shadow-md cursor-pointer transition-all hover:shadow-lg hover:bg-amber-50"
+      className="relative overflow-hidden rounded-lg border border-amber-300 bg-amber-50 p-4 shadow-md cursor-pointer transition-all hover:shadow-lg hover:bg-amber-50"
     >
       {imageUrl && (
         <div

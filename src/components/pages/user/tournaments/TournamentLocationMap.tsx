@@ -27,7 +27,7 @@ const TournamentLocationMap: React.FC<TournamentLocationMapProps> = ({
 
   return (
     <div className={`space-y-2 h-full ${className}`}>
-      <h3 className="text-sm font-semibold text-gray-800">
+      <h3 className="text-gray-500 text-sm">
         {t("tournamentDetail.mapTitle")}
       </h3>
       <div className="overflow-hidden rounded-lg border border-gray-200 bg-slate-100 aspect-[4/3] min-h-[140px] max-h-52">
