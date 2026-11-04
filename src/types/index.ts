@@ -427,6 +427,13 @@ export interface TournamentPlayer {
   id?: number;
   user_id?: string;
   user?: TournamentPlayerUser;
+  deck_id?: string | null;
+  dropped?: boolean;
+  late_deck_penalty?: boolean;
+  penalties?: Array<{
+    id: number;
+    penalty_type?: { id?: number; code?: string; label?: string };
+  }>;
   [key: string]: unknown;
 }
 

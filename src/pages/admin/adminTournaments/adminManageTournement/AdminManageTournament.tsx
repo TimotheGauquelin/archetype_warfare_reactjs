@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import AdminBodyHeader from "@/components/pages/admin/AdminBodyHeader";
 import AdminLayout from "../../adminLayout";
 import {
@@ -20,6 +21,7 @@ import type { User } from "@/types";
 import type { PaginatedResponse } from "@/types";
 import type { RootState } from "@/redux/store";
 import { TOURNAMENT_STATUS } from "@/utils/trad/tournamentStatus";
+import { translatePenaltyType } from "@/utils/trad/penaltyType";
 import ErrorText from "@/components/generic/ErrorText";
 import AdminTournamentMatchmaking from "@/components/pages/admin/archetype/adminTournaments/AdminTournamentMatchmaking";
 import { TournamentDetailsStanding } from "@/components/pages/user/tournaments/TournamentDetailsStanding";
@@ -31,12 +33,11 @@ import { verbalDate } from "@/utils/date/verbalDate";
 
 type ManageTournamentTab = "players" | "matchmaking" | "standings";
 
-const TOURNAMENT_PENALTY_TYPE_LABELS = [
-    "Caution",
-    "Warning",
-    "Game Loss",
-    "Match Loss",
-    "Disqualification",
+const TOURNAMENT_PENALTY_TYPE_CODES = [
+    "warning",
+    "game_loss",
+    "match_loss",
+    "disqualification",
 ] as const;
 
 const TAB_CLASS = (active: boolean) =>
@@ -47,6 +48,7 @@ const TAB_CLASS = (active: boolean) =>
     }`;
 
 const AdminManageTournament = () => {
+    const { t } = useTranslation();
     const { tournamentId } = useParams<{ tournamentId: string }>();
     const { token } = useSelector((state: RootState) => state.user);
     const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
@@ -330,12 +332,12 @@ const AdminManageTournament = () => {
                             {tournament.allow_penalities ? (
                                 <ul className="list-disc list-inside ml-2 space-y-0.5">
                                     <li>Activées — types applicables :</li>
-                                    {TOURNAMENT_PENALTY_TYPE_LABELS.map((label) => (
+                                    {TOURNAMENT_PENALTY_TYPE_CODES.map((code) => (
                                         <li
-                                            key={label}
+                                            key={code}
                                             className="ml-4 list-[circle]"
                                         >
-                                            {label}
+                                            {translatePenaltyType(t, code)}
                                         </li>
                                     ))}
                                 </ul>

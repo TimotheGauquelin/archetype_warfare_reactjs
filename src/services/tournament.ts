@@ -26,6 +26,9 @@ import {
   URL_BACK_ADMIN_SET_TOURNAMENT_PLAYER_DROPPED,
   URL_BACK_ADD_TOURNAMENT_PLAYER,
   URL_BACK_TOGGLE_TOURNAMENT_REGISTRATION,
+  URL_BACK_TOURNAMENT_PENALTY_TYPES,
+  URL_BACK_TOURNAMENT_PLAYER_PENALTIES,
+  URL_BACK_TOURNAMENT_PLAYER_PENALTY,
 } from "../constant/urlsBack";
 import { createElement } from "react";
 import type { Tournament } from "../types";
@@ -69,6 +72,7 @@ export interface MyTournamentPlayer {
   games_won: number;
   games_played: number;
   dropped: boolean;
+  late_deck_penalty?: boolean;
   created_at: string;
   updated_at: string;
   user?: MyTournamentPlayerUser;
@@ -84,7 +88,7 @@ export interface MyTournamentPlayerPenalty {
     code: string;
     label: string;
   };
-  round?: number | null;
+  round?: { id: number; round_number: number } | null;
   tournament_match?: unknown | null;
   reason?: string | null;
   notes?: string | null;
@@ -144,6 +148,9 @@ export interface TournamentStanding {
   user_id: string;
   username: string;
   deck?: TournamentPlayerDeckSnapshot | null;
+  late_deck_penalty?: boolean;
+  penalties_count?: number;
+  has_penalties?: boolean;
   matches_breakdown: {
     wins: {
       count: number;
@@ -161,6 +168,28 @@ export interface TournamentStanding {
     games_won: number;
     games_played: number;
   };
+}
+
+export interface PenaltyTypeOption {
+  id: number;
+  code: string;
+  label: string;
+  severity: number;
+}
+
+export interface TournamentPlayerPenaltyAdmin {
+  id: number;
+  tournament_player_id: number;
+  penalty_type_id: number;
+  penalty_type?: PenaltyTypeOption;
+  reason?: string | null;
+  notes?: string | null;
+  applied_at?: string;
+  applied_by?: { id?: string; username?: string } | null;
+  round_id?: number | null;
+  round?: { id: number; round_number: number; status?: string } | null;
+  tournament_match_id?: number | null;
+  disqualification_with_prize?: boolean | null;
 }
 
 /** Match tel que renvoyé par GET /tournaments/:id (détail avec rondes). */
@@ -250,6 +279,8 @@ export interface TournamentPlayerAdmin {
   user?: { id?: string; username?: string; [key: string]: unknown };
   banned?: boolean;
   dropped?: boolean;
+  late_deck_penalty?: boolean;
+  penalties?: TournamentPlayerPenaltyAdmin[];
   /** ID du deck associé (si présent) */
   deck_id?: string | null;
   /** Snapshot du deck au moment de l’inscription (inclut cartes) */
@@ -894,6 +925,115 @@ export const addPlayerToTournament = async (
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "addPlayerToTournament");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
+export const getTournamentPenaltyTypes = async (
+  token: string
+): Promise<PenaltyTypeOption[]> => {
+  const api = api_aw_token(token);
+  try {
+    const response = await api.get<PenaltyTypeOption[]>(
+      URL_BACK_TOURNAMENT_PENALTY_TYPES
+    );
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getTournamentPenaltyTypes");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
+export const getTournamentPlayerPenalties = async (
+  tournamentId: number | string,
+  playerId: number | string,
+  token: string
+): Promise<TournamentPlayerPenaltyAdmin[]> => {
+  const api = api_aw_token(token);
+  try {
+    const response = await api.get<TournamentPlayerPenaltyAdmin[]>(
+      URL_BACK_TOURNAMENT_PLAYER_PENALTIES(tournamentId, playerId)
+    );
+    return Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getTournamentPlayerPenalties");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
+export type UpsertTournamentPlayerPenaltyPayload = {
+  penalty_type_id: number;
+  reason?: string | null;
+  notes?: string | null;
+  /** null = avant le début du tournoi */
+  round_id?: number | null;
+};
+
+export const createTournamentPlayerPenalty = async (
+  tournamentId: number | string,
+  playerId: number | string,
+  payload: UpsertTournamentPlayerPenaltyPayload,
+  token: string
+): Promise<TournamentPlayerPenaltyAdmin> => {
+  const api = api_aw_token(token);
+  try {
+    const response = await api.post<TournamentPlayerPenaltyAdmin>(
+      URL_BACK_TOURNAMENT_PLAYER_PENALTIES(tournamentId, playerId),
+      payload
+    );
+    toast.success("Pénalité ajoutée.");
+    return response.data;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "createTournamentPlayerPenalty");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
+export const updateTournamentPlayerPenalty = async (
+  tournamentId: number | string,
+  playerId: number | string,
+  penaltyId: number | string,
+  payload: UpsertTournamentPlayerPenaltyPayload,
+  token: string
+): Promise<TournamentPlayerPenaltyAdmin> => {
+  const api = api_aw_token(token);
+  try {
+    const response = await api.put<TournamentPlayerPenaltyAdmin>(
+      URL_BACK_TOURNAMENT_PLAYER_PENALTY(tournamentId, playerId, penaltyId),
+      payload
+    );
+    toast.success("Pénalité mise à jour.");
+    return response.data;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "updateTournamentPlayerPenalty");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
+export const deleteTournamentPlayerPenalty = async (
+  tournamentId: number | string,
+  playerId: number | string,
+  penaltyId: number | string,
+  token: string
+): Promise<void> => {
+  const api = api_aw_token(token);
+  try {
+    await api.delete(
+      URL_BACK_TOURNAMENT_PLAYER_PENALTY(tournamentId, playerId, penaltyId)
+    );
+    toast.success("Pénalité supprimée.");
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "deleteTournamentPlayerPenalty");
     toast.error(getErrorMessage(appError));
     throw appError;
   }

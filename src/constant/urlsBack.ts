@@ -229,6 +229,17 @@ export const URL_BACK_GET_TOURNAMENT_PLAYER_DECK_SNAPSHOT = (
   playerId: number | string
 ) => `/tournaments/players/${playerId}/deck-snapshot`;
 
+export const URL_BACK_TOURNAMENT_PENALTY_TYPES = "/tournaments/penalty-types";
+export const URL_BACK_TOURNAMENT_PLAYER_PENALTIES = (
+  tournamentId: number | string,
+  playerId: number | string
+) => `/tournaments/${tournamentId}/players/${playerId}/penalties`;
+export const URL_BACK_TOURNAMENT_PLAYER_PENALTY = (
+  tournamentId: number | string,
+  playerId: number | string,
+  penaltyId: number | string
+) => `/tournaments/${tournamentId}/players/${playerId}/penalties/${penaltyId}`;
+
 export const URL_BACK_ASSIGN_TOURNAMENT_PLAYER_DECK = (
   tournamentId: number | string,
   playerId: number | string
