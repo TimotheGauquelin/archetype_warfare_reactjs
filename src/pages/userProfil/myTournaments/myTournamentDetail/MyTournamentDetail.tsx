@@ -25,11 +25,16 @@ import DeckCardsGrid from "@/components/pages/userProfil/deckCommon/DeckCardsGri
 import DeckSection from "@/components/pages/userProfil/deckCommon/DeckSection";
 import { TOURNAMENT_STATUS } from "@/utils/trad/tournamentStatus";
 import NoItemMessage from "@/components/generic/NoItemMessage";
+import PaginationTableHead from "@/components/generic/pagination/PaginationTableHead";
 import {
     MatchMakingCard,
 } from "@/components/pages/userProfil/myTournaments/MatchMakingCard";
 import type { MatchScoreProps } from "@/types/match";
 import Section from "@/components/generic/Section";
+import {
+    translatePenaltyRound,
+    translatePenaltyType,
+} from "@/utils/trad/penaltyType";
 
 const MyTournamentDetail: React.FC = () => {
     const { t, i18n } = useTranslation();
@@ -296,20 +301,43 @@ const MyTournamentDetail: React.FC = () => {
                             tournament.status !== "tournament_did_not_happen" && (
                                 <div
                                     role="status"
-                                    className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950"
+                                    className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-3.5 py-2.5 text-sm text-amber-950 shadow-sm"
                                 >
-                                    <p className="font-semibold">
-                                        {t("profile.deckRequiredReminderTitle")}
-                                    </p>
-                                    <p className="mt-1">
-                                        {t("profile.deckRequiredReminderInline")}
+                                    <p className="min-w-0 leading-snug">
+                                        <span className="font-semibold">
+                                            {t("profile.deckRequiredReminderTitle")}
+                                        </span>
+                                        <span className="text-amber-900/90">
+                                            {" — "}
+                                            {t("profile.deckRequiredReminderInline")}
+                                        </span>
                                     </p>
                                 </div>
                             )}
                         <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
-                            <h2 className="text-xl font-semibold text-gray-900">
-                                Informations générales
-                            </h2>
+                            <div className="flex items-center justify-between gap-3">
+                                <h2 className="text-xl font-semibold text-gray-900">
+                                    Informations générales
+                                </h2>
+                                {isTournamentInProgress &&
+                                    !tournament.tournament_player.dropped && (
+                                    <button
+                                        type="button"
+                                        onClick={handleDrop}
+                                        disabled={!haveCompletedAllMatches || isDropping}
+                                        title={
+                                            haveCompletedAllMatches
+                                                ? t("profile.dropTournamentHint")
+                                                : t("profile.dropTournamentLocked")
+                                        }
+                                        className="shrink-0 cursor-pointer inline-flex items-center justify-center px-3 py-1.5 rounded bg-red-600 text-white text-sm hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
+                                    >
+                                        {isDropping
+                                            ? t("profile.dropping")
+                                            : t("profile.dropTournament")}
+                                    </button>
+                                )}
+                            </div>
                             <div className="text-sm text-gray-700 space-y-2">
                                 <p>
                                     <span className="font-semibold">{t("profile.status")}</span>{" "}
@@ -353,17 +381,18 @@ const MyTournamentDetail: React.FC = () => {
                                         }
                                     </p>
                                     <div>
-                                        {playableDecksLoading ? (
+                                        {isRegistrationOpen && playableDecksLoading ? (
                                             <p className="text-gray-500 text-sm">{t("profile.loadingPlayableDecks")}</p>
                                         ) : (
                                             <div className="grid grid-cols-12 gap-2">
+                                                {isRegistrationOpen && (
                                                 <div className="md:col-span-2 col-span-12">
                                                     <select
                                                         id="tournament-deck-select"
                                                         value={selectedDeckId}
                                                         onChange={(e) => setSelectedDeckId(e.target.value)}
                                                         className="w-full max-w-md rounded border border-gray-300 bg-white py-2 px-3 text-gray-700 focus:border-blue-500 focus:outline-none"
-                                                        disabled={!isRegistrationOpen || playableDecks.length === 0 || playableDecksLoading}
+                                                        disabled={playableDecks.length === 0 || playableDecksLoading}
                                                     >
                                                         <option value="" disabled>{t("profile.selectYourDeck")}</option>
                                                         {playableDecks
@@ -379,11 +408,10 @@ const MyTournamentDetail: React.FC = () => {
                                                             {t("profile.noPlayableDeck")}
                                                         </p>
                                                     )}
-                                                    {isRegistrationOpen && <button
+                                                    <button
                                                         type="button"
                                                         onClick={handleSubmitDeck}
                                                         disabled={
-                                                            !isRegistrationOpen ||
                                                             selectedDeckId === "" ||
                                                             isSubmittingDeck ||
                                                             (registeredDeckId != null &&
@@ -398,9 +426,10 @@ const MyTournamentDetail: React.FC = () => {
                                                                 selectedDeckId !== registeredDeckId
                                                                 ? t("profile.changeDeck")
                                                                 : t("profile.validateDeck")}
-                                                    </button>}
+                                                    </button>
                                                 </div>
-                                                <div className="md:p-2 p-0 md:col-span-10 col-span-12 bg-white">
+                                                )}
+                                                <div className={`md:p-2 p-0 col-span-12 bg-white ${isRegistrationOpen ? "md:col-span-10" : ""}`}>
                                                     {deckSnapshotLoading || selectedDeckPreviewLoading ? (
                                                         <p className="text-gray-500 text-sm">{t("profile.loadingDeck")}</p>
                                                     ) : deckCardsForDisplay ? (
@@ -471,20 +500,6 @@ const MyTournamentDetail: React.FC = () => {
                                 </Section>
                             )}
 
-                        {isTournamentInProgress && !tournament.tournament_player.dropped && (
-                            <section className="flex justify-end">
-                                <button
-                                    type="button"
-                                    onClick={handleDrop}
-                                    disabled={!haveCompletedAllMatches}
-                                    className="cursor-pointer mt-2 inline-block w-fit items-center px-3 py-1.5 rounded bg-red-600 text-white text-sm hover:bg-red-700 disabled:opacity-60"
-                                >
-                                    {isDropping ? t("profile.dropping") : t("profile.dropTournament")}
-                                </button>
-                            </section>
-                        )}
-
-
                         {!isTournamentPhase && (
                             <NoItemMessage message={t("profile.tournamentNotStarted")} />
                         )}
@@ -494,7 +509,7 @@ const MyTournamentDetail: React.FC = () => {
                                 {tournament.rounds.length === 0 ? (
                                     <NoItemMessage message={t("profile.noRoundsGenerated")} />
                                 ) : (
-                                    <div className="space-y-2">
+                                    <div className="space-y-3">
                                         {tournament.tournament_player.dropped && (
                                             <p className="bg-red-100 p-2 rounded-md text-base font-bold text-red-600">
                                                 {tournament.rounds.length != null
@@ -502,11 +517,33 @@ const MyTournamentDetail: React.FC = () => {
                                                     : t("profile.droppedTournament")}
                                             </p>
                                         )}
-                                        {tournament.rounds
-                                            .sort((a, b) => b.round_number - a.round_number)
-                                            .map((round: MyTournamentRound) => {
-                                                if (round.match !== null) {
-                                                    return (
+                                        <div className="w-full text-sm text-left text-gray-500 overflow-x-auto">
+                                            <PaginationTableHead
+                                                tableHeadItem={[
+                                                    {
+                                                        colspan: "col-span-2",
+                                                        label: t("matchmaking.colRound"),
+                                                    },
+                                                    {
+                                                        colspan: "col-span-3 sscreen:col-span-2",
+                                                        label: t("matchmaking.colStatus"),
+                                                    },
+                                                    {
+                                                        colspan: "col-span-7 sscreen:col-span-3",
+                                                        label: t("matchmaking.colMatch"),
+                                                    },
+                                                    {
+                                                        colspan: "hidden sscreen:flex sscreen:col-span-5",
+                                                        label: t("matchmaking.colResult"),
+                                                    },
+                                                ]}
+                                            />
+                                            <div className="grid grid-cols-12">
+                                                {tournament.rounds
+                                                    .slice()
+                                                    .sort((a, b) => b.round_number - a.round_number)
+                                                    .filter((round) => round.match !== null)
+                                                    .map((round: MyTournamentRound) => (
                                                         <MatchMakingCard
                                                             key={round.id}
                                                             round={round}
@@ -516,11 +553,9 @@ const MyTournamentDetail: React.FC = () => {
                                                             }
                                                             onSubmitScore={handleSubmitScore}
                                                         />
-                                                    )
-                                                }
-                                            }
-                                            )
-                                        }
+                                                    ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </Section>
@@ -528,41 +563,92 @@ const MyTournamentDetail: React.FC = () => {
 
                         {tournament.allow_penalities && (
                             <Section title={t("profile.myPenalties")}>
-                            {tournament?.tournament_player?.penalties &&
-                                tournament.tournament_player.penalties.length > 0 ? (
-                                <ul className="space-y-3 list-none p-0 m-0">
-                                    {tournament.tournament_player.penalties.map((penalty) => (
-                                        <li
-                                            key={penalty.id}
-                                            className="border border-gray-200 rounded-md p-3 bg-gray-50 text-sm"
-                                        >
-                                            <div className="font-semibold text-gray-800">
-                                                {penalty.penalty_type?.label ?? t("profile.penalty")}
+                            {(() => {
+                                const penalties = [
+                                    ...(tournament.tournament_player?.penalties ?? []),
+                                ].sort((a, b) => {
+                                    const aTime = a.applied_at
+                                        ? new Date(a.applied_at).getTime()
+                                        : 0;
+                                    const bTime = b.applied_at
+                                        ? new Date(b.applied_at).getTime()
+                                        : 0;
+                                    return bTime - aTime;
+                                });
+                                if (penalties.length === 0) {
+                                    return (
+                                        <NoItemMessage
+                                            message={t("profile.noPenalties")}
+                                        />
+                                    );
+                                }
+                                const penaltyTableHead = [
+                                    {
+                                        colspan: "col-span-3 sscreen:col-span-2",
+                                        label: t("profile.penaltyTypeCol"),
+                                    },
+                                    {
+                                        colspan: "col-span-4 sscreen:col-span-3",
+                                        label: t("profile.penaltyRoundLabel"),
+                                    },
+                                    {
+                                        colspan: "col-span-5 sscreen:col-span-3",
+                                        label: t("profile.penaltyReasonCol"),
+                                    },
+                                    {
+                                        colspan: "hidden sscreen:flex sscreen:col-span-2",
+                                        label: t("profile.penaltyNotesCol"),
+                                    },
+                                    {
+                                        colspan: "hidden sscreen:flex sscreen:col-span-2",
+                                        label: t("profile.penaltyDateCol"),
+                                    },
+                                ];
+                                return (
+                                <div className="w-full text-sm text-left text-gray-500 overflow-x-auto">
+                                    <PaginationTableHead
+                                        tableHeadItem={penaltyTableHead}
+                                    />
+                                    <div className="grid grid-cols-12">
+                                        {penalties.map((penalty) => (
+                                            <div
+                                                key={penalty.id}
+                                                className="grid grid-cols-12 col-span-12 items-center border-b border-l border-r hover:bg-slate-200"
+                                            >
+                                                <div className="col-span-3 sscreen:col-span-2 p-2 font-medium text-gray-900 truncate">
+                                                    {translatePenaltyType(
+                                                        t,
+                                                        penalty.penalty_type?.code,
+                                                        penalty.penalty_type?.label
+                                                    )}
+                                                </div>
+                                                <div className="col-span-4 sscreen:col-span-3 p-2 truncate">
+                                                    {translatePenaltyRound(
+                                                        t,
+                                                        penalty.round
+                                                    )}
+                                                </div>
+                                                <div className="col-span-5 sscreen:col-span-3 p-2 truncate">
+                                                    {penalty.reason?.trim() || "—"}
+                                                </div>
+                                                <div className="hidden sscreen:block sscreen:col-span-2 p-2 truncate">
+                                                    {penalty.notes?.trim() || "—"}
+                                                </div>
+                                                <div className="hidden sscreen:block sscreen:col-span-2 p-2 truncate">
+                                                    {penalty.applied_at
+                                                        ? new Date(
+                                                              penalty.applied_at
+                                                          ).toLocaleString(
+                                                              i18n.language
+                                                          )
+                                                        : "—"}
+                                                </div>
                                             </div>
-                                            {penalty.reason && (
-                                                <p className="mt-1 text-gray-700">
-                                                    {t("profile.reason")} {penalty.reason}
-                                                </p>
-                                            )}
-                                            {penalty.notes && (
-                                                <p className="mt-0.5 text-gray-600">
-                                                    {penalty.notes}
-                                                </p>
-                                            )}
-                                            {penalty.applied_at && (
-                                                <p className="mt-1 text-gray-500 text-xs">
-                                                    {t("profile.appliedAt")}{" "}
-                                                    {new Date(
-                                                        penalty.applied_at
-                                                    ).toLocaleString(i18n.language)}
-                                                </p>
-                                            )}
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p>{t("profile.noPenalties")}</p>
-                            )}
+                                        ))}
+                                    </div>
+                                </div>
+                                );
+                            })()}
                         </Section>
                         )}
                     </div>

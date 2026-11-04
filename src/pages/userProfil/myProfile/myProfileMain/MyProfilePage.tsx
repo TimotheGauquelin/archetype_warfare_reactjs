@@ -14,7 +14,9 @@ import MyProfileRankingTab from "@/components/pages/user/profile/MyProfileRankin
 import MyProfileMedalsTab from "@/components/pages/user/profile/MyProfileMedalsTab";
 import ProfileSection from "@/components/pages/userProfil/ProfileSection";
 import TournamentDeckRequiredReminder from "@/components/pages/userProfil/TournamentDeckRequiredReminder";
+import TournamentPenaltyReminder from "@/components/pages/userProfil/TournamentPenaltyReminder";
 import { tournamentsNeedingDeckSelection } from "@/utils/tournament/tournamentsNeedingDeck";
+import { tournamentsWithPlayerPenalties } from "@/utils/tournament/tournamentsWithPenalties";
 
 const MyProfile = () => {
   const { t } = useTranslation();
@@ -62,6 +64,11 @@ const MyProfile = () => {
     [myTournaments, id]
   );
 
+  const penaltyReminders = useMemo(
+    () => tournamentsWithPlayerPenalties(myTournaments, id),
+    [myTournaments, id]
+  );
+
   const handleDeleteUser = () => {
     if (!id) return;
     showConfirmDialog({
@@ -77,13 +84,28 @@ const MyProfile = () => {
     <UserProfilLayout>
       <div className="grid grid-cols-1 lscreen:grid-cols-12 gap-3">
         <div className="lscreen:col-span-8 space-y-3">
-          {deckReminders.map((tournament) => (
-            <TournamentDeckRequiredReminder
-              key={tournament.id}
-              tournamentId={tournament.id}
-              tournamentName={tournament.name}
-            />
-          ))}
+          {(deckReminders.length > 0 || penaltyReminders.length > 0) && (
+            <div className="space-y-2">
+              {deckReminders.map((tournament) => (
+                <TournamentDeckRequiredReminder
+                  key={`deck-${tournament.id}`}
+                  tournamentId={tournament.id}
+                  tournamentName={tournament.name}
+                />
+              ))}
+              {penaltyReminders.map(
+                ({ tournament, penaltiesCount, lateDeck }) => (
+                  <TournamentPenaltyReminder
+                    key={`penalty-${tournament.id}`}
+                    tournamentId={tournament.id}
+                    tournamentName={tournament.name}
+                    penaltiesCount={penaltiesCount}
+                    lateDeck={lateDeck}
+                  />
+                )
+              )}
+            </div>
+          )}
 
           <ProfileSection title={t("profile.presentationTitle")} collapsible>
             <p className="text-sm text-slate-800 whitespace-pre-wrap min-h-[3rem]">
