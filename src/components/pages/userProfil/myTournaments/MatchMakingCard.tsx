@@ -13,7 +13,6 @@ import {
 } from "@/utils/tournament/bestOfScore";
 import { matchHasReportedResult } from "@/utils/tournament/matchResult";
 
-
 interface MatchMakingCardProps {
     round: MyTournamentRound;
     maxWinningDuelPerPlayer: number;
@@ -53,11 +52,15 @@ export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({
         const p1 = roundMatch?.player1?.id != null ? String(roundMatch.player1.id) : null;
         const p2 = roundMatch?.player2?.id != null ? String(roundMatch.player2.id) : null;
         return p1 === expected || p2 === expected;
-    }
+    };
 
     const canEdit = isUserOfTheMatch() && roundMatch.status !== "completed" && !isBye;
-    const player1Username = roundMatch?.player1?.username ? String(roundMatch?.player1?.username) : t("matchmaking.unknown");
-    const player2Username = roundMatch?.player2?.username ? String(roundMatch?.player2?.username) : t("matchmaking.unknown");
+    const player1Username = roundMatch?.player1?.username
+        ? String(roundMatch.player1.username)
+        : t("matchmaking.unknown");
+    const player2Username = roundMatch?.player2?.username
+        ? String(roundMatch.player2.username)
+        : t("matchmaking.unknown");
 
     const handleP1Change = (raw: number) => {
         const nextP1 = clampScore(raw, winsNeeded);
@@ -77,104 +80,116 @@ export const MatchMakingCard: React.FC<MatchMakingCardProps> = ({
         });
     };
 
-    return (
-        <div className="bg-white rounded-md p-3">
-            <h3 className="font-semibold mb-2">
-                {t("matchmaking.round", { number: round.round_number })} ({TOURNAMENT_ROUND_STATUS(round.status)})
-            </h3>
-
-            <ul className="space-y-2">
-                <li
-                    key={round.id}
-                    className={`border rounded p-2 ${
-                        hasResult ? "bg-emerald-50 border-emerald-200" : "bg-white"
-                    } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
+    const renderResult = () => {
+        if (canEdit) {
+            return (
+                <form
+                    className="flex flex-wrap items-center gap-1.5"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        onSubmitScore(matchId, playersScore);
+                    }}
                 >
-                    <div className="flex flex-col gap-1">
-                        <div className="flex justify-between">
-                            <span className="font-medium">
-                                {player1Username} vs {isBye ? "BYE" : player2Username}
-                            </span>
-                        </div>
+                    <label className="flex items-center gap-1">
+                        <span className="truncate max-w-[5rem]">{player1Username}</span>
+                        <input
+                            type="number"
+                            min={0}
+                            max={maxP1}
+                            className="w-12 border rounded px-1 py-0.5 text-right"
+                            value={playersScore.player1_games_won}
+                            onChange={(e) => handleP1Change(Number(e.target.value))}
+                        />
+                    </label>
+                    <span>-</span>
+                    <label className="flex items-center gap-1">
+                        <input
+                            type="number"
+                            min={0}
+                            max={maxP2}
+                            className="w-12 border rounded px-1 py-0.5 text-right"
+                            value={playersScore.player2_games_won}
+                            onChange={(e) => handleP2Change(Number(e.target.value))}
+                        />
+                        <span className="truncate max-w-[5rem]">{player2Username}</span>
+                    </label>
+                    <button
+                        type="submit"
+                        className="inline-flex items-center px-2 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
+                    >
+                        {t("matchmaking.saveScore")}
+                    </button>
+                </form>
+            );
+        }
 
-                        {canEdit ? (
-                            <form
-                                className="mt-2 flex flex-wrap items-center gap-2"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    onSubmitScore(matchId, playersScore);
-                                }}
-                            >
-                                <label className="flex items-center gap-1">
-                                    <span>{player1Username}</span>
-                                    <input
-                                        type="number"
-                                        min={0}
-                                        max={maxP1}
-                                        className="w-14 border rounded px-1 py-0.5 text-right"
-                                        value={playersScore.player1_games_won}
-                                        onChange={(e) => handleP1Change(Number(e.target.value))}
-                                    />
-                                </label>
-                                <span>-</span>
-                                <label className="flex items-center gap-1">
-                                    <span>{player2Username}</span>
-                                    <input
-                                        type="number"
-                                        min={0}
-                                        max={maxP2}
-                                        className="w-14 border rounded px-1 py-0.5 text-right"
-                                        value={playersScore.player2_games_won}
-                                        onChange={(e) => handleP2Change(Number(e.target.value))}
-                                    />
-                                </label>
-                                <button
-                                    type="submit"
-                                    className="ml-auto inline-flex items-center px-2 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
-                                >
-                                    {t("matchmaking.saveScore")}
-                                </button>
-                            </form>
-                        ) : !hasResult ? (
-                            <p className="text-gray-400 italic mt-1">{t("matchmaking.scorePending")}</p>
-                        ) : (
-                            <>
-                                {isBye ? (
-                                    <p className="text-green-700 mt-1 font-medium">{t("matchmaking.byeWin")}</p>
-                                ) : (() => {
-                                    const outcome = resolveMatchOutcome(
-                                        roundMatch.player1.gamesWon,
-                                        roundMatch.player2!.gamesWon,
-                                        winsNeeded,
-                                        matchResolutionMode
-                                    );
-                                    if (outcome === "draw") {
-                                        return <p className="text-gray-600 mt-1">{t("matchmaking.draw")}</p>;
-                                    }
-                                    if (outcome === "double_loss") {
-                                        return <p className="text-gray-600 mt-1">{t("matchmaking.doubleLoss")}</p>;
-                                    }
-                                    return (
-                                        <p className="text-gray-600 mt-1">
-                                            {t("matchmaking.wonBy")}{" "}
-                                            <span className="font-bold">
-                                                {outcome === "p1_win" ? player1Username : player2Username}
-                                            </span>
-                                        </p>
-                                    );
-                                })()}
-                                {!isBye && roundMatch.player2 && (
-                                    <p className="text-gray-600 mt-1">
-                                        {t("matchmaking.score")} {player1Username} {roundMatch.player1.gamesWon} - {roundMatch.player2.gamesWon}{" "}
-                                        {player2Username}
-                                    </p>
-                                )}
-                            </>
-                        )}
+        if (!hasResult) {
+            return (
+                <span className="text-gray-400 italic">{t("matchmaking.scorePending")}</span>
+            );
+        }
+
+        if (isBye) {
+            return (
+                <span className="text-green-700 font-medium">{t("matchmaking.byeWin")}</span>
+            );
+        }
+
+        const outcome = resolveMatchOutcome(
+            roundMatch.player1.gamesWon,
+            roundMatch.player2!.gamesWon,
+            winsNeeded,
+            matchResolutionMode
+        );
+
+        let outcomeLabel: React.ReactNode;
+        if (outcome === "draw") {
+            outcomeLabel = t("matchmaking.draw");
+        } else if (outcome === "double_loss") {
+            outcomeLabel = t("matchmaking.doubleLoss");
+        } else {
+            outcomeLabel = (
+                <>
+                    {t("matchmaking.wonBy")}{" "}
+                    <span className="font-bold">
+                        {outcome === "p1_win" ? player1Username : player2Username}
+                    </span>
+                </>
+            );
+        }
+
+        return (
+            <div className="space-y-0.5">
+                <div>{outcomeLabel}</div>
+                {roundMatch.player2 && (
+                    <div>
+                        {t("matchmaking.score")} {player1Username}{" "}
+                        {roundMatch.player1.gamesWon} - {roundMatch.player2.gamesWon}{" "}
+                        {player2Username}
                     </div>
-                </li>
+                )}
+            </div>
+        );
+    };
 
-            </ul>
+    return (
+        <div
+            className={`grid grid-cols-12 col-span-12 items-center border-b border-l border-r hover:bg-slate-200 ${
+                hasResult ? "bg-emerald-50/60" : ""
+            } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
+        >
+            <div className="col-span-2 sscreen:col-span-2 p-2 font-medium text-gray-900">
+                {t("matchmaking.round", { number: round.round_number })}
+            </div>
+            <div className="col-span-3 sscreen:col-span-2 p-2">
+                {TOURNAMENT_ROUND_STATUS(round.status)}
+            </div>
+            <div className="col-span-7 sscreen:col-span-3 p-2 font-medium text-gray-900 truncate">
+                {player1Username} vs {isBye ? "BYE" : player2Username}
+            </div>
+            <div className="col-span-12 sscreen:col-span-5 p-2 border-t sscreen:border-t-0 sscreen:border-l bg-gray-50 sscreen:bg-transparent">
+                {renderResult()}
+            </div>
         </div>
     );
 };

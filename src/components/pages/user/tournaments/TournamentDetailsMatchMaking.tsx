@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import api_aw from "@/api/api_aw";
+import PaginationTableHead from "@/components/generic/pagination/PaginationTableHead";
 import { TournamentDropDown } from "./TournamentDropDown";
 import { TOURNAMENT_MATCH_STATUS } from "@/utils/trad/tournamentStatus";
+import {
+  getWinsNeeded,
+  resolveMatchOutcome,
+  type MatchResolutionMode,
+} from "@/utils/tournament/bestOfScore";
 import { matchHasReportedResult } from "@/utils/tournament/matchResult";
 
 interface Props {
@@ -35,6 +42,8 @@ export interface TournamentDetail {
   name: string;
   current_round: number;
   max_number_of_rounds: number;
+  matches_per_round?: number;
+  match_resolution_mode?: MatchResolutionMode;
   status: string;
   rounds: Round[];
 }
@@ -96,10 +105,19 @@ const computeRoundPointsByRoundId = (rounds: Round[]) => {
 };
 
 export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) => {
+  const { t } = useTranslation();
   const [tournament, setTournament] = useState<TournamentDetail | null>(null);
   const [standings, setStandings] = useState<StandingMap>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const tableHead = [
+    { colspan: "col-span-2", label: t("matchmaking.colTable") },
+    { colspan: "col-span-2", label: t("matchmaking.colStatus") },
+    { colspan: "col-span-2", label: t("matchmaking.colPlayer1") },
+    { colspan: "col-span-2", label: t("matchmaking.colPlayer2") },
+    { colspan: "col-span-4", label: t("matchmaking.colResult") },
+  ];
 
   useEffect(() => {
     let isMounted = true;
@@ -140,152 +158,185 @@ export const TournamentDetailsMatchMaking: React.FC<Props> = ({ tournamentId }) 
     };
   }, [tournamentId]);
 
-  if (loading) return <div>Chargement des rounds...</div>;
+  if (loading) return <div>{t("matchmaking.loadingRounds")}</div>;
   if (error) return <div>Erreur : {error}</div>;
   if (!tournament) return <div>Aucun tournoi trouvé.</div>;
-
-  const sortedRounds = [...(tournament.rounds || [])].sort(
-    (a, b) => a.round_number - b.round_number
-  );
 
   const roundPointsByRoundId = computeRoundPointsByRoundId(
     tournament.rounds || []
   );
+  const winsNeeded = getWinsNeeded(tournament.matches_per_round ?? 1);
+  const matchResolutionMode: MatchResolutionMode =
+    tournament.match_resolution_mode === "highest_score"
+      ? "highest_score"
+      : "strict_wins";
+
+  const sortedRounds = [...(tournament.rounds || [])].sort(
+    (a, b) => b.round_number - a.round_number
+  );
 
   return (
-    <TournamentDropDown title="Matchmakings">
-
+    <TournamentDropDown title={t("matchmaking.title")}>
       {sortedRounds.length === 0 && (
-        <p>Aucune ronde créée pour l&apos;instant.</p>
+        <p>{t("matchmaking.noRoundsYet")}</p>
       )}
 
-      {sortedRounds
-        .sort((a, b) => b.round_number - a.round_number)
-        .map((round) => {
-          const statusLabel =
-            round.status === "pending"
-              ? "En attente"
-              : round.status === "in_progress"
-                ? "En cours"
-                : "Terminée";
+      {sortedRounds.map((round) => {
+        const statusLabel =
+          round.status === "pending"
+            ? "En attente"
+            : round.status === "in_progress"
+              ? "En cours"
+              : "Terminée";
 
-          return (
-            <TournamentDropDown
-              key={round.id}
-              nested
-              defaultCollapsed={round.status !== "in_progress"}
-              title={
-                <>
-                  Ronde {round.round_number}{" "}
-                  <span className="font-medium text-red-500">
-                    ({statusLabel})
-                  </span>
-                </>
-              }
-            >
-              {round.matches.length === 0 ? (
-                <p>Aucun match dans cette ronde.</p>
-              ) : (
-                <div className="overflow-x-auto border border-gray-200 rounded-lg">
-                  <table className="w-full border-collapse text-sm">
-                    <thead className="bg-gray-100 text-gray-700">
-                      <tr>
-                        <th className="p-2 border-b text-left">Table</th>
-                        <th className="p-2 border-b text-left">Joueur 1</th>
-                        <th className="p-2 border-b text-left">Joueur 2</th>
-                        <th className="p-2 border-b text-center">Score</th>
-                        <th className="p-2 border-b text-center">Statut</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[...round.matches]
-                        .sort((a, b) => a.id - b.id)
-                        .map((match, index) => {
-                          const isBye =
-                            match.player2_tournament_player_id == null;
-                          const p1Standing =
-                            standings[match.player1_tournament_player_id];
-                          const p2Standing = isBye
-                            ? undefined
-                            : standings[match.player2_tournament_player_id!];
+        return (
+          <TournamentDropDown
+            key={round.id}
+            nested
+            defaultCollapsed={round.status !== "in_progress"}
+            title={
+              <>
+                {t("matchmaking.round", { number: round.round_number })}{" "}
+                <span className="font-medium text-red-500">
+                  ({statusLabel})
+                </span>
+              </>
+            }
+          >
+            {round.matches.length === 0 ? (
+              <p>{t("matchmaking.noMatchesInRound")}</p>
+            ) : (
+              <div className="w-full text-sm text-left text-gray-500 overflow-x-auto">
+                <PaginationTableHead tableHeadItem={tableHead} />
+                <div className="grid grid-cols-12">
+                  {[...round.matches]
+                    .sort((a, b) => a.id - b.id)
+                    .map((match, index) => {
+                      const isBye =
+                        match.player2_tournament_player_id == null;
+                      const p1Standing =
+                        standings[match.player1_tournament_player_id];
+                      const p2Standing = isBye
+                        ? undefined
+                        : standings[match.player2_tournament_player_id!];
 
-                          const p1Name =
-                            p1Standing?.username ??
-                            `TP#${match.player1_tournament_player_id}`;
-                          const p2Name = isBye
-                            ? "BYE"
-                            : p2Standing?.username ??
-                              `TP#${match.player2_tournament_player_id}`;
+                      const p1Name =
+                        p1Standing?.username ??
+                        `TP#${match.player1_tournament_player_id}`;
+                      const p2Name = isBye
+                        ? "BYE"
+                        : p2Standing?.username ??
+                          `TP#${match.player2_tournament_player_id}`;
 
-                          const roundPoints =
-                            roundPointsByRoundId[round.id] || {};
-                          const p1Points =
-                            roundPoints[match.player1_tournament_player_id] ??
-                            0;
-                          const p2Points = isBye
-                            ? null
-                            : (roundPoints[
-                                match.player2_tournament_player_id!
-                              ] ?? 0);
+                      const roundPoints =
+                        roundPointsByRoundId[round.id] || {};
+                      const p1Points =
+                        roundPoints[match.player1_tournament_player_id] ?? 0;
+                      const p2Points = isBye
+                        ? null
+                        : (roundPoints[
+                            match.player2_tournament_player_id!
+                          ] ?? 0);
 
-                          const hasResult = matchHasReportedResult(match);
+                      const hasResult = matchHasReportedResult(match);
 
-                          return (
-                            <tr
-                              key={match.id}
-                              className={`border-b ${
-                                hasResult
-                                  ? "bg-emerald-50"
-                                  : "odd:bg-gray-100 bg-white"
-                              } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
-                            >
-                              <td className="p-2 text-center">
-                                Table {index + 1}
-                              </td>
-                              <td className="block p-2 text-center flex flex-col lscreen:flex-row justify-center items-center">
-                                <span className="font-bold">{p1Name}</span>
-                                <span>({p1Points} pts)</span>
-                              </td>
-                              <td className="p-2 text-center">
-                                <span className="font-bold">{p2Name}</span>
-                                <span>
-                                  {p2Points !== null
-                                    ? ` (${p2Points} pts)`
-                                    : ""}
-                                </span>
-                              </td>
-                              <td className="p-2 text-center">
-                                {hasResult ? (
-                                  `${match.player1_games_won} - ${match.player2_games_won}`
-                                ) : (
-                                  <span className="text-gray-400 italic">
-                                    —
-                                  </span>
-                                )}
-                              </td>
-                              <td
-                                className={`p-2 text-center ${
-                                  hasResult
-                                    ? "text-green-600 font-medium"
-                                    : match.status === "in_progress"
-                                      ? "text-amber-600"
-                                      : "text-red-500"
-                                }`}
-                              >
-                                {TOURNAMENT_MATCH_STATUS(match.status, {
-                                  isBye,
-                                })}
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
+                      return (
+                        <div
+                          key={match.id}
+                          className={`grid grid-cols-12 col-span-12 items-center border-b border-l border-r hover:bg-slate-200 ${
+                            hasResult ? "bg-emerald-50/60" : ""
+                          } ${isBye ? "border-l-4 border-l-amber-400" : ""}`}
+                        >
+                          <div className="col-span-2 p-2 font-medium text-gray-900">
+                            {t("matchmaking.table", { number: index + 1 })}
+                          </div>
+                          <div
+                            className={`col-span-2 p-2 ${
+                              hasResult
+                                ? "text-green-600 font-medium"
+                                : match.status === "in_progress"
+                                  ? "text-amber-600"
+                                  : "text-red-500"
+                            }`}
+                          >
+                            {TOURNAMENT_MATCH_STATUS(match.status, {
+                              isBye,
+                            })}
+                          </div>
+                          <div className="col-span-2 p-2 min-w-0">
+                            <span className="font-medium text-gray-900">
+                              {p1Name}
+                            </span>
+                            <span className="text-gray-500">
+                              {" "}
+                              ({t("matchmaking.points", { count: p1Points })})
+                            </span>
+                          </div>
+                          <div className="col-span-2 p-2 min-w-0">
+                            <span className="font-medium text-gray-900">
+                              {p2Name}
+                            </span>
+                            {p2Points !== null && (
+                              <span className="text-gray-500">
+                                {" "}
+                                ({t("matchmaking.points", { count: p2Points })})
+                              </span>
+                            )}
+                          </div>
+                          <div className="col-span-4 p-2 text-gray-800">
+                            {!hasResult ? (
+                              <span className="text-gray-400 italic">—</span>
+                            ) : isBye ? (
+                              <span className="font-medium text-green-700">
+                                {t("matchmaking.byeWin")}
+                              </span>
+                            ) : (
+                              (() => {
+                                const outcome = resolveMatchOutcome(
+                                  match.player1_games_won,
+                                  match.player2_games_won,
+                                  winsNeeded,
+                                  matchResolutionMode
+                                );
+                                let outcomeLabel: React.ReactNode;
+                                if (outcome === "draw") {
+                                  outcomeLabel = t("matchmaking.draw");
+                                } else if (outcome === "double_loss") {
+                                  outcomeLabel = t("matchmaking.doubleLoss");
+                                } else {
+                                  outcomeLabel = (
+                                    <>
+                                      {t("matchmaking.wonBy")}{" "}
+                                      <span className="font-bold">
+                                        {outcome === "p1_win"
+                                          ? p1Name
+                                          : p2Name}
+                                      </span>
+                                    </>
+                                  );
+                                }
+                                return (
+                                  <div className="space-y-0.5">
+                                    <div>{outcomeLabel}</div>
+                                    <div>
+                                      {t("matchmaking.score")} {p1Name}{" "}
+                                      {match.player1_games_won} -{" "}
+                                      {match.player2_games_won} {p2Name}
+                                    </div>
+                                  </div>
+                                );
+                              })()
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
-              )}
-            </TournamentDropDown>
-          );
-        })}
+              </div>
+            )}
+          </TournamentDropDown>
+        );
+      })}
     </TournamentDropDown>
   );
 };
