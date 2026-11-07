@@ -80,7 +80,7 @@ const ArchetypeMastersSection = ({
                 <div className="col-span-3 p-1.5 tablet:p-2 text-center text-gray-800">
                   {t("archetypePage.masterPoints", { count: player.points })}
                 </div>
-                <div className="col-span-3 p-1.5 tablet:p-2 text-right">
+                <div className="col-span-3 p-1.5 tablet:p-2 text-right bg-gray-100 self-stretch flex items-center justify-end border-l">
                   {player.userId ? (
                     <Link
                       to={
@@ -88,7 +88,7 @@ const ArchetypeMastersSection = ({
                           ? URL_FRONT_MY_PROFILE
                           : getUserProfilePath(player.userId)
                       }
-                      className="inline-flex items-center justify-center px-2.5 py-1 rounded bg-blue-700 text-white text-[11px] tablet:text-xs font-semibold hover:bg-blue-800"
+                      className="font-medium text-blue-600 hover:text-yellow-600 hover:underline cursor-pointer text-[11px] tablet:text-xs"
                     >
                       {t("archetypePage.masterViewProfile")}
                     </Link>

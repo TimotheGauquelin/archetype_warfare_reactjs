@@ -152,7 +152,7 @@ const ArchetypePage = () => {
           itemSubTitle={typeof archetype.main_info === "string" ? archetype.main_info : ""}
           itemImg={archetype.slider_img_url}
         />
-        <div className="relative px-3 pb-3 sscreen:px-3 lscreen:px-0 lscreen:max-w-containerSize m-auto lscreen:pb-20">
+        <div className="px-3 pb-3 lscreen:px-0 lscreen:pb-0">
           <MainInformationsBlock archetype={archetype} />
         </div>
       </div>
@@ -179,9 +179,15 @@ const ArchetypePage = () => {
               />
             </div>
             {sortedCards.length > 0 ? (
-              <div className="bg-gray-100 p-2.5 tablet:p-4 grid grid-cols-12 gap-2 tablet:gap-3 sscreen:gap-4 mb-4 border border-gray-200 rounded-lg">
+              <div className="bg-gray-100 p-2.5 tablet:p-4 grid grid-cols-2 tablet:grid-cols-4 lscreen:grid-cols-7 gap-2 tablet:gap-3 sscreen:gap-4 mb-4 border border-gray-200 rounded-lg">
                 {sortedCards.map((card, index) => (
-                  <Card key={card.card.id} card={card} index={index} />
+                  <Card
+                    key={card.card.id}
+                    card={card}
+                    index={index}
+                    imagePreset="card"
+                    className="relative col-span-1 cursor-pointer select-none touch-manipulation overflow-visible"
+                  />
                 ))}
               </div>
             ) : (
