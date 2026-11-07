@@ -39,24 +39,29 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
     </>
   );
 
+  const headerRounded =
+    !collapsible || isOpen ? "rounded-t-lg" : "rounded-lg";
+
   return (
-    <section className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+    <section className="bg-white border border-gray-200 rounded-lg shadow-sm">
       {collapsible ? (
         <button
           type="button"
-          className="w-full flex items-center justify-between gap-2 bg-gray-200 hover:bg-gray-300 px-4 py-3 text-left transition-colors"
+          className={`w-full flex items-center justify-between gap-2 bg-gray-200 hover:bg-gray-300 px-4 py-3 text-left transition-colors ${headerRounded}`}
           onClick={() => setIsOpen((v) => !v)}
           aria-expanded={isOpen}
         >
           {titleRow}
         </button>
       ) : (
-        <div className="flex items-center justify-between gap-2 bg-gray-200 px-4 py-3">
+        <div
+          className={`flex items-center justify-between gap-2 bg-gray-200 px-4 py-3 ${headerRounded}`}
+        >
           {titleRow}
         </div>
       )}
       {(!collapsible || isOpen) && (
-        <div className="p-4 tablet:p-5">{children}</div>
+        <div className="overflow-visible p-4 tablet:p-5">{children}</div>
       )}
     </section>
   );

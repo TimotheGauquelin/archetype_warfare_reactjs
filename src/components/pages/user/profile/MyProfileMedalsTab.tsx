@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { FaMedal, FaLock } from "react-icons/fa";
 import {
@@ -48,6 +49,11 @@ const MedalTile = ({
   locked?: boolean;
 }) => {
   const { t } = useTranslation();
+  const tileRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState<{ top: number; left: number } | null>(
+    null
+  );
   const earnedLabel =
     !locked && medal.earnedAt
       ? t("profile.medalsEarnedAt", {
@@ -55,8 +61,43 @@ const MedalTile = ({
         })
       : null;
 
+  const updateCoords = () => {
+    const el = tileRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    setCoords({
+      top: rect.top - 6,
+      left: rect.left + rect.width / 2,
+    });
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    updateCoords();
+    const onReposition = () => updateCoords();
+    window.addEventListener("scroll", onReposition, true);
+    window.addEventListener("resize", onReposition);
+    return () => {
+      window.removeEventListener("scroll", onReposition, true);
+      window.removeEventListener("resize", onReposition);
+    };
+  }, [open]);
+
   return (
-    <div className="group relative flex flex-col items-center gap-1.5 rounded border border-gray-200 bg-gray-50 p-2 text-center hover:border-amber-300 hover:bg-amber-50 transition-colors">
+    <div
+      ref={tileRef}
+      className="relative flex flex-col items-center gap-1.5 rounded border border-gray-200 bg-gray-50 p-2 text-center hover:border-amber-300 hover:bg-amber-50 transition-colors"
+      onMouseEnter={() => {
+        updateCoords();
+        setOpen(true);
+      }}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => {
+        updateCoords();
+        setOpen(true);
+      }}
+      onBlur={() => setOpen(false)}
+    >
       <MedalIcon medal={medal} locked={locked} />
       <p
         className={`text-xs font-semibold leading-tight line-clamp-2 w-full ${
@@ -66,21 +107,27 @@ const MedalTile = ({
         {medal.title}
       </p>
 
-      <div
-        role="tooltip"
-        className="pointer-events-none absolute left-1/2 bottom-full z-20 mb-1.5 w-max max-w-[14rem] -translate-x-1/2 rounded bg-gray-900 px-2.5 py-1.5 text-left opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
-      >
-        <p className="text-[11px] text-gray-100 leading-snug">
-          {medal.description}
-        </p>
-        {earnedLabel && (
-          <p className="text-[10px] text-amber-300 mt-1">{earnedLabel}</p>
+      {open &&
+        coords &&
+        createPortal(
+          <div
+            role="tooltip"
+            className="pointer-events-none fixed z-[100] w-max max-w-[14rem] -translate-x-1/2 -translate-y-full rounded bg-gray-900 px-2.5 py-1.5 text-left shadow-lg"
+            style={{ top: coords.top, left: coords.left }}
+          >
+            <p className="text-[11px] text-gray-100 leading-snug">
+              {medal.description}
+            </p>
+            {earnedLabel && (
+              <p className="text-[10px] text-amber-300 mt-1">{earnedLabel}</p>
+            )}
+            <span
+              className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900"
+              aria-hidden
+            />
+          </div>,
+          document.body
         )}
-        <span
-          className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-900"
-          aria-hidden
-        />
-      </div>
     </div>
   );
 };
