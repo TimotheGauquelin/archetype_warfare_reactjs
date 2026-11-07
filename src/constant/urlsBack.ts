@@ -270,6 +270,7 @@ export const URL_BACK_QUIZ_ADMIN_QUESTIONS = `/quizzes/admin/questions`;
 export const URL_BACK_QUIZ_ADMIN_QUESTION = (questionId: number | string) =>
   `/quizzes/admin/questions/${questionId}`;
 export const URL_BACK_QUIZ_SWITCH_ALL_TO_INACTIVE = `/quizzes/admin/questions/switchAllToInactive`;
+export const URL_BACK_QUIZ_SWITCH_ALL_TO_ACTIVE = `/quizzes/admin/questions/switchAllToActive`;
 export const URL_BACK_QUIZ_SWITCH_ALL_TO_NON_DAILY = `/quizzes/admin/questions/switchAllToNonDaily`;
 export const URL_BACK_QUIZ_ADMIN_SEASONS = `/quizzes/admin/seasons`;
 export const URL_BACK_QUIZ_ADMIN_SEASON = (seasonId: number | string) =>
