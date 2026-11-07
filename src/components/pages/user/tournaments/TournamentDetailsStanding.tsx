@@ -8,17 +8,21 @@ import { sortedDeck } from "@/utils/functions/sortedDeck";
 import { EXTRA_DECK_LABELS } from "@/utils/const/extraDeckConst";
 import DeckSection from "@/components/pages/userProfil/deckCommon/DeckSection";
 import DeckCardsGrid from "@/components/pages/userProfil/deckCommon/DeckCardsGrid";
+import type { MatchResolutionMode } from "@/utils/tournament/bestOfScore";
 
 interface TournamentDetailsStandingProps {
   standings: TournamentStanding[];
+  matchResolutionMode?: MatchResolutionMode;
 }
 
 export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps> = ({
   standings,
+  matchResolutionMode = "strict_wins",
 }) => {
   const { t } = useTranslation();
   const [selectedDeck, setSelectedDeck] = useState<TournamentPlayerDeckSnapshot | null>(null);
   const { cardTypes } = useCardTypes();
+  const showDrawsColumn = matchResolutionMode === "highest_score";
 
   const handleOpenDeck = (standing: TournamentStanding) => {
     if (!standing.deck) return;
@@ -74,7 +78,7 @@ export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps>
   if (!standings || standings.length === 0) {
     return (
       <p className="text-gray-600 text-sm">
-        Aucun classement disponible pour ce tournoi.
+        {t("tournamentDetail.standingsEmpty")}
       </p>
     );
   }
@@ -85,13 +89,29 @@ export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps>
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
-              <th className="px-3 py-2 border-b text-left">Rang</th>
-              <th className="px-3 py-2 border-b text-left">Joueur (Pts totaux)</th>
-              <th className="px-2 py-2 border-b text-center">Nb matchs gagnés (3pts)</th>
-              <th className="px-2 py-2 border-b text-center">Nb matchs perdu (0pts)</th>
-              <th className="px-2 py-2 border-b text-center">Nb matchs égalité (1pts)</th>
-              <th className="px-1 py-2 border-b text-center">Abandon</th>
-              <th className="px-1 py-2 border-b text-center">Deck</th>
+              <th className="px-3 py-2 border-b text-left">
+                {t("tournamentDetail.standingsColRank")}
+              </th>
+              <th className="px-3 py-2 border-b text-left">
+                {t("tournamentDetail.standingsColPlayer")}
+              </th>
+              <th className="px-2 py-2 border-b text-center">
+                {t("tournamentDetail.standingsColWins")}
+              </th>
+              <th className="px-2 py-2 border-b text-center">
+                {t("tournamentDetail.standingsColLosses")}
+              </th>
+              {showDrawsColumn && (
+                <th className="px-2 py-2 border-b text-center">
+                  {t("tournamentDetail.standingsColDraws")}
+                </th>
+              )}
+              <th className="px-1 py-2 border-b text-center">
+                {t("tournamentDetail.standingsColDrop")}
+              </th>
+              <th className="px-1 py-2 border-b text-center">
+                {t("tournamentDetail.standingsColDeck")}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -101,11 +121,19 @@ export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps>
                   #{standing.rank}
                 </td>
                 <td className="px-3 py-2 border-b">
-                  {standing.username && `${standing.username} (${standing.matches_breakdown.wins.total_points + standing.matches_breakdown.draws.total_points} pts)`}
+                  {standing.username &&
+                    t("tournamentDetail.standingsPts", {
+                      name: standing.username,
+                      pts:
+                        standing.matches_breakdown.wins.total_points +
+                        standing.matches_breakdown.draws.total_points,
+                    })}
                 </td>
                 <td className="px-2 py-2 border-b text-center">{standing.matches_breakdown.wins.count}</td>
                 <td className="px-2 py-2 border-b text-center">{standing.matches_breakdown.losses.count}</td>
-                <td className="px-2 py-2 border-b text-center">{standing.matches_breakdown.draws.count}</td>
+                {showDrawsColumn && (
+                  <td className="px-2 py-2 border-b text-center">{standing.matches_breakdown.draws.count}</td>
+                )}
                 <td className="px-1 py-2 border-b text-center">{standing.matches_breakdown.hasDropped ? t("common.yes") : t("common.no")}</td>
                 <td className="px-1 py-2 border-b text-center">
                   {standing.deck ? (
@@ -114,10 +142,12 @@ export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps>
                       className="text-blue-600 hover:underline cursor-pointer text-xs"
                       onClick={() => handleOpenDeck(standing)}
                     >
-                      Afficher le deck
+                      {t("tournamentDetail.showDeck")}
                     </button>
                   ) : (
-                    <span className="text-gray-400 text-xs">Aucun deck</span>
+                    <span className="text-gray-400 text-xs">
+                      {t("tournamentDetail.noDeck")}
+                    </span>
                   )}
                 </td>
               </tr>
@@ -129,22 +159,24 @@ export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps>
       <PopUp
         isOpen={!!selectedDeck}
         onClose={handleCloseDeck}
-        title={selectedDeck?.label ?? "Deck du joueur"}
+        title={selectedDeck?.label ?? t("tournamentDetail.playerDeckTitle")}
         className="max-w-3xl w-full"
       >
         {selectedDeck && sortedDeckCards ? (
           <div className="space-y-3">
             {selectedDeck.archetype?.name && (
               <p className="font-semibold">
-                Archétype : {selectedDeck.archetype.name}
+                {t("tournamentDetail.archetypeLabel", {
+                  name: selectedDeck.archetype.name,
+                })}
               </p>
             )}
             {mainDisplayCards.length > 0 && (
               <DeckSection
-                title="Main Deck"
+                title={t("tournamentDetail.mainDeck")}
                 badges={[
                   {
-                    label: "Total MainDeck",
+                    label: t("tournamentDetail.totalMainDeck"),
                     value: `${mainDisplayCards.reduce(
                       (acc, card) => acc + card.quantity,
                       0
@@ -158,10 +190,10 @@ export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps>
             )}
             {extraDisplayCards.length > 0 && (
               <DeckSection
-                title="Extra Deck"
+                title={t("tournamentDetail.extraDeck")}
                 badges={[
                   {
-                    label: "Total ExtraDeck",
+                    label: t("tournamentDetail.totalExtraDeck"),
                     value: `${extraDisplayCards.reduce(
                       (acc, card) => acc + card.quantity,
                       0
@@ -175,13 +207,13 @@ export const TournamentDetailsStanding: React.FC<TournamentDetailsStandingProps>
             )}
             {mainDisplayCards.length === 0 && extraDisplayCards.length === 0 && (
               <p className="text-gray-500 text-sm">
-                Aucune carte dans ce deck.
+                {t("tournamentDetail.deckEmpty")}
               </p>
             )}
           </div>
         ) : (
           <p className="text-gray-500 text-sm">
-            Aucun deck enregistré pour ce joueur.
+            {t("tournamentDetail.deckNoneRecorded")}
           </p>
         )}
       </PopUp>

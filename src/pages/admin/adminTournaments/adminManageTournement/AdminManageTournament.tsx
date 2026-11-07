@@ -431,6 +431,10 @@ const AdminManageTournament = () => {
                             {standings && standings.length > 0 ? (
                                 <TournamentDetailsStanding
                                     standings={standings}
+                                    matchResolutionMode={
+                                        tournament?.match_resolution_mode ??
+                                        "strict_wins"
+                                    }
                                 />
                             ) : (
                                 <p className="text-sm text-gray-600">

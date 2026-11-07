@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { Tournament } from "../../../../types";
 import { URL_FRONT_TOURNAMENT } from "../../../../constant/urlsFront";
 import { TOURNAMENT_STATUS } from "@/utils/trad/tournamentStatus";
@@ -25,6 +26,7 @@ interface TournamentCardProps {
 }
 
 const TournamentCard: React.FC<TournamentCardProps> = ({ tournament, to }) => {
+  const { t } = useTranslation();
   const playersCount = tournament.players?.length ?? 0;
   const maxPlayers = tournament.max_players;
   const statusLabel = TOURNAMENT_STATUS(tournament.status as string);
@@ -38,18 +40,30 @@ const TournamentCard: React.FC<TournamentCardProps> = ({ tournament, to }) => {
     >
       <h2 className="text-lg font-semibold text-gray-900 mb-2">{tournament.name}</h2>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-        <span className="font-medium">
-          {statusLabel}
-        </span>
+        <span className="font-medium">{statusLabel}</span>
         <span>
-          {playersCount}
-          {maxPlayers != null ? ` / ${maxPlayers}` : ""} joueurs
+          {maxPlayers != null
+            ? t("tournamentsPage.playersCountMax", {
+                count: playersCount,
+                max: maxPlayers,
+              })
+            : t("tournamentsPage.playersCount", { count: playersCount })}
         </span>
-        {tournament.max_number_of_rounds != null && <span>{tournament.max_number_of_rounds} rondes</span>}
+        {tournament.max_number_of_rounds != null && (
+          <span>
+            {t("tournamentsPage.roundsCount", {
+              count: tournament.max_number_of_rounds,
+            })}
+          </span>
+        )}
         {tournament.event_date && <span>{verbalDate(tournament.event_date)}</span>}
         {tournament.location && <span>{tournament.location}</span>}
         {tournament.is_online !== undefined && (
-          <span>{tournament.is_online ? "En ligne" : "Sur place"}</span>
+          <span>
+            {tournament.is_online
+              ? t("tournamentsPage.online")
+              : t("tournamentsPage.onSite")}
+          </span>
         )}
       </div>
     </Link>

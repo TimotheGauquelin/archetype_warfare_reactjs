@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import UserBasicLayout from "../layout";
 import { getOverlappingTournament, getTournamentById, getTournamentStandings, registerToTournament, unregisterFromTournament, type TournamentStanding } from "../../../services/tournament";
 import type { Tournament, TournamentPlayer } from "../../../types";
@@ -13,6 +14,7 @@ import TournamentDetailsMainInfo from "../../../components/pages/user/tournament
 import { TournamentDetailsStanding } from "@/components/pages/user/tournaments/TournamentDetailsStanding";
 
 const TournamentDetailPage: React.FC = () => {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const user = useSelector((state: RootState) => state.user);
   const [tournament, setTournament] = useState<Tournament | null>(null);
@@ -35,11 +37,11 @@ const TournamentDetailPage: React.FC = () => {
       const data = await getTournamentById(id);
       setTournament(data);
     } catch {
-      setError("Tournoi introuvable.");
+      setError(t("tournamentDetail.notFound"));
     } finally {
       setIsLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   const loadStandings = useCallback(async () => {
     if (!id) return;
@@ -49,11 +51,13 @@ const TournamentDetailPage: React.FC = () => {
       const data = await getTournamentStandings(id);
       setStandings(data);
     } catch (err) {
-      setStandingsError(err instanceof Error ? err.message : "Impossible de charger le classement final.");
+      setStandingsError(
+        err instanceof Error ? err.message : t("tournamentDetail.standingsError")
+      );
     } finally {
       setIsLoadingStandings(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   const handleRegister = async () => {
     if (!id || !user.token) return;
@@ -62,34 +66,34 @@ const TournamentDetailPage: React.FC = () => {
     setIsRegistering(true);
     try {
       await registerToTournament(id, user.token);
-      setRegisterSuccessMessage("Inscription enregistrée.");
+      setRegisterSuccessMessage(t("tournamentDetail.registerSuccess"));
       await loadTournament();
     } catch (err) {
       const overlapping = getOverlappingTournament(err);
       if (overlapping) {
         setRegisterErrorMessage(
           <>
-            Vous êtes déjà inscrit au tournoi{" "}
+            {t("tournamentDetail.overlapWarningBefore")}{" "}
             <Link
               to={URL_FRONT_TOURNAMENT(overlapping.id)}
               className="underline font-semibold text-red-700 hover:text-red-800"
             >
               {overlapping.name}
             </Link>
-            . Abandonnez-le pour vous inscrire ici.
+            {t("tournamentDetail.overlapWarningAfter")}
           </>
         );
       } else {
         setRegisterErrorMessage(
           err instanceof AppError || err instanceof Error
             ? err.message
-            : "Inscription impossible."
+            : t("tournamentDetail.registerError")
         );
       }
     } finally {
       setIsRegistering(false);
     }
-  }
+  };
 
   const handleUnregister = async () => {
     if (!id || !user.token) return;
@@ -99,12 +103,13 @@ const TournamentDetailPage: React.FC = () => {
       await unregisterFromTournament(id, user.token);
       await loadTournament();
     } catch (err) {
-      setUnregisterErrorMessage(err instanceof Error ? err.message : "Désinscription impossible.");
+      setUnregisterErrorMessage(
+        err instanceof Error ? err.message : t("tournamentDetail.unregisterError")
+      );
     } finally {
       setIsUnregistering(false);
     }
-  }
-
+  };
 
   useEffect(() => {
     loadTournament();
@@ -119,11 +124,11 @@ const TournamentDetailPage: React.FC = () => {
 
   if (!id) {
     return (
-      <UserBasicLayout mainTitle="Tournoi" subTitle="">
+      <UserBasicLayout mainTitle={t("tournamentDetail.pageTitle")} subTitle="">
         <div className="px-4 py-6 max-w-4xl mx-auto">
-          <p className="text-gray-600">Identifiant de tournoi manquant.</p>
+          <p className="text-gray-600">{t("tournamentDetail.missingId")}</p>
           <Link to={URL_FRONT_TOURNAMENTS} className="text-blue-600 hover:underline mt-2 inline-block">
-            Retour à la liste des tournois
+            {t("tournamentDetail.backToList")}
           </Link>
         </div>
       </UserBasicLayout>
@@ -132,9 +137,9 @@ const TournamentDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <UserBasicLayout mainTitle="Tournoi" subTitle="">
+      <UserBasicLayout mainTitle={t("tournamentDetail.pageTitle")} subTitle="">
         <div className="px-4 py-6 max-w-4xl mx-auto text-center text-gray-500">
-          Chargement du tournoi…
+          {t("tournamentDetail.loading")}
         </div>
       </UserBasicLayout>
     );
@@ -142,11 +147,13 @@ const TournamentDetailPage: React.FC = () => {
 
   if (error || !tournament) {
     return (
-      <UserBasicLayout mainTitle="Tournoi" subTitle="">
+      <UserBasicLayout mainTitle={t("tournamentDetail.pageTitle")} subTitle="">
         <div className="px-4 py-6 max-w-4xl mx-auto">
-          <p className="text-red-600" role="alert">{error ?? "Tournoi introuvable."}</p>
+          <p className="text-red-600" role="alert">
+            {error ?? t("tournamentDetail.notFound")}
+          </p>
           <Link to={URL_FRONT_TOURNAMENTS} className="text-blue-600 hover:underline mt-2 inline-block">
-            Retour à la liste des tournois
+            {t("tournamentDetail.backToList")}
           </Link>
         </div>
       </UserBasicLayout>
@@ -156,7 +163,7 @@ const TournamentDetailPage: React.FC = () => {
   return (
     <UserBasicLayout
       mainTitle={tournament.name}
-      subTitle="Détail du tournoi"
+      subTitle={t("tournamentDetail.pageSubtitle")}
     >
       <div className="px-4 py-6 max-w-4xl mx-auto space-y-6">
         <TournamentDetailsMainInfo
@@ -175,11 +182,11 @@ const TournamentDetailPage: React.FC = () => {
         {tournament.status.includes("finished") && (
           <section className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
             <h2 className="text-xl font-semibold text-gray-900">
-              Classement final
+              {t("tournamentDetail.finalStandings")}
             </h2>
             {isLoadingStandings && (
               <p className="text-gray-500 text-sm">
-                Chargement du classement final…
+                {t("tournamentDetail.standingsLoading")}
               </p>
             )}
             {standingsError && (
@@ -188,7 +195,12 @@ const TournamentDetailPage: React.FC = () => {
               </p>
             )}
             {standings && standings.length > 0 && (
-              <TournamentDetailsStanding standings={standings} />
+              <TournamentDetailsStanding
+                standings={standings}
+                matchResolutionMode={
+                  tournament.match_resolution_mode ?? "strict_wins"
+                }
+              />
             )}
           </section>
         )}
