@@ -4,6 +4,7 @@ import CardsSkeleton from "../skeletons/CardsSkeleton";
 import NoItemMessage from "./NoItemMessage";
 import Card from "./Card";
 import type { CardWithBanlistStatus } from "../../types";
+import type { ImagePreset } from "@/utils/image/optimizeImageUrl";
 
 interface CardsSectionProps {
   title: string;
@@ -11,9 +12,16 @@ interface CardsSectionProps {
   isFetching?: boolean;
   errorMessage?: string;
   skeletonItemCount?: number;
+  imagePreset?: ImagePreset;
 }
 
-const CardsSection: React.FC<CardsSectionProps> = ({ title, cards, isFetching, skeletonItemCount = 6 }) => {
+const CardsSection: React.FC<CardsSectionProps> = ({
+  title,
+  cards,
+  isFetching,
+  skeletonItemCount = 6,
+  imagePreset = "card",
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -27,7 +35,12 @@ const CardsSection: React.FC<CardsSectionProps> = ({ title, cards, isFetching, s
           <div className="bg-gray-100 p-2.5 tablet:p-4 grid grid-cols-12 gap-2 tablet:gap-3 sscreen:gap-4 border border-gray-200 rounded-lg">
             {
               cards.map((card, index) => (
-                <Card key={`${card.card.id}-${index}`} card={card} index={index} />
+                <Card
+                  key={`${card.card.id}-${index}`}
+                  card={card}
+                  index={index}
+                  imagePreset={imagePreset}
+                />
               ))
             }
           </div>

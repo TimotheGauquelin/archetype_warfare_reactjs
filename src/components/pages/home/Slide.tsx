@@ -98,7 +98,7 @@ const Slide: React.FC<SlideProps> = ({
             )}
           </h2>
           <p
-            className={`whiteVeilText leading-snug font-semibold text-base tablet:text-xl mb-4 transition-all duration-700 ease-out ${
+            className={`whiteVeilText leading-snug font-bold text-base tablet:text-xl mb-4 transition-all duration-700 ease-out ${
               showText
                 ? "translate-x-0 opacity-100"
                 : "-translate-x-full opacity-0"

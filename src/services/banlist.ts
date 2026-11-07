@@ -6,17 +6,38 @@ import type { Banlist, SetStateCallback } from "../types";
 import { handleApiError, getErrorMessage, logError } from "../utils/errorHandler";
 import type { NavigateFunction } from "react-router-dom";
 import type { ToastFunction } from "./websiteactions";
+import {
+  readBanlistSessionCache,
+  readBanlistSessionEtag,
+  writeBanlistSessionCache,
+} from "../utils/banlist/banlistSessionCache";
 
 /**
- * Retrieves the current banlist
+ * Retrieves the current banlist (ETag + sessionStorage).
  */
 export const getCurrentBanlist = async (
   setBanlist: SetStateCallback<Banlist | null>,
   showArchetypeCards: boolean
 ): Promise<void> => {
   try {
-    const response = await api_aw.get(URL_BACK_GET_CURRENT_BANLIST(showArchetypeCards));
+    const etag = readBanlistSessionEtag(showArchetypeCards);
+    const response = await api_aw.get(URL_BACK_GET_CURRENT_BANLIST(showArchetypeCards), {
+      headers: etag ? { "If-None-Match": etag } : undefined,
+      validateStatus: (status) => (status >= 200 && status < 300) || status === 304,
+    });
+
+    if (response.status === 304) {
+      const cached = readBanlistSessionCache(showArchetypeCards);
+      if (cached) setBanlist(cached);
+      return;
+    }
+
     if (response.status === 200 && response.data) {
+      const nextEtag =
+        (response.headers?.etag as string | undefined) ??
+        (response.headers?.ETag as string | undefined) ??
+        null;
+      writeBanlistSessionCache(showArchetypeCards, response.data, nextEtag);
       setBanlist(response.data);
     }
   } catch (error) {

@@ -7,8 +7,9 @@ import { STATUS_FORBIDDEN, STATUS_LIMITED, STATUS_SEMI_LIMITED } from "../../../
 import { sortArchetypeCards } from "../../../utils/functions/sortCards";
 import { useCardTypes } from "../../../hooks/useCardTypes";
 import { useDebounce } from "../../../utils/functions/debounce/useDebounce";
+import { readBanlistSessionCache } from "../../../utils/banlist/banlistSessionCache";
 import "../../../styles/Archetypes.scss";
-import type { Banlist as BanlistType, BanlistCard, SetStateCallback } from "../../../types";
+import type { Banlist as BanlistType, BanlistCard } from "../../../types";
 import UserHeroLayout from "../layout";
 import { SwitchInput } from "@/components/generic/form/SwitchInput";
 import { useTranslation } from "react-i18next";
@@ -21,15 +22,22 @@ const BanlistPage = () => {
     showArchetypeCards: false,
   });
   const [isFetching, setIsFetching] = useState(false);
-  const [banlist, setBanlist] = useState<BanlistType | null>(null);
+  const [banlist, setBanlist] = useState<BanlistType | null>(() =>
+    readBanlistSessionCache(false)
+  );
   const { cardTypes } = useCardTypes();
   const debouncedSearchInput = useDebounce(filters.banlistSearchInput, 300);
 
   const loadBanlistData = useCallback(async () => {
-    setIsFetching(true);
+    const cached = readBanlistSessionCache(filters.showArchetypeCards);
+    if (cached) {
+      setBanlist(cached);
+    } else {
+      setIsFetching(true);
+    }
 
     try {
-      await getCurrentBanlist(setBanlist as SetStateCallback<BanlistType | null>, filters.showArchetypeCards);
+      await getCurrentBanlist(setBanlist, filters.showArchetypeCards);
     } catch (err) {
       console.error("Erreur:", err);
     } finally {
@@ -112,18 +120,21 @@ const BanlistPage = () => {
             title={t("banlist.forbidden")}
             cards={cardsByStatus.forbidden}
             isFetching={isFetching}
+            imagePreset="card"
           />
 
           <CardsSection
             title={t("banlist.limited")}
             cards={cardsByStatus.limited}
             isFetching={isFetching}
+            imagePreset="card"
           />
 
           <CardsSection
             title={t("banlist.semiLimited")}
             cards={cardsByStatus.semiLimited}
             isFetching={isFetching}
+            imagePreset="card"
           />
       </PageContentBlock>
     </UserHeroLayout>

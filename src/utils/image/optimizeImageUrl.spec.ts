@@ -8,11 +8,9 @@ describe("optimizeImageUrl", () => {
     expect(optimizeImageUrl(undefined)).toBe("");
   });
 
-  it("rewrites ygoprodeck full cards to cards_small for card preset", () => {
+  it("keeps ygoprodeck full cards URL (no cards_small)", () => {
     const url = "https://images.ygoprodeck.com/images/cards/123.jpg";
-    expect(optimizeImageUrl(url, "card")).toBe(
-      "https://images.ygoprodeck.com/images/cards_small/123.jpg"
-    );
+    expect(optimizeImageUrl(url, "card")).toBe(url);
   });
 
   it("leaves non-cloudinary non-ygoprodeck URLs unchanged", () => {
@@ -20,25 +18,15 @@ describe("optimizeImageUrl", () => {
     expect(optimizeImageUrl(url, "card")).toBe(url);
   });
 
-  it("injects f_auto,q_auto:eco and width for slider URLs", () => {
+  it("keeps cloudinary slider URLs at original resolution", () => {
     const url =
       "https://res.cloudinary.com/dqfuwqmql/image/upload/v1763767085/jumbotron_archetypes/abc.png";
-    expect(optimizeImageUrl(url, "slider")).toBe(
-      "https://res.cloudinary.com/dqfuwqmql/image/upload/f_auto,q_auto:eco,c_limit,w_800/v1763767085/jumbotron_archetypes/abc.png"
-    );
+    expect(optimizeImageUrl(url, "slider")).toBe(url);
   });
 
-  it("uses q_auto:low and w_280 for card preset", () => {
+  it("keeps cloudinary card URLs at original resolution", () => {
     const url =
       "https://res.cloudinary.com/dqfuwqmql/image/upload/v1/introduction_archetypes/abc.png";
-    expect(optimizeImageUrl(url, "card")).toBe(
-      "https://res.cloudinary.com/dqfuwqmql/image/upload/f_auto,q_auto:low,c_limit,w_280/v1/introduction_archetypes/abc.png"
-    );
-  });
-
-  it("does not double-apply transforms", () => {
-    const url =
-      "https://res.cloudinary.com/dqfuwqmql/image/upload/f_auto,q_auto:low,c_limit,w_280/v1/folder/x.png";
     expect(optimizeImageUrl(url, "card")).toBe(url);
   });
 });
