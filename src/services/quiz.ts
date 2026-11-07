@@ -16,6 +16,7 @@ import {
   URL_BACK_QUIZ_START_FREE,
   URL_BACK_QUIZ_SUBMIT_ANSWER,
   URL_BACK_QUIZ_SWITCH_ALL_TO_INACTIVE,
+  URL_BACK_QUIZ_SWITCH_ALL_TO_ACTIVE,
   URL_BACK_QUIZ_SWITCH_ALL_TO_NON_DAILY,
   URL_BACK_QUIZ_THEMES,
 } from "../constant/urlsBack";
@@ -404,7 +405,7 @@ export type AdminQuizQuestion = {
   for_daily: boolean;
   /** Historique : déjà sortie au moins une fois en Daily */
   was_daily_question: boolean;
-  /** Secondes pour le daily : 0 = pas de chrono, max 30 */
+  /** Secondes pour le daily : 0 = pas de chrono ; défaut 30 */
   daily_time_limit_seconds: number;
   season_id?: number | null;
   scheduled_date?: string | null;
@@ -702,10 +703,11 @@ export const deleteAdminQuizQuestion = async (questionId: number): Promise<void>
 };
 
 export const switchAllQuizQuestionsToInactive = async (
-  setRefresh: SetStateCallback<boolean>
+  setRefresh: SetStateCallback<boolean>,
+  ids: number[]
 ): Promise<void> => {
   try {
-    const response = await api_aw.put(URL_BACK_QUIZ_SWITCH_ALL_TO_INACTIVE);
+    const response = await api_aw.put(URL_BACK_QUIZ_SWITCH_ALL_TO_INACTIVE, { ids });
     if (response.status === 200) {
       setRefresh(true);
     }
@@ -716,11 +718,28 @@ export const switchAllQuizQuestionsToInactive = async (
   }
 };
 
-export const switchAllQuizQuestionsToNonDaily = async (
-  setRefresh: SetStateCallback<boolean>
+export const switchAllQuizQuestionsToActive = async (
+  setRefresh: SetStateCallback<boolean>,
+  ids: number[]
 ): Promise<void> => {
   try {
-    const response = await api_aw.put(URL_BACK_QUIZ_SWITCH_ALL_TO_NON_DAILY);
+    const response = await api_aw.put(URL_BACK_QUIZ_SWITCH_ALL_TO_ACTIVE, { ids });
+    if (response.status === 200) {
+      setRefresh(true);
+    }
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "switchAllQuizQuestionsToActive");
+    throw appError;
+  }
+};
+
+export const switchAllQuizQuestionsToNonDaily = async (
+  setRefresh: SetStateCallback<boolean>,
+  ids: number[]
+): Promise<void> => {
+  try {
+    const response = await api_aw.put(URL_BACK_QUIZ_SWITCH_ALL_TO_NON_DAILY, { ids });
     if (response.status === 200) {
       setRefresh(true);
     }

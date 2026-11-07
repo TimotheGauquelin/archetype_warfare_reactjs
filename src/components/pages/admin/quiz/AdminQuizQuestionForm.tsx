@@ -232,7 +232,7 @@ export const emptyForm = (themeSlug = ""): QuestionFormState => ({
   is_active: true,
   for_daily: false,
   was_daily_question: false,
-  daily_time_limit_seconds: 15,
+  daily_time_limit_seconds: 30,
   season_id: null,
   scheduled_date: null,
   difficulty: "medium",
@@ -410,7 +410,7 @@ export const formFromQuestion = (q: AdminQuizQuestion): QuestionFormState => {
     was_daily_question: Boolean(q.was_daily_question),
     daily_time_limit_seconds: Math.max(
       0,
-      Math.min(30, Number(q.daily_time_limit_seconds) || 0)
+      Math.floor(Number(q.daily_time_limit_seconds) || 0)
     ),
     season_id: q.season_id ?? q.season?.id ?? null,
     scheduled_date: q.scheduled_date
@@ -764,7 +764,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
           ? 0
           : Math.max(
             0,
-            Math.min(30, Math.floor(Number(form.daily_time_limit_seconds) || 0))
+            Math.floor(Number(form.daily_time_limit_seconds) || 0)
           ),
       season_id: form.for_daily
         ? form.season_id != null && String(form.season_id) !== ""
@@ -940,7 +940,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
             </div>
 
             <label className="flex flex-col text-sm font-medium text-gray-800">
-              Énoncé
+              <span className="font-bold">Énoncé: <span className="font-semibold text-red-600">*</span></span>
               <textarea
                 required
                 rows={4}
@@ -950,6 +950,9 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                   setForm((prev) => ({ ...prev, prompt: e.target.value }))
                 }
               />
+              <span className="mt-1 text-xs text-gray-600 font-normal">
+                Formatage : **gras**, *italique*, Entrée pour une nouvelle ligne.
+              </span>
             </label>
           </div>
 
@@ -958,7 +961,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               form.type !== "hint_ladder" && (
               <div className="border border-gray-200 col-span-12 tablet:col-span-6 bg-gray-100 rounded p-2.5 tablet:p-3 space-y-3">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="font-medium text-gray-800">Image <span className="font-semibold text-red-600">*</span></p>
+                  <p className="font-bold">Image: <span className="font-semibold text-red-600">*</span></p>
                   <div className="flex flex-row items-center gap-2">
                     <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
                       Ajouter ma propre image
@@ -1057,8 +1060,8 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
             {form.type !== "zoom" && form.type !== "hint_ladder" && (
               <div className="flex flex-col border border-gray-200 bg-gray-100 rounded p-2.5 tablet:p-3 space-y-3 col-span-12 tablet:col-span-6">
                 <div className="flex flex-col gap-2">
-                  <label className="font-medium text-gray-800">
-                    Donner un indice pour trouver le nom de la carte
+                  <label className="font-bold">
+                    Indice:
                   </label>
                   <textarea
                     rows={3}
@@ -1070,8 +1073,8 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="flex flex-col font-medium text-gray-800">
-                    Donner une explication pour trouver le nom de la carte
+                  <label className="font-bold">
+                    Explication à la réponse:
                   </label>
                   <textarea
                     rows={4}
@@ -1081,14 +1084,15 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                       setForm((prev) => ({ ...prev, explanation: e.target.value }))
                     }
                   />
+                  <span className="text-xs text-gray-600 font-normal">
+                    Formatage : **gras**, *italique*, Entrée pour une nouvelle
+                    ligne.
+                  </span>
                 </div>
-                <div className="border border-gray-200 bg-white rounded p-3 space-y-3">
+                <div>
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="font-medium text-gray-800">
-                      Image d&apos;explication{" "}
-                      <span className="text-xs font-normal text-gray-500">
-                        (optionnel)
-                      </span>
+                    <p className="font-bold">
+                      Image d&apos;explication:
                     </p>
                     <div className="flex flex-row items-center gap-2">
                       <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
@@ -1503,11 +1507,10 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                 setAction={setForm}
                 inputType="number"
                 min={0}
-                max={30}
                 colSpanWidth="12"
               />
               <span className="mt-1 text-xs text-gray-600 font-normal">
-                0 = pas de chrono. Maximum 30 secondes.
+                0 = pas de chrono
               </span>
             </div>
           )}

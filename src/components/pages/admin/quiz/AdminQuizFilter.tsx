@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import usePopup from "../../../../hooks/usePopup";
 import PopUp from "../../../generic/PopUp";
@@ -6,10 +6,11 @@ import { Input } from "../../../generic/form/input/Input";
 import SelectInput from "../../../generic/form/SelectInput";
 import type { QuizDifficulty, QuizTheme } from "../../../../services/quiz";
 import {
+  switchAllQuizQuestionsToActive,
   switchAllQuizQuestionsToInactive,
   switchAllQuizQuestionsToNonDaily,
 } from "../../../../services/quiz";
-import { FaCalendar, FaEyeSlash } from "react-icons/fa";
+import { FaCalendar, FaEye, FaEyeSlash } from "react-icons/fa";
 
 export type AdminQuizFilters = {
   prompt: string;
@@ -27,6 +28,10 @@ interface AdminQuizFilterProps {
   setCriteria: React.Dispatch<React.SetStateAction<AdminQuizFilters>>;
   resetAllFilters: () => void;
   setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedIds: number[];
+  onClearSelection: () => void;
+  /** Force l'ouverture du panneau Actions générales (ex. au clic d'une checkbox). */
+  openGeneralActionsSignal?: number;
 }
 
 const TYPE_OPTIONS = [
@@ -66,9 +71,19 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
   setCriteria,
   resetAllFilters,
   setRefresh,
+  selectedIds,
+  onClearSelection,
+  openGeneralActionsSignal = 0,
 }) => {
   const [displayGeneralActions, setDisplayGeneralActions] = useState(false);
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
+  const selectedCount = selectedIds.length;
+
+  useEffect(() => {
+    if (openGeneralActionsSignal > 0) {
+      setDisplayGeneralActions(true);
+    }
+  }, [openGeneralActionsSignal]);
 
   const themeOptions = useMemo(
     () =>
@@ -89,16 +104,31 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
     });
   };
 
-  const handleSwitchAllToInactive = () => {
+  const requireSelection = (): boolean => {
+    if (selectedCount === 0) {
+      toast.warning("Sélectionnez au moins une question dans le tableau.");
+      return false;
+    }
+    return true;
+  };
+
+  const handleSwitchSelectedToInactive = () => {
+    if (!requireSelection()) return;
     showConfirmDialog({
-      title: "Mettre toutes les questions en inactif",
-      message:
-        "Êtes-vous sûr de vouloir désactiver toutes les questions du quiz ?",
+      title: "Mettre les questions sélectionnées en inactif",
+      message: `Êtes-vous sûr de vouloir désactiver ${selectedCount} question${
+        selectedCount > 1 ? "s" : ""
+      } ?`,
       onConfirm: () => {
         void (async () => {
           try {
-            await switchAllQuizQuestionsToInactive(setRefresh);
-            toast.success("Toutes les questions sont désormais inactives");
+            await switchAllQuizQuestionsToInactive(setRefresh, selectedIds);
+            toast.success(
+              `${selectedCount} question${selectedCount > 1 ? "s" : ""} désormais inactive${
+                selectedCount > 1 ? "s" : ""
+              }`
+            );
+            onClearSelection();
           } catch (error) {
             toast.error(
               error instanceof Error
@@ -111,16 +141,52 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
     });
   };
 
-  const handleSwitchAllToNonDaily = () => {
+  const handleSwitchSelectedToActive = () => {
+    if (!requireSelection()) return;
     showConfirmDialog({
-      title: "Libérer tous les créneaux Daily",
-      message:
-        "Retirer toutes les questions de leur jour planifié ? Elles restent dans le pool Daily si elles y étaient.",
+      title: "Mettre les questions sélectionnées en actif",
+      message: `Êtes-vous sûr de vouloir activer ${selectedCount} question${
+        selectedCount > 1 ? "s" : ""
+      } ?`,
       onConfirm: () => {
         void (async () => {
           try {
-            await switchAllQuizQuestionsToNonDaily(setRefresh);
-            toast.success("Tous les créneaux Daily ont été libérés");
+            await switchAllQuizQuestionsToActive(setRefresh, selectedIds);
+            toast.success(
+              `${selectedCount} question${selectedCount > 1 ? "s" : ""} désormais active${
+                selectedCount > 1 ? "s" : ""
+              }`
+            );
+            onClearSelection();
+          } catch (error) {
+            toast.error(
+              error instanceof Error
+                ? error.message
+                : "Impossible d'activer les questions"
+            );
+          }
+        })();
+      },
+    });
+  };
+
+  const handleSwitchSelectedToNonDaily = () => {
+    if (!requireSelection()) return;
+    showConfirmDialog({
+      title: "Libérer les créneaux Daily sélectionnés",
+      message: `Retirer ${selectedCount} question${
+        selectedCount > 1 ? "s" : ""
+      } de leur jour planifié ? Elles restent dans le pool Daily si elles y étaient.`,
+      onConfirm: () => {
+        void (async () => {
+          try {
+            await switchAllQuizQuestionsToNonDaily(setRefresh, selectedIds);
+            toast.success(
+              `Créneaux Daily libérés pour ${selectedCount} question${
+                selectedCount > 1 ? "s" : ""
+              }`
+            );
+            onClearSelection();
           } catch (error) {
             toast.error(
               error instanceof Error
@@ -153,6 +219,7 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
             }}
           >
             Actions générales
+            {selectedCount > 0 ? ` (${selectedCount})` : ""}
           </button>
         </div>
       </div>
@@ -240,19 +307,33 @@ const AdminQuizFilter: React.FC<AdminQuizFilterProps> = ({
         <div className="flex flex-col tablet:flex-row flex-wrap bg-white border border-gray-200 rounded-lg p-2 mt-2 gap-2">
           <button
             type="button"
-            className="flex items-center justify-center tablet:justify-start bg-orange-100 hover:bg-orange-200 p-2 tablet:p-1 rounded text-orange-500 font-semibold text-sm"
-            onClick={handleSwitchAllToNonDaily}
+            className="flex items-center justify-center tablet:justify-start bg-orange-100 hover:bg-orange-200 p-2 tablet:p-1 rounded text-orange-500 font-semibold text-sm disabled:opacity-50"
+            onClick={handleSwitchSelectedToNonDaily}
+            disabled={selectedCount === 0}
           >
             <FaCalendar className="mr-2 shrink-0" />
-            Changer toutes les questions en « non-planifiées » pour le daily
+            Passer les sélectionnées en « non-planifiées » pour le daily
+            {selectedCount > 0 ? ` (${selectedCount})` : ""}
           </button>
           <button
             type="button"
-            className="flex items-center justify-center tablet:justify-start bg-red-100 hover:bg-red-200 p-2 tablet:p-1 rounded text-red-500 font-semibold text-sm"
-            onClick={handleSwitchAllToInactive}
+            className="flex items-center justify-center tablet:justify-start bg-green-100 hover:bg-green-200 p-2 tablet:p-1 rounded text-green-600 font-semibold text-sm disabled:opacity-50"
+            onClick={handleSwitchSelectedToActive}
+            disabled={selectedCount === 0}
+          >
+            <FaEye className="mr-2 shrink-0" />
+            Changer la sélection en « actives »
+            {selectedCount > 0 ? ` (${selectedCount})` : ""}
+          </button>
+          <button
+            type="button"
+            className="flex items-center justify-center tablet:justify-start bg-red-100 hover:bg-red-200 p-2 tablet:p-1 rounded text-red-500 font-semibold text-sm disabled:opacity-50"
+            onClick={handleSwitchSelectedToInactive}
+            disabled={selectedCount === 0}
           >
             <FaEyeSlash className="mr-2 shrink-0" />
-            Changer toutes les questions en « inactives »
+            Changer la sélection en « inactives »
+            {selectedCount > 0 ? ` (${selectedCount})` : ""}
           </button>
         </div>
       )}

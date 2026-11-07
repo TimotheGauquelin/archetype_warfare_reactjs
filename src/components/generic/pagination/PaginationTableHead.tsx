@@ -1,9 +1,10 @@
 import React from "react";
 import PaginationTableHeadItem from "./PaginationTableHeadItem";
 
-interface TableHeadItem {
+export interface TableHeadItem {
   colspan: string;
-  label: string;
+  label?: string;
+  content?: React.ReactNode;
 }
 
 interface PaginationTableHeadProps {
@@ -19,7 +20,9 @@ const PaginationTableHead: React.FC<PaginationTableHeadProps> = ({ tableHeadItem
             key={index}
             colspan={headItem.colspan}
             label={headItem.label}
-          />
+          >
+            {headItem.content}
+          </PaginationTableHeadItem>
         );
       })}
     </div>

@@ -40,6 +40,8 @@ const AdminQuizQuestions = () => {
   const [currentPage, setCurrentPage] = usePersistedListPage(
     "admin-quiz-questions"
   );
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [openGeneralActionsSignal, setOpenGeneralActionsSignal] = useState(0);
 
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
 
@@ -117,9 +119,61 @@ const AdminQuizQuestions = () => {
     return filteredQuestions.slice(start, start + PAGE_SIZE);
   }, [filteredQuestions, page]);
 
+  const pageIds = useMemo(
+    () => paginatedQuestions.map((q) => q.id),
+    [paginatedQuestions]
+  );
+
+  const allPageSelected =
+    pageIds.length > 0 && pageIds.every((id) => selectedIds.has(id));
+
+  const clearSelection = useCallback(() => {
+    setSelectedIds(new Set());
+  }, []);
+
+  const handleToggleSelect = useCallback((id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    setOpenGeneralActionsSignal((n) => n + 1);
+  }, []);
+
+  const handleToggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      const everySelected =
+        pageIds.length > 0 && pageIds.every((id) => next.has(id));
+      if (everySelected) {
+        pageIds.forEach((id) => next.delete(id));
+      } else {
+        pageIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+    setOpenGeneralActionsSignal((n) => n + 1);
+  }, [pageIds]);
+
+  // Nettoie la sélection si des IDs ne sont plus dans la liste filtrée
+  useEffect(() => {
+    const valid = new Set(filteredQuestions.map((q) => q.id));
+    setSelectedIds((prev) => {
+      let changed = false;
+      const next = new Set<number>();
+      prev.forEach((id) => {
+        if (valid.has(id)) next.add(id);
+        else changed = true;
+      });
+      return changed ? next : prev;
+    });
+  }, [filteredQuestions]);
+
   const resetAllFilters = () => {
     setFilters(defaultFilters());
     setCurrentPage(1);
+    clearSelection();
     toast.success("Vous avez mis les filtres à leur état d'origine.");
   };
 
@@ -175,6 +229,9 @@ const AdminQuizQuestions = () => {
           setCriteria={setFilters}
           resetAllFilters={resetAllFilters}
           setRefresh={setRefresh}
+          selectedIds={[...selectedIds]}
+          onClearSelection={clearSelection}
+          openGeneralActionsSignal={openGeneralActionsSignal}
         />
 
         <AdminQuizPagination
@@ -186,6 +243,10 @@ const AdminQuizQuestions = () => {
           totalPages={totalPages}
           pageSize={PAGE_SIZE}
           loading={loading}
+          selectedIds={selectedIds}
+          allPageSelected={allPageSelected}
+          onToggleSelect={handleToggleSelect}
+          onToggleSelectAll={handleToggleSelectAll}
           onDelete={handleDelete}
           onToggleActive={(q) => void handleToggleActive(q)}
         />

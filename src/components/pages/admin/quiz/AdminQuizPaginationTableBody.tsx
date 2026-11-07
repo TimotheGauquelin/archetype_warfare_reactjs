@@ -36,13 +36,23 @@ const typeLabel = (type: AdminQuizQuestion["type"]) => {
 
 interface AdminQuizPaginationTableBodyProps {
   arrayItems: AdminQuizQuestion[];
+  selectedIds?: Set<number>;
+  onToggleSelect?: (id: number) => void;
   onDelete: (question: AdminQuizQuestion) => void;
   onToggleActive: (question: AdminQuizQuestion) => void;
+  selectionEnabled?: boolean;
 }
 
 const AdminQuizPaginationTableBody: React.FC<
   AdminQuizPaginationTableBodyProps
-> = ({ arrayItems, onDelete, onToggleActive }) => {
+> = ({
+  arrayItems,
+  selectedIds,
+  onToggleSelect,
+  onDelete,
+  onToggleActive,
+  selectionEnabled = false,
+}) => {
   if (!arrayItems || arrayItems.length === 0) {
     return (
       <div className="col-span-12 p-4 border border-l border-r text-center">
@@ -54,6 +64,20 @@ const AdminQuizPaginationTableBody: React.FC<
   return (
     <div className="grid grid-cols-12">
       {arrayItems.map((item) => {
+        const checked = selectionEnabled
+          ? Boolean(selectedIds?.has(item.id))
+          : false;
+        const rowCheckbox = selectionEnabled ? (
+          <input
+            type="checkbox"
+            className="h-3.5 w-3.5 shrink-0 cursor-pointer accent-blue-600"
+            checked={checked}
+            onChange={() => onToggleSelect?.(item.id)}
+            onClick={(e) => e.stopPropagation()}
+            aria-label={`Sélectionner la question ${item.id}`}
+          />
+        ) : null;
+
         const activeToggle = (
           <label className="inline-flex relative items-center cursor-pointer">
             <input
@@ -86,20 +110,25 @@ const AdminQuizPaginationTableBody: React.FC<
 
         return (
           <div
-            className="col-span-12 border-b border-l border-r hover:bg-slate-200"
+            className={`col-span-12 border-b border-l border-r hover:bg-slate-200 ${
+              checked ? "bg-blue-50 hover:bg-blue-100" : ""
+            }`}
             key={item.id}
           >
             {/* Mobile card */}
             <div className="sscreen:hidden p-3 space-y-2">
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-xs text-gray-500">#{item.id}</p>
-                  <p
-                    className="font-medium text-gray-900 leading-snug line-clamp-3"
-                    title={item.prompt}
-                  >
-                    {item.prompt}
-                  </p>
+                <div className="min-w-0 flex items-start gap-2">
+                  {rowCheckbox}
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-500">#{item.id}</p>
+                    <p
+                      className="font-medium text-gray-900 leading-snug line-clamp-3"
+                      title={item.prompt}
+                    >
+                      {item.prompt}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex flex-col items-end gap-1 shrink-0 text-sm">
                   {actions}
@@ -135,7 +164,10 @@ const AdminQuizPaginationTableBody: React.FC<
 
             {/* Desktop row */}
             <div className="hidden sscreen:grid grid-cols-12 items-center cursor-pointer">
-              <div className="col-span-1 p-1">{item.id}</div>
+              <div className="col-span-1 p-1 flex items-center gap-1.5 min-w-0">
+                {rowCheckbox}
+                <span className="truncate">{item.id}</span>
+              </div>
               <div className="col-span-1 p-1">{item.theme?.label ?? "—"}</div>
               <div className="col-span-1 p-1">{typeLabel(item.type)}</div>
               <div className="col-span-3 p-1 line-clamp-2" title={item.prompt}>
