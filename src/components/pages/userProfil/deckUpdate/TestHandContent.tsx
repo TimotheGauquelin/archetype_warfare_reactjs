@@ -42,6 +42,14 @@ const TestHandContent: React.FC<TestHandContentProps> = ({
     });
   }, []);
 
+  const drawNewHand = useCallback(() => {
+    const shuffled = shuffleCards(deckCards);
+    setDrawState({
+      hand: shuffled.slice(0, initialHandSize),
+      remaining: shuffled.slice(initialHandSize),
+    });
+  }, [deckCards, initialHandSize]);
+
   return (
     <div>
       <div className="grid grid-cols-10 gap-1 p-2">
@@ -55,12 +63,18 @@ const TestHandContent: React.FC<TestHandContentProps> = ({
           />
         ))}
       </div>
-      <div className="flex justify-center p-2">
+      <div className="flex flex-wrap justify-center gap-2 p-2">
         <Button
           className="bg-blue-800 hover:bg-blue-900 text-white px-4 py-2 rounded font-semibold shadow-sm"
           buttonText={t("profile.addCardToHand")}
           action={drawOneCard}
           disabled={drawState.remaining.length === 0}
+        />
+        <Button
+          className="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded font-semibold shadow-sm"
+          buttonText={t("profile.newHand")}
+          action={drawNewHand}
+          disabled={deckCards.length === 0}
         />
       </div>
     </div>
