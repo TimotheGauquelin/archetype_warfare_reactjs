@@ -5,6 +5,7 @@ import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
 import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
 import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
 import { shuffle } from "@/utils/shuffle";
+import { renderInlineBold } from "@/utils/quiz/renderInlineBold";
 
 export type OrderItem = {
   id: string;
@@ -94,7 +95,9 @@ const OrderQuestion = ({
         <p className="text-sm font-semibold text-gray-700">{questionNumberLabel}</p>
       )}
       <QuizQuestionBadges question={question} />
-      <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
+      <p className="text-md md:text-lg font-medium text-gray-900">
+        {renderInlineBold(question.prompt)}
+      </p>
       <p className="text-sm text-gray-600">{t("quiz.orderHint")}</p>
 
       {question.hint && !hasAnswered && (

@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { renderInlineBold } from "@/utils/quiz/renderInlineBold";
 
 interface QuizExplanationBlockProps {
   explanation?: string | null;
@@ -19,7 +20,7 @@ const QuizExplanationBlock = ({
       {text && (
         <p>
           <span className="font-semibold">{t("quiz.explanation")} :</span>{" "}
-          {text}
+          {renderInlineBold(text)}
         </p>
       )}
       {image && (

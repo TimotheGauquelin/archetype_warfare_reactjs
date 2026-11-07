@@ -7,6 +7,7 @@ import QuizChoiceCardPicker, {
   emptyChoiceCard,
   type ChoiceCard,
 } from "@/components/pages/admin/quiz/QuizChoiceCardPicker";
+import { renderInlineBold } from "@/utils/quiz/renderInlineBold";
 
 const PHASE_SCALES = [4.5, 2.2, 1] as const;
 const PHASE_POINTS = [3, 2, 1] as const;
@@ -171,7 +172,9 @@ const ZoomQuestion = ({
         <p className="text-sm font-semibold text-gray-700">{questionNumberLabel}</p>
       )}
       <QuizQuestionBadges question={question} />
-      <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
+      <p className="text-md md:text-lg font-medium text-gray-900">
+        {renderInlineBold(question.prompt)}
+      </p>
       <p className="text-sm text-gray-600">{t("quiz.zoomHint")}</p>
 
       {!hasAnswered && (

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import PopUp from "@/components/generic/PopUp";
 import usePopup from "@/hooks/usePopup";
+import { renderInlineBold } from "@/utils/quiz/renderInlineBold";
 
 interface QuizQuestionHintProps {
   hint: string;
@@ -51,7 +52,8 @@ const QuizQuestionHint = ({
           </button>
         ) : (
           <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded p-2">
-            <span className="font-semibold">{t("quiz.hint")} :</span> {hint}
+            <span className="font-semibold">{t("quiz.hint")} :</span>{" "}
+            {renderInlineBold(hint)}
             {forfeitPointsOnHint && (
               <span className="block mt-1 text-xs font-medium text-amber-900">
                 {t("quiz.hintForfeitActive")}

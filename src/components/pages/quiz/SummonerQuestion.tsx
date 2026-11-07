@@ -5,6 +5,7 @@ import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
 import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
 import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
 import { shuffle } from "@/utils/shuffle";
+import { renderInlineBold } from "@/utils/quiz/renderInlineBold";
 
 type SummonerProposition = {
   id: string;
@@ -90,7 +91,9 @@ const SummonerQuestion = ({
         <p className="text-sm font-semibold text-gray-700">{questionNumberLabel}</p>
       )}
       <QuizQuestionBadges question={question} />
-      <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
+      <p className="text-md md:text-lg font-medium text-gray-900">
+        {renderInlineBold(question.prompt)}
+      </p>
       {materialCountHint != null && materialCountHint > 0 && (
         <p className="inline-flex items-center rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-sm font-bold text-amber-900">
           {t("quiz.summonerMaterialHint", { count: materialCountHint })}

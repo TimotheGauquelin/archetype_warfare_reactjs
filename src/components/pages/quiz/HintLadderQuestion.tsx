@@ -7,6 +7,7 @@ import QuizChoiceCardPicker, {
   emptyChoiceCard,
   type ChoiceCard,
 } from "@/components/pages/admin/quiz/QuizChoiceCardPicker";
+import { renderInlineBold } from "@/utils/quiz/renderInlineBold";
 
 const LEVELS = ["hard", "medium", "easy", "newbie"] as const;
 type HintLevel = (typeof LEVELS)[number];
@@ -96,7 +97,9 @@ const HintLadderQuestion = ({
         <p className="text-sm font-semibold text-gray-700">{questionNumberLabel}</p>
       )}
       <QuizQuestionBadges question={question} />
-      <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
+      <p className="text-md md:text-lg font-medium text-gray-900">
+        {renderInlineBold(question.prompt)}
+      </p>
       <p className="text-sm text-gray-600">{t("quiz.hintLadderIntro")}</p>
 
       {!hasAnswered && (
@@ -123,7 +126,7 @@ const HintLadderQuestion = ({
                   ({POINTS_BY_LEVEL[level]} {t("quiz.hintLadderPts")})
                 </span>
               </p>
-              <p className="text-sm text-gray-900">{text}</p>
+              <p className="text-sm text-gray-900">{renderInlineBold(text)}</p>
             </div>
           );
         })}

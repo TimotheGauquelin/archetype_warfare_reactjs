@@ -4,6 +4,7 @@ import QuizQuestionBadges from "@/components/pages/quiz/QuizQuestionBadges";
 import QuizQuestionHint from "@/components/pages/quiz/QuizQuestionHint";
 import QuizExplanationBlock from "@/components/pages/quiz/QuizExplanationBlock";
 import { shuffle } from "@/utils/shuffle";
+import { renderInlineBold } from "@/utils/quiz/renderInlineBold";
 
 const DEFAULT_QUESTION_ARTWORK = "/assets/question_artwork.png";
 
@@ -78,7 +79,9 @@ const TrueFalseQuestion = ({
         <p className="text-sm font-semibold text-gray-700">{questionNumberLabel}</p>
       )}
       <QuizQuestionBadges question={question} />
-      <p className="text-md md:text-lg font-medium text-gray-900">{question.prompt}</p>
+      <p className="text-md md:text-lg font-medium text-gray-900">
+        {renderInlineBold(question.prompt)}
+      </p>
 
       {question.hint && !hasAnswered && (
         <QuizQuestionHint
