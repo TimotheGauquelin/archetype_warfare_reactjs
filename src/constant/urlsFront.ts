@@ -2,6 +2,7 @@ export const URL_FRONT_HOME = "/";
 export const URL_FRONT_LOGIN = "/login";
 export const URL_FRONT_REGISTER = "/register";
 export const URL_FRONT_TERMS_AND_CONDITIONS = "/terms-and-conditions";
+export const URL_FRONT_CGU = "/cgu";
 export const URL_FRONT_DISCORD_CALLBACK = "/login/discord/callback";
 export const URL_FRONT_ABOUT = "/about";
 export const URL_FRONT_PASSWORD_LOST = "/password-lost";

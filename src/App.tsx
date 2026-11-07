@@ -25,6 +25,7 @@ import {
   URL_FRONT_DISCORD_CALLBACK,
   URL_FRONT_REGISTER,
   URL_FRONT_TERMS_AND_CONDITIONS,
+  URL_FRONT_CGU,
   URL_FRONT_MY_PROFILE,
   URL_FRONT_PASSWORD_LOST,
   URL_FRONT_PASSWORD_RESET,
@@ -229,6 +230,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route path={URL_FRONT_TERMS_AND_CONDITIONS} element={<TermsAndConditions />} />
+            <Route path={URL_FRONT_CGU} element={<TermsAndConditions />} />
             <Route path={URL_FRONT_ARCHETYPES} element={<ArchetypesPage />} />
             <Route path="/archetype/:slug" element={<ArchetypePage />} />
             <Route path={URL_FRONT_ABOUT} element={<ConceptPage />} />

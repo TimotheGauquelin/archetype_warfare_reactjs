@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import { DISCORD_URL, TWITCH_URL } from "@/utils/const/extraLink";
+import { URL_FRONT_CGU } from "@/constant/urlsFront";
 import { currentYear } from "@/utils/date/currentYear";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -14,9 +16,17 @@ const Footer: React.FC = () => {
           {t("footer.legal")}
         </p>
         <div className="border-t border-gray-300 pt-3 tablet:pt-4 flex flex-col gap-3 sscreen:flex-row sscreen:justify-between sscreen:items-center">
-          <p className="text-gray-700 text-xs tablet:text-sm order-2 sscreen:order-1">
-            {t("footer.copyright", { year: currentYear })}
-          </p>
+          <div className="order-2 sscreen:order-1 space-y-1">
+            <p className="text-gray-700 text-xs tablet:text-sm">
+              {t("footer.copyright", { year: currentYear })}
+            </p>
+            <Link
+              to={URL_FRONT_CGU}
+              className="text-gray-700 text-xs tablet:text-sm underline hover:text-gray-900"
+            >
+              {t("footer.cguLink")}
+            </Link>
+          </div>
           <p className="text-gray-700 text-xs tablet:text-sm leading-snug order-3 sscreen:order-2">
             {t("footer.tagline")}
           </p>
