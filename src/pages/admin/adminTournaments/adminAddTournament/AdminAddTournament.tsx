@@ -27,6 +27,7 @@ type TournamentFormState = {
   match_resolution_mode: string;
   max_players: string;
   location: string;
+  description: string;
   event_date: string;
   event_date_end: string;
   is_online: boolean;
@@ -83,6 +84,7 @@ const AdminAddTournament = () => {
     match_resolution_mode: "strict_wins",
     max_players: "16",
     location: "",
+    description: "",
     event_date: defaultStart(),
     event_date_end: defaultEnd(),
     is_online: false,
@@ -141,7 +143,8 @@ const AdminAddTournament = () => {
             ? "highest_score"
             : "strict_wins",
         max_players: Number(form.max_players) || 2,
-        location: form.location.trim(),
+        location: form.is_online ? "" : form.location.trim(),
+        description: form.description.trim() || null,
         event_date: start.toISOString(),
         event_date_end: end.toISOString(),
         is_online: form.is_online,
@@ -228,22 +231,40 @@ const AdminAddTournament = () => {
           <Input
             label="Nom du tournoi"
             required
-            colSpanWidth="6"
+            colSpanWidth={form.is_online ? "12" : "6"}
             inputType="text"
             attribute="name"
             data={form}
             setAction={setForm}
             placeholder="Ex: Championnat du printemps 2025"
           />
-          <Input
-            label="Lieu"
-            inputType="text"
-            colSpanWidth="6"
-            attribute="location"
-            data={form}
-            setAction={setForm}
-            placeholder="Ex: Paris"
-          />
+          {!form.is_online && (
+            <Input
+              label="Lieu"
+              inputType="text"
+              colSpanWidth="6"
+              attribute="location"
+              data={form}
+              setAction={setForm}
+              placeholder="Ex: Paris"
+            />
+          )}
+          <div className="col-span-12 flex flex-col text-sm font-medium text-gray-800">
+            <span className="font-bold">Description:</span>
+            <textarea
+              rows={4}
+              className="mt-1 p-2 rounded font-normal border border-gray-300"
+              value={form.description}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, description: e.target.value }))
+              }
+              placeholder="Présentation du tournoi…"
+            />
+            <span className="mt-1 text-xs text-gray-600 font-normal">
+              Formatage : **gras**, __souligné__, *italique*, *red*rouge*red*,
+              *green*vert*green*, Entrée = nouvelle ligne.
+            </span>
+          </div>
           <Input
             label="Nombre max de joueurs"
             required

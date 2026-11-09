@@ -35,6 +35,7 @@ const AdminUpdateTournament = () => {
     status: "registration_open",
     max_players: 2,
     location: "",
+    description: "",
     event_date: "",
     event_date_end: "",
     is_online: false,
@@ -106,6 +107,7 @@ const AdminUpdateTournament = () => {
           is_official: data.is_official ?? false,
           until_winner: data.until_winner,
           location: data.location,
+          description: data.description ?? "",
           event_date: formatDateForInputWithHours(data.event_date),
           event_date_end: formatDateForInputWithHours(data.event_date_end),
           is_online: data.is_online,
@@ -153,7 +155,13 @@ const AdminUpdateTournament = () => {
         name: (tournament.name ?? "").trim(),
         status: tournament.status,
         max_players: Number(tournament.max_players) || 2,
-        location: (tournament.location ?? "").trim(),
+        location: tournament.is_online
+          ? ""
+          : (tournament.location ?? "").trim(),
+        description:
+          typeof tournament.description === "string"
+            ? tournament.description.trim() || null
+            : null,
         event_date: start.toISOString(),
         event_date_end: end.toISOString(),
         is_online: tournament.is_online,
@@ -283,15 +291,40 @@ const AdminUpdateTournament = () => {
             setAction={setTournament}
             options={statusOptions}
           />
-          <Input
-            label="Lieu"
-            inputType="text"
-            attribute="location"
-            data={tournament}
-            setAction={setTournament}
-            placeholder="Ex: Paris - Salle des Duelistes"
-            colSpanWidth="6"
-          />
+          {!tournament.is_online && (
+            <Input
+              label="Lieu"
+              inputType="text"
+              attribute="location"
+              data={tournament}
+              setAction={setTournament}
+              placeholder="Ex: Paris - Salle des Duelistes"
+              colSpanWidth="6"
+            />
+          )}
+          <div className="col-span-12 flex flex-col text-sm font-medium text-gray-800">
+            <span className="font-bold">Description:</span>
+            <textarea
+              rows={4}
+              className="mt-1 p-2 rounded font-normal border border-gray-300"
+              value={
+                typeof tournament.description === "string"
+                  ? tournament.description
+                  : ""
+              }
+              onChange={(e) =>
+                setTournament((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }))
+              }
+              placeholder="Présentation du tournoi…"
+            />
+            <span className="mt-1 text-xs text-gray-600 font-normal">
+              Formatage : **gras**, __souligné__, *italique*, *red*rouge*red*,
+              *green*vert*green*, Entrée = nouvelle ligne.
+            </span>
+          </div>
           <Input
             label="Nombre max de joueurs"
             required

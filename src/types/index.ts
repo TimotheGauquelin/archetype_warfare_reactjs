@@ -443,6 +443,7 @@ export interface Tournament {
   status: TournamentStatus;
   max_players: number;
   location: string;
+  description?: string | null;
   event_date: string;
   event_date_end: string;
   is_online: boolean;

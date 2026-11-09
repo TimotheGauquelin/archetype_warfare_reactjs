@@ -523,6 +523,7 @@ export interface CreateTournamentPayload {
   match_resolution_mode?: "strict_wins" | "highest_score";
   max_players: number;
   location: string;
+  description?: string | null;
   event_date: string;
   event_date_end: string;
   is_online: boolean;
@@ -566,6 +567,7 @@ export interface UpdateTournamentPayload {
   status: string;
   max_players: number;
   location: string;
+  description?: string | null;
   event_date: string;
   event_date_end: string;
   is_online: boolean;

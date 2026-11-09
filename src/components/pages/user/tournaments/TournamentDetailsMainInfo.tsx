@@ -9,6 +9,7 @@ import { verbalDate } from "@/utils/date/verbalDate";
 import { deadlineWindow } from "@/utils/functions/deadlineWindow/deadlineWindow";
 import { getWinsNeeded } from "@/utils/tournament/bestOfScore";
 import TournamentLocationMap from "@/components/pages/user/tournaments/TournamentLocationMap";
+import { renderFormattedText } from "@/utils/quiz/renderFormattedText";
 
 function getStatusBadgeClass(status: string | undefined): string {
   switch (status) {
@@ -218,6 +219,18 @@ const TournamentDetailsMainInfo: React.FC<TournamentDetailProps> = ({
           {TOURNAMENT_STATUS(tournament.status as string)}
         </span>
       </p>
+
+      {typeof tournament.description === "string" &&
+        tournament.description.trim() && (
+          <div className="text-sm text-gray-800 bg-slate-50 border border-slate-200 rounded-lg p-3">
+            <p className="text-gray-500 mb-1 font-medium">
+              {t("tournamentDetail.description")}
+            </p>
+            <div className="leading-relaxed">
+              {renderFormattedText(tournament.description.trim())}
+            </div>
+          </div>
+        )}
 
       {tournament.location?.trim() ? (
         <div className="grid grid-cols-1 sscreen:grid-cols-2 gap-4 sscreen:gap-6 items-start">
