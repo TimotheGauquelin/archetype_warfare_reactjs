@@ -369,6 +369,7 @@ const MyTournamentDetail: React.FC = () => {
                         {
                             tournament.require_deck_list && (
                                 <Section title={t("profile.myDeckSection")}>
+                                    {!tournament?.status?.includes("finished") && (
                                     <p>
                                         <span >{t("profile.registeredToTournament")}</span>
                                         {tournament.tournament_player.deck_id
@@ -380,6 +381,7 @@ const MyTournamentDetail: React.FC = () => {
                                             )
                                         }
                                     </p>
+                                    )}
                                     <div>
                                         {isRegistrationOpen && playableDecksLoading ? (
                                             <p className="text-gray-500 text-sm">{t("profile.loadingPlayableDecks")}</p>
