@@ -54,7 +54,7 @@ const CountrySelect = ({
 
   return (
     <div className="flex flex-col rounded-md space-y-2 mt-2 relative">
-      {label && <label className="font-medium">{label}</label>}
+      {label && <label className="font-bold">{label}:</label>}
 
       {value && selectedName ? (
         <div className="flex items-center gap-2 p-2 bg-gray-100 rounded-md">

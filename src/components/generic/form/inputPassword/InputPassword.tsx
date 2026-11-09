@@ -37,9 +37,9 @@ export const InputPassword = <T extends Record<string, unknown> = Record<string,
       data-testid="password-input-container"
       className={`flex flex-col col-span-${colSpanWidth}`}
     >
-      <label htmlFor={inputId} className="mt-2 font-medium">
+      <label htmlFor={inputId} className="mt-2 font-bold">
         {label}:
-        {required && <span className="text-red-500 font-bold">*</span>}
+        {required && <span className="text-red-500">*</span>}
       </label>
       <div className="flex mt-2 group">
         <input
