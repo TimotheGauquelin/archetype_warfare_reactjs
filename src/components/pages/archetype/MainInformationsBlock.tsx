@@ -9,7 +9,7 @@ interface MainInformationsBlockProps {
   archetype: Archetype;
 }
 
-type InfoItem = { key: string; label: string; iconSrc: string };
+type InfoItem = { key: string; label: string; iconSrc?: string };
 
 const InfoSection: React.FC<{ title: string; items: InfoItem[] }> = ({
   title,
@@ -25,18 +25,26 @@ const InfoSection: React.FC<{ title: string; items: InfoItem[] }> = ({
           key={item.key}
           className="col-span-1 tablet:col-span-2 text-center min-w-0"
         >
-          <div className="aspect-square w-full max-w-[36px] tablet:max-w-[52px] mx-auto">
-            <img
-              className="w-full h-full object-contain"
-              src={item.iconSrc}
-              alt=""
-              width={52}
-              height={52}
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          <p className="pt-0.5 tablet:pt-1 font-medium text-[10px] tablet:text-xs leading-tight truncate">
+          {item.iconSrc ? (
+            <div className="aspect-square w-full max-w-[36px] tablet:max-w-[52px] mx-auto">
+              <img
+                className="w-full h-full object-contain"
+                src={item.iconSrc}
+                alt=""
+                width={52}
+                height={52}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          ) : null}
+          <p
+            className={`font-medium text-[10px] tablet:text-xs leading-tight ${
+              item.iconSrc
+                ? "pt-0.5 tablet:pt-1 truncate"
+                : "pt-0.5 tablet:pt-1 whitespace-normal break-words"
+            }`}
+          >
             {item.label}
           </p>
         </div>
@@ -75,6 +83,7 @@ const MainInformationsBlock: React.FC<MainInformationsBlockProps> = ({
         iconSrc: `${import.meta.env.BASE_URL}assets/cardAttributeIcon/${attribute.label.toLowerCase()}.png`,
       })) ?? [];
 
+  // Icônes d’invocation temporairement désactivées : label seul en attendant les assets.
   const summons: InfoItem[] =
     archetype?.summon_mechanics
       ?.slice()
@@ -83,7 +92,7 @@ const MainInformationsBlock: React.FC<MainInformationsBlockProps> = ({
       .map((sm) => ({
         key: `sm-${sm.label}`,
         label: isFrench ? summonMechanicsToFrench(sm.label) : sm.label,
-        iconSrc: `${import.meta.env.BASE_URL}assets/cardAttributeIcon/${sm.label}.png`,
+        // iconSrc: `${import.meta.env.BASE_URL}assets/cardAttributeIcon/${sm.label}.png`,
       })) ?? [];
 
   return (
