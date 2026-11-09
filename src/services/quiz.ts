@@ -374,6 +374,8 @@ export type AdminQuizQuestion = {
     | "hint_ladder"
     | string;
   prompt: string;
+  /** Mots-clés admin pour la recherche */
+  keywords?: string[];
   payload: {
     choicesMode?: "text" | "cards";
     choices?: Array<string | QuizMcqChoice>;
@@ -446,6 +448,8 @@ export type AdminQuizQuestionInput = {
     | "zoom"
     | "hint_ladder";
   prompt: string;
+  /** Mots-clés (tableau ou chaîne séparée par des virgules) */
+  keywords?: string[] | string;
   payload: {
     choicesMode?: "text" | "cards";
     choices?: Array<string | QuizMcqChoice>;

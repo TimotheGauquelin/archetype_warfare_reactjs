@@ -107,9 +107,22 @@ const AdminQuizQuestions = () => {
   ]);
 
   const filteredQuestions = useMemo(() => {
-    const needle = filters.prompt.trim().toLowerCase();
-    if (!needle) return questions;
-    return questions.filter((q) => q.prompt.toLowerCase().includes(needle));
+    const raw = filters.prompt.trim().toLowerCase();
+    if (!raw) return questions;
+    const terms = raw
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const matchTerm = (q: (typeof questions)[number], term: string) => {
+      if (q.prompt.toLowerCase().includes(term)) return true;
+      const keywords = Array.isArray(q.keywords) ? q.keywords : [];
+      return keywords.some((k) => String(k).toLowerCase().includes(term));
+    };
+    if (terms.length <= 1) {
+      const term = terms[0] ?? raw;
+      return questions.filter((q) => matchTerm(q, term));
+    }
+    return questions.filter((q) => terms.every((term) => matchTerm(q, term)));
   }, [questions, filters.prompt]);
 
   const totalPages = Math.max(1, Math.ceil(filteredQuestions.length / PAGE_SIZE));

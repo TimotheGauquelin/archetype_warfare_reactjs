@@ -180,6 +180,8 @@ export type QuestionFormState = {
   themeSlug: string;
   type: QuestionType;
   prompt: string;
+  /** Saisie admin : mots-clés séparés par des virgules */
+  keywords: string;
   choicesMode: ChoicesMode;
   choices: [ChoiceCard, ChoiceCard, ChoiceCard, ChoiceCard];
   correctIndex: number;
@@ -216,6 +218,7 @@ export const emptyForm = (themeSlug = ""): QuestionFormState => ({
   themeSlug,
   type: "mcq",
   prompt: "",
+  keywords: "",
   choicesMode: "text",
   choices: emptyChoices(),
   correctIndex: 0,
@@ -385,6 +388,7 @@ export const formFromQuestion = (q: AdminQuizQuestion): QuestionFormState => {
       : q.theme?.slug ?? "",
     type,
     prompt: q.prompt,
+    keywords: Array.isArray(q.keywords) ? q.keywords.join(", ") : "",
     choicesMode: detectChoicesMode(q),
     choices: [
       normalizeChoice(q.payload.choices?.[0]),
@@ -752,6 +756,10 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
         : form.themeSlug,
       type: form.type,
       prompt: form.prompt.trim(),
+      keywords: form.keywords
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean),
       payload: buildPayload(form),
       points:
         form.type === "zoom" || form.type === "hint_ladder"
@@ -951,7 +959,26 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                 }
               />
               <span className="mt-1 text-xs text-gray-600 font-normal">
-                Formatage : **gras**, *italique*, Entrée pour une nouvelle ligne.
+                Formatage : **gras**, __souligné__, *italique*,
+                *red*rouge*red*, *green*vert*green*, Entrée = nouvelle ligne.
+                Carte (gras + survol) : [**Nom FR exact**]
+                ex. [**Burstinatrix, HÉROS Élémentaire**].
+              </span>
+            </label>
+
+            <label className="flex flex-col text-sm font-medium text-gray-800">
+              <span className="font-bold">Mots-clés</span>
+              <input
+                type="text"
+                className="mt-1 p-2 rounded font-normal"
+                value={form.keywords}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, keywords: e.target.value }))
+                }
+                placeholder="Kaiba, HEROS, Synchro"
+              />
+              <span className="mt-1 text-xs text-gray-600 font-normal">
+                Séparez les mots-clés par une virgule
               </span>
             </label>
           </div>
@@ -1085,8 +1112,9 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                     }
                   />
                   <span className="text-xs text-gray-600 font-normal">
-                    Formatage : **gras**, *italique*, Entrée pour une nouvelle
-                    ligne.
+                    Formatage : **gras**, __souligné__, *italique*,
+                    *red*rouge*red*, *green*vert*green*, [**carte**],
+                    Entrée = nouvelle ligne.
                   </span>
                 </div>
                 <div>
