@@ -163,6 +163,43 @@ export const getCardById = async (
   return response.data;
 };
 
+export type ExactNameCard = {
+  id: string;
+  name: string;
+  artwork_url: string | null;
+};
+
+/** Match exact du nom (locale FR par défaut) — survol quiz. */
+export const findCardByExactName = async (
+  name: string,
+  locale: "fr" | "en" = "fr",
+  signal?: AbortSignal
+): Promise<ExactNameCard | null> => {
+  const trimmed = name.trim();
+  if (!trimmed) return null;
+  try {
+    const params = new URLSearchParams({
+      name: trimmed,
+      locale,
+    });
+    const response = await api_aw.get<ExactNameCard>(
+      `/cards/by-exact-name?${params.toString()}`,
+      signal ? { signal } : undefined
+    );
+    if (response.status === 200 && response.data?.id) {
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    const appError = handleApiError(error);
+    if (appError.code === "CANCELED" || appError.statusCode === 404) {
+      return null;
+    }
+    logError(appError, "findCardByExactName");
+    return null;
+  }
+};
+
 export type CardUpdatePayload = {
   name?: string;
   description?: string | null;
