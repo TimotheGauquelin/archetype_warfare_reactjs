@@ -349,11 +349,14 @@ export interface PasswordResetResult {
  * En cas de succès, l'appelant doit gérer toast et navigation.
  */
 export const updatePasswordWithResult = async (
-  userId: number | string,
+  resetToken: string,
   form: PasswordUpdateForm
 ): Promise<PasswordResetResult> => {
   try {
-    const response = await api_aw.put(URL_BACK_UPDATE_PASSWORD(userId), form);
+    const response = await api_aw.put(URL_BACK_UPDATE_PASSWORD, {
+      ...form,
+      token: resetToken,
+    });
     if (response.status === 200) {
       return { success: true };
     }
@@ -376,7 +379,7 @@ export const updatePasswordWithResult = async (
  * Met à jour le mot de passe d'un utilisateur
  */
 export const updatePassword = async (
-  userId: number | string,
+  resetToken: string,
   form: PasswordUpdateForm,
   navigate: NavigateFunction,
   setMultipleErrors: SetStateCallback<string | Record<string, string[]>>,
@@ -385,7 +388,10 @@ export const updatePassword = async (
 ): Promise<void> => {
   try {
     setIsUpdating(true);
-    const response = await api_aw.put(URL_BACK_UPDATE_PASSWORD(userId), form);
+    const response = await api_aw.put(URL_BACK_UPDATE_PASSWORD, {
+      ...form,
+      token: resetToken,
+    });
     if (response.status === 200) {
       toast.success("Mot de passe modifié avec succès !");
       setTimeout(() => {
@@ -415,14 +421,11 @@ export const updatePassword = async (
 export const updateMyLocale = async (
   userId: number | string,
   locale: CardLocale,
-  token: string
+  _token?: string | null
 ): Promise<void> => {
   try {
-    await api_aw.patch(
-      URL_BACK_UPDATE_MY_PROFILE(userId),
-      { locale },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    // Auth via cookie httpOnly (withCredentials sur api_aw)
+    await api_aw.patch(URL_BACK_UPDATE_MY_PROFILE(userId), { locale });
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "updateMyLocale");
@@ -441,15 +444,11 @@ export const updateMyProfile = async (
     profile_picture_url?: string | null;
     locale?: CardLocale;
   },
-  token: string,
+  _token: string | null | undefined,
   toast: ToastFunction
 ): Promise<User | null> => {
   try {
-    const response = await api_aw.patch(
-      URL_BACK_UPDATE_MY_PROFILE(userId),
-      payload,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const response = await api_aw.patch(URL_BACK_UPDATE_MY_PROFILE(userId), payload);
     if (response.status === 200) {
       toast.success("Profil mis à jour");
       return (response.data?.user as User) ?? null;
@@ -470,15 +469,11 @@ export const updateMyProfile = async (
 export const changeMyPassword = async (
   userId: number | string,
   form: ChangePasswordForm,
-  token: string,
+  _token: string | null | undefined,
   toast: ToastFunction
 ): Promise<boolean> => {
   try {
-    const response = await api_aw.put(
-      URL_BACK_CHANGE_MY_PASSWORD(userId),
-      form,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const response = await api_aw.put(URL_BACK_CHANGE_MY_PASSWORD(userId), form);
     if (response.status === 200) {
       toast.success("Mot de passe mis à jour");
       return true;

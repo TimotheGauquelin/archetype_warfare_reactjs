@@ -44,11 +44,11 @@ const PasswordResetPage = () => {
       if (!hasAcceptedTerms) {
         return { error: t("auth.acceptTermsRequired") };
       }
-      if (!user?.id) {
+      if (!resetToken) {
         return { error: t("auth.passwordResetInvalidSession") };
       }
 
-      const result = await updatePasswordWithResult(user.id, {
+      const result = await updatePasswordWithResult(resetToken, {
         password,
         confirmPassword,
         has_accepted_terms_and_conditions: true,

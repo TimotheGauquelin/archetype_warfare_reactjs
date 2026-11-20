@@ -64,7 +64,7 @@ describe("PasswordResetPage (integration)", () => {
         `${API_BASE_URL}${URL_BACK_GET_USER_BY_RESET_PASSWORD_TOKEN("fake-token-123")}`,
         () => HttpResponse.json(mockUser)
       ),
-      http.put(`${API_BASE_URL}${URL_BACK_UPDATE_PASSWORD(1)}`, () => new HttpResponse(null, { status: 200 }))
+      http.put(`${API_BASE_URL}${URL_BACK_UPDATE_PASSWORD}`, () => new HttpResponse(null, { status: 200 }))
     );
   });
 
@@ -217,7 +217,7 @@ describe("PasswordResetPage (integration)", () => {
     it("display the error returned by the API in case of failure", async () => {
       const apiErrorMessage = "Le mot de passe ne respecte pas les critères.";
       server.use(
-        http.put(`${API_BASE_URL}${URL_BACK_UPDATE_PASSWORD(1)}`, () => {
+        http.put(`${API_BASE_URL}${URL_BACK_UPDATE_PASSWORD}`, () => {
           return HttpResponse.json({ message: apiErrorMessage }, { status: 400 });
         })
       );

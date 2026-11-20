@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { User } from "../../types";
+import { clearSessionToken, setSessionToken } from "@/utils/auth/sessionToken";
 
 const initialState: User = {
   isAuthenticated: false,
@@ -8,6 +9,7 @@ const initialState: User = {
   email: null,
   roles: [],
   token: null,
+  expiresAt: null,
   biography: null,
   country: null,
   profile_picture_url: null,
@@ -23,6 +25,7 @@ interface SetUserPayload {
   email: string | null;
   roles: string[];
   token: string | null;
+  expiresAt?: number | null;
 }
 
 interface UpdateUserPayload {
@@ -45,6 +48,12 @@ const userSlice = createSlice({
       state.email = action.payload.email;
       state.roles = action.payload.roles;
       state.token = action.payload.token;
+      state.expiresAt = action.payload.expiresAt ?? null;
+      if (action.payload.token) {
+        setSessionToken(action.payload.token);
+      } else {
+        clearSessionToken();
+      }
     },
     clearUser: (state) => {
       state.isAuthenticated = false;
@@ -53,12 +62,14 @@ const userSlice = createSlice({
       state.email = null;
       state.roles = [];
       state.token = null;
+      state.expiresAt = null;
       state.biography = null;
       state.country = null;
       state.profile_picture_url = null;
       state.loved_archetype_id = null;
       state.loved_archetype = null;
       state.quiz_points = 0;
+      clearSessionToken();
     },
     updateUser: (state, action: PayloadAction<UpdateUserPayload>) => {
       if (action.payload.biography !== undefined) {
@@ -79,8 +90,8 @@ const userSlice = createSlice({
       if (action.payload.quiz_points !== undefined) {
         state.quiz_points = action.payload.quiz_points;
       }
-    }
-  }
+    },
+  },
 });
 
 export const { setUser, clearUser, updateUser } = userSlice.actions;

@@ -67,7 +67,16 @@ describe("LoginPage (integration)", () => {
     navigateMock.mockClear();
     server.resetHandlers(
       http.post(`${API_BASE_URL}${URL_BACK_LOGIN}`, () => {
-        return HttpResponse.json({ token: "fake-jwt" });
+        return HttpResponse.json({
+          success: true,
+          expiresAt: Math.floor(Date.now() / 1000) + 7200,
+          user: {
+            id: "1",
+            email: "test@example.com",
+            username: "test",
+            roles: ["User"],
+          },
+        });
       }),
       http.get(`${API_BASE_URL}${URL_BACK_GET_CONFIG}`, () => {
         return HttpResponse.json({ registration_enabled: true });

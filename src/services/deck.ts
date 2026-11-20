@@ -10,7 +10,7 @@ import type { ToastFunction } from "./websiteactions";
  * Récupère tous les decks d'un utilisateur
  */
 export const getMyDecks = async (
-  token: string,
+  token?: string | null,
   id: number | string,
   setMyDecks: SetStateCallback<DeckWithArchetypeDetails[]>,
   setIsFetching: SetStateCallback<boolean>,
@@ -36,7 +36,7 @@ export const getMyDecks = async (
  * Récupère tous les decks jouables d'un utilisateur (is_playable=true).
  */
 export const getMyPlayableDecks = async (
-  token: string,
+  token?: string | null,
   userId: number | string
 ): Promise<Deck[]> => {
   const response = await api_aw_token(token).get(URL_BACK_GET_PLAYABLE_DECKS(userId));
@@ -50,7 +50,7 @@ export const getMyPlayableDecks = async (
  * Récupère un deck par son ID
  */
 export const getDeckById = async (
-  token: string,
+  token?: string | null,
   deckId: number | string,
   setDeck: SetStateCallback<Deck>,
   setIsFetching: SetStateCallback<boolean>,
@@ -77,7 +77,7 @@ export const getDeckById = async (
  * Récupère un deck par son ID et le renvoie directement (sans navigation/toast).
  */
 export const fetchDeckById = async (
-  token: string,
+  token?: string | null,
   deckId: number | string
 ): Promise<Deck | null> => {
   try {
@@ -97,7 +97,7 @@ export const fetchDeckById = async (
  * Crée un nouveau deck
  */
 export const createDeck = async (
-  token: string,
+  token?: string | null,
   myDeck: Partial<Deck>,
   toast: ToastFunction,
   navigate: NavigateFunction,
@@ -125,7 +125,7 @@ export const createDeck = async (
  * Met à jour un deck
  */
 export const updateDeck = async (
-  token: string,
+  token?: string | null,
   deckId: number | string,
   myDeck: Partial<Deck>,
   toast: ToastFunction,
@@ -154,7 +154,7 @@ export const updateDeck = async (
  * Supprime un deck
  */
 export const deleteMyDeck = async (
-  token: string,
+  token?: string | null,
   deckId: number | string,
   setIsLoading: SetStateCallback<boolean>,
   navigate: NavigateFunction,

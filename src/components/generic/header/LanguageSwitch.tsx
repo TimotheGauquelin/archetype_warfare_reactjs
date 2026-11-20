@@ -26,7 +26,7 @@ const LanguageSwitch = () => {
     dispatch(setLocale(option));
     void i18n.changeLanguage(option);
 
-    if (user?.isAuthenticated && user.id && user.token) {
+    if (user?.isAuthenticated && user.id) {
       void updateMyLocale(user.id, option, user.token);
     }
   };
