@@ -33,3 +33,24 @@ export const getImagesFromCloudinaryFolder = async (
     setState([]);
   }
 };
+
+/** Upload une image (base64 data URL) vers un dossier Cloudinary. */
+export const uploadImageToFolder = async (
+  imageData: string,
+  folderName: string
+): Promise<string | null> => {
+  try {
+    const response = await api_aw.post(`/images/upload`, {
+      imageData,
+      folderName,
+    });
+    if (response.status === 200 || response.status === 201) {
+      return (response.data?.url as string) ?? null;
+    }
+    return null;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "uploadImageToFolder");
+    throw appError;
+  }
+};

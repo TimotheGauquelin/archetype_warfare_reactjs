@@ -2,21 +2,33 @@ import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../adminLayout";
-import { getImagesFromCloudinaryFolder, type CloudinaryImage } from "../../../services/file";
+import {
+  getImagesFromCloudinaryFolder,
+  type CloudinaryImage,
+} from "../../../services/file";
 import PopUp from "../../../components/generic/PopUp";
 import { FaTrash } from "react-icons/fa";
 import { api_aw_token } from "../../../api/api_aw_token";
 import type { RootState } from "../../../types";
 import { optimizeImageUrl } from "../../../utils/image/optimizeImageUrl";
+import { FOLDER_JUMBOTRON } from "../../../utils/const/cloudinary";
+
+const checkerBg =
+  "bg-[linear-gradient(45deg,#e2e8f0_25%,transparent_25%),linear-gradient(-45deg,#e2e8f0_25%,transparent_25%),linear-gradient(45deg,transparent_75%,#e2e8f0_75%),linear-gradient(-45deg,transparent_75%,#e2e8f0_75%)] bg-[length:16px_16px] bg-[position:0_0,0_8px,8px_-8px,-8px_0]";
 
 const AdminFilesJumbotron = () => {
-  const [archetypeJumbotronsImages, setArchetypeJumbotronsImages] = useState<CloudinaryImage[]>([]);
+  const [archetypeJumbotronsImages, setArchetypeJumbotronsImages] = useState<
+    CloudinaryImage[]
+  >([]);
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { token } = useSelector((state: RootState) => state.user);
+  const { token, isAuthenticated } = useSelector(
+    (state: RootState) => state.user
+  );
 
   const fetchImages = useCallback(() => {
-    getImagesFromCloudinaryFolder("jumbotron_archetypes", setArchetypeJumbotronsImages);
+    getImagesFromCloudinaryFolder(FOLDER_JUMBOTRON, setArchetypeJumbotronsImages);
   }, []);
 
   useEffect(() => {
@@ -24,7 +36,7 @@ const AdminFilesJumbotron = () => {
   }, [fetchImages]);
 
   const handleConfirmDelete = async () => {
-    if (!imageToDelete || !token) {
+    if (!imageToDelete || !isAuthenticated) {
       setImageToDelete(null);
       return;
     }
@@ -48,29 +60,35 @@ const AdminFilesJumbotron = () => {
         catchphrase="Vérifiez tous les fichiers"
         returnButton={true}
       />
-      <div className="grid grid-cols-12">
+      <div className="grid grid-cols-1 sscreen:grid-cols-2 gap-4 rounded-xl bg-slate-50 border border-slate-200 p-4">
         {archetypeJumbotronsImages.map((jumbotron, index) => {
           const imageUrl = jumbotron.secure_url || jumbotron.url || "";
           return (
             <div
-              className="relative col-span-4 m-1 rounded border-2 border-black group"
-              key={index}
+              className={`relative aspect-[16/9] rounded-lg border border-slate-300 overflow-hidden group shadow-sm ${checkerBg}`}
+              key={jumbotron.public_id || index}
             >
-              <img
-                className="w-full h-full object-cover"
-                src={optimizeImageUrl(imageUrl, "thumb")}
-                alt={String(index)}
-                width={200}
-                height={200}
-                loading="lazy"
-                decoding="async"
-              />
               <button
                 type="button"
-                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-600 text-white p-1 rounded-full shadow"
-                onClick={() => setImageToDelete(imageUrl)}
+                className="block w-full h-full cursor-zoom-in"
+                onClick={() => setPreviewUrl(imageUrl)}
+                title="Agrandir"
               >
-                <FaTrash className="w-4 h-4" />
+                <img
+                  className="w-full h-full object-contain"
+                  src={optimizeImageUrl(imageUrl, "card")}
+                  alt={String(index)}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+              <button
+                type="button"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-red-600 text-white p-1.5 rounded-full shadow"
+                onClick={() => setImageToDelete(imageUrl)}
+                aria-label="Supprimer"
+              >
+                <FaTrash className="w-3.5 h-3.5" />
               </button>
             </div>
           );
@@ -105,6 +123,21 @@ const AdminFilesJumbotron = () => {
             {isDeleting ? "Suppression..." : "Supprimer"}
           </button>
         </div>
+      </PopUp>
+
+      <PopUp
+        isOpen={previewUrl !== null}
+        onClose={() => setPreviewUrl(null)}
+        title="Aperçu"
+        showCloseButton
+      >
+        {previewUrl ? (
+          <img
+            src={optimizeImageUrl(previewUrl, "card")}
+            alt=""
+            className={`w-full max-h-[70vh] object-contain rounded-lg ${checkerBg}`}
+          />
+        ) : null}
       </PopUp>
     </AdminStructure>
   );
