@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../adminLayout";
 import AdminArchetypeFilter from "../../../components/pages/admin/archetype/AdminArchetypeFilter";
@@ -9,7 +10,8 @@ import { URL_FRONT_ADMIN_ARCHETYPE_ADD_FORM } from "../../../constant/urlsFront"
 import PopUp from "../../../components/generic/PopUp";
 import usePopup from "../../../hooks/usePopup";
 import usePersistedListPage from "../../../hooks/usePersistedListPage";
-import type { Archetype, SearchCriteria } from "../../../types";
+import type { Archetype, RootState, SearchCriteria } from "../../../types";
+import { useDebounce } from "@/utils/functions/debounce/useDebounce";
 
 const AdminArchetype = () => {
   const [currentPage, setCurrentPage] = usePersistedListPage("admin-archetypes");
@@ -32,12 +34,23 @@ const AdminArchetype = () => {
   const [_errorMessage, setErrorMessage] = useState("");
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(false);
+  const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
+  const debouncedName = useDebounce((filters.name ?? "").trim(), 450);
+  const prevDebouncedNameRef = useRef(debouncedName);
 
   useEffect(() => {
     setFilters((prev) =>
       prev.page === currentPage ? prev : { ...prev, page: currentPage }
     );
   }, [currentPage]);
+
+  // Nouvelle recherche texte → revenir à la page 1
+  useEffect(() => {
+    if (prevDebouncedNameRef.current !== debouncedName) {
+      prevDebouncedNameRef.current = debouncedName;
+      if (currentPage !== 1) setCurrentPage(1);
+    }
+  }, [debouncedName, currentPage, setCurrentPage]);
 
   const resetAllFilters = () => {
     setCurrentPage(1);
@@ -56,20 +69,40 @@ const AdminArchetype = () => {
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
 
   useEffect(() => {
+    if (debouncedName.length === 1) return;
+
     setLoading(true);
+    const criteria: SearchCriteria = {
+      ...filters,
+      name: debouncedName.length >= 2 ? debouncedName : "",
+      page: currentPage,
+    };
+
     void Promise.resolve(
       getArchetypesWithCriteria(
-        filters,
+        criteria,
         setArchetypes,
         setPagination,
-        setErrorMessage
+        setErrorMessage,
+        locale
       )
     ).finally(() => {
       setLoading(false);
       setRefresh(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refresh, filters]);
+  }, [
+    refresh,
+    debouncedName,
+    filters.era,
+    filters.type,
+    filters.attribute,
+    filters.summonmechanic,
+    filters.is_active,
+    filters.size,
+    currentPage,
+    locale,
+  ]);
 
   return (
     <AdminStructure>

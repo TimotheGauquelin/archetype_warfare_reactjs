@@ -22,6 +22,7 @@ import { formatDateForInput } from '../../../utils/date/formatDateForInput';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import type { Banlist, BanlistCard, BanlistReason } from '../../../types';
+import { useDebounce } from '@/utils/functions/debounce/useDebounce';
 import {
     isGenericRestrictedBanlistCard,
     isUnlimitedBanlistStatus,
@@ -43,6 +44,7 @@ const AdminUpdateBanlist = () => {
     const [cardStatus, setCardStatus] = useState<CardStatus[]>([]);
     const [availableReasons, setAvailableReasons] = useState<BanlistReason[]>([]);
     const [cardsSearch, setCardsSearch] = useState("");
+    const debouncedCardsSearch = useDebounce(cardsSearch.trim(), 300);
     const [statusFilter, setStatusFilter] = useState<ListedCardStatusFilter>("all");
     const [viewMode, setViewMode] = useState<BanlistCardLayout>("grid");
     const [isFetching, setIsFetching] = useState(false);
@@ -122,14 +124,14 @@ const AdminUpdateBanlist = () => {
             matchesListedCardFilters(
                 card.card?.name,
                 card.card_status?.label,
-                cardsSearch,
+                debouncedCardsSearch,
                 statusFilter,
                 typeof card.card?.description === "string"
                     ? card.card.description
                     : null
             )
         );
-    }, [genericCards, cardsSearch, statusFilter]);
+    }, [genericCards, debouncedCardsSearch, statusFilter]);
 
     const sameCardId = (left: unknown, right: unknown) =>
         String(left ?? "") === String(right ?? "");

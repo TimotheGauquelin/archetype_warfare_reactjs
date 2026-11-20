@@ -51,7 +51,7 @@ export const URL_BACK_DISCORD_AUTH = (params?: { locale?: string; acceptedTerms?
 
 //ARCHETYPE
 
-export const URL_BACK_SEARCH_ARCHETYPES = (size?: number, page?: number, name?: string, era?: string, type?: string, attribute?: string, summonmecanic?: string, is_active?: boolean): string => {
+export const URL_BACK_SEARCH_ARCHETYPES = (size?: number, page?: number, name?: string, era?: string, type?: string, attribute?: string, summonmecanic?: string, is_active?: boolean, locale?: string): string => {
   const params = new URLSearchParams();
 
   if (size) params.append('size', String(size));
@@ -62,6 +62,7 @@ export const URL_BACK_SEARCH_ARCHETYPES = (size?: number, page?: number, name?: 
   if (attribute) params.append('attribute', attribute);
   if (summonmecanic) params.append('summonmechanic', summonmecanic);
   if (is_active) params.append('is_active', String(is_active));
+  if (locale) params.append('locale', locale);
   return `/archetypes/search?${params.toString()}`;
 };
 

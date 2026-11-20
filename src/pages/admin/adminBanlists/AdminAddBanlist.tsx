@@ -20,6 +20,7 @@ import { formatDateForInput } from '../../../utils/date/formatDateForInput';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
 import type { Banlist, BanlistCard, BanlistReason } from '../../../types';
+import { useDebounce } from '@/utils/functions/debounce/useDebounce';
 import {
     isGenericRestrictedBanlistCard,
     isUnlimitedBanlistStatus,
@@ -53,6 +54,7 @@ const AdminAddBanlist = () => {
     const [cardStatus, setCardStatus] = useState<CardStatus[]>([]);
     const [availableReasons, setAvailableReasons] = useState<BanlistReason[]>([]);
     const [cardsSearch, setCardsSearch] = useState("");
+    const debouncedCardsSearch = useDebounce(cardsSearch.trim(), 300);
     const [statusFilter, setStatusFilter] = useState<ListedCardStatusFilter>("all");
     const [viewMode, setViewMode] = useState<BanlistCardLayout>("grid");
     const [isLoading, setIsLoading] = useState(false);
@@ -63,14 +65,14 @@ const AdminAddBanlist = () => {
             matchesListedCardFilters(
                 card.card?.name,
                 card.card_status?.label,
-                cardsSearch,
+                debouncedCardsSearch,
                 statusFilter,
                 typeof card.card?.description === "string"
                     ? card.card.description
                     : null
             )
         );
-    }, [banlist.banlist_archetype_cards, cardsSearch, statusFilter]);
+    }, [banlist.banlist_archetype_cards, debouncedCardsSearch, statusFilter]);
 
     const handleAddBanlist = useCallback(() => {
         if (!isAuthenticated) return;

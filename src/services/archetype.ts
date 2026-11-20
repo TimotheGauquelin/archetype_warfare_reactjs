@@ -14,7 +14,8 @@ export const getArchetypesWithCriteria = async (
   criteria: SearchCriteria,
   setArchetypes: SetStateCallback<Archetype[]>,
   setPagination: SetStateCallback<Pagination>,
-  setErrorMessage: SetErrorMessageCallback
+  setErrorMessage: SetErrorMessageCallback,
+  locale?: string
 ): Promise<void> => {
   try {
     const response = await api_aw.get(
@@ -26,7 +27,8 @@ export const getArchetypesWithCriteria = async (
         criteria.type,
         criteria.attribute,
         criteria.summonmechanic,
-        criteria.is_active
+        criteria.is_active,
+        locale
       )
     );
 

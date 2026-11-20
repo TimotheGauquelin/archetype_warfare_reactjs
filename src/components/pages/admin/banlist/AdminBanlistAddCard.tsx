@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { FaAngleLeft, FaAngleRight } from 'react-icons/fa';
 import { searchCards } from '../../../../services/card';
 import type { Banlist, Card, Pagination, BanlistCard, RootState } from '../../../../types';
 import { STATUS_FORBIDDEN } from '../../../../utils/const/banlistConst';
 import { isGenericRestrictedBanlistCard } from '../../../../utils/banlist/genericBanlistCard';
+import { useDebounce } from '@/utils/functions/debounce/useDebounce';
 
 export type BanlistFormLike = { banlist_archetype_cards?: BanlistCard[] } & Record<string, unknown>;
 
@@ -30,6 +31,8 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
         page: 1,
         size: 30,
     });
+    const debouncedName = useDebounce(filters.name.trim(), 450);
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     const increasePage = () => {
         if (pagination.currentPage < pagination.totalPages) {
@@ -130,8 +133,36 @@ const AdminBanlistAddCard: React.FC<AdminBanlistAddCardProps> = ({ banlist, setB
 
 
     useEffect(() => {
-        searchCards(setCards, setPagination, filters.size, filters.page, filters.name);
-    }, [filters, locale]);
+        if (debouncedName.length === 1) return;
+
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
+        const signal = abortControllerRef.current.signal;
+
+        void searchCards(
+            setCards,
+            setPagination,
+            filters.size,
+            filters.page,
+            debouncedName.length >= 2 ? debouncedName : undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            signal,
+            undefined,
+            locale
+        );
+
+        return () => {
+            abortControllerRef.current?.abort();
+        };
+    }, [debouncedName, filters.page, filters.size, locale]);
 
     return (
         <div className="w-full">
