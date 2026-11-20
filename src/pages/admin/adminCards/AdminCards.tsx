@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import api_aw from "../../../api/api_aw";
 import Loader from "../../../components/generic/Loader";
@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../types";
 import usePersistedListPage from "../../../hooks/usePersistedListPage";
 import usePersistedListFilters from "../../../hooks/usePersistedListFilters";
+import { useDebounce } from "@/utils/functions/debounce/useDebounce";
 
 const DEFAULT_CARD_CRITERIA: CardSearchCriteria = {
   name: "",
@@ -76,6 +77,8 @@ const AdminCards = () => {
   const [databaseUpdateLoader, setDatabaseUpdateLoader] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
+  const debouncedName = useDebounce((criteria.name ?? "").trim(), 450);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const navigate = useNavigate();
 
@@ -177,12 +180,25 @@ const AdminCards = () => {
   };
 
   useEffect(() => {
-    searchCards(
+    getCardTypes(setCardTypes);
+    getAttributes(setAttributes);
+  }, []);
+
+  useEffect(() => {
+    if (debouncedName.length === 1) return;
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
+    void searchCards(
       setCards,
       setPagination,
       size,
       page,
-      criteria.name,
+      debouncedName.length >= 2 ? debouncedName : undefined,
       criteria.card_type,
       criteria.level,
       criteria.min_atk,
@@ -190,14 +206,30 @@ const AdminCards = () => {
       criteria.min_def,
       criteria.max_def,
       criteria.attribute,
-      undefined,
-      Boolean(criteria.missing_fr)
+      signal,
+      Boolean(criteria.missing_fr),
+      locale
     );
-    getCardTypes(setCardTypes);
-    getAttributes(setAttributes);
     setRefresh(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [criteria, page, refresh, locale]);
+
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, [
+    debouncedName,
+    criteria.card_type,
+    criteria.level,
+    criteria.min_atk,
+    criteria.max_atk,
+    criteria.min_def,
+    criteria.max_def,
+    criteria.attribute,
+    criteria.missing_fr,
+    page,
+    size,
+    refresh,
+    locale,
+  ]);
 
   return (
     <AdminStructure>

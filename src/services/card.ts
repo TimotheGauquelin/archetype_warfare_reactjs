@@ -19,7 +19,8 @@ export const searchCards = async (
   max_def?: number,
   attribute?: string,
   signal?: AbortSignal | null,
-  missing_fr?: boolean
+  missing_fr?: boolean,
+  locale?: string
 ): Promise<void> => {
   const params = new URLSearchParams();
 
@@ -34,6 +35,7 @@ export const searchCards = async (
   if (max_def !== undefined) params.append("max_def", max_def.toString());
   if (attribute) params.append("attribute", attribute);
   if (missing_fr) params.append("missing_fr", "true");
+  if (locale) params.append("locale", locale);
 
   const config = signal ? { signal } : {};
 

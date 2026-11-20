@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { searchCards } from "../../services/card";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
@@ -6,6 +6,7 @@ import type { Archetype, Card, BanlistCard, CardSearchCriteria, RootState } from
 import AdminCardsFilter from "../pages/admin/cards/AdminCardsFilter";
 import { useCardTypes } from "@/hooks/useCardTypes";
 import { useAttributes } from "@/hooks/useAttributes";
+import { useDebounce } from "@/utils/functions/debounce/useDebounce";
 
 const defaultFilters: CardSearchCriteria = {
   name: "",
@@ -35,6 +36,8 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
     pageSize: 30,
   });
   const [filters, setFilters] = useState<CardSearchCriteria>({ ...defaultFilters });
+  const debouncedName = useDebounce((filters.name ?? "").trim(), 450);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const { cardTypes } = useCardTypes();
   const { attributes } = useAttributes();
@@ -133,12 +136,21 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
   };
 
   useEffect(() => {
-    searchCards(
+    // 1 caractère trop large / trop cher — attendre 2+ ou champ vide
+    if (debouncedName.length === 1) return;
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
+    void searchCards(
       setCards,
       setPagination,
       filters.size ?? 30,
       filters.page ?? 1,
-      filters.name,
+      debouncedName.length >= 2 ? debouncedName : undefined,
       filters.card_type,
       filters.level,
       filters.min_atk,
@@ -146,8 +158,27 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
       filters.min_def,
       filters.max_def,
       filters.attribute,
+      signal,
+      undefined,
+      locale
     );
-  }, [filters, locale]);
+
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, [
+    debouncedName,
+    filters.page,
+    filters.size,
+    filters.card_type,
+    filters.level,
+    filters.min_atk,
+    filters.max_atk,
+    filters.min_def,
+    filters.max_def,
+    filters.attribute,
+    locale,
+  ]);
 
   return (
     <div className="w-full">
@@ -169,6 +200,11 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
           resetAllFilters={() => setFilters({ ...defaultFilters })}
           attributes={attributes}
           compact
+          onPageReset={() =>
+            setFilters((prev) =>
+              prev.page === 1 ? prev : { ...prev, page: 1 }
+            )
+          }
         />
         <div
           className="overflow-y-auto bg-white grid grid-cols-12 gap-1 p-1 rounded"
