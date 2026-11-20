@@ -13,6 +13,7 @@ import {
 } from "../services/archetype";
 import Footer from "../components/generic/footer/Footer";
 import OfficialTournamentHighlight from "../components/pages/user/tournaments/OfficialTournamentHighlight";
+import SeasonHighlight from "../components/pages/user/season/SeasonHighlight";
 import { getTournaments } from "../services/tournament";
 import type { Archetype, RootState, Tournament } from "../types";
 
@@ -91,6 +92,7 @@ const Home: React.FC = () => {
       </div>
       <main>
         <div className="flex flex-col justify-center space-y-8 tablet:space-y-10 py-6 tablet:py-8 lscreen:py-10 max-w-containerSize mx-auto px-3 tablet:px-4 w-full">
+          <SeasonHighlight variant="home" homeSectionTitle />
           <OfficialTournamentHighlight
             tournaments={highlightTournaments}
             homeSectionTitle

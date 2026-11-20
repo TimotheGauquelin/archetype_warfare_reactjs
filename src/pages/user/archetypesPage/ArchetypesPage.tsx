@@ -1,4 +1,12 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "../../../styles/Archetypes.scss";
@@ -14,12 +22,14 @@ import SelectInput from "../../../components/generic/form/SelectInput";
 import { Input } from "../../../components/generic/form/input/Input";
 import Button from "../../../components/generic/buttons/classicButton/Button";
 import { laborIllusion } from "../../../utils/functions/laborIllusion/laborIllusion";
-import type { Archetype, RootState } from "../../../types";
+import type { Archetype, Pagination, RootState } from "../../../types";
 import UserHeroLayout from "../layout";
 import { useEras } from "../../../hooks/useEras";
 import { useDebounce } from "@/utils/functions/debounce/useDebounce";
 import { useTranslation } from "react-i18next";
 import { optimizeImageUrl } from "@/utils/image/optimizeImageUrl";
+
+const PAGE_SIZE = 12;
 
 const ArchetypesPage = () => {
   const { t } = useTranslation();
@@ -27,22 +37,24 @@ const ArchetypesPage = () => {
   const [archetypes, setArchetypes] = useState<Archetype[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const { eras } = useEras();
   const [filters, setFilters] = useState({
     name: "",
     era: "",
-    size: 12,
-    page: 0,
-    is_active: true
+    size: PAGE_SIZE,
+    page: 1,
+    is_active: true,
   });
-  const [, setPagination] = useState({
+  const [pagination, setPagination] = useState<Pagination>({
     total: 0,
     totalPages: 0,
-    currentPage: 0,
-    pageSize: 12,
+    currentPage: 1,
+    pageSize: PAGE_SIZE,
   });
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const requestIdRef = useRef(0);
 
   const debouncedName = useDebounce(filters.name, 500);
 
@@ -58,27 +70,71 @@ const ArchetypesPage = () => {
     }, 0.5);
   }, [navigate]);
 
+  // Nouveau filtre → page 1 + liste vidée (skeleton).
+  useEffect(() => {
+    setFilters((prev) => (prev.page === 1 ? prev : { ...prev, page: 1 }));
+    setArchetypes([]);
+  }, [debouncedName, filters.era]);
+
   const loadData = useCallback(async () => {
+    const requestId = ++requestIdRef.current;
+    const page = filters.page;
+    const append = page > 1;
     try {
-      setIsFetching(true);
+      if (append) setIsLoadingMore(true);
+      else setIsFetching(true);
+      setErrorMessage(null);
+
       const searchFilters = {
         name: debouncedName,
         era: filters.era,
         size: filters.size,
-        page: filters.page,
-        is_active: filters.is_active
+        page,
+        is_active: filters.is_active,
       };
-      await getArchetypesWithCriteria(searchFilters, setArchetypes, setPagination, (v) => setErrorMessage(prev => typeof v === 'function' ? (v as (p: string) => string)(prev ?? '') : v));
-    } catch (err) {
+
+      await getArchetypesWithCriteria(
+        searchFilters,
+        (value) => {
+          if (requestId !== requestIdRef.current) return;
+          const incoming = Array.isArray(value) ? value : [];
+          setArchetypes((prev) => {
+            if (!append) return incoming;
+            const seen = new Set(prev.map((a) => a.id));
+            return [
+              ...prev,
+              ...incoming.filter((a) => a.id != null && !seen.has(a.id)),
+            ];
+          });
+        },
+        (value) => {
+          if (requestId !== requestIdRef.current) return;
+          setPagination(value);
+        },
+        (value) => {
+          if (requestId !== requestIdRef.current) return;
+          setErrorMessage(typeof value === "function" ? value("") : value);
+        }
+      );
+    } catch {
       console.log("Erreur lors du chargement des archétypes");
     } finally {
-      setIsFetching(false);
+      if (requestId === requestIdRef.current) {
+        setIsFetching(false);
+        setIsLoadingMore(false);
+      }
     }
-  }, [debouncedName, filters.era, filters.size, filters.page, filters.is_active, locale]);
-
+  }, [
+    debouncedName,
+    filters.era,
+    filters.size,
+    filters.page,
+    filters.is_active,
+    locale,
+  ]);
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, [loadData]);
 
   // Précharge l’image LCP (1ʳᵉ carte) dès qu’on a l’URL — fetchpriority natif sur le <link>
@@ -88,7 +144,9 @@ const ArchetypesPage = () => {
     const href = optimizeImageUrl(raw, "card");
     if (!href) return;
 
-    const existing = document.head.querySelector<HTMLLinkElement>('link[data-lcp-preload="archetypes"]');
+    const existing = document.head.querySelector<HTMLLinkElement>(
+      'link[data-lcp-preload="archetypes"]'
+    );
     if (existing?.href === href) return;
 
     existing?.remove();
@@ -108,13 +166,22 @@ const ArchetypesPage = () => {
   const eraOptions = useMemo(() => eras, [eras]);
 
   const isRandomButtonDisabled = useMemo(() => {
-
     const hasNameFilter = filters.name.trim() !== "";
     const hasEraFilter = filters.era !== "";
     const hasNoData = archetypes.length === 0;
 
     return hasNameFilter || hasEraFilter || hasNoData;
   }, [filters.name, filters.era, archetypes]);
+
+  const hasMore =
+    pagination.totalPages > 0
+      ? pagination.currentPage < pagination.totalPages
+      : archetypes.length < pagination.total;
+
+  const handleSeeMore = () => {
+    if (isFetching || isLoadingMore || !hasMore) return;
+    setFilters((prev) => ({ ...prev, page: prev.page + 1 }));
+  };
 
   return (
     <UserHeroLayout
@@ -142,7 +209,9 @@ const ArchetypesPage = () => {
             data={filters as Record<string, unknown>}
             defaultOptionLabel={t("archetypesPage.eraPlaceholder")}
             ariaLabel={t("archetypesPage.eraLabel")}
-            setAction={setFilters as React.Dispatch<React.SetStateAction<Record<string, unknown>>>}
+            setAction={
+              setFilters as Dispatch<SetStateAction<Record<string, unknown>>>
+            }
           />
         </div>
         <div className="col-span-3 tablet:col-span-2 flex">
@@ -160,10 +229,24 @@ const ArchetypesPage = () => {
       <PageContentBlock>
         <ArchetypeList
           dataArray={archetypes}
-          isFetching={isFetching}
+          isFetching={isFetching && archetypes.length === 0}
           skeletonItemCount={8}
           errorMessage={errorMessage}
         />
+        {hasMore && archetypes.length > 0 ? (
+          <div className="flex justify-center pt-2">
+            <button
+              type="button"
+              className="text-sm font-medium text-blue-600 hover:text-yellow-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleSeeMore}
+              disabled={isLoadingMore || isFetching}
+            >
+              {isLoadingMore
+                ? t("archetypesPage.loadingMore")
+                : t("archetypesPage.seeMore")}
+            </button>
+          </div>
+        ) : null}
       </PageContentBlock>
     </UserHeroLayout>
   );
