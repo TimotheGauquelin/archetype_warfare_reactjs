@@ -39,7 +39,7 @@
     "or": "ou",
     "continueWithDiscord": "Se connecter avec Discord",
     "registerWithDiscord": "S'inscrire avec Discord",
-    "discordGuildRequired": "Inscription Discord réservée aux membres du serveur Discord Archetype Warfare",
+    "discordGuildRequired": "En vous inscrivant via Discord, vous serez ajouté au serveur Archetype Warfare",
     "discordTitle": "Connexion Discord",
     "discordConnecting": "Connexion Discord en cours…",
     "discordPendingApproval": "Compte Discord créé. Un administrateur doit l'approuver avant connexion",
@@ -80,7 +80,7 @@
     "logout": "Déconnexion",
     "confirmLogout": "Se déconnecter",
     "loading": "Chargement...",
-    "searchCard": "Quelle carte recherchez-vous ?",
+    "searchCard": "Nom ou description…",
     "searchCardAria": "Rechercher une carte",
     "previousPage": "Page précédente",
     "nextPage": "Page suivante",
@@ -98,7 +98,12 @@
     "searchPlaceholder": "Quel archetype recherchez-vous ?",
     "eraPlaceholder": "De quelle ère est votre archetype ?",
     "eraLabel": "Ère de l'archétype",
-    "randomArchetype": "Archétype aléatoire"
+    "randomArchetype": "Archétype aléatoire",
+    "seeMore": "Voir plus",
+    "loadingMore": "Chargement…"
+  },
+  "seasonHighlight": {
+    "title": "Événement en cours"
   },
   "officialTournamentHighlight": {
     "title": "Tournoi officiel à venir",
@@ -108,9 +113,11 @@
     "badgeInProgress": "En cours",
     "countdown": "Début dans {{time}}",
     "startsAt": "Début : {{date}}",
+    "seasonLabel": "Saison : {{season}}",
     "seeTournament": "Voir le tournoi"
   },
   "tournamentsPage": {
+    "allTournamentsTitle": "Tous les tournois",
     "searchPlaceholder": "Quel tournoi recherchez-vous ?",
     "locationPlaceholder": "Lieu",
     "dateLabel": "Date",
@@ -271,15 +278,23 @@
       "tournament": "Tournois",
       "deck": "Decks",
       "quiz": "Quiz",
-      "loyalty": "Ancienneté"
+      "loyalty": "Ancienneté",
+      "season": "Saison"
     },
-    "rankingQuizTitle": "Daily Quiz — Par session",
+    "rankingQuizTitle": "Daily Quiz — Par saison",
     "rankingQuizTotal": "Total : {{count}} pts",
     "rankingQuizSeasonDates": "{{start}} → {{end}}",
     "rankingQuizSeasonAttempts_one": "{{count}} daily joué",
     "rankingQuizSeasonAttempts_other": "{{count}} dailys joués",
-    "rankingQuizSeasonEmpty": "Aucun daily joué sur une session pour le moment.",
+    "rankingQuizSeasonEmpty": "Aucun daily joué sur une saison pour le moment.",
     "rankingQuizSeasonView": "Voir le classement",
+    "rankingTournamentSeasonsTitle": "Tournois — Par saison",
+    "rankingTournamentSeasonsTotal": "Total : {{count}} pts",
+    "rankingTournamentSeasonsCount_one": "{{count}} tournoi officiel",
+    "rankingTournamentSeasonsCount_other": "{{count}} tournois officiels",
+    "rankingTournamentSeasonsEmpty": "Aucun tournoi officiel joué sur une saison pour le moment.",
+    "rankingTournamentSeasonsView": "Voir le classement",
+    "rankingTournamentSeasonTier": "Rang : {{tier}}",
     "rankingArchetypesTitle": "Mes TopTables — Par archétype",
     "rankingArchetypesTotal": "Total : {{count}} pts",
     "rankingTournamentColTournament": "Tournoi",
@@ -311,6 +326,8 @@
     "deleteAccountTitle": "Supprimer votre compte",
     "deleteAccountConfirm": "Cette action est irréversible. Êtes-vous sûr de vouloir supprimer votre compte ?",
     "allMyDecks": "Tous mes decks",
+    "allMyDecksWithCount": "Tous mes decks ({{count}}/{{max}})",
+    "deckLimitReached": "Limite de {{max}} decks atteinte",
     "createDeck": "Créer un deck",
     "addDeck": "Ajouter un deck",
     "deckWithoutArchetype": "Deck sans archétype",
@@ -433,6 +450,7 @@
     "deckNotSelected": "mais vous n'avez pas encore sélectionné de deck. ",
     "contactOrganizer": "Si vous n'avez sélectionné de deck et que les inscriptions sont closes, contactez l'organisateur du tournoi.",
     "loadingPlayableDecks": "Chargement des decks jouables…",
+    "noPlayableDeckForSeasonPool": "Aucun de vos decks jouables n'appartient au pool d'archétypes de la saison.",
     "selectYourDeck": "Sélectionner votre deck",
     "noPlayableDeck": "Aucun deck jouable. Créez un deck d'au moins 40 cartes et selectionnez-le !",
     "changeDeck": "Changer de deck",
@@ -685,49 +703,45 @@
     "s11Body": "Pour toute demande relative à ces mentions légales, conditions d'utilisation ou à la confidentialité, contactez-nous à : timothegauquelin@gmail.com."
   },
   "roadmap": {
-    "pageTitle": "RoadMap 2025-2026",
+    "pageTitle": "RoadMap 2026-2027",
     "q0": {
-      "period": "T0 2025",
-      "dates": "Juillet - Décembre 2025",
+      "period": "T4 2026",
+      "dates": "Octobre - Décembre 2026",
       "items": [
-        "Développement des fonctionnalités principales (Fonctionnalités Dashboard Admin, Dashboard User, Système de Deck Builder, Système de Banlist)",
-        "Tests et optimisations (Tests unitaires, Tests d'intégration, Tests de performance)",
-        "Préparation du lancement (Lancement de la version 0, Collecte des retours utilisateurs, Améliorations basées sur les retours)",
-        "Creation d'une communauté avec le lancement de la chaine Twitch, d'un canal Discord"
+        "Lancement de la V1",
+        "Création d'une communauté (chaîne Twitch, serveur Discord)"
       ]
     },
     "q1": {
-      "period": "T1 2026",
-      "dates": "Janvier - Mars 2026",
+      "period": "T1 2027",
+      "dates": "Janvier - Mars 2027",
       "items": [
-        "Développement des fonctionnalités Tournoi (Création de tournoi par l'admin, Inscription à un tournoi, Résultats de tournoi)",
-        "Développement des fonctionnalités Classement (Classement des joueurs, Classement des meilleurs archétypes, Maître des Archétypes)"
+        "Système Utilisateur Premium (plus de decks, personnalisation du profil, tournois privés)",
+        "Refonte UX/UI du site"
       ]
     },
     "q2": {
-      "period": "T2 2026",
-      "dates": "Avril - Juin 2026",
+      "period": "T2 2027",
+      "dates": "Avril - Juin 2027",
       "items": [
-        "Premiers tournois en ligne",
-        "Développement des fonctionnalités Quizz (Quizz de connaissances sur l'univers Yu-Gi-Oh! - Manga/Anime, JdC, produits dérivés, etc.)",
-        "Développement d'un système d'Utilisateur Premium (Creation de plus de decks, Personnalisation du profil, Accès à des tournois privés)"
+        "Internationalisation du site (japonais)",
+        "Tournois avec prix en jeu"
       ]
     },
     "q3": {
-      "period": "T3 2026",
-      "dates": "Juillet - Septembre 2026",
+      "period": "T3 2027",
+      "dates": "Juillet - Septembre 2027",
       "items": [
-        "Refonte UX/UI du site web",
-        "Lancement de la V1"
+        "Tournoi physique à 16 joueurs",
+        "Amélioration continue du circuit saisons / quiz / tournois"
       ]
     },
     "q4": {
-      "period": "T4 2026 et plus loin",
-      "dates": "Octobre 2026 - Proche dans le futur",
+      "period": "T4 2027 et plus loin",
+      "dates": "Octobre 2027 - Proche futur",
       "items": [
-        "Internationalisation du site web (Anglais, Japonais)",
-        "Tournois avec Cash Prize",
-        "Tournoi physique à 64 joueurs sur Lille (France)"
+        "Événements physiques plus larges",
+        "Nouvelles fonctionnalités selon les retours de la communauté"
       ]
     }
   },
@@ -738,9 +752,12 @@
     "hubSubtitle": "Partie libre (tous thèmes ou par thème) et défi du jour",
     "seasonBlockTitle": "Quizz de la saison « {{season}} »",
     "seasonExceptionalBadge": "Exceptionnelle",
-    "seasonPodiumTitle": "Podium",
-    "seasonRankingSectionTitle": "Classement",
+    "seasonPodiumTitle": "Top 3 des joueurs du Daily Quizz",
+    "seasonTournamentPodiumTitle": "Top 3 des joueurs du circuit Tournoi",
+    "seasonRankingSectionTitle": "Classement des joueurs Quizz",
     "seasonPodiumHint": "Classement de « {{season}} » (somme des scores du défi du jour)",
+    "seasonQuizPlayersHintPast": "Pour cette saison annexe « {{season}} », vous avez été {{count}} joueurs. Merci d'avoir participé !",
+    "seasonQuizPlayersHintActive": "Pour cette saison annexe « {{season}} », vous êtes {{count}} joueurs. Merci de participer et bonne chance à tous !",
     "seasonPodiumEmpty": "Pas encore de classement pour cette saison — soyez le premier !",
     "seasonPodiumSeeAll": "Voir le classement complet",
     "seasonPodiumScore": "{{score}} pt(s) · {{attempts}} tentative(s)",
@@ -754,8 +771,35 @@
     "seasonRankingDates": "Du {{start}} au {{end}}",
     "seasonRankingMeta": "{{status}} · {{days}} jours · {{questions}} questions · {{players}} joueur(s)",
     "seasonRankingLoadError": "Impossible de charger le classement de la saison.",
+    "seasonPlayableArchetypesTitle": "Archétypes jouables",
+    "seasonPlayableArchetypesSelection": "Voici les archétypes autorisés pour cette saison",
+    "seasonPlayableArchetypesSeeMore": "Voir plus",
+    "seasonPlayableArchetypesSeeLess": "Voir moins",
+    "seasonRankingTabQuiz": "Quiz",
+    "seasonRankingTabTournament": "Tournois",
+    "seasonTournamentRankingTitle": "Classement des joueurs Tournois",
+    "seasonTournamentRankingHint": "Pendant la saison « {{season}} », les tournois officiels se jouent en format suisse. Chaque duel gagné rapporte 3 points au classement de saison ; une défaite n'en rapporte aucun.",
+    "seasonTournamentRankingHintBonus": "En plus des points de matchs, le podium du tournoi offre un bonus de fin d'événement : +5 points pour la 1re place, +4 points pour la 2e et +3 points pour la 3e.",
+    "seasonTournamentRankingEmpty": "Pas encore de points tournoi pour cette saison.",
+    "seasonTierTableTitle": "Paliers de rang",
+    "seasonTierTableColRank": "Rang",
+    "seasonTierTableColPoints": "Points minimum",
+    "seasonTierTableFrozenNote": "Rangs figés en fin de saison (souvenir).",
+    "seasonTournamentColPoints": "Points",
+    "seasonTournamentColEvents": "Tournois",
+    "seasonTournamentColTier": "Rang",
+    "seasonTierNovice": "Novice",
+    "seasonTierBronze": "Bronze",
+    "seasonTierArgent": "Argent",
+    "seasonTierOr": "Or",
+    "seasonTierPlatine": "Platine",
+    "seasonTierDiamant": "Diamant",
+    "seasonTierMaster": "Master",
+    "seasonTierProgress": "{{tier}} — {{points}} pts pour {{next}}",
+    "seasonTierMax": "{{tier}} (palier max)",
+    "seasonTierFrozenHint": "Rangs figés en fin de saison (souvenir).",
     "seasonStatusCurrent": "En cours",
-    "seasonStatusPast": "Terminée",
+    "seasonStatusPast": "Terminé",
     "seasonStatusUpcoming": "À venir",
     "dailyTitle": "Quizz du jour",
     "dailyHint": "Question inédite du {{date}}",
@@ -783,6 +827,7 @@
     "startError": "Impossible de démarrer le quizz.",
     "missingTheme": "Thème manquant",
     "backToHub": "Retour au hub quizz",
+    "backToTournamentsHub": "Retour au hub tournois",
     "leaveConfirmTitle": "Quitter la partie ?",
     "leaveConfirmFree": "Si vous quittez maintenant, la partie libre sera annulée.",
     "leaveConfirmDaily": "Si vous quittez maintenant, votre tentative du jour sera clôturée et vous ne pourrez plus retenter votre chance aujourd'hui.",
@@ -842,9 +887,13 @@
     },
     "orderHint": "Glissez-déposez les propositions dans le bon ordre, puis validez",
     "validateOrder": "Valider l'ordre",
-    "nameTheCardsHint": "Identifiez chaque monstre numéroté sur l'image (l'ordre compte)",
+    "nameTheCardsHint": "Identifiez chaque monstre numéroté sur l'image (l'ordre compte). Vous pouvez valider même sans tout remplir.",
     "nameTheCardsSlot": "Monstre {{n}}",
     "nameTheCardsExpected": "Bonne réponse :",
+    "nameTheCardsNoneSelected": "Aucune carte sélectionnée",
+    "nameTheCardsResultAll": "Bravo ! Vous avez trouvé toutes les cartes",
+    "nameTheCardsResultPartial": "Vous avez trouvé {{correct}} cartes sur {{total}}",
+    "nameTheCardsResultNone": "Oh non ! Malheureusement, vous n'avez trouvé aucune carte",
     "validateNameTheCards": "Valider les noms",
     "summonerMaterialHint": "Nombre de matériaux à trouver: {{count}}",
     "summonerSlot": "Matériau {{n}}",

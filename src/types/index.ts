@@ -7,8 +7,10 @@ export interface User {
   id: string | null;
   username: string | null;
   email: string | null;
-  roles: string[]
+  roles: string[];
   token: string | null;
+  /** Expiration JWT (unix seconds) — pour auto-logout sans lire le cookie */
+  expiresAt?: number | null;
   isAuthenticated: boolean;
   is_active?: boolean;
   is_banned?: boolean;
@@ -98,6 +100,8 @@ export interface PasswordUpdateForm {
   password: string;
   confirmPassword: string;
   has_accepted_terms_and_conditions?: boolean;
+  /** Token de reset (lien email) — requis pour /authenticate/reset-password */
+  token?: string;
   [key: string]: unknown;
 }
 
@@ -245,6 +249,7 @@ export interface SearchCriteria {
 export interface Card {
   id: number;
   name: string;
+  description?: string | null;
   img_url?: string;
   /** Artwork croppé YGOPRODeck (image_url_cropped) */
   artwork_url?: string | null;
@@ -460,6 +465,10 @@ export interface Tournament {
   image_focal_x?: number;
   image_focal_y?: number;
   image_zoom?: number;
+  /** Saison plateforme (quiz_season) pour le circuit officiel. */
+  season_id?: number | null;
+  /** Incluse sur la liste publique des tournois. */
+  season?: { id: number; name: string } | null;
   players?: TournamentPlayer[];
   [key: string]: unknown;
 }

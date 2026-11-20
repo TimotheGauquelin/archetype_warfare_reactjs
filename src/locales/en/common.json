@@ -39,7 +39,7 @@
     "or": "or",
     "continueWithDiscord": "Login with Discord",
     "registerWithDiscord": "Sign up with Discord",
-    "discordGuildRequired": "Discord signup is limited to members of the Archetype Warfare Discord server",
+    "discordGuildRequired": "Signing up with Discord will add you to the Archetype Warfare Discord server",
     "discordTitle": "Discord login",
     "discordConnecting": "Connecting with Discord…",
     "discordPendingApproval": "Discord account created. An administrator must approve it before you can log in",
@@ -80,7 +80,7 @@
     "logout": "Log out",
     "confirmLogout": "Log out",
     "loading": "Loading...",
-    "searchCard": "Which card are you looking for?",
+    "searchCard": "Name or description…",
     "searchCardAria": "Search for a card",
     "previousPage": "Previous page",
     "nextPage": "Next page",
@@ -98,7 +98,12 @@
     "searchPlaceholder": "Which archetype are you looking for?",
     "eraPlaceholder": "Which era is your archetype from?",
     "eraLabel": "Archetype era",
-    "randomArchetype": "Random archetype"
+    "randomArchetype": "Random archetype",
+    "seeMore": "See more",
+    "loadingMore": "Loading…"
+  },
+  "seasonHighlight": {
+    "title": "Ongoing event"
   },
   "officialTournamentHighlight": {
     "title": "Upcoming official tournament",
@@ -108,9 +113,11 @@
     "badgeInProgress": "In progress",
     "countdown": "Starts in {{time}}",
     "startsAt": "Starts: {{date}}",
+    "seasonLabel": "Season: {{season}}",
     "seeTournament": "View tournament"
   },
   "tournamentsPage": {
+    "allTournamentsTitle": "All tournaments",
     "searchPlaceholder": "Which tournament are you looking for?",
     "locationPlaceholder": "Location",
     "dateLabel": "Date",
@@ -271,15 +278,23 @@
       "tournament": "Tournaments",
       "deck": "Decks",
       "quiz": "Quiz",
-      "loyalty": "Loyalty"
+      "loyalty": "Loyalty",
+      "season": "Season"
     },
-    "rankingQuizTitle": "Daily Quiz — By session",
+    "rankingQuizTitle": "Daily Quiz — By season",
     "rankingQuizTotal": "Total: {{count}} pts",
     "rankingQuizSeasonDates": "{{start}} → {{end}}",
     "rankingQuizSeasonAttempts_one": "{{count}} daily played",
     "rankingQuizSeasonAttempts_other": "{{count}} dailies played",
-    "rankingQuizSeasonEmpty": "No daily played in a session yet.",
+    "rankingQuizSeasonEmpty": "No daily played in a season yet.",
     "rankingQuizSeasonView": "View ranking",
+    "rankingTournamentSeasonsTitle": "Tournaments — By season",
+    "rankingTournamentSeasonsTotal": "Total: {{count}} pts",
+    "rankingTournamentSeasonsCount_one": "{{count}} official tournament",
+    "rankingTournamentSeasonsCount_other": "{{count}} official tournaments",
+    "rankingTournamentSeasonsEmpty": "No official tournament played in a season yet.",
+    "rankingTournamentSeasonsView": "View ranking",
+    "rankingTournamentSeasonTier": "Rank: {{tier}}",
     "rankingArchetypesTitle": "My TopTables — By archetype",
     "rankingArchetypesTotal": "Total: {{count}} pts",
     "rankingTournamentColTournament": "Tournament",
@@ -311,6 +326,8 @@
     "deleteAccountTitle": "Delete your account",
     "deleteAccountConfirm": "This action is irreversible. Are you sure you want to delete your account?",
     "allMyDecks": "All my decks",
+    "allMyDecksWithCount": "All my decks ({{count}}/{{max}})",
+    "deckLimitReached": "Deck limit of {{max}} reached",
     "createDeck": "Create a deck",
     "addDeck": "Add a deck",
     "deckWithoutArchetype": "Deck without archetype",
@@ -433,6 +450,7 @@
     "deckNotSelected": "but you have not selected a deck yet. ",
     "contactOrganizer": "If you have not selected a deck and registration is closed, contact the tournament organizer.",
     "loadingPlayableDecks": "Loading playable decks…",
+    "noPlayableDeckForSeasonPool": "None of your playable decks belong to this season’s archetype pool.",
     "selectYourDeck": "Select your deck",
     "noPlayableDeck": "No playable deck. Create a deck with at least 40 cards and select it!",
     "changeDeck": "Change deck",
@@ -685,49 +703,45 @@
     "s11Body": "For any request about these legal notices, terms of use or privacy, contact us at: timothegauquelin@gmail.com."
   },
   "roadmap": {
-    "pageTitle": "Roadmap 2025-2026",
+    "pageTitle": "Roadmap 2026-2027",
     "q0": {
-      "period": "Q0 2025",
-      "dates": "July - December 2025",
+      "period": "Q4 2026",
+      "dates": "October - December 2026",
       "items": [
-        "Core feature development (Admin Dashboard, User Dashboard, Deck Builder, Banlist system)",
-        "Testing and optimizations (Unit tests, Integration tests, Performance tests)",
-        "Launch preparation (Version 0 release, User feedback collection, Feedback-driven improvements)",
-        "Community building with the launch of a Twitch channel and a Discord server"
+        "V1 launch",
+        "Community building (Twitch channel, Discord server)"
       ]
     },
     "q1": {
-      "period": "Q1 2026",
-      "dates": "January - March 2026",
+      "period": "Q1 2027",
+      "dates": "January - March 2027",
       "items": [
-        "Tournament features (Admin tournament creation, Tournament registration, Tournament results)",
-        "Ranking features (Player rankings, Best archetype rankings, Master of Archetypes)"
+        "Premium user system (more decks, profile customization, private tournaments)",
+        "Website UX/UI redesign"
       ]
     },
     "q2": {
-      "period": "Q2 2026",
-      "dates": "April - June 2026",
+      "period": "Q2 2027",
+      "dates": "April - June 2027",
       "items": [
-        "First online tournaments",
-        "Quiz features (Yu-Gi-Oh! universe quizzes - Manga/Anime, TCG, merchandise, etc.)",
-        "Premium user system (Create more decks, Profile customization, Access to private tournaments)"
+        "Website internationalization (Japanese)",
+        "Cash prize tournaments"
       ]
     },
     "q3": {
-      "period": "Q3 2026",
-      "dates": "July - September 2026",
+      "period": "Q3 2027",
+      "dates": "July - September 2027",
       "items": [
-        "Website UX/UI redesign",
-        "V1 launch"
+        "In-person 16-player tournament",
+        "Ongoing improvements to seasons / quiz / tournament circuit"
       ]
     },
     "q4": {
-      "period": "Q4 2026 and beyond",
-      "dates": "October 2026 - Near future",
+      "period": "Q4 2027 and beyond",
+      "dates": "October 2027 - Near future",
       "items": [
-        "Website internationalization (English, Japanese)",
-        "Cash prize tournaments",
-        "In-person 64-player tournament in Lille (France)"
+        "Larger in-person events",
+        "New features driven by community feedback"
       ]
     }
   },
@@ -738,9 +752,12 @@
     "hubSubtitle": "Free play (all themes or by theme) and today's challenge",
     "seasonBlockTitle": "Season quiz “{{season}}”",
     "seasonExceptionalBadge": "Special",
-    "seasonPodiumTitle": "Podium",
-    "seasonRankingSectionTitle": "Ranking",
+    "seasonPodiumTitle": "Daily Quiz players Top 3",
+    "seasonTournamentPodiumTitle": "Tournament circuit players Top 3",
+    "seasonRankingSectionTitle": "Quiz players ranking",
     "seasonPodiumHint": "Ranking for “{{season}}” (sum of daily challenge scores)",
+    "seasonQuizPlayersHintPast": "For this side season “{{season}}”, you were {{count}} players. Thank you for taking part!",
+    "seasonQuizPlayersHintActive": "For this side season “{{season}}”, you are {{count}} players. Thanks for joining and good luck to everyone!",
     "seasonPodiumEmpty": "No ranking yet for this season — be the first!",
     "seasonPodiumSeeAll": "View full ranking",
     "seasonPodiumScore": "{{score}} pt(s) · {{attempts}} attempt(s)",
@@ -754,6 +771,33 @@
     "seasonRankingDates": "From {{start}} to {{end}}",
     "seasonRankingMeta": "{{status}} · {{days}} days · {{questions}} questions · {{players}} player(s)",
     "seasonRankingLoadError": "Unable to load the season ranking.",
+    "seasonPlayableArchetypesTitle": "Playable archetypes",
+    "seasonPlayableArchetypesSelection": "Here are the archetypes allowed for this season",
+    "seasonPlayableArchetypesSeeMore": "See more",
+    "seasonPlayableArchetypesSeeLess": "See less",
+    "seasonRankingTabQuiz": "Quiz",
+    "seasonRankingTabTournament": "Tournaments",
+    "seasonTournamentRankingTitle": "Tournament ranking",
+    "seasonTournamentRankingHint": "During the “{{season}}” season, official tournaments use a Swiss format. Each won duel awards 3 points to the season ranking; a loss awards none.",
+    "seasonTournamentRankingHintBonus": "On top of match points, the tournament podium grants an end-of-event bonus: +5 points for 1st place, +4 for 2nd and +3 for 3rd.",
+    "seasonTournamentRankingEmpty": "No tournament points for this season yet.",
+    "seasonTierTableTitle": "Rank tiers",
+    "seasonTierTableColRank": "Rank",
+    "seasonTierTableColPoints": "Minimum points",
+    "seasonTierTableFrozenNote": "Ranks frozen at season end (keepsake).",
+    "seasonTournamentColPoints": "Points",
+    "seasonTournamentColEvents": "Tournaments",
+    "seasonTournamentColTier": "Rank",
+    "seasonTierNovice": "Novice",
+    "seasonTierBronze": "Bronze",
+    "seasonTierArgent": "Silver",
+    "seasonTierOr": "Gold",
+    "seasonTierPlatine": "Platinum",
+    "seasonTierDiamant": "Diamond",
+    "seasonTierMaster": "Master",
+    "seasonTierProgress": "{{tier}} — {{points}} pts to {{next}}",
+    "seasonTierMax": "{{tier}} (max tier)",
+    "seasonTierFrozenHint": "Ranks frozen at season end (keepsake).",
     "seasonStatusCurrent": "In progress",
     "seasonStatusPast": "Finished",
     "seasonStatusUpcoming": "Upcoming",
@@ -783,6 +827,7 @@
     "startError": "Unable to start the quiz.",
     "missingTheme": "Missing theme",
     "backToHub": "Back to quiz hub",
+    "backToTournamentsHub": "Back to tournaments hub",
     "leaveConfirmTitle": "Leave this quiz?",
     "leaveConfirmFree": "If you leave now, this free play attempt will be cancelled.",
     "leaveConfirmDaily": "If you leave now, today's attempt will be closed and you won't be able to try again today.",
@@ -842,9 +887,13 @@
     },
     "orderHint": "Drag and drop the propositions into the correct order, then validate.",
     "validateOrder": "Validate order",
-    "nameTheCardsHint": "Identify each numbered monster on the image (order matters)",
+    "nameTheCardsHint": "Identify each numbered monster on the image (order matters). You can submit even if some slots are empty.",
     "nameTheCardsSlot": "Monster {{n}}",
     "nameTheCardsExpected": "Correct answer:",
+    "nameTheCardsNoneSelected": "No card selected",
+    "nameTheCardsResultAll": "Well done! You found all the cards",
+    "nameTheCardsResultPartial": "You found {{correct}} cards out of {{total}}",
+    "nameTheCardsResultNone": "Oh no! Unfortunately, you didn't find any card",
     "validateNameTheCards": "Validate names",
     "summonerMaterialHint": "Number of materials to find: {{count}}.",
     "summonerSlot": "Material {{n}}",
