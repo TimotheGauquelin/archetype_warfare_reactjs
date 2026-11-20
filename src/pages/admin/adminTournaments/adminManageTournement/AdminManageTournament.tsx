@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import AdminBodyHeader from "@/components/pages/admin/AdminBodyHeader";
 import AdminLayout from "../../adminLayout";
+import { getAdminSeasonUpdatePath } from "@/constant/urlsFront";
 import {
     addPlayerToTournament,
     getTournamentDetail,
@@ -15,6 +16,7 @@ import {
     type TournamentStanding,
     type TournamentPlayerAdmin,
     toggleTournamentRegistration,
+    recalculateTournamentSeasonPoints,
 } from "@/services/tournament";
 import { searchUsers } from "@/services/user";
 import type { User } from "@/types";
@@ -50,7 +52,7 @@ const TAB_CLASS = (active: boolean) =>
 const AdminManageTournament = () => {
     const { t } = useTranslation();
     const { tournamentId } = useParams<{ tournamentId: string }>();
-    const { token } = useSelector((state: RootState) => state.user);
+    const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
     const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
     const [tournament, setTournament] = useState<TournamentDetail | null>(null);
     const [standings, setStandings] = useState<TournamentStanding[]>([]);
@@ -93,7 +95,7 @@ const AdminManageTournament = () => {
     }, [loadData]);
 
     const doStartTournament = useCallback(async () => {
-        if (!token || !tournamentId) return;
+        if (!isAuthenticated || !tournamentId) return;
         setActionLoading(true);
         try {
             await startTournament(tournamentId, token);
@@ -104,7 +106,7 @@ const AdminManageTournament = () => {
     }, [token, tournamentId, loadData]);
 
     const handleStart = useCallback(() => {
-        if (!token || !tournamentId) return;
+        if (!isAuthenticated || !tournamentId) return;
 
         const eventStart = tournament?.event_date
             ? new Date(tournament.event_date)
@@ -157,7 +159,7 @@ const AdminManageTournament = () => {
     );
 
     const handleNextRound = useCallback(async () => {
-        if (!token || !tournamentId) return;
+        if (!isAuthenticated || !tournamentId) return;
         setActionLoading(true);
         try {
             const playerDropUpdates = Object.entries(pendingDropOverrides).map(
@@ -176,9 +178,19 @@ const AdminManageTournament = () => {
         }
     }, [token, tournamentId, loadData, pendingDropOverrides]);
 
+    const handleRecalculateSeasonPoints = useCallback(async () => {
+        if (!isAuthenticated || !tournamentId) return;
+        setActionLoading(true);
+        try {
+            await recalculateTournamentSeasonPoints(tournamentId, token);
+        } finally {
+            setActionLoading(false);
+        }
+    }, [token, tournamentId]);
+
     const handleToggleRegistration = useCallback(async () => {
         try {
-            if (!token || !tournamentId) return;
+            if (!isAuthenticated || !tournamentId) return;
             await toggleTournamentRegistration(tournamentId, token);
             await loadData();
         } finally {
@@ -188,24 +200,61 @@ const AdminManageTournament = () => {
 
     const handleRemovePlayer = useCallback(
         async (playerId: number | string) => {
-            if (!token || !tournamentId) return;
+            if (!isAuthenticated || !tournamentId) return;
             try {
                 await removePlayerFromTournament(tournamentId, playerId, token);
-                await loadData();
+                setTournament((prev) => {
+                    if (!prev?.players) return prev;
+                    return {
+                        ...prev,
+                        players: prev.players.filter(
+                            (p) => String(p.id) !== String(playerId)
+                        ),
+                    };
+                });
             } catch {
                 // toast already in service
             }
         },
-        [token, tournamentId, loadData]
+        [token, tournamentId]
     );
 
     const handleAddPlayer = useCallback(
         async (user: User) => {
-            if (!token || !tournamentId || user.id == null) return;
+            if (!isAuthenticated || !tournamentId || user.id == null) return;
             setAddingUserId(user.id);
             try {
-                await addPlayerToTournament(tournamentId, user.id, token);
-                await loadData();
+                const created = await addPlayerToTournament(
+                    tournamentId,
+                    user.id,
+                    token
+                );
+                const newPlayer: TournamentPlayerAdmin = {
+                    ...created,
+                    user:
+                        created.user ??
+                        ({
+                            id: String(user.id),
+                            username: user.username,
+                        } as TournamentPlayerAdmin["user"]),
+                    user_id: created.user_id ?? String(user.id),
+                    dropped: created.dropped ?? false,
+                    penalties: created.penalties ?? [],
+                    deck_snapshot: created.deck_snapshot ?? null,
+                };
+                setTournament((prev) => {
+                    if (!prev) return prev;
+                    const withoutDup = (prev.players ?? []).filter(
+                        (p) =>
+                            String(p.id) !== String(newPlayer.id) &&
+                            String(p.user_id ?? p.user?.id ?? "") !==
+                                String(user.id)
+                    );
+                    return {
+                        ...prev,
+                        players: [...withoutDup, newPlayer],
+                    };
+                });
                 setAddPlayerResults(null);
                 setAddPlayerUsername("");
             } catch {
@@ -214,7 +263,7 @@ const AdminManageTournament = () => {
                 setAddingUserId(null);
             }
         },
-        [token, tournamentId, loadData]
+        [token, tournamentId]
     );
 
     const currentRound = tournament && tournament.rounds?.find(
@@ -225,7 +274,16 @@ const AdminManageTournament = () => {
     /** En "tournament_is_beginning" il n’y a pas encore de matchmaking → on peut cliquer directement. */
     const isBeginningNoMatches = tournament && tournament.status === "tournament_beginning";
     const canAdvanceRound = isBeginningNoMatches || allMatchesCompleted;
-    const players = tournament && tournament.players ? tournament.players : [];
+    const players = useMemo(() => {
+        const list = tournament?.players ?? [];
+        return [...list].sort((a, b) =>
+            (a.user?.username ?? `#${a.id}`).localeCompare(
+                b.user?.username ?? `#${b.id}`,
+                "fr",
+                { sensitivity: "base" }
+            )
+        );
+    }, [tournament?.players]);
     const maxPlayers = tournament && tournament.max_players ? tournament.max_players : 0;
     const overCapacity =
         maxPlayers > 0 && players.length > maxPlayers;
@@ -327,6 +385,31 @@ const AdminManageTournament = () => {
                             <span className="font-semibold">Tournoi officiel :</span>{" "}
                             {tournament.is_official ? "Oui" : "Non"}
                         </p>
+                        <p>
+                            <span className="font-semibold">Saison :</span>{" "}
+                            {tournament.season?.id != null &&
+                            tournament.season.name ? (
+                                <Link
+                                    to={getAdminSeasonUpdatePath(
+                                        tournament.season.id
+                                    )}
+                                    className="text-blue-700 hover:underline font-medium"
+                                >
+                                    {tournament.season.name}
+                                </Link>
+                            ) : tournament.season_id != null ? (
+                                <Link
+                                    to={getAdminSeasonUpdatePath(
+                                        tournament.season_id
+                                    )}
+                                    className="text-blue-700 hover:underline font-medium"
+                                >
+                                    {`Saison #${tournament.season_id}`}
+                                </Link>
+                            ) : (
+                                "Aucune"
+                            )}
+                        </p>
                         <div>
                             <p className="font-semibold">Pénalités :</p>
                             {tournament.allow_penalities ? (
@@ -358,6 +441,7 @@ const AdminManageTournament = () => {
                     handleNextRound={handleNextRound}
                     handleToggleRegistration={handleToggleRegistration}
                     handleStart={handleStart}
+                    handleRecalculateSeasonPoints={handleRecalculateSeasonPoints}
                     hasEnoughPlayers={hasEnoughPlayers}
                     canAdvanceRound={canAdvanceRound}
                 />
@@ -409,7 +493,7 @@ const AdminManageTournament = () => {
                                 activeTab === "matchmaking" ? "" : "hidden"
                             }
                         >
-                            {tournament && token && (
+                            {tournament && isAuthenticated && (
                                 <AdminTournamentMatchmaking
                                     tournamentId={tournament.id}
                                     rounds={tournament.rounds ?? []}

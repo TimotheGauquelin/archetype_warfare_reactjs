@@ -26,10 +26,10 @@ const TournamentDeckRequiredReminder: React.FC<
       />
       <p className="min-w-0 leading-snug">
         <span className="font-semibold">
-          {t("profile.deckRequiredReminderTitle")}
+          {t("profile.deckRequiredReminderTitle")}:
         </span>
+        {" "}
         <span className="text-amber-900/90">
-          {" — "}
           {t("profile.deckRequiredReminderBody", { name: tournamentName })}
         </span>
       </p>

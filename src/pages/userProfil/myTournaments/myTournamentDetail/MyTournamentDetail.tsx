@@ -67,7 +67,7 @@ const MyTournamentDetail: React.FC = () => {
     });
 
     const loadTournament = useCallback(async () => {
-        if (!tournamentId || !user.token) return;
+        if (!tournamentId || !user.isAuthenticated) return;
         setIsLoading(true);
         setError(null);
         try {
@@ -78,11 +78,11 @@ const MyTournamentDetail: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [tournamentId, user.token, t]);
+    }, [tournamentId, user.isAuthenticated, t]);
 
     const handleSubmitScore = async (matchId: number, playersScore: MatchScoreProps) => {
         try {
-            if (!user.token) return;
+            if (!user.isAuthenticated) return;
             await reportMatchResult(matchId, playersScore, user.token);
             await loadTournament();
         } catch {
@@ -91,7 +91,7 @@ const MyTournamentDetail: React.FC = () => {
     }
 
     const handleDrop = async () => {
-        if (!tournamentId || !user.token) return;
+        if (!tournamentId || !user.isAuthenticated) return;
         setIsDropping(true);
         try {
             await dropFromTournament(tournamentId, user.token);
@@ -109,7 +109,7 @@ const MyTournamentDetail: React.FC = () => {
 
     useEffect(() => {
         const playerId = tournament?.tournament_player?.id;
-        if (!playerId || !user.token) {
+        if (!playerId || !user.isAuthenticated) {
             setDeckSnapshot(null);
             return;
         }
@@ -128,20 +128,31 @@ const MyTournamentDetail: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [tournament?.tournament_player?.id, tournament?.tournament_player?.deck_id, user.token]);
+    }, [tournament?.tournament_player?.id, tournament?.tournament_player?.deck_id, user.isAuthenticated]);
 
     useEffect(() => {
-        if (!user.id || !user.token) {
+        if (!user.id || !user.isAuthenticated) {
             setPlayableDecks([]);
             setSelectedDeckId("");
             return;
         }
         let cancelled = false;
         setPlayableDecksLoading(true);
+        const allowedIds = tournament?.allowedArchetypeIds ?? null;
+        const allowedSet =
+            allowedIds != null && allowedIds.length > 0
+                ? new Set(allowedIds.map(Number))
+                : null;
         getMyPlayableDecks(user.token, user.id)
             .then((decks) => {
                 if (!cancelled) {
-                    const list = decks ?? [];
+                    const list = (decks ?? []).filter((deck) => {
+                        if (!allowedSet) return true;
+                        return (
+                            deck.archetype_id != null &&
+                            allowedSet.has(Number(deck.archetype_id))
+                        );
+                    });
                     setPlayableDecks(list);
                     const registeredDeckId = tournament?.tournament_player?.deck_id;
                     const isRegisteredInList =
@@ -159,10 +170,17 @@ const MyTournamentDetail: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [isRegistrationOpen, user.id, user.token, tournament?.tournament_player?.deck_id, tournament?.id]);
+    }, [
+        isRegistrationOpen,
+        user.id,
+        user.isAuthenticated,
+        tournament?.tournament_player?.deck_id,
+        tournament?.id,
+        tournament?.allowedArchetypeIds,
+    ]);
 
     const handleSubmitDeck = async () => {
-        if (!tournamentId || !user.token || selectedDeckId === "") return;
+        if (!tournamentId || !user.isAuthenticated || selectedDeckId === "") return;
         setIsSubmittingDeck(true);
         try {
             await setTournamentMyDeck(tournamentId, selectedDeckId, user.token);
@@ -175,7 +193,7 @@ const MyTournamentDetail: React.FC = () => {
     };
 
     useEffect(() => {
-        if (!user.token || selectedDeckId === "" || selectedDeckId === registeredDeckId) {
+        if (!user.isAuthenticated || selectedDeckId === "" || selectedDeckId === registeredDeckId) {
             setSelectedDeckPreview(null);
             setSelectedDeckPreviewLoading(false);
             return;
@@ -195,7 +213,7 @@ const MyTournamentDetail: React.FC = () => {
         return () => {
             cancelled = true;
         };
-    }, [selectedDeckId, registeredDeckId, user.token]);
+    }, [selectedDeckId, registeredDeckId, user.isAuthenticated]);
 
     const sortedSnapshotCards = useMemo((): DeckCard[] | null => {
         if (!deckSnapshot?.cards) return null;
@@ -407,7 +425,10 @@ const MyTournamentDetail: React.FC = () => {
                                                     </select>
                                                     {playableDecks.length === 0 && !playableDecksLoading && (
                                                         <p className="text-amber-700 text-sm mt-1">
-                                                            {t("profile.noPlayableDeck")}
+                                                            {tournament?.allowedArchetypeIds != null &&
+                                                            tournament.allowedArchetypeIds.length > 0
+                                                                ? t("profile.noPlayableDeckForSeasonPool")
+                                                                : t("profile.noPlayableDeck")}
                                                         </p>
                                                     )}
                                                     <button

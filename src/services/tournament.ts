@@ -29,6 +29,7 @@ import {
   URL_BACK_TOURNAMENT_PENALTY_TYPES,
   URL_BACK_TOURNAMENT_PLAYER_PENALTIES,
   URL_BACK_TOURNAMENT_PLAYER_PENALTY,
+  URL_BACK_TOURNAMENT_RECALCULATE_SEASON_POINTS,
 } from "../constant/urlsBack";
 import { createElement } from "react";
 import type { Tournament } from "../types";
@@ -140,6 +141,9 @@ export interface MyTournamentDetail {
   require_deck_list: boolean;
   is_official?: boolean;
   allow_penalities: boolean;
+  season_id?: number | null;
+  /** null = pas de restriction (non officiel / pool vide) */
+  allowedArchetypeIds?: number[] | null;
 }
 
 export interface TournamentStanding {
@@ -232,6 +236,10 @@ export interface TournamentDetail {
   until_winner?: boolean;
   event_date?: string | null;
   event_date_end?: string | null;
+  season_id?: number | null;
+  season?: { id: number; name: string } | null;
+  /** null = pas de restriction (non officiel / pool vide) */
+  allowedArchetypeIds?: number[] | null;
 }
 
 export interface TournamentPlayerDeckSnapshot {
@@ -313,10 +321,24 @@ export const getTournaments = async (): Promise<Tournament[]> => {
  * Tous les tournois (admin) : y compris passés / annulés.
  * GET /tournaments/all
  */
-export const getAllTournaments = async (token: string): Promise<Tournament[]> => {
+export const getAllTournaments = async (
+  token?: string | null,
+  filters?: {
+    season_id?: number;
+    without_season?: boolean;
+    name?: string;
+  }
+): Promise<Tournament[]> => {
   const api = api_aw_token(token);
   try {
-    const response = await api.get<Tournament[] | { data: Tournament[] }>(URL_BACK_GET_ALL_TOURNAMENTS);
+    const params: Record<string, string> = {};
+    if (filters?.season_id != null) params.season_id = String(filters.season_id);
+    if (filters?.without_season) params.without_season = "true";
+    if (filters?.name?.trim()) params.name = filters.name.trim();
+    const response = await api.get<Tournament[] | { data: Tournament[] }>(
+      URL_BACK_GET_ALL_TOURNAMENTS,
+      { params }
+    );
     const data = response?.data;
     const list = Array.isArray(data) ? data : (data as { data?: Tournament[] })?.data ?? [];
     return list;
@@ -327,11 +349,32 @@ export const getAllTournaments = async (token: string): Promise<Tournament[]> =>
   }
 };
 
+/** Rattache / détache un tournoi d'une saison (admin). */
+export const setTournamentSeasonId = async (
+  tournamentId: number | string,
+  seasonId: number | null,
+  token?: string | null
+): Promise<Tournament> => {
+  const api = api_aw_token(token);
+  try {
+    const response = await api.put<Tournament>(
+      URL_BACK_UPDATE_TOURNAMENT(tournamentId),
+      { season_id: seasonId }
+    );
+    return response.data;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "setTournamentSeasonId");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
 /**
  * Get all tournaments for the current user.
  * Requires an authenticated token (use api_aw_token).
  */
-export const getMyTournaments = async (token: string): Promise<Tournament[]> => {
+export const getMyTournaments = async (token?: string | null): Promise<Tournament[]> => {
   const api = api_aw_token(token);
   try {
     const response = await api.get<Tournament[] | { data: Tournament[] }>(URL_BACK_GET_MY_TOURNAMENTS);
@@ -420,7 +463,7 @@ export const getTournamentStandings = async (
  */
 export const getMyTournamentDetail = async (
   id: number | string,
-  token: string
+  token?: string | null
 ): Promise<MyTournamentDetail> => {
   const api = api_aw_token(token);
   try {
@@ -440,7 +483,7 @@ export const getMyTournamentDetail = async (
 export const reportMatchResult = async (
   matchId: number | string,
   payload: MatchResultPayload,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   try {
     await api_aw_token(token).put(URL_BACK_REPORT_MATCH_RESULT(matchId), payload);
@@ -459,7 +502,7 @@ export const reportMatchResult = async (
  */
 export const registerToTournament = async (
   id: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -499,7 +542,7 @@ export const registerToTournament = async (
  */
 export const unregisterFromTournament = async (
   id: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -536,6 +579,7 @@ export interface CreateTournamentPayload {
   image_focal_x?: number;
   image_focal_y?: number;
   image_zoom?: number;
+  season_id?: number | null;
 }
 
 /**
@@ -544,7 +588,7 @@ export interface CreateTournamentPayload {
  */
 export const createTournament = async (
   payload: CreateTournamentPayload,
-  token: string
+  token?: string | null
 ): Promise<Tournament> => {
   const api = api_aw_token(token);
   try {
@@ -583,6 +627,7 @@ export interface UpdateTournamentPayload {
   image_focal_x?: number;
   image_focal_y?: number;
   image_zoom?: number;
+  season_id?: number | null;
 }
 
 /**
@@ -592,7 +637,7 @@ export interface UpdateTournamentPayload {
 export const updateTournament = async (
   id: number | string,
   payload: UpdateTournamentPayload,
-  token: string
+  token?: string | null
 ): Promise<Tournament> => {
   const api = api_aw_token(token);
   try {
@@ -609,9 +654,31 @@ export const updateTournament = async (
   }
 };
 
+/** Recalcule les points Swiss de saison pour un tournoi terminé. Admin. */
+export const recalculateTournamentSeasonPoints = async (
+  tournamentId: number | string,
+  token?: string | null
+): Promise<{ message: string; awarded: number; cleared: boolean }> => {
+  const api = api_aw_token(token);
+  try {
+    const response = await api.post<{
+      message: string;
+      awarded: number;
+      cleared: boolean;
+    }>(URL_BACK_TOURNAMENT_RECALCULATE_SEASON_POINTS(tournamentId));
+    toast.success(response.data?.message || "Points saison recalculés");
+    return response.data;
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "recalculateTournamentSeasonPoints");
+    toast.error(getErrorMessage(appError));
+    throw appError;
+  }
+};
+
 export const toggleTournamentRegistration = async (
   id: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -633,7 +700,7 @@ export const toggleTournamentRegistration = async (
  */
 export const deleteTournament = async (
   id: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -653,7 +720,7 @@ export const deleteTournament = async (
  */
 export const dropFromTournament = async (
   id: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -673,7 +740,7 @@ export const dropFromTournament = async (
  */
 export const rollbackTournamentRound = async (
   id: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -697,7 +764,7 @@ export const rollbackTournamentRound = async (
  */
 export const repairTournamentRound = async (
   id: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -722,7 +789,7 @@ export const repairTournamentRound = async (
 export const setTournamentMyDeck = async (
   tournamentId: number | string,
   deckId: string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -742,7 +809,7 @@ export const setTournamentMyDeck = async (
  */
 export const getTournamentPlayerDeckSnapshot = async (
   playerId: number | string,
-  token: string
+  token?: string | null
 ): Promise<TournamentPlayerDeckSnapshot | null> => {
   const api = api_aw_token(token);
   try {
@@ -765,7 +832,7 @@ export const assignTournamentPlayerDeck = async (
   tournamentId: number | string,
   playerId: number | string,
   deckId: string,
-  token: string
+  token?: string | null
 ): Promise<{ tournamentPlayer: TournamentPlayerAdmin } | null> => {
   const api = api_aw_token(token);
   try {
@@ -794,7 +861,7 @@ export const assignTournamentPlayerDeck = async (
  */
 export const startTournament = async (
   id: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -820,7 +887,7 @@ export type TournamentPlayerDropUpdate = {
  */
 export const tournamentNextRound = async (
   id: number | string,
-  token: string,
+  token?: string | null,
   options?: { playerDropUpdates?: TournamentPlayerDropUpdate[] }
 ): Promise<void> => {
   const api = api_aw_token(token);
@@ -847,7 +914,7 @@ export const setTournamentPlayerBanned = async (
   tournamentId: number | string,
   tournamentPlayerId: number | string,
   banned: boolean,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -870,7 +937,7 @@ export const setTournamentPlayerBanned = async (
 export const removePlayerFromTournament = async (
   tournamentId: number | string,
   tournamentPlayerId: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -892,7 +959,7 @@ export const adminSetTournamentPlayerDropped = async (
   tournamentId: number | string,
   tournamentPlayerId: number | string,
   dropped: boolean,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {
@@ -918,12 +985,20 @@ export const adminSetTournamentPlayerDropped = async (
 export const addPlayerToTournament = async (
   tournamentId: number | string,
   userId: number | string,
-  token: string
-): Promise<void> => {
+  token?: string | null
+): Promise<TournamentPlayerAdmin> => {
   const api = api_aw_token(token);
   try {
-    await api.post(URL_BACK_ADD_TOURNAMENT_PLAYER(tournamentId, userId));
+    const response = await api.post<{
+      message?: string;
+      tournamentPlayer: TournamentPlayerAdmin;
+    }>(URL_BACK_ADD_TOURNAMENT_PLAYER(tournamentId, userId));
     toast.success("Joueur ajouté au tournoi.");
+    const player = response.data?.tournamentPlayer;
+    if (!player) {
+      throw new Error("Réponse invalide : joueur manquant");
+    }
+    return player;
   } catch (error) {
     const appError = handleApiError(error);
     logError(appError, "addPlayerToTournament");
@@ -933,7 +1008,7 @@ export const addPlayerToTournament = async (
 };
 
 export const getTournamentPenaltyTypes = async (
-  token: string
+  token?: string | null
 ): Promise<PenaltyTypeOption[]> => {
   const api = api_aw_token(token);
   try {
@@ -952,7 +1027,7 @@ export const getTournamentPenaltyTypes = async (
 export const getTournamentPlayerPenalties = async (
   tournamentId: number | string,
   playerId: number | string,
-  token: string
+  token?: string | null
 ): Promise<TournamentPlayerPenaltyAdmin[]> => {
   const api = api_aw_token(token);
   try {
@@ -980,7 +1055,7 @@ export const createTournamentPlayerPenalty = async (
   tournamentId: number | string,
   playerId: number | string,
   payload: UpsertTournamentPlayerPenaltyPayload,
-  token: string
+  token?: string | null
 ): Promise<TournamentPlayerPenaltyAdmin> => {
   const api = api_aw_token(token);
   try {
@@ -1003,7 +1078,7 @@ export const updateTournamentPlayerPenalty = async (
   playerId: number | string,
   penaltyId: number | string,
   payload: UpsertTournamentPlayerPenaltyPayload,
-  token: string
+  token?: string | null
 ): Promise<TournamentPlayerPenaltyAdmin> => {
   const api = api_aw_token(token);
   try {
@@ -1025,7 +1100,7 @@ export const deleteTournamentPlayerPenalty = async (
   tournamentId: number | string,
   playerId: number | string,
   penaltyId: number | string,
-  token: string
+  token?: string | null
 ): Promise<void> => {
   const api = api_aw_token(token);
   try {

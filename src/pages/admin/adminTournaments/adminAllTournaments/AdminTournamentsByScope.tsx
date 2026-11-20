@@ -50,7 +50,7 @@ const toDateKey = (value: string | null | undefined): string => {
 
 const AdminTournamentsByScope = () => {
   const { scope: scopeParam } = useParams<{ scope: string }>();
-  const { token } = useSelector((state: RootState) => state.user);
+  const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
   const [tournaments, setTournaments] = useState<Tournament[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +64,7 @@ const AdminTournamentsByScope = () => {
   const meta = scope ? ADMIN_TOURNAMENT_SCOPE_META[scope] : null;
 
   const loadTournaments = useCallback(async () => {
-    if (!token) {
+    if (!isAuthenticated) {
       setTournaments([]);
       setLoading(false);
       toast.error("Authentification requise.");
@@ -138,7 +138,7 @@ const AdminTournamentsByScope = () => {
         confirmText: "Supprimer",
         cancelText: "Annuler",
         onConfirm: () => {
-          if (!token) return;
+          if (!isAuthenticated) return;
           void (async () => {
             try {
               await deleteTournament(tournament.id, token);

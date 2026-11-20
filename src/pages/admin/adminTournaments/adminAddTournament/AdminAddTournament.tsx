@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import AdminBodyHeader from "@/components/pages/admin/AdminBodyHeader";
@@ -7,6 +7,10 @@ import { Input } from "@/components/generic/form/input/Input";
 import { SwitchInput } from "@/components/generic/form/SwitchInput";
 import Button from "@/components/generic/buttons/classicButton/Button";
 import { createTournament, type CreateTournamentPayload } from "@/services/tournament";
+import {
+  listAdminQuizSeasons,
+  type AdminQuizSeason,
+} from "@/services/quiz";
 import { URL_FRONT_ADMIN_TOURNAMENTS } from "@/constant/urlsFront";
 import type { RootState } from "@/redux/store";
 import { toast } from "react-toastify";
@@ -14,6 +18,11 @@ import SelectInput from "@/components/generic/form/SelectInput";
 import QuizImageCardSearch from "@/components/pages/admin/quiz/QuizImageCardSearch";
 import ImageFocalZoomEditor from "@/components/pages/admin/ImageFocalZoomEditor";
 import { MATCH_RESOLUTION_MODE_OPTIONS } from "@/utils/tournament/bestOfScore";
+import {
+  clampTournamentDatesToSeason,
+  isTournamentFullyWithinSeason,
+  seasonToDatetimeBounds,
+} from "@/utils/tournament/seasonDateConstraints";
 
 function toDatetimeLocal(date: Date): string {
   const pad = (n: number) => (n < 10 ? "0" + n : String(n));
@@ -40,6 +49,7 @@ type TournamentFormState = {
   image_focal_x: number;
   image_focal_y: number;
   image_zoom: number;
+  season_id: number | string | null;
 } & Record<string, unknown>;
 
 const REGISTRATION_CLOSE_HOURS_OPTIONS = [
@@ -75,7 +85,7 @@ const isBeforeToday = (date: Date): boolean => {
 
 const AdminAddTournament = () => {
   const navigate = useNavigate();
-  const { token } = useSelector((state: RootState) => state.user);
+  const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState<TournamentFormState>({
     name: "",
@@ -97,8 +107,103 @@ const AdminAddTournament = () => {
     image_focal_x: 50,
     image_focal_y: 50,
     image_zoom: 100,
+    season_id: null,
   });
   const [imageCardName, setImageCardName] = useState<string | null>(null);
+  const [seasons, setSeasons] = useState<AdminQuizSeason[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    listAdminQuizSeasons()
+      .then((data) => {
+        if (!cancelled) setSeasons(data);
+      })
+      .catch(() => {
+        if (!cancelled) setSeasons([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const selectedSeason = useMemo(() => {
+    if (form.season_id == null || String(form.season_id) === "") return null;
+    return (
+      seasons.find((s) => String(s.id) === String(form.season_id)) ?? null
+    );
+  }, [seasons, form.season_id]);
+
+  const seasonDateBounds = useMemo(() => {
+    if (!selectedSeason) return null;
+    return seasonToDatetimeBounds(
+      selectedSeason.startDate,
+      selectedSeason.endDate
+    );
+  }, [selectedSeason]);
+
+  const eventDateMin = seasonDateBounds?.min ?? minEventStart();
+  const eventDateMax = seasonDateBounds?.max;
+  const eventDateEndMin = form.event_date
+    ? seasonDateBounds
+      ? form.event_date > seasonDateBounds.min
+        ? form.event_date
+        : seasonDateBounds.min
+      : form.event_date
+    : eventDateMin;
+  const eventDateEndMax = seasonDateBounds?.max;
+
+  const seasonOptions = useMemo(() => {
+    const matching = seasons.filter((s) =>
+      isTournamentFullyWithinSeason(
+        form.event_date,
+        form.event_date_end,
+        s.startDate,
+        s.endDate
+      )
+    );
+    // Garder la saison sélectionnée visible le temps du clamp.
+    if (
+      selectedSeason &&
+      !matching.some((s) => String(s.id) === String(selectedSeason.id))
+    ) {
+      matching.push(selectedSeason);
+    }
+    return matching.map((s) => ({
+      id: String(s.id),
+      label: `${s.name} (${s.startDate} → ${s.endDate})`,
+    }));
+  }, [seasons, form.event_date, form.event_date_end, selectedSeason]);
+
+  // Saison inconnue → retirer. Sinon maintenir les dates dans la fenêtre.
+  useEffect(() => {
+    if (form.season_id == null || String(form.season_id) === "") return;
+    if (seasons.length === 0) return;
+    if (!selectedSeason) {
+      setForm((prev) => ({ ...prev, season_id: null }));
+      return;
+    }
+    setForm((prev) => {
+      const clamped = clampTournamentDatesToSeason(
+        prev.event_date,
+        prev.event_date_end,
+        selectedSeason.startDate,
+        selectedSeason.endDate
+      );
+      if (
+        clamped.event_date === prev.event_date &&
+        clamped.event_date_end === prev.event_date_end
+      ) {
+        return prev;
+      }
+      return { ...prev, ...clamped };
+    });
+  }, [
+    selectedSeason,
+    seasons.length,
+    form.season_id,
+    form.event_date,
+    form.event_date_end,
+  ]);
 
   const matchesPerRoundOptions = [
     { id: "1", label: "1 Duel" },
@@ -114,7 +219,7 @@ const AdminAddTournament = () => {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!token) {
+      if (!isAuthenticated) {
         toast.error("Vous devez être connecté.");
         return;
       }
@@ -133,6 +238,20 @@ const AdminAddTournament = () => {
           "La date de fin doit être postérieure ou égale à la date de début."
         );
         return;
+      }
+      if (selectedSeason) {
+        const ok = isTournamentFullyWithinSeason(
+          form.event_date,
+          form.event_date_end,
+          selectedSeason.startDate,
+          selectedSeason.endDate
+        );
+        if (!ok) {
+          toast.error(
+            "Les dates du tournoi doivent être entièrement comprises dans la saison sélectionnée."
+          );
+          return;
+        }
       }
       const payload: CreateTournamentPayload = {
         name: form.name.trim(),
@@ -158,6 +277,10 @@ const AdminAddTournament = () => {
         image_focal_x: form.image_url.trim() ? form.image_focal_x : 50,
         image_focal_y: form.image_url.trim() ? form.image_focal_y : 50,
         image_zoom: form.image_url.trim() ? form.image_zoom : 100,
+        season_id:
+          form.season_id != null && String(form.season_id) !== ""
+            ? Number(form.season_id)
+            : null,
       };
       setIsLoading(true);
       try {
@@ -318,7 +441,8 @@ const AdminAddTournament = () => {
             attribute="event_date"
             data={form}
             setAction={setForm}
-            min={minEventStart()}
+            min={eventDateMin}
+            max={eventDateMax}
             colSpanWidth="6"
           />
           <Input
@@ -328,9 +452,36 @@ const AdminAddTournament = () => {
             attribute="event_date_end"
             data={form}
             setAction={setForm}
-            min={form.event_date || undefined}
+            min={eventDateEndMin}
+            max={eventDateEndMax}
             colSpanWidth="6"
           />
+          {selectedSeason ? (
+            <p className="col-span-12 text-xs text-gray-600 -mt-2">
+              Dates limitées à la saison « {selectedSeason.name} » (
+              {selectedSeason.startDate} → {selectedSeason.endDate}).
+            </p>
+          ) : null}
+          <SelectInput
+            label="Saison (circuit officiel)"
+            attribute="season_id"
+            data={form}
+            setAction={setForm}
+            options={seasonOptions}
+            defaultOptionLabel="— Aucune saison —"
+            colSpanWidth="12"
+          />
+          <p className="col-span-12 text-xs text-gray-600 -mt-2">
+            Seules les saisons qui couvrent entièrement le début et la fin du
+            tournoi sont proposées. Choisir une saison limite aussi les dates
+            sélectionnables.
+          </p>
+          {form.is_official && !form.season_id && (
+            <p className="col-span-12 text-xs text-amber-700 -mt-2">
+              Un tournoi officiel sans saison n&apos;attribue pas de points au
+              classement saison (Swiss 3/1/0).
+            </p>
+          )}
           <SelectInput
             defaultOptionLabel="Choisir le délai de fermeture"
             label="Fermeture des inscriptions"

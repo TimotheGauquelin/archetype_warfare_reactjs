@@ -136,7 +136,7 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
 
   const saveMatchResult = useCallback(
     async (matchId: number) => {
-      if (!token) return;
+      if (!isAuthenticated) return;
       setSavingResult(true);
       try {
         await reportMatchResult(
@@ -158,7 +158,7 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
   }, []);
 
   const handleConfirmRollback = useCallback(async () => {
-    if (!token || !tournamentId || rollbackRoundId == null) return;
+    if (!isAuthenticated || !tournamentId || rollbackRoundId == null) return;
     setRollbackLoading(true);
     try {
       await rollbackTournamentRound(tournamentId, token);
@@ -170,7 +170,7 @@ const AdminTournamentMatchmaking: React.FC<AdminTournamentMatchmakingProps> = ({
   }, [token, tournamentId, rollbackRoundId, onMatchUpdated]);
 
   const handleConfirmRepair = useCallback(async () => {
-    if (!token || !tournamentId || repairRoundId == null) return;
+    if (!isAuthenticated || !tournamentId || repairRoundId == null) return;
     setRepairLoading(true);
     try {
       await repairTournamentRound(tournamentId, token);

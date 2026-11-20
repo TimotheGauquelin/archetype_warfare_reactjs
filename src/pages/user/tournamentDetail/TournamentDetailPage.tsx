@@ -60,7 +60,7 @@ const TournamentDetailPage: React.FC = () => {
   }, [id, t]);
 
   const handleRegister = async () => {
-    if (!id || !user.token) return;
+    if (!id || !user.isAuthenticated) return;
     setRegisterErrorMessage(null);
     setRegisterSuccessMessage(null);
     setIsRegistering(true);
@@ -96,7 +96,7 @@ const TournamentDetailPage: React.FC = () => {
   };
 
   const handleUnregister = async () => {
-    if (!id || !user.token) return;
+    if (!id || !user.isAuthenticated) return;
     setUnregisterErrorMessage(null);
     setIsUnregistering(true);
     try {

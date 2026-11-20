@@ -135,7 +135,7 @@ const AdminManageTournamentPlayersSection = ({
   };
 
   const handleOpenPenalties = async (player: TournamentPlayerAdmin) => {
-    if (!token || !tournament?.id) return;
+    if (!isAuthenticated || !tournament?.id) return;
     setPenaltiesPlayer(player);
     setPenaltiesLoading(true);
     resetPenaltyForm();
@@ -163,7 +163,7 @@ const AdminManageTournamentPlayersSection = ({
   };
 
   const handleSavePenalty = async () => {
-    if (!token || !tournament?.id || !penaltiesPlayer) return;
+    if (!isAuthenticated || !tournament?.id || !penaltiesPlayer) return;
     if (penaltyFormTypeId === "") return;
     setPenaltySaving(true);
     try {
@@ -212,7 +212,7 @@ const AdminManageTournamentPlayersSection = ({
   };
 
   const handleDeletePenalty = async (penaltyId: number) => {
-    if (!token || !tournament?.id || !penaltiesPlayer) return;
+    if (!isAuthenticated || !tournament?.id || !penaltiesPlayer) return;
     setPenaltySaving(true);
     try {
       await deleteTournamentPlayerPenalty(
@@ -250,16 +250,31 @@ const AdminManageTournamentPlayersSection = ({
   useEffect(() => {
     const player = assignDeckPlayer;
     const userId = player?.user_id ?? player?.user?.id;
-    if (!token || !userId || !player) {
+    if (!isAuthenticated || !userId || !player) {
       setPlayableDecks([]);
       return;
     }
     let cancelled = false;
     setPlayableDecksLoading(true);
+    const allowedIds = tournament?.allowedArchetypeIds ?? null;
+    const allowedSet =
+      allowedIds != null && allowedIds.length > 0
+        ? new Set(allowedIds.map(Number))
+        : null;
     getMyPlayableDecks(token, userId)
       .then((decks) => {
         if (!cancelled) {
-          setPlayableDecks(Array.isArray(decks) ? decks.filter((d) => d.is_playable !== false) : []);
+          const list = Array.isArray(decks)
+            ? decks.filter((d) => {
+                if (d.is_playable === false) return false;
+                if (!allowedSet) return true;
+                return (
+                  d.archetype_id != null &&
+                  allowedSet.has(Number(d.archetype_id))
+                );
+              })
+            : [];
+          setPlayableDecks(list);
         }
       })
       .catch(() => {
@@ -271,11 +286,11 @@ const AdminManageTournamentPlayersSection = ({
     return () => {
       cancelled = true;
     };
-  }, [assignDeckPlayer, token]);
+  }, [assignDeckPlayer, token, tournament?.allowedArchetypeIds]);
 
   const handleConfirmAssignDeck = async () => {
     const player = assignDeckPlayer;
-    if (!token || !tournament?.id || !player || selectedDeckId === "") return;
+    if (!isAuthenticated || !tournament?.id || !player || selectedDeckId === "") return;
     setAssignDeckError(null);
     setAssignDeckLoading(true);
     try {

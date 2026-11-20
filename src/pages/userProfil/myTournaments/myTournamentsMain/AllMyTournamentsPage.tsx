@@ -61,7 +61,7 @@ const AllMyTournamentsPage: React.FC = () => {
   );
 
   const loadMyTournaments = useCallback(async () => {
-    if (!user.token) {
+    if (!user.isAuthenticated) {
       setTournaments([]);
       return;
     }
@@ -77,7 +77,7 @@ const AllMyTournamentsPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [user.token, t]);
+  }, [user.isAuthenticated, t]);
 
   useEffect(() => {
     void loadMyTournaments();

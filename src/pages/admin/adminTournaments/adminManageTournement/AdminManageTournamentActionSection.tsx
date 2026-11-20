@@ -1,7 +1,7 @@
 import Button from "@/components/generic/buttons/classicButton/Button";
 import ErrorText from "@/components/generic/ErrorText";
 import { TournamentDetail } from "@/services/tournament";
-import { FaArrowRight, FaLock, FaPlay, FaUnlock } from "react-icons/fa";
+import { FaArrowRight, FaLock, FaPlay, FaRedo, FaUnlock } from "react-icons/fa";
 
 interface AdminManageTournamentActionSectionProps {
   tournament: TournamentDetail | null;
@@ -9,6 +9,7 @@ interface AdminManageTournamentActionSectionProps {
   handleNextRound: () => void;
   handleToggleRegistration: () => void;
   handleStart: () => void;
+  handleRecalculateSeasonPoints?: () => void;
   hasEnoughPlayers: boolean;
   canAdvanceRound: boolean;
 }
@@ -19,6 +20,7 @@ const AdminManageTournamentActionSection = ({
   handleNextRound,
   handleToggleRegistration,
   handleStart,
+  handleRecalculateSeasonPoints,
   hasEnoughPlayers,
   canAdvanceRound,
 }: AdminManageTournamentActionSectionProps) => {
@@ -85,7 +87,27 @@ const AdminManageTournamentActionSection = ({
             Tous les matchs de la ronde courante doivent être terminés.
           </span>
         )}
+        {tournament?.status === "tournament_finished" &&
+          tournament.is_official &&
+          tournament.season_id != null &&
+          handleRecalculateSeasonPoints && (
+            <Button
+              icon={<FaRedo />}
+              buttonText="Recalculer les points saison"
+              action={handleRecalculateSeasonPoints}
+              disabled={actionLoading}
+              className="flex items-center px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded p-1 font-semibold"
+            />
+          )}
       </div>
+      {tournament?.status === "tournament_finished" &&
+        tournament.is_official &&
+        tournament.season_id == null && (
+          <p className="text-sm text-amber-700">
+            Tournoi officiel sans saison : aucun point circuit n&apos;est
+            attribué. Assignez une saison puis recalculez.
+          </p>
+        )}
     </section>
   );
 };
