@@ -103,7 +103,10 @@ const AdminArchetypeUpdateFormikCardData: React.FC<
         card.card?.name,
         card.card_status?.label,
         cardsSearch,
-        statusFilter
+        statusFilter,
+        typeof card.card?.description === "string"
+          ? card.card.description
+          : null
       )
     );
   }, [sortedCards, cardsSearch, statusFilter]);

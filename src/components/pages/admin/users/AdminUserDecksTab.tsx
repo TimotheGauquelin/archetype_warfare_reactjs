@@ -22,7 +22,7 @@ interface AdminUserDecksTabProps {
 }
 
 const AdminUserDecksTab: React.FC<AdminUserDecksTabProps> = ({ userId }) => {
-  const { token } = useSelector((state: RootState) => state.user);
+  const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
   const { cardTypes } = useCardTypes();
   const [decks, setDecks] = useState<DeckWithArchetypeDetails[]>([]);
   const [isFetching, setIsFetching] = useState(false);
@@ -31,12 +31,12 @@ const AdminUserDecksTab: React.FC<AdminUserDecksTabProps> = ({ userId }) => {
   const [deckLoading, setDeckLoading] = useState(false);
 
   useEffect(() => {
-    if (!token || !userId) return;
+    if (!isAuthenticated || !userId) return;
     void getMyDecks(token, userId, setDecks, setIsFetching, setError);
   }, [token, userId]);
 
   const handleOpenDeck = async (deckId: string) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     setDeckLoading(true);
     try {
       const deck = await fetchDeckById(token, deckId);

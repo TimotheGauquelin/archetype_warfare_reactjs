@@ -72,6 +72,7 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
         card: {
           id: card.id,
           name: card.name,
+          description: card.description ?? null,
           img_url: card.img_url,
           card_type: card.card_type,
           atk: card.atk,
@@ -100,6 +101,7 @@ const AddCardModule: React.FC<AddCardModuleProps> = ({ newArchetype, setNewArche
       card: {
         id: card.id,
         name: card.name,
+        description: card.description ?? null,
         img_url: card.img_url,
         card_type: card.card_type,
         atk: card.atk,

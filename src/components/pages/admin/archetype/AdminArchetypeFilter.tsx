@@ -30,6 +30,8 @@ interface AdminArchetypeFilterProps {
   criteria: SearchCriteria;
   setCriteria: React.Dispatch<React.SetStateAction<SearchCriteria>>;
   setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+  /** Actions globales (slider / hors-ligne / popularité). Défaut true. */
+  showGeneralActions?: boolean;
 }
 
 type FilterForm = SearchCriteria & Record<string, unknown>;
@@ -39,6 +41,7 @@ const AdminArchetypeFilter: React.FC<AdminArchetypeFilterProps> = ({
   criteria,
   setCriteria,
   setRefresh,
+  showGeneralActions = true,
 }) => {
   const [eras, setEras] = useState<Option[]>([]);
   const [types, setTypes] = useState<Option[]>([]);
@@ -151,15 +154,17 @@ const AdminArchetypeFilter: React.FC<AdminArchetypeFilterProps> = ({
           >
             Reset les filtres
           </button>
-          <button
-            type="button"
-            className="hover:text-blue-500 cursor-pointer text-left"
-            onClick={() => {
-              setDisplayGeneralActions(!displayGeneralActions);
-            }}
-          >
-            Actions générales
-          </button>
+          {showGeneralActions ? (
+            <button
+              type="button"
+              className="hover:text-blue-500 cursor-pointer text-left"
+              onClick={() => {
+                setDisplayGeneralActions(!displayGeneralActions);
+              }}
+            >
+              Actions générales
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -220,7 +225,7 @@ const AdminArchetypeFilter: React.FC<AdminArchetypeFilterProps> = ({
         </div>
       </div>
 
-      {displayGeneralActions && (
+      {showGeneralActions && displayGeneralActions ? (
         <div className="flex flex-col tablet:flex-row flex-wrap bg-white border border-gray-200 rounded-lg p-2 mt-2 gap-2">
           <button
             type="button"
@@ -247,7 +252,7 @@ const AdminArchetypeFilter: React.FC<AdminArchetypeFilterProps> = ({
             Remettre les points de popularité à 0
           </button>
         </div>
-      )}
+      ) : null}
 
       <PopUp
         isOpen={isOpen}

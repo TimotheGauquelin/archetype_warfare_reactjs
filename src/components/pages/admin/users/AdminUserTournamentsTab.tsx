@@ -69,6 +69,7 @@ const AdminUserTournamentsTab: React.FC<AdminUserTournamentsTabProps> = ({
   userId,
 }) => {
   const token = useSelector((state: RootState) => state.user.token);
+  const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
   const { cardTypes } = useCardTypes();
   const [tournaments, setTournaments] = useState<
     AdminUserTournamentSummaryItem[]
@@ -136,7 +137,7 @@ const AdminUserTournamentsTab: React.FC<AdminUserTournamentsTabProps> = ({
   }, [tournaments, filters]);
 
   const handleOpenDeck = async (tournamentPlayerId: number) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     setDeckLoading(true);
     setSelectedDeck(null);
     try {
