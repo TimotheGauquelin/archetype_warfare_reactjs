@@ -1,13 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import UserHeroLayout from "../layout";
-import AbsoluteInput from "../../../components/generic/AbsoluteInput";
 import PageContentBlock from "../../../components/generic/PageContentBlock";
 import SelectInput from "../../../components/generic/form/SelectInput";
 import { Input } from "../../../components/generic/form/input/Input";
 import TournamentTable from "../../../components/pages/user/tournaments/TournamentTable";
 import OfficialTournamentHighlight from "../../../components/pages/user/tournaments/OfficialTournamentHighlight";
+import SeasonEventCollapsible from "../../../components/pages/user/season/SeasonEventCollapsible";
+import type { SeasonHighlightItem } from "../../../components/pages/user/season/SeasonHighlight";
 import { getTournaments } from "../../../services/tournament";
+import {
+  getQuizHub,
+  getQuizSeasonTournamentRanking,
+  type SeasonTournamentRankingEntry,
+} from "../../../services/quiz";
 import { useDebounce } from "@/utils/functions/debounce/useDebounce";
 import {
   filterTournamentsByScope,
@@ -25,6 +31,11 @@ type TournamentFilters = {
   phase: TournamentPhase;
 } & Record<string, unknown>;
 
+type SeasonTournamentBlock = {
+  item: SeasonHighlightItem;
+  podium: SeasonTournamentRankingEntry[];
+};
+
 const EMPTY_FILTERS: TournamentFilters = {
   name: "",
   location: "",
@@ -33,7 +44,10 @@ const EMPTY_FILTERS: TournamentFilters = {
   phase: "",
 };
 
-const PHASE_TO_SCOPE: Record<Exclude<TournamentPhase, "">, AdminTournamentScope> = {
+const PHASE_TO_SCOPE: Record<
+  Exclude<TournamentPhase, "">,
+  AdminTournamentScope
+> = {
   open: "upcoming",
   in_progress: "in-progress",
   finished: "past",
@@ -50,6 +64,7 @@ const TournamentsPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState<TournamentFilters>(EMPTY_FILTERS);
   const debouncedName = useDebounce(filters.name, 400);
+  const [seasonBlocks, setSeasonBlocks] = useState<SeasonTournamentBlock[]>([]);
 
   const officialOptions = useMemo(
     () => [
@@ -79,9 +94,47 @@ const TournamentsPage: React.FC = () => {
     }
   }, []);
 
+  const loadSeasonHighlight = useCallback(async () => {
+    try {
+      const hub = await getQuizHub();
+      const blocks =
+        hub.seasonPodiums && hub.seasonPodiums.length > 0
+          ? hub.seasonPodiums
+          : hub.seasonPodium
+            ? [hub.seasonPodium]
+            : [];
+      const currentItems = blocks
+        .filter((b) => b.season.status === "current")
+        .map((b) => ({ season: b.season, podium: b.podium }));
+
+      const withRankings = await Promise.all(
+        currentItems.map(async (item) => {
+          try {
+            const rankingData = await getQuizSeasonTournamentRanking(
+              item.season.id
+            );
+            return {
+              item,
+              podium: (rankingData.ranking ?? []).slice(0, 3),
+            };
+          } catch {
+            return { item, podium: [] as SeasonTournamentRankingEntry[] };
+          }
+        })
+      );
+      setSeasonBlocks(withRankings);
+    } catch {
+      setSeasonBlocks([]);
+    }
+  }, []);
+
   useEffect(() => {
     void loadTournaments();
   }, [loadTournaments]);
+
+  useEffect(() => {
+    void loadSeasonHighlight();
+  }, [loadSeasonHighlight]);
 
   const filteredTournaments = useMemo(() => {
     const name = debouncedName.trim().toLowerCase();
@@ -131,70 +184,27 @@ const TournamentsPage: React.FC = () => {
       mainTitle={t("hero.tournaments.title")}
       subTitle={t("hero.tournaments.subtitle")}
     >
-      <AbsoluteInput>
-        <div className="col-span-6 tablet:col-span-3">
-          <Input
-            inputType="text"
-            inputName="name"
-            colSpanWidth="12"
-            attribute="name"
-            data={filters}
-            setAction={setFilters}
-            placeholder={t("tournamentsPage.searchPlaceholder")}
-          />
-        </div>
-        <div className="col-span-6 tablet:col-span-2">
-          <Input
-            inputType="text"
-            inputName="location"
-            colSpanWidth="12"
-            attribute="location"
-            data={filters}
-            setAction={setFilters}
-            placeholder={t("tournamentsPage.locationPlaceholder")}
-          />
-        </div>
-        <div className="col-span-6 tablet:col-span-2">
-          <Input
-            inputType="date"
-            inputName="event_date"
-            colSpanWidth="12"
-            attribute="event_date"
-            data={filters}
-            setAction={setFilters}
-          />
-        </div>
-        <div className="col-span-6 tablet:col-span-2">
-          <SelectInput
-            options={officialOptions}
-            inputName="is_official"
-            colSpanWidth="12"
-            attribute="is_official"
-            data={filters}
-            defaultOptionLabel={t("tournamentsPage.typePlaceholder")}
-            ariaLabel={t("tournamentsPage.typeLabel")}
-            setAction={setFilters}
-          />
-        </div>
-        <div className="col-span-6 tablet:col-span-3">
-          <SelectInput
-            options={phaseOptions}
-            inputName="phase"
-            colSpanWidth="12"
-            attribute="phase"
-            data={filters}
-            defaultOptionLabel={t("tournamentsPage.phasePlaceholder")}
-            ariaLabel={t("tournamentsPage.phaseLabel")}
-            setAction={setFilters}
-          />
-        </div>
-      </AbsoluteInput>
-
       <PageContentBlock>
+        {seasonBlocks.length > 0 && (
+          <div className="space-y-4 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+            <h2 className="text-xl font-bold text-gray-900">
+              {t("seasonHighlight.title")}
+            </h2>
+            {seasonBlocks.map(({ item, podium }, index) => (
+              <SeasonEventCollapsible
+                key={item.season.id}
+                item={item}
+                variant="tournaments"
+                tournamentPodium={podium}
+                defaultOpen={index === 0}
+              />
+            ))}
+          </div>
+        )}
         {!isLoading && (
           <OfficialTournamentHighlight
             tournaments={tournaments}
-            className="mb-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+            className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
           />
         )}
         {isLoading ? (
@@ -202,7 +212,70 @@ const TournamentsPage: React.FC = () => {
             {t("tournamentsPage.loading")}
           </p>
         ) : (
-          <TournamentTable tournaments={filteredTournaments} />
+          <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
+            <h2 className="text-xl font-bold text-gray-900">
+              {t("tournamentsPage.allTournamentsTitle")}
+            </h2>
+            <div className="grid grid-cols-12 gap-2 tablet:gap-3 items-end">
+              <div className="col-span-12 tablet:col-span-3">
+                <Input
+                  inputType="text"
+                  inputName="name"
+                  colSpanWidth="12"
+                  attribute="name"
+                  data={filters}
+                  setAction={setFilters}
+                  placeholder={t("tournamentsPage.searchPlaceholder")}
+                />
+              </div>
+              <div className="col-span-6 tablet:col-span-2">
+                <Input
+                  inputType="text"
+                  inputName="location"
+                  colSpanWidth="12"
+                  attribute="location"
+                  data={filters}
+                  setAction={setFilters}
+                  placeholder={t("tournamentsPage.locationPlaceholder")}
+                />
+              </div>
+              <div className="col-span-6 tablet:col-span-2">
+                <Input
+                  inputType="date"
+                  inputName="event_date"
+                  colSpanWidth="12"
+                  attribute="event_date"
+                  data={filters}
+                  setAction={setFilters}
+                />
+              </div>
+              <div className="col-span-6 tablet:col-span-2">
+                <SelectInput
+                  options={officialOptions}
+                  inputName="is_official"
+                  colSpanWidth="12"
+                  attribute="is_official"
+                  data={filters}
+                  defaultOptionLabel={t("tournamentsPage.typePlaceholder")}
+                  ariaLabel={t("tournamentsPage.typeLabel")}
+                  setAction={setFilters}
+                />
+              </div>
+              <div className="col-span-6 tablet:col-span-3">
+                <SelectInput
+                  options={phaseOptions}
+                  inputName="phase"
+                  colSpanWidth="12"
+                  attribute="phase"
+                  data={filters}
+                  defaultOptionLabel={t("tournamentsPage.phasePlaceholder")}
+                  ariaLabel={t("tournamentsPage.phaseLabel")}
+                  setAction={setFilters}
+                />
+              </div>
+            </div>
+            <TournamentTable tournaments={filteredTournaments} />
+          </div>
         )}
       </PageContentBlock>
     </UserHeroLayout>

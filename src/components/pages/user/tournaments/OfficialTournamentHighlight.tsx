@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/redux/store";
@@ -85,7 +85,7 @@ const OfficialTournamentHighlightCard: React.FC<{
           goToTournament();
         }
       }}
-      className="relative overflow-hidden rounded-lg border border-amber-300 bg-amber-50 p-4 shadow-md cursor-pointer transition-all hover:shadow-lg hover:bg-amber-50"
+      className="relative overflow-hidden rounded-lg border border-gray-200 bg-white p-4 shadow-md cursor-pointer transition-all hover:shadow-lg"
     >
       {imageUrl && (
         <div
@@ -102,7 +102,7 @@ const OfficialTournamentHighlightCard: React.FC<{
               transformOrigin: `${focalX}% ${focalY}%`,
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-amber-50 via-amber-50/75 to-amber-50/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/75 to-white/10" />
         </div>
       )}
 
@@ -113,6 +113,11 @@ const OfficialTournamentHighlightCard: React.FC<{
               <span className="inline-flex items-center rounded-md bg-amber-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                 {t("officialTournamentHighlight.officialBadge")}
               </span>
+              {tournament.season?.name ? (
+                <span className="inline-flex items-center rounded-md bg-sky-600 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                  {tournament.season.name}
+                </span>
+              ) : null}
               {countdownLabel && (
                 <span className="inline-flex items-center rounded-md bg-red-600 px-2 py-0.5 text-xs font-bold tabular-nums text-white">
                   {t("officialTournamentHighlight.countdown", {
@@ -143,16 +148,6 @@ const OfficialTournamentHighlightCard: React.FC<{
             : tournament.is_online
               ? ` · ${t("tournamentsPage.online")}`
               : null}
-        </p>
-
-        <p className="text-sm font-medium text-amber-800">
-          <Link
-            to={URL_FRONT_TOURNAMENT(tournament.id)}
-            className="underline hover:text-amber-950"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {t("officialTournamentHighlight.seeTournament")}
-          </Link>
         </p>
       </div>
     </div>
