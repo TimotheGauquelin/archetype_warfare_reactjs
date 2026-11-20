@@ -145,49 +145,76 @@ const DeckCardsSearcher: React.FC<DeckCardsSearcherProps> = ({ myDeck, setMyDeck
       min_def,
       max_def,
       attribute,
-      signal // Passer le signal pour l'annulation
+      signal,
+      locale
     );
-  }, [myDeck.archetype_id, setPagination]);
+  }, [myDeck.archetype_id, setPagination, locale]);
 
-  // Debounce de la recherche avec 500ms de délai
+  // Debounce un peu plus long pour limiter les appels API en prod
   const debouncedSearch = useMemo(
     () => debounce((name: string, page: number, size: number, card_type?: string, level?: number, min_atk?: number, max_atk?: number, min_def?: number, max_def?: number, attribute?: string) => {
       performSearch(name, page, size, card_type, level, min_atk, max_atk, min_def, max_def, attribute);
-    }, 500),
+    }, 450),
     [performSearch]
   );
 
-  // Effet pour la recherche avec debounce
   useEffect(() => {
     const size = filters.size ?? 30;
     const page = filters.page ?? 1;
-    // Si le nom est vide et qu'on est sur la page 1, charger la première page
-    if (filters.name === "" && page === 1) {
-      performSearch("", 1, size, filters.card_type, filters.level, filters.min_atk, filters.max_atk, filters.min_def, filters.max_def, filters.attribute);
-    } else {
-      debouncedSearch(filters.name ?? "", page, size, filters.card_type, filters.level, filters.min_atk, filters.max_atk, filters.min_def, filters.max_def, filters.attribute);
+    const name = (filters.name ?? "").trim();
+
+    // 1 caractère : trop large / trop cher — attendre 2+ ou champ vide (browse)
+    if (name.length === 1) {
+      return;
     }
 
-    // Cleanup : annuler la requête en cours si le composant se démonte
+    if (name.length === 0) {
+      performSearch(
+        "",
+        page,
+        size,
+        filters.card_type,
+        filters.level,
+        filters.min_atk,
+        filters.max_atk,
+        filters.min_def,
+        filters.max_def,
+        filters.attribute
+      );
+    } else {
+      debouncedSearch(
+        name,
+        page,
+        size,
+        filters.card_type,
+        filters.level,
+        filters.min_atk,
+        filters.max_atk,
+        filters.min_def,
+        filters.max_def,
+        filters.attribute
+      );
+    }
+
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
     };
   }, [
-    filters.name, 
-    filters.page, 
-    filters.size, 
-    filters.card_type, 
-    filters.level, 
-    filters.min_atk, 
-    filters.max_atk, 
-    filters.min_def, 
-    filters.max_def, 
+    filters.name,
+    filters.page,
+    filters.size,
+    filters.card_type,
+    filters.level,
+    filters.min_atk,
+    filters.max_atk,
+    filters.min_def,
+    filters.max_def,
     filters.attribute,
     locale,
-    debouncedSearch, 
-    performSearch
+    debouncedSearch,
+    performSearch,
   ]);
 
   const increasePage = useCallback(() => {

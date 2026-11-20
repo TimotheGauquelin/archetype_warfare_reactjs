@@ -81,7 +81,8 @@ export const searchCardsWithoutArchetypeAndByOneArchetypeId = async (
   min_def?: number,
   max_def?: number,
   attribute?: string,
-  signal?: AbortSignal | null
+  signal?: AbortSignal | null,
+  locale?: string
 ): Promise<void> => {
   const params = new URLSearchParams();
   if (size) params.append("size", size.toString());
@@ -94,6 +95,7 @@ export const searchCardsWithoutArchetypeAndByOneArchetypeId = async (
   if (min_def !== undefined) params.append("min_def", min_def.toString());
   if (max_def !== undefined) params.append("max_def", max_def.toString());
   if (attribute) params.append("attribute", attribute);
+  if (locale) params.append("locale", locale);
 
   const config = signal ? { signal } : {};
 
