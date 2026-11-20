@@ -10,7 +10,6 @@ import {
   AdminQuizQuestion,
   AdminQuizSeason,
   deleteAdminQuizQuestion,
-  deleteAdminQuizSeason,
   listAdminQuizQuestions,
   listAdminQuizSeasons,
   updateAdminQuizQuestion,
@@ -21,7 +20,7 @@ import {
 } from "../../../constant/urlsFront";
 
 const AdminQuizzes = () => {
-  const [seasons, setSeasons] = useState<AdminQuizSeason[]>([]);
+  const [, setSeasons] = useState<AdminQuizSeason[]>([]);
   const [questions, setQuestions] = useState<AdminQuizQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);

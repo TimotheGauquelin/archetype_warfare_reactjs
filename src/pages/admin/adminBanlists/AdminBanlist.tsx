@@ -26,7 +26,7 @@ const AdminBanlist = () => {
   const [, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { token } = useSelector((state: RootState) => state.user);
+  const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
 
   const handleDeleteBanlist = (banlistId: number) => {

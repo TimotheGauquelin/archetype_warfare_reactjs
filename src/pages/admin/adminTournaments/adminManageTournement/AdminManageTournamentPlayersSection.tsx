@@ -135,7 +135,7 @@ const AdminManageTournamentPlayersSection = ({
   };
 
   const handleOpenPenalties = async (player: TournamentPlayerAdmin) => {
-    if (!isAuthenticated || !tournament?.id) return;
+    if (!token || !tournament?.id) return;
     setPenaltiesPlayer(player);
     setPenaltiesLoading(true);
     resetPenaltyForm();
@@ -163,7 +163,7 @@ const AdminManageTournamentPlayersSection = ({
   };
 
   const handleSavePenalty = async () => {
-    if (!isAuthenticated || !tournament?.id || !penaltiesPlayer) return;
+    if (!token || !tournament?.id || !penaltiesPlayer) return;
     if (penaltyFormTypeId === "") return;
     setPenaltySaving(true);
     try {
@@ -212,7 +212,7 @@ const AdminManageTournamentPlayersSection = ({
   };
 
   const handleDeletePenalty = async (penaltyId: number) => {
-    if (!isAuthenticated || !tournament?.id || !penaltiesPlayer) return;
+    if (!token || !tournament?.id || !penaltiesPlayer) return;
     setPenaltySaving(true);
     try {
       await deleteTournamentPlayerPenalty(
@@ -250,7 +250,7 @@ const AdminManageTournamentPlayersSection = ({
   useEffect(() => {
     const player = assignDeckPlayer;
     const userId = player?.user_id ?? player?.user?.id;
-    if (!isAuthenticated || !userId || !player) {
+    if (!token || !userId || !player) {
       setPlayableDecks([]);
       return;
     }
@@ -290,7 +290,7 @@ const AdminManageTournamentPlayersSection = ({
 
   const handleConfirmAssignDeck = async () => {
     const player = assignDeckPlayer;
-    if (!isAuthenticated || !tournament?.id || !player || selectedDeckId === "") return;
+    if (!token || !tournament?.id || !player || selectedDeckId === "") return;
     setAssignDeckError(null);
     setAssignDeckLoading(true);
     try {

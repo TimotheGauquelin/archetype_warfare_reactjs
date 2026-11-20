@@ -11,6 +11,8 @@ import { cardTypeToFrench } from "@/utils/trad/cardType";
 import { MONSTER_TYPE_LABELS, monsterTypeToFrench } from "@/utils/trad/monsterType";
 import { useCardTypes } from "../../../hooks/useCardTypes";
 import { useAttributes } from "../../../hooks/useAttributes";
+import type { CardType } from "../../../redux/slice/cardTypeSlice";
+import type { Attribute } from "../../../redux/slice/attributeSlice";
 
 type LocaleTab = "fr" | "en";
 
@@ -346,7 +348,7 @@ const AdminCardDetail = () => {
                       className="w-full max-w-md rounded border border-gray-300 px-3 py-2 text-gray-900"
                     >
                       <option value="">Sélectionner un type</option>
-                      {cardTypes.map((ct) => (
+                      {cardTypes.map((ct: CardType) => (
                         <option key={ct.id} value={ct.label}>
                           {cardTypeToFrench(ct.label)}
                         </option>
@@ -437,7 +439,7 @@ const AdminCardDetail = () => {
                           className="w-full rounded border border-gray-300 px-3 py-2"
                         >
                           <option value="">Sélectionner</option>
-                          {attributes.map((attr) => (
+                          {attributes.map((attr: Attribute) => (
                             <option key={attr.id} value={attr.label.toLowerCase()}>
                               {attributeToFrench(attr.label)}
                             </option>
