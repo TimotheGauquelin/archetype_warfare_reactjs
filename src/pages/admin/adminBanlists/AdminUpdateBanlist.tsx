@@ -50,7 +50,7 @@ const AdminUpdateBanlist = () => {
     const [error, setError] = useState<string | null>(null);
     const [hasLoaded, setHasLoaded] = useState(false);
 
-    const { token } = useSelector((state: RootState) => state.user);
+    const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
     const { banlistId } = useParams<{ banlistId?: string }>();
     const navigate = useNavigate();
     const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
@@ -123,7 +123,10 @@ const AdminUpdateBanlist = () => {
                 card.card?.name,
                 card.card_status?.label,
                 cardsSearch,
-                statusFilter
+                statusFilter,
+                typeof card.card?.description === "string"
+                    ? card.card.description
+                    : null
             )
         );
     }, [genericCards, cardsSearch, statusFilter]);
@@ -214,7 +217,7 @@ const AdminUpdateBanlist = () => {
     }, [genericCards.length, deleteAllListedCards, showConfirmDialog]);
 
     const handleUpdateBanlist = useCallback(() => {
-        if (!banlistId || !token || !hasLoaded) return;
+        if (!banlistId || !isAuthenticated || !hasLoaded) return;
         setIsLoading(true);
 
         // Ne persister que les génériques restreintes ; le backend supprimera les Unlimited orphelines

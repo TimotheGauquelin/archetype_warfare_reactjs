@@ -34,7 +34,7 @@ const AdminBanlist = () => {
       title: "Supprimer la banlist",
       message: "Êtes-vous sûr de vouloir supprimer cette banlist ?",
       onConfirm: () => {
-        if (token) deleteBanlist(token, banlistId, navigate, setIsLoading);
+        if (isAuthenticated) deleteBanlist(token, banlistId, navigate, setIsLoading);
         setRefresh(true);
       },
     });

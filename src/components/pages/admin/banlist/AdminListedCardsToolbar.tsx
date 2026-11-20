@@ -80,7 +80,7 @@ const AdminListedCardsToolbar = ({
         type="search"
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
-        placeholder="Rechercher…"
+        placeholder="Nom ou description…"
         aria-label={searchAriaLabel}
         className="w-[140px] tablet:w-[180px] p-1.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       />
@@ -135,10 +135,16 @@ export const matchesListedCardFilters = (
   cardName: string | undefined,
   cardStatusLabel: string | undefined,
   search: string,
-  statusFilter: ListedCardStatusFilter
+  statusFilter: ListedCardStatusFilter,
+  cardDescription?: string | null
 ): boolean => {
   const q = search.trim().toLowerCase();
-  if (q && !cardName?.toLowerCase().includes(q)) return false;
+  if (q) {
+    const inName = cardName?.toLowerCase().includes(q) ?? false;
+    const inDescription =
+      cardDescription?.toLowerCase().includes(q) ?? false;
+    if (!inName && !inDescription) return false;
+  }
 
   if (statusFilter === "all") return true;
   return (cardStatusLabel ?? "").toLowerCase() === statusFilter.toLowerCase();

@@ -56,7 +56,7 @@ const AdminAddBanlist = () => {
     const [statusFilter, setStatusFilter] = useState<ListedCardStatusFilter>("all");
     const [viewMode, setViewMode] = useState<BanlistCardLayout>("grid");
     const [isLoading, setIsLoading] = useState(false);
-    const { token } = useSelector((state: RootState) => state.user);
+    const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
 
     const filteredCards = useMemo(() => {
         return banlist.banlist_archetype_cards.filter((card) =>
@@ -64,13 +64,16 @@ const AdminAddBanlist = () => {
                 card.card?.name,
                 card.card_status?.label,
                 cardsSearch,
-                statusFilter
+                statusFilter,
+                typeof card.card?.description === "string"
+                    ? card.card.description
+                    : null
             )
         );
     }, [banlist.banlist_archetype_cards, cardsSearch, statusFilter]);
 
     const handleAddBanlist = useCallback(() => {
-        if (!token) return;
+        if (!isAuthenticated) return;
         // Le back attend un tableau DTO "plat" (pas de `card`, pas de `card_status` imbriqués).
         const mappedBanlistArchetypeCards = (banlist.banlist_archetype_cards || [])
             .filter(isGenericRestrictedBanlistCard)

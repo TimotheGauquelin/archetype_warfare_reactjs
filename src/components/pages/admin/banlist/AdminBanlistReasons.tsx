@@ -20,7 +20,7 @@ const emptyForm = {
 };
 
 const AdminBanlistReasons = () => {
-  const { token } = useSelector((state: RootState) => state.user);
+  const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
   const [reasons, setReasons] = useState<BanlistReason[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -54,7 +54,7 @@ const AdminBanlistReasons = () => {
   };
 
   const handleSubmit = async () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     if (!form.label.trim() || !form.text.trim()) {
       toast.error("Label et texte sont obligatoires");
       return;
@@ -81,7 +81,7 @@ const AdminBanlistReasons = () => {
   };
 
   const handleDelete = (reason: BanlistReason) => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     showConfirmDialog({
       title: "Supprimer la raison",
       message: `Supprimer « ${reason.label} » ? Les associations aux cartes seront aussi retirées.`,

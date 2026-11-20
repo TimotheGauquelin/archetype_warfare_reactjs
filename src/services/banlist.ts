@@ -92,7 +92,7 @@ export const getBanlistById = async (
  * Adds a new banlist
  */
 export const addBanlist = async (
-  token: string,
+  token?: string | null,
   newBanlist: Partial<Banlist>,
   navigate: NavigateFunction,
   toast: ToastFunction,
@@ -121,7 +121,7 @@ export const addBanlist = async (
  * Updates a banlist
  */
 export const updateBanlist = async (
-  token: string,
+  token?: string | null,
   banlistId: number | string,
   data: Partial<Banlist>,
   navigate: NavigateFunction,
@@ -148,7 +148,7 @@ export const updateBanlist = async (
  * Deletes a banlist
  */
 export const deleteBanlist = async (
-  token: string,
+  token?: string | null,
   banlistId: number | string,
   navigate: NavigateFunction,
   setIsLoading: SetStateCallback<boolean>
