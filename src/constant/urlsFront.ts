@@ -35,9 +35,26 @@ export const getQuizDailyPath = (seasonId?: number | string | null): string =>
     : URL_FRONT_QUIZ_DAILY;
 export const URL_FRONT_QUIZ_PLAY = (attemptId: string): string =>
   `/quiz/play/${attemptId}`;
-export const URL_FRONT_QUIZ_SEASON_RANKING = "/quiz/season/:seasonId";
-export const getQuizSeasonRankingPath = (seasonId: number | string = "current") =>
-  `/quiz/season/${seasonId}`;
+/** Page publique d'une saison (classements quiz / tournois + descriptif). */
+export const URL_FRONT_SEASON = "/season/:seasonId";
+export const getSeasonPath = (
+  seasonId: number | string = "current",
+  from?: "quiz" | "tournaments"
+) => {
+  const path = `/season/${seasonId}`;
+  const hash =
+    from === "quiz"
+      ? "#quiz-ranking"
+      : from === "tournaments"
+        ? "#tournament-ranking"
+        : "";
+  if (!from) return path;
+  return `${path}?from=${from}${hash}`;
+};
+/** @deprecated utiliser URL_FRONT_SEASON / getSeasonPath */
+export const URL_FRONT_QUIZ_SEASON_RANKING = URL_FRONT_SEASON;
+/** @deprecated utiliser getSeasonPath */
+export const getQuizSeasonRankingPath = getSeasonPath;
 
 //Profil
 export const URL_FRONT_MY_PROFILE = "/my-profile";
@@ -80,12 +97,18 @@ export const URL_FRONT_ADMIN_CARDS = "/admin/cards";
 export const URL_FRONT_ADMIN_CARD_DETAIL = "/admin/cards/:cardId";
 export const URL_FRONT_ADMIN_QUIZZES = "/admin/quizzes";
 export const URL_FRONT_ADMIN_QUIZ_QUESTIONS = "/admin/quizzes/questions";
-export const URL_FRONT_ADMIN_QUIZ_SEASONS = "/admin/quizzes/seasons";
-export const URL_FRONT_ADMIN_QUIZ_SEASON_ADD = "/admin/quizzes/seasons/add";
-export const URL_FRONT_ADMIN_QUIZ_SEASON_UPDATE =
-  "/admin/quizzes/seasons/update/:seasonId";
-export const getAdminQuizSeasonUpdatePath = (seasonId: number | string) =>
-  `/admin/quizzes/seasons/update/${seasonId}`;
+export const URL_FRONT_ADMIN_SEASONS = "/admin/seasons";
+export const URL_FRONT_ADMIN_SEASONS_ALL = "/admin/seasons/all";
+export const URL_FRONT_ADMIN_SEASON_ADD = "/admin/seasons/add";
+export const URL_FRONT_ADMIN_SEASON_UPDATE =
+  "/admin/seasons/update/:seasonId";
+export const getAdminSeasonUpdatePath = (seasonId: number | string) =>
+  `/admin/seasons/update/${seasonId}`;
+/** Alias historiques (mêmes écrans que /admin/seasons/*). */
+export const URL_FRONT_ADMIN_QUIZ_SEASONS = URL_FRONT_ADMIN_SEASONS_ALL;
+export const URL_FRONT_ADMIN_QUIZ_SEASON_ADD = URL_FRONT_ADMIN_SEASON_ADD;
+export const URL_FRONT_ADMIN_QUIZ_SEASON_UPDATE = URL_FRONT_ADMIN_SEASON_UPDATE;
+export const getAdminQuizSeasonUpdatePath = getAdminSeasonUpdatePath;
 export const URL_FRONT_ADMIN_QUIZ_ADD = "/admin/quizzes/add";
 export const URL_FRONT_ADMIN_QUIZ_UPDATE = "/admin/quizzes/update/:questionId";
 export const getAdminQuizUpdatePath = (questionId: number | string) =>

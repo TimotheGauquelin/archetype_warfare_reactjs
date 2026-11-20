@@ -11,6 +11,7 @@ import {
   URL_FRONT_ADMIN_HOME,
   URL_FRONT_ADMIN_OPTIONS,
   URL_FRONT_ADMIN_QUIZZES,
+  URL_FRONT_ADMIN_SEASONS,
   URL_FRONT_ADMIN_TOURNAMENTS,
   URL_FRONT_ADMIN_USERS,
 } from "../../../constant/urlsFront";
@@ -40,6 +41,11 @@ const sideBarCategories = [
     title: "Utilisateurs",
     icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
     url: URL_FRONT_ADMIN_USERS,
+  },
+  {
+    title: "Saison",
+    icon: <FaHome className="h-5 w-5 flex-shrink-0 text-white" />,
+    url: URL_FRONT_ADMIN_SEASONS,
   },
   {
     title: "Tournois",

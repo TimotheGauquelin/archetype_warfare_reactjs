@@ -11,14 +11,14 @@ const AdminOptions = () => {
   const [config, setConfig] = useState<Record<string, unknown>>({});
   const [isFetching, setIsFetching] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const { token } = useSelector((state: RootState) => state.user);
+  const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
       getConfig(setConfig, setIsFetching);
   }, [isUpdating]);
 
   const handleToggleStreamBar = useCallback(() => {
-    if (!token || isUpdating) return;
+    if (!isAuthenticated || isUpdating) return;
     setIsUpdating(true);
     toggleStreamBar(token, setIsUpdating, toast).then(() => {
       getConfig(setConfig, setIsFetching);
@@ -26,7 +26,7 @@ const AdminOptions = () => {
   }, [token, isUpdating]);
 
   const handleToggleRegistration = useCallback(() => {
-    if (!token || isUpdating) return;
+    if (!isAuthenticated || isUpdating) return;
     setIsUpdating(true);
     toggleRegistration(token, setIsUpdating, toast).then(() => {
       getConfig(setConfig, setIsFetching);

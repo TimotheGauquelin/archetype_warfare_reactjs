@@ -37,6 +37,8 @@ export const URL_BACK_CONFIRMATION_TOKEN = (token: string) =>
 
 //AUTHENTICATE
 export const URL_BACK_LOGIN = "/authenticate/login"
+export const URL_BACK_AUTH_ME = "/authenticate/me"
+export const URL_BACK_LOGOUT = "/authenticate/logout"
 export const URL_BACK_REGISTER = "/authenticate/register";
 export const URL_BACK_DISCORD_AUTH = (params?: { locale?: string; acceptedTerms?: boolean }) => {
   const search = new URLSearchParams();
@@ -172,7 +174,7 @@ export const URL_BACK_UPDATE_MY_PROFILE = (userId: number | string) => `/users/$
 export const URL_BACK_CHANGE_MY_PASSWORD = (userId: number | string) => `/users/${userId}/password`
 
 ///// PASSWORD
-export const URL_BACK_UPDATE_PASSWORD = (userId: number | string) => `/authenticate/user/${userId}/update-password`
+export const URL_BACK_UPDATE_PASSWORD = `/authenticate/reset-password`
 export const URL_BACK_REQUEST_NEW_PASSWORD = `/authenticate/request-new-password`
 
 ///// WEBSITE ACTIONS
@@ -254,6 +256,12 @@ export const URL_BACK_GET_USER_ARCHETYPE_RANKINGS = (userId: number | string) =>
 export const URL_BACK_QUIZ_HUB = `/quizzes/hub`;
 export const URL_BACK_QUIZ_SEASON_RANKING = (seasonId: number | string = "current") =>
   `/quizzes/seasons/${seasonId}/ranking`;
+export const URL_BACK_QUIZ_SEASON_TOURNAMENT_RANKING = (
+  seasonId: number | string = "current"
+) => `/quizzes/seasons/${seasonId}/tournament-ranking`;
+export const URL_BACK_TOURNAMENT_RECALCULATE_SEASON_POINTS = (
+  tournamentId: number | string
+) => `/tournaments/${tournamentId}/season-points/recalculate`;
 export const URL_BACK_QUIZ_MY_STATS = `/quizzes/me/stats`;
 export const URL_BACK_QUIZ_USER_STATS = (userId: number | string) =>
   `/quizzes/users/${userId}/stats`;

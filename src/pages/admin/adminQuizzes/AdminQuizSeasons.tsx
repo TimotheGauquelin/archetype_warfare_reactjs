@@ -10,7 +10,7 @@ import {
   deleteAdminQuizSeason,
   listAdminQuizSeasons,
 } from "../../../services/quiz";
-import { URL_FRONT_ADMIN_QUIZ_SEASON_ADD } from "../../../constant/urlsFront";
+import { URL_FRONT_ADMIN_SEASON_ADD } from "../../../constant/urlsFront";
 import usePersistedListPage from "../../../hooks/usePersistedListPage";
 
 const PAGE_SIZE = 30;
@@ -76,9 +76,9 @@ const AdminQuizSeasons = () => {
   return (
     <AdminStructure>
       <AdminBodyHeader
-        label="Saisons Daily Quizz"
-        catchphrase="Toutes les saisons de quizz du jour"
-        buttonUrl={URL_FRONT_ADMIN_QUIZ_SEASON_ADD}
+        label="Toutes les saisons"
+        catchphrase="Saisons plateforme (quiz + tournois officiels)"
+        buttonUrl={URL_FRONT_ADMIN_SEASON_ADD}
         buttonLabel="Ajouter une saison"
         returnButton
       />

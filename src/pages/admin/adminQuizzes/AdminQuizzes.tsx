@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../adminLayout";
-import AdminQuizSeasonPagination from "../../../components/pages/admin/quiz/AdminQuizSeasonPagination";
 import AdminQuizPagination from "../../../components/pages/admin/quiz/AdminQuizPagination";
 import PopUp from "../../../components/generic/PopUp";
 import usePopup from "../../../hooks/usePopup";
@@ -19,8 +18,6 @@ import {
 import {
   URL_FRONT_ADMIN_QUIZ_ADD,
   URL_FRONT_ADMIN_QUIZ_QUESTIONS,
-  URL_FRONT_ADMIN_QUIZ_SEASON_ADD,
-  URL_FRONT_ADMIN_QUIZ_SEASONS,
 } from "../../../constant/urlsFront";
 
 const AdminQuizzes = () => {
@@ -54,28 +51,6 @@ const AdminQuizzes = () => {
   useEffect(() => {
     void load();
   }, [load, refresh]);
-
-  const handleDeleteSeason = (season: AdminQuizSeason) => {
-    showConfirmDialog({
-      title: "Suppression de la saison",
-      message: `Supprimer la saison « ${season.name} » ? Les questions liées ne seront plus rattachées à une saison.`,
-      onConfirm: () => {
-        void (async () => {
-          try {
-            await deleteAdminQuizSeason(season.id);
-            toast.success("Saison supprimée");
-            setRefresh(true);
-          } catch (error) {
-            toast.error(
-              error instanceof Error
-                ? error.message
-                : "Impossible de supprimer la saison"
-            );
-          }
-        })();
-      },
-    });
-  };
 
   const handleToggleActive = async (question: AdminQuizQuestion) => {
     try {
@@ -118,38 +93,6 @@ const AdminQuizzes = () => {
         label="Quizz"
         catchphrase="Saisons Daily Quizz et dernières questions"
       />
-
-      <section className="bg-white border border-gray-200 rounded-lg p-2.5 tablet:p-4 shadow-sm mb-6 tablet:mb-10 space-y-3 overflow-hidden">
-        <div className="flex flex-col sscreen:flex-row sscreen:items-center sscreen:justify-between gap-2 tablet:gap-3">
-          <h2 className="text-lg tablet:text-xl font-semibold text-gray-900 leading-snug">
-            Gérer mes saisons de Daily Quizz
-          </h2>
-          <div className="flex flex-col tablet:flex-row flex-wrap gap-2 w-full sscreen:w-auto">
-            <Link
-              to={URL_FRONT_ADMIN_QUIZ_SEASON_ADD}
-              className="h-fit block text-center text-white px-3 py-2 bg-blue-400 rounded hover:bg-blue-500 font-bold text-sm"
-            >
-              Ajouter une saison
-            </Link>
-            <Link
-              to={URL_FRONT_ADMIN_QUIZ_SEASONS}
-              className="h-fit block text-center text-blue-700 px-3 py-2 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 font-semibold text-sm"
-            >
-              Voir toutes les saisons
-            </Link>
-          </div>
-        </div>
-        <p className="text-xs tablet:text-sm text-gray-600 leading-snug">
-          Saison en cours et les deux prochaines (~3 mois chacune). Une question
-          daily est tirée chaque jour dans le pool de la saison.
-        </p>
-
-        <AdminQuizSeasonPagination
-          seasons={seasons}
-          loading={loading}
-          onDelete={handleDeleteSeason}
-        />
-      </section>
 
       <section className="bg-white border border-gray-200 rounded-lg p-2.5 tablet:p-4 shadow-sm space-y-3 overflow-hidden">
         <div className="flex flex-col sscreen:flex-row sscreen:items-center sscreen:justify-between gap-2 tablet:gap-3">

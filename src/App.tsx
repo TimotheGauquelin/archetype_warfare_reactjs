@@ -1,6 +1,13 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { useAuthAutoLogout } from "./hooks/useAuthAutoLogout";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -46,7 +53,7 @@ import {
   URL_FRONT_QUIZ,
   URL_FRONT_QUIZ_DAILY,
   URL_FRONT_QUIZ_DAILY_SEASON,
-  URL_FRONT_QUIZ_SEASON_RANKING,
+  URL_FRONT_SEASON,
   URL_FRONT_MY_TOURNAMENTS,
   URL_FRONT_ADMIN_TOURNAMENTS,
   URL_FRONT_ADMIN_TOURNAMENTS_BY_SCOPE,
@@ -56,9 +63,11 @@ import {
   URL_FRONT_ADMIN_CARD_DETAIL,
   URL_FRONT_ADMIN_QUIZZES,
   URL_FRONT_ADMIN_QUIZ_QUESTIONS,
-  URL_FRONT_ADMIN_QUIZ_SEASONS,
-  URL_FRONT_ADMIN_QUIZ_SEASON_ADD,
-  URL_FRONT_ADMIN_QUIZ_SEASON_UPDATE,
+  URL_FRONT_ADMIN_SEASONS,
+  URL_FRONT_ADMIN_SEASONS_ALL,
+  URL_FRONT_ADMIN_SEASON_ADD,
+  URL_FRONT_ADMIN_SEASON_UPDATE,
+  getAdminSeasonUpdatePath,
   URL_FRONT_ADMIN_QUIZ_ADD,
   URL_FRONT_ADMIN_QUIZ_UPDATE,
 } from "./constant/urlsFront";
@@ -72,7 +81,7 @@ import type { SiteConfig } from "./types";
 import PopUp from "./components/generic/PopUp";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "./redux/store";
-import { logOut } from "./services/auth";
+import { fetchAuthMe, logOut } from "./services/auth";
 
 const LoginPage = lazy(() => import("./pages/auth/login/LoginPage"));
 const DiscordCallbackPage = lazy(() => import("./pages/auth/login/DiscordCallbackPage"));
@@ -135,17 +144,33 @@ const AdminQuizzes = lazy(() => import("./pages/admin/adminQuizzes/AdminQuizzes"
 const AdminQuizQuestions = lazy(
   () => import("./pages/admin/adminQuizzes/AdminQuizQuestions")
 );
-const AdminQuizSeasons = lazy(
+const AdminSeasons = lazy(
+  () => import("./pages/admin/adminSeasons/AdminSeasons")
+);
+const AdminSeasonsAll = lazy(
   () => import("./pages/admin/adminQuizzes/AdminQuizSeasons")
 );
-const AdminQuizSeasonAdd = lazy(
+const AdminSeasonAdd = lazy(
   () => import("./pages/admin/adminQuizzes/AdminQuizSeasonAdd")
 );
-const AdminQuizSeasonUpdate = lazy(
+const AdminSeasonUpdate = lazy(
   () => import("./pages/admin/adminQuizzes/AdminQuizSeasonUpdate")
 );
 const AdminQuizAdd = lazy(() => import("./pages/admin/adminQuizzes/AdminQuizAdd"));
 const AdminQuizUpdate = lazy(() => import("./pages/admin/adminQuizzes/AdminQuizUpdate"));
+
+const LegacyQuizSeasonUpdateRedirect: React.FC = () => {
+  const { seasonId } = useParams<{ seasonId: string }>();
+  if (!seasonId) {
+    return <Navigate to={URL_FRONT_ADMIN_SEASONS} replace />;
+  }
+  return <Navigate to={getAdminSeasonUpdatePath(seasonId)} replace />;
+};
+
+const LegacyQuizSeasonPageRedirect: React.FC = () => {
+  const { seasonId } = useParams<{ seasonId: string }>();
+  return <Navigate to={`/season/${seasonId ?? "current"}`} replace />;
+};
 
 const AuthAutoLogout: React.FC = () => {
   const isExpired = useAuthAutoLogout();
@@ -194,6 +219,11 @@ const RouteFallback = () => (
 
 const AppContent: React.FC = () => {
   const [config, setConfig] = useState<SiteConfig>({});
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    void fetchAuthMe(dispatch);
+  }, [dispatch]);
 
   useEffect(() => {
     const t = window.setTimeout(() => getConfig(setConfig), 4000);
@@ -245,11 +275,12 @@ const AppContent: React.FC = () => {
                 element={<QuizDailyPage />}
               />
               <Route path="/quiz/play/:attemptId" element={<QuizPlayPage />} />
-              <Route
-                path={URL_FRONT_QUIZ_SEASON_RANKING}
-                element={<QuizSeasonRankingPage />}
-              />
             </Route>
+            <Route path={URL_FRONT_SEASON} element={<QuizSeasonRankingPage />} />
+            <Route
+              path="/quiz/season/:seasonId"
+              element={<LegacyQuizSeasonPageRedirect />}
+            />
             <Route path={URL_FRONT_PASSWORD_LOST} element={<PasswordLostPage />} />
             <Route path={URL_FRONT_PASSWORD_RESET} element={<PasswordReset />} />
 
@@ -345,23 +376,39 @@ const AppContent: React.FC = () => {
               />
             </Route>
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
+              <Route path={URL_FRONT_ADMIN_SEASONS} element={<AdminSeasons />} />
+            </Route>
+            <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
               <Route
-                path={URL_FRONT_ADMIN_QUIZ_SEASONS}
-                element={<AdminQuizSeasons />}
+                path={URL_FRONT_ADMIN_SEASONS_ALL}
+                element={<AdminSeasonsAll />}
               />
             </Route>
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
               <Route
-                path={URL_FRONT_ADMIN_QUIZ_SEASON_ADD}
-                element={<AdminQuizSeasonAdd />}
+                path={URL_FRONT_ADMIN_SEASON_ADD}
+                element={<AdminSeasonAdd />}
               />
             </Route>
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
               <Route
-                path={URL_FRONT_ADMIN_QUIZ_SEASON_UPDATE}
-                element={<AdminQuizSeasonUpdate />}
+                path={URL_FRONT_ADMIN_SEASON_UPDATE}
+                element={<AdminSeasonUpdate />}
               />
             </Route>
+            {/* Anciennes URLs quiz/seasons → nouvelles */}
+            <Route
+              path="/admin/quizzes/seasons"
+              element={<Navigate to={URL_FRONT_ADMIN_SEASONS_ALL} replace />}
+            />
+            <Route
+              path="/admin/quizzes/seasons/add"
+              element={<Navigate to={URL_FRONT_ADMIN_SEASON_ADD} replace />}
+            />
+            <Route
+              path="/admin/quizzes/seasons/update/:seasonId"
+              element={<LegacyQuizSeasonUpdateRedirect />}
+            />
             <Route element={<PrivateRoute allowedRoles={[ROLE_ADMIN]} />}>
               <Route path={URL_FRONT_ADMIN_QUIZ_ADD} element={<AdminQuizAdd />} />
             </Route>

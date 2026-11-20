@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import type { AdminQuizSeason } from "../../../../services/quiz";
-import { getAdminQuizSeasonUpdatePath } from "../../../../constant/urlsFront";
+import { getAdminSeasonUpdatePath } from "../../../../constant/urlsFront";
 
 const statusLabel = (status: AdminQuizSeason["status"]) => {
   switch (status) {
@@ -67,7 +67,7 @@ const AdminQuizSeasonPaginationTableBody: React.FC<
             </button>
             <Link
               className="hover:text-yellow-600 hover:underline cursor-pointer"
-              to={getAdminQuizSeasonUpdatePath(item.id)}
+              to={getAdminSeasonUpdatePath(item.id)}
             >
               Modifier
             </Link>

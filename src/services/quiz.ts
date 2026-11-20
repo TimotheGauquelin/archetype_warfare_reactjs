@@ -10,6 +10,7 @@ import {
   URL_BACK_QUIZ_FINISH,
   URL_BACK_QUIZ_HUB,
   URL_BACK_QUIZ_SEASON_RANKING,
+  URL_BACK_QUIZ_SEASON_TOURNAMENT_RANKING,
   URL_BACK_QUIZ_MY_STATS,
   URL_BACK_QUIZ_USER_STATS,
   URL_BACK_QUIZ_START_DAILY,
@@ -88,6 +89,7 @@ export type QuizPublicQuestion = {
     items?: QuizOrderItem[];
     correctOrder?: string[];
     monsterCount?: number;
+    scoringMode?: "per_card" | "all_or_nothing";
     materialCount?: number;
     propositions?: QuizSummonerProposition[];
     answers?: QuizNameTheCardsAnswer[];
@@ -148,11 +150,41 @@ export type QuizSeasonPodiumEntry = {
   attemptsCount: number;
 };
 
+export type SeasonTournamentTier =
+  | "novice"
+  | "bronze"
+  | "argent"
+  | "or"
+  | "platine"
+  | "diamant"
+  | "master";
+
+export type SeasonTournamentRankingEntry = {
+  rank: number;
+  userId: string;
+  username: string;
+  totalPoints: number;
+  tournamentsCount: number;
+  tier?: SeasonTournamentTier;
+  nextTier?: SeasonTournamentTier | null;
+  nextTierMinPoints?: number | null;
+  pointsToNextTier?: number | null;
+  frozen?: boolean;
+};
+
+export type SeasonPlayableArchetype = {
+  id: number;
+  name: string;
+  slug?: string | null;
+  cardImgUrl?: string | null;
+};
+
 export type AdminQuizSeason = {
   id: number;
   name: string;
   startDate: string;
   endDate: string;
+  description?: string | null;
   imageUrl?: string | null;
   imageFocalX?: number;
   imageFocalY?: number;
@@ -160,6 +192,12 @@ export type AdminQuizSeason = {
   allowsOverlap?: boolean;
   dayCount: number;
   questionCount: number;
+  /** Pool enregistré ; vide = pas de restriction */
+  playableArchetypes?: SeasonPlayableArchetype[];
+  /** true si un sous-ensemble est imposé aux tournois officiels */
+  playableArchetypesRestricted?: boolean;
+  /** Liste à afficher (pool, ou tous les archétypes en ligne) */
+  playableArchetypesDisplay?: SeasonPlayableArchetype[];
   status: "past" | "current" | "upcoming";
   createdAt?: string | null;
   updatedAt?: string | null;
@@ -218,9 +256,37 @@ export type MyQuizSeasonStats = {
   attemptsCount: number;
 };
 
+export type MyTournamentSeasonEvent = {
+  tournamentId: string;
+  tournamentName: string;
+  eventDate: string | null;
+  place: number | null;
+  playersCount: number | null;
+  points: number;
+  matchPoints?: number | null;
+  placementBonus?: number | null;
+};
+
+export type MyTournamentSeasonStats = {
+  seasonId: number;
+  name: string;
+  startDate: string;
+  endDate: string;
+  imageUrl?: string | null;
+  imageFocalX?: number;
+  imageFocalY?: number;
+  imageZoom?: number;
+  points: number;
+  tournamentsCount: number;
+  tier?: SeasonTournamentTier;
+  tournaments?: MyTournamentSeasonEvent[];
+};
+
 export type MyQuizStatsResponse = {
   quizPoints: number;
   seasons: MyQuizSeasonStats[];
+  tournamentPoints?: number;
+  tournamentSeasons?: MyTournamentSeasonStats[];
 };
 
 export const getQuizHub = async (): Promise<QuizHubResponse> => {
@@ -253,6 +319,30 @@ export const getQuizSeasonRanking = async (
   }
 };
 
+/** Classement circuit tournois d'une saison (Swiss 3/1/0 cumulés). */
+export const getQuizSeasonTournamentRanking = async (
+  seasonId: number | string = "current"
+): Promise<{
+  season: AdminQuizSeason;
+  ranking: SeasonTournamentRankingEntry[];
+  ranksFrozen?: boolean;
+}> => {
+  try {
+    const response = await api_aw.get(
+      URL_BACK_QUIZ_SEASON_TOURNAMENT_RANKING(seasonId)
+    );
+    return response.data as {
+      season: AdminQuizSeason;
+      ranking: SeasonTournamentRankingEntry[];
+      ranksFrozen?: boolean;
+    };
+  } catch (error) {
+    const appError = handleApiError(error);
+    logError(appError, "getQuizSeasonTournamentRanking");
+    throw appError;
+  }
+};
+
 /** Stats quiz de l'utilisateur (points daily + par saison). */
 export const getMyQuizStats = async (): Promise<MyQuizStatsResponse> => {
   try {
@@ -261,6 +351,10 @@ export const getMyQuizStats = async (): Promise<MyQuizStatsResponse> => {
     return {
       quizPoints: data.quizPoints ?? 0,
       seasons: Array.isArray(data.seasons) ? data.seasons : [],
+      tournamentPoints: data.tournamentPoints ?? 0,
+      tournamentSeasons: Array.isArray(data.tournamentSeasons)
+        ? data.tournamentSeasons
+        : [],
     };
   } catch (error) {
     const appError = handleApiError(error);
@@ -279,6 +373,10 @@ export const getUserQuizStats = async (
     return {
       quizPoints: data.quizPoints ?? 0,
       seasons: Array.isArray(data.seasons) ? data.seasons : [],
+      tournamentPoints: data.tournamentPoints ?? 0,
+      tournamentSeasons: Array.isArray(data.tournamentSeasons)
+        ? data.tournamentSeasons
+        : [],
     };
   } catch (error) {
     const appError = handleApiError(error);
@@ -384,6 +482,7 @@ export type AdminQuizQuestion = {
     items?: QuizOrderItem[];
     correctOrder?: string[];
     monsterCount?: number;
+    scoringMode?: "per_card" | "all_or_nothing";
     materialCount?: number;
     propositions?: QuizSummonerProposition[];
     answers?: QuizNameTheCardsAnswer[];
@@ -407,6 +506,10 @@ export type AdminQuizQuestion = {
   for_daily: boolean;
   /** Historique : déjà sortie au moins une fois en Daily */
   was_daily_question: boolean;
+  /** Première sortie réelle en Daily (ISO) */
+  first_daily_played_at?: string | null;
+  /** Jours de publication Daily (quiz_daily + jour planifié) */
+  daily_publication_dates?: string[];
   /** Secondes pour le daily : 0 = pas de chrono ; défaut 30 */
   daily_time_limit_seconds: number;
   season_id?: number | null;
@@ -430,11 +533,13 @@ export type AdminQuizSeasonInput = {
   name: string;
   startDate: string;
   endDate?: string;
+  description?: string | null;
   imageUrl?: string | null;
   imageFocalX?: number;
   imageFocalY?: number;
   imageZoom?: number;
   allowsOverlap?: boolean;
+  playableArchetypeIds?: number[];
 };
 
 export type AdminQuizQuestionInput = {
@@ -458,6 +563,7 @@ export type AdminQuizQuestionInput = {
     items?: QuizOrderItem[];
     correctOrder?: string[];
     monsterCount?: number;
+    scoringMode?: "per_card" | "all_or_nothing";
     materialCount?: number;
     propositions?: Array<{
       cardId: string | null;

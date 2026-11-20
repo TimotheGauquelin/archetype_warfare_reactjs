@@ -1,9 +1,12 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { FaChevronDown } from "react-icons/fa";
 import AdminBodyHeader from "../../../components/pages/admin/AdminBodyHeader";
 import AdminStructure from "../adminLayout";
 import AdminQuizSeasonPoolTab from "../../../components/pages/admin/quiz/AdminQuizSeasonPoolTab";
+import AdminSeasonPlayableArchetypesTab from "../../../components/pages/admin/quiz/AdminSeasonPlayableArchetypesTab";
+import AdminSeasonTournamentPoolTab from "../../../components/pages/admin/quiz/AdminSeasonTournamentPoolTab";
 import CheckboxSlider from "../../../components/generic/CheckboxSlider";
 import QuizImageCardSearch from "../../../components/pages/admin/quiz/QuizImageCardSearch";
 import ImageFocalZoomEditor from "../../../components/pages/admin/ImageFocalZoomEditor";
@@ -13,8 +16,8 @@ import {
   updateAdminQuizSeason,
 } from "../../../services/quiz";
 import {
-  URL_FRONT_ADMIN_QUIZZES,
-  getAdminQuizSeasonUpdatePath,
+  URL_FRONT_ADMIN_SEASONS,
+  getAdminSeasonUpdatePath,
 } from "../../../constant/urlsFront";
 import { convertBase64 } from "../../../utils/img/convertBase";
 
@@ -26,7 +29,11 @@ const addDays = (isoDate: string, days: number): string => {
 
 const todayIso = () => new Date().toISOString().slice(0, 10);
 
-type SeasonTab = "informations" | "pool";
+type SeasonTab =
+  | "informations"
+  | "archetypes"
+  | "pool"
+  | "tournaments";
 
 interface AdminQuizSeasonFormProps {
   mode: "add" | "edit";
@@ -38,12 +45,14 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
   const [name, setName] = useState("");
   const [startDate, setStartDate] = useState(todayIso());
   const [endDate, setEndDate] = useState(addDays(todayIso(), 89));
+  const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState<string>("");
   const [imageMode, setImageMode] = useState<"upload" | "card">("upload");
   const [imageCardName, setImageCardName] = useState<string | null>(null);
   const [imageFocalX, setImageFocalX] = useState(50);
   const [imageFocalY, setImageFocalY] = useState(50);
   const [imageZoom, setImageZoom] = useState(100);
+  const [imageSectionOpen, setImageSectionOpen] = useState(false);
   const [allowsOverlap, setAllowsOverlap] = useState(false);
   const [loading, setLoading] = useState(mode === "edit");
   const [saving, setSaving] = useState(false);
@@ -62,17 +71,19 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
         setName(season.name);
         setStartDate(season.startDate);
         setEndDate(season.endDate);
+        setDescription(season.description ?? "");
         setImageUrl(season.imageUrl ?? "");
         setImageFocalX(season.imageFocalX ?? 50);
         setImageFocalY(season.imageFocalY ?? 50);
         setImageZoom(season.imageZoom ?? 100);
+        setImageSectionOpen(false);
         setAllowsOverlap(Boolean(season.allowsOverlap));
         setResolvedSeasonId(season.id);
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : "Saison introuvable"
         );
-        navigate(URL_FRONT_ADMIN_QUIZZES);
+        navigate(URL_FRONT_ADMIN_SEASONS);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -101,6 +112,7 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
         name: name.trim(),
         startDate,
         endDate,
+        description: description.trim() || null,
         imageUrl: imageUrl.trim() || null,
         imageFocalX,
         imageFocalY,
@@ -110,11 +122,11 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
       if (mode === "edit" && seasonId) {
         await updateAdminQuizSeason(seasonId, payload);
         toast.success("Saison mise à jour");
-        navigate(URL_FRONT_ADMIN_QUIZZES);
+        navigate(URL_FRONT_ADMIN_SEASONS);
       } else {
         const created = await createAdminQuizSeason(payload);
         toast.success("Saison créée");
-        navigate(getAdminQuizSeasonUpdatePath(created.id));
+        navigate(getAdminSeasonUpdatePath(created.id));
       }
     } catch (error) {
       toast.error(
@@ -126,16 +138,17 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
   };
 
   const tabClass = (tab: SeasonTab) =>
-    `py-2 px-4 rounded-t-md cursor-pointer ${activeTab === tab
-      ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
-      : "text-gray-700 bg-gray-200 hover:bg-gray-300"
+    `py-2 px-4 rounded-t-md cursor-pointer ${
+      activeTab === tab
+        ? "text-blue-700 bg-blue-200 hover:bg-blue-300"
+        : "text-gray-700 bg-gray-200 hover:bg-gray-300"
     }`;
 
   return (
     <AdminStructure>
       <AdminBodyHeader
         label={mode === "edit" ? "Modifier la saison" : "Nouvelle saison"}
-        catchphrase="Une saison Daily Quizz dure environ 3 mois (90 jours)"
+        catchphrase="Une saison est indépendante des quiz et tournois, mais peut en posséder"
         returnButton
       />
 
@@ -144,7 +157,7 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
       ) : (
         <div>
           {mode === "edit" && (
-            <div className="flex">
+            <div className="flex flex-wrap">
               <span
                 className={tabClass("informations")}
                 onClick={() => setActiveTab("informations")}
@@ -152,10 +165,22 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
                 Informations générales
               </span>
               <span
+                className={tabClass("archetypes")}
+                onClick={() => setActiveTab("archetypes")}
+              >
+                Archetypes jouables
+              </span>
+              <span
                 className={tabClass("pool")}
                 onClick={() => setActiveTab("pool")}
               >
                 Pool questions
+              </span>
+              <span
+                className={tabClass("tournaments")}
+                onClick={() => setActiveTab("tournaments")}
+              >
+                Pool tournois
               </span>
             </div>
           )}
@@ -206,6 +231,22 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
                 />
               </label>
 
+              <label className="flex flex-col gap-1 text-sm font-medium text-gray-800">
+                Description
+                <textarea
+                  rows={6}
+                  className="border rounded p-2 font-normal"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Présentation de la saison…"
+                />
+                <span className="text-xs text-gray-600 font-normal">
+                  Formatage : **gras**, __souligné__, *italique*,
+                  *red*rouge*red*, [**Nom FR exact d&apos;une carte**], Entrée =
+                  nouvelle ligne.
+                </span>
+              </label>
+
               <label className="flex items-start gap-3 rounded border border-amber-200 bg-amber-50 p-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -223,24 +264,91 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
                 </span>
               </label>
 
-              <div className="space-y-2 rounded border border-gray-200 bg-gray-50 p-3">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm font-medium text-gray-800">
-                    Image d&apos;illustration
-                  </p>
-                  <div className="flex flex-row items-center gap-2">
-                    <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
-                      Depuis mon PC
+              <div className="rounded border border-gray-200 bg-gray-50 p-3">
+                <button
+                  type="button"
+                  className="w-full flex items-center justify-between gap-2 text-left"
+                  onClick={() => setImageSectionOpen((open) => !open)}
+                  aria-expanded={imageSectionOpen}
+                >
+                  <span className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-medium text-gray-800">
+                      Image d&apos;illustration
                     </span>
-                    <label className="inline-flex relative items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="sr-only peer"
-                        checked={imageMode === "card"}
-                        onChange={() => {
-                          const nextMode =
-                            imageMode === "card" ? "upload" : "card";
-                          setImageMode(nextMode);
+                    {!imageSectionOpen && imageUrl ? (
+                      <span className="text-xs text-green-700 truncate">
+                        Image définie
+                      </span>
+                    ) : null}
+                  </span>
+                  <FaChevronDown
+                    className={`w-3.5 h-3.5 text-gray-600 shrink-0 transition-transform duration-200 ${
+                      imageSectionOpen ? "rotate-180" : ""
+                    }`}
+                    aria-hidden
+                  />
+                </button>
+
+                {imageSectionOpen ? (
+                  <div className="space-y-2 pt-3">
+                    <div className="flex flex-row items-center justify-end gap-2">
+                      <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
+                        Depuis mon PC
+                      </span>
+                      <label className="inline-flex relative items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={imageMode === "card"}
+                          onChange={() => {
+                            const nextMode =
+                              imageMode === "card" ? "upload" : "card";
+                            setImageMode(nextMode);
+                            setImageCardName(null);
+                            setImageUrl("");
+                            setImageFocalX(50);
+                            setImageFocalY(50);
+                            setImageZoom(100);
+                          }}
+                        />
+                        <CheckboxSlider />
+                      </label>
+                      <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
+                        Depuis une carte
+                      </span>
+                    </div>
+                    {imageMode === "upload" ? (
+                      <label className="flex flex-col gap-1 text-sm text-gray-700">
+                        Fichier image
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="font-normal"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            const base64Img = await convertBase64(file);
+                            if (typeof base64Img === "string") {
+                              setImageCardName(null);
+                              setImageUrl(base64Img);
+                              setImageFocalX(50);
+                              setImageFocalY(50);
+                              setImageZoom(100);
+                            }
+                          }}
+                        />
+                      </label>
+                    ) : (
+                      <QuizImageCardSearch
+                        selectedName={imageCardName}
+                        onSelect={(artworkUrl, cardName) => {
+                          setImageCardName(cardName);
+                          setImageUrl(artworkUrl);
+                          setImageFocalX(50);
+                          setImageFocalY(50);
+                          setImageZoom(100);
+                        }}
+                        onClear={() => {
                           setImageCardName(null);
                           setImageUrl("");
                           setImageFocalX(50);
@@ -248,87 +356,43 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
                           setImageZoom(100);
                         }}
                       />
-                      <CheckboxSlider />
-                    </label>
-                    <span className="text-xs font-medium text-gray-800 whitespace-nowrap">
-                      Depuis une carte
-                    </span>
+                    )}
+                    {imageUrl && (
+                      <>
+                        <ImageFocalZoomEditor
+                          imageUrl={imageUrl}
+                          focalX={imageFocalX}
+                          focalY={imageFocalY}
+                          zoom={imageZoom}
+                          onFocalChange={(x, y) => {
+                            setImageFocalX(x);
+                            setImageFocalY(y);
+                          }}
+                          onZoomChange={setImageZoom}
+                          previewTone="white"
+                          previewHint="Aperçu item profil (droite)"
+                        />
+                        <button
+                          type="button"
+                          className="text-sm text-red-600 hover:underline text-left"
+                          onClick={() => {
+                            setImageCardName(null);
+                            setImageUrl("");
+                            setImageFocalX(50);
+                            setImageFocalY(50);
+                            setImageZoom(100);
+                          }}
+                        >
+                          Retirer l&apos;image
+                        </button>
+                      </>
+                    )}
+                    <p className="text-xs text-gray-500">
+                      Affichée en fond (droite) sur le profil, dans « Daily Quiz
+                      — Par saison » et « Tournois — Par saison ».
+                    </p>
                   </div>
-                </div>
-                {imageMode === "upload" ? (
-                  <label className="flex flex-col gap-1 text-sm text-gray-700">
-                    Fichier image
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="font-normal"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        const base64Img = await convertBase64(file);
-                        if (typeof base64Img === "string") {
-                          setImageCardName(null);
-                          setImageUrl(base64Img);
-                          setImageFocalX(50);
-                          setImageFocalY(50);
-                          setImageZoom(100);
-                        }
-                      }}
-                    />
-                  </label>
-                ) : (
-                  <QuizImageCardSearch
-                    selectedName={imageCardName}
-                    onSelect={(artworkUrl, cardName) => {
-                      setImageCardName(cardName);
-                      setImageUrl(artworkUrl);
-                      setImageFocalX(50);
-                      setImageFocalY(50);
-                      setImageZoom(100);
-                    }}
-                    onClear={() => {
-                      setImageCardName(null);
-                      setImageUrl("");
-                      setImageFocalX(50);
-                      setImageFocalY(50);
-                      setImageZoom(100);
-                    }}
-                  />
-                )}
-                {imageUrl && (
-                  <>
-                    <ImageFocalZoomEditor
-                      imageUrl={imageUrl}
-                      focalX={imageFocalX}
-                      focalY={imageFocalY}
-                      zoom={imageZoom}
-                      onFocalChange={(x, y) => {
-                        setImageFocalX(x);
-                        setImageFocalY(y);
-                      }}
-                      onZoomChange={setImageZoom}
-                      previewTone="white"
-                      previewHint="Aperçu item profil (droite)"
-                    />
-                    <button
-                      type="button"
-                      className="text-sm text-red-600 hover:underline text-left"
-                      onClick={() => {
-                        setImageCardName(null);
-                        setImageUrl("");
-                        setImageFocalX(50);
-                        setImageFocalY(50);
-                        setImageZoom(100);
-                      }}
-                    >
-                      Retirer l&apos;image
-                    </button>
-                  </>
-                )}
-                <p className="text-xs text-gray-500">
-                  Affichée en fond (droite) sur le profil, dans « Daily Quiz —
-                  Par session ».
-                </p>
+                ) : null}
               </div>
 
               <p className="text-sm text-gray-500 bg-yellow-100 border border-yellow-500 p-2 rounded-md">
@@ -350,10 +414,20 @@ const AdminQuizSeasonForm = ({ mode }: AdminQuizSeasonFormProps) => {
           </div>
 
           {mode === "edit" && resolvedSeasonId && (
-            <AdminQuizSeasonPoolTab
-              seasonId={resolvedSeasonId}
-              active={activeTab === "pool"}
-            />
+            <>
+              <AdminSeasonPlayableArchetypesTab
+                seasonId={resolvedSeasonId}
+                active={activeTab === "archetypes"}
+              />
+              <AdminQuizSeasonPoolTab
+                seasonId={resolvedSeasonId}
+                active={activeTab === "pool"}
+              />
+              <AdminSeasonTournamentPoolTab
+                seasonId={resolvedSeasonId}
+                active={activeTab === "tournaments"}
+              />
+            </>
           )}
         </div>
       )}

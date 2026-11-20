@@ -237,12 +237,37 @@ const AdminQuizSeasonPoolTab = ({
       .sort((a, b) => a.label.localeCompare(b.label, "fr"));
   }, [allQuestions]);
 
-  /** Questions du pool Daily pas encore placées sur un jour du brouillon. */
+  /**
+   * Pool Daily uniquement, pas encore placé sur un jour du brouillon.
+   * Exclut les questions déjà réservées à une autre saison.
+   * Priorité : déjà associées à cette saison, puis jamais sorties en Daily.
+   */
   const availablePool = useMemo(() => {
-    return allQuestions.filter(
-      (q) => q.for_daily && !draftAssignedIds.has(q.id)
-    );
-  }, [allQuestions, draftAssignedIds]);
+    return allQuestions
+      .filter((q) => {
+        if (!q.for_daily || draftAssignedIds.has(q.id)) return false;
+        const reservedSeasonId =
+          q.season_id != null ? Number(q.season_id) : null;
+        if (
+          reservedSeasonId != null &&
+          Number.isFinite(reservedSeasonId) &&
+          reservedSeasonId !== seasonId
+        ) {
+          return false;
+        }
+        return true;
+      })
+      .slice()
+      .sort((a, b) => {
+        const aSeason = a.season_id === seasonId ? 0 : 1;
+        const bSeason = b.season_id === seasonId ? 0 : 1;
+        if (aSeason !== bSeason) return aSeason - bSeason;
+        const aFresh = a.was_daily_question ? 1 : 0;
+        const bFresh = b.was_daily_question ? 1 : 0;
+        if (aFresh !== bFresh) return aFresh - bFresh;
+        return b.id - a.id;
+      });
+  }, [allQuestions, draftAssignedIds, seasonId]);
 
   const typeOptions = useMemo(() => {
     const types = new Set<string>();
@@ -601,6 +626,11 @@ const AdminQuizSeasonPoolTab = ({
             <h4 className="text-sm font-semibold text-gray-800">
               Ajouter une question sur ce jour
             </h4>
+            <p className="text-xs text-gray-600">
+              Uniquement les questions « pour le Daily » libres ou réservées à
+              cette saison (pas celles d&apos;une autre saison). Les questions
+              de cette saison apparaissent en premier.
+            </p>
             {!selectedDay || selectedQuestion ? (
               <p className="text-sm text-gray-500">
                 {selectedQuestion
@@ -657,16 +687,22 @@ const AdminQuizSeasonPoolTab = ({
                 </div>
                 {available.length === 0 ? (
                   <p className="text-sm text-gray-500">
-                    Aucune question disponible.
+                    Aucune question Daily disponible.
                   </p>
                 ) : (
                   <ul className="divide-y border rounded max-h-72 overflow-y-auto">
                     {available.map((q) => {
                       const img = questionImageUrl(q);
+                      const forThisSeason = q.season_id === seasonId;
+                      const neverPlayed = !q.was_daily_question;
                       return (
                         <li
                           key={q.id}
-                          className="flex flex-col sscreen:flex-row sscreen:items-center sscreen:justify-between gap-2 p-3 text-sm hover:bg-slate-50"
+                          className={`flex flex-col sscreen:flex-row sscreen:items-center sscreen:justify-between gap-2 p-3 text-sm hover:bg-slate-50 ${
+                            forThisSeason
+                              ? "bg-indigo-50/80 border-l-4 border-l-indigo-500"
+                              : ""
+                          }`}
                         >
                           <div className="flex gap-3 min-w-0 flex-1">
                             {img ? (
@@ -695,19 +731,37 @@ const AdminQuizSeasonPoolTab = ({
                                 >
                                   {difficultyLabel(q.difficulty)}
                                 </span>
+                                {forThisSeason && (
+                                  <span className="inline-flex items-center px-2 py-0.5 text-white text-xs font-bold rounded bg-indigo-600">
+                                    Cette saison
+                                  </span>
+                                )}
+                                {neverPlayed && (
+                                  <span className="inline-flex items-center px-2 py-0.5 text-white text-xs font-bold rounded bg-teal-600">
+                                    Jamais Daily
+                                  </span>
+                                )}
                               </div>
                               <p className="text-gray-600 line-clamp-2">
                                 {q.prompt}
                               </p>
                             </div>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => assignToDay(q, selectedDay)}
-                            className="shrink-0 px-3 py-1.5 rounded bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
-                          >
-                            Planifier
-                          </button>
+                          <div className="shrink-0 flex flex-col gap-1.5 items-stretch sscreen:items-end">
+                            <button
+                              type="button"
+                              onClick={() => assignToDay(q, selectedDay)}
+                              className="px-3 py-1.5 rounded bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
+                            >
+                              Planifier
+                            </button>
+                            <Link
+                              to={getAdminQuizUpdatePath(q.id)}
+                              className="text-center text-sm text-blue-600 hover:underline font-medium px-1"
+                            >
+                              Accéder à la question
+                            </Link>
+                          </div>
                         </li>
                       );
                     })}
