@@ -34,7 +34,7 @@ const MyDeckAddPage = () => {
     deck_cards: [],
   });
 
-  const { token } = useSelector((state: RootState) => state.user);
+  const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
   const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const MyDeckAddPage = () => {
   }, [myDeck.deck_cards, myDeck.archetype_id]);
 
   const handleCreate = () => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     if (hasIllegalCards) {
       toast.error(t("profile.cannotSaveIllegalCards"));
       return;

@@ -105,7 +105,7 @@ const UserProfilLayout: React.FC<UserProfilLayoutProps> = ({ children }) => {
   const confirmLogout = () => setShowLogoutConfirm(true);
   const handleCancelLogout = () => setShowLogoutConfirm(false);
   const handleConfirmLogout = () => {
-    logOut(dispatch, navigate);
+    void logOut(dispatch, navigate);
     setShowLogoutConfirm(false);
   };
 

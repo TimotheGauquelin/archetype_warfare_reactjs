@@ -26,9 +26,13 @@ import { optimizeImageUrl } from "@/utils/image/optimizeImageUrl";
 const UpdateMyProfilePage = () => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const { id, token, username: initialUsername, email: initialEmail } = useSelector(
-    (state: RootState) => state.user
-  );
+  const {
+    id,
+    token,
+    isAuthenticated,
+    username: initialUsername,
+    email: initialEmail,
+  } = useSelector((state: RootState) => state.user);
 
   const [profile, setProfile] = useState<UserUpdateForm>({
     username: "",
@@ -71,7 +75,7 @@ const UpdateMyProfilePage = () => {
   }, [id, initialUsername, initialEmail]);
 
   const handleSaveProfile = async () => {
-    if (!id || !token) return;
+    if (!id || !isAuthenticated) return;
     setIsSavingProfile(true);
     const updated = await updateMyProfile(
       id,
@@ -99,7 +103,7 @@ const UpdateMyProfilePage = () => {
   };
 
   const handleSavePassword = async () => {
-    if (!id || !token) return;
+    if (!id || !isAuthenticated) return;
 
     if (!passwordForm.currentPassword || !passwordForm.password || !passwordForm.confirmPassword) {
       toast.error(t("profile.passwordAllFieldsRequired"));
@@ -164,35 +168,25 @@ const UpdateMyProfilePage = () => {
               {defaultAvatars.length === 0 ? (
                 <p className="text-sm text-gray-500">{t("profile.noDefaultAvatars")}</p>
               ) : (
-                <div className="grid grid-cols-3 gap-1.5 max-w-[9rem]">
+                <div className="grid grid-cols-3 gap-2 max-w-[13rem]">
                   {defaultAvatars.map((img) => {
                     const url = img.secure_url || img.url || "";
                     const selected = profile.profile_picture_url === url;
                     return (
-                      <button
+                      <img
                         key={img.public_id}
-                        type="button"
+                        aria-pressed={selected}
+                        aria-label={t("profile.selectProfilePicture")}
                         onClick={() =>
                           setProfile((prev) => ({
                             ...prev,
                             profile_picture_url: url,
                           }))
                         }
-                        className={`aspect-square rounded overflow-hidden border-2 transition-colors ${
-                          selected
-                            ? "border-blue-600 ring-2 ring-blue-300"
-                            : "border-gray-200 hover:border-gray-400"
-                        }`}
-                        disabled={isSavingProfile}
-                        aria-pressed={selected}
-                        aria-label={t("profile.selectProfilePicture")}
-                      >
-                        <img
-                          src={optimizeImageUrl(url, "thumb")}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      </button>
+                        src={optimizeImageUrl(url, "thumb")}
+                        alt=""
+                        className="w-full h-full object-cover cursor-pointer hover:border-blue-600 hover:ring-2 hover:ring-blue-300 rounded-sm border-2 border-slate-200 rounded-sm"
+                      />
                     );
                   })}
                 </div>

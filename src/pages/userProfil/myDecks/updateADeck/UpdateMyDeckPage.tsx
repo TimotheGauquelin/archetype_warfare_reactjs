@@ -25,7 +25,7 @@ const UpdateMyDeckPage = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { deckId } = useParams<{ deckId?: string }>();
-    const { token } = useSelector((state: RootState) => state.user);
+    const { token, isAuthenticated } = useSelector((state: RootState) => state.user);
     const locale = useSelector((state: RootState) => state.locale?.value ?? "fr");
 
     const [archetypes, setArchetypes] = useState<Archetype[]>([]);
@@ -51,7 +51,7 @@ const UpdateMyDeckPage = () => {
 
     useEffect(() => {
         setIsFetching(true);
-        if (token && deckId) {
+        if (isAuthenticated && deckId) {
             getDeckById(
                 token,
                 deckId,
@@ -65,7 +65,7 @@ const UpdateMyDeckPage = () => {
     }, [token, deckId, navigate, locale]);
 
     const handleDelete = useCallback(() => {
-        if (!token || !deckId) return;
+        if (!isAuthenticated || !deckId) return;
         setIsLoading(true);
         laborIllusion(() => {
             deleteMyDeck(token, deckId, setIsLoading, navigate, toast);
@@ -91,7 +91,7 @@ const UpdateMyDeckPage = () => {
     }, [myDeck.deck_cards, myDeck.archetype_id]);
 
     const handleUpdate = useCallback(() => {
-        if (!token || !deckId) return;
+        if (!isAuthenticated || !deckId) return;
         if (hasIllegalCards) {
             toast.error(t("profile.cannotSaveIllegalCards"));
             return;

@@ -71,17 +71,17 @@ describe("MyDecksPage (integration)", () => {
   });
 
   describe("rendering", () => {
-    it("display the title 'Tous mes decks'", async () => {
+    it("display the title 'Tous mes decks (0/5)'", async () => {
       renderMyDecksPage();
       await waitFor(() => {
-        expect(screen.getByTestId("user-profile-layout-title")).toHaveTextContent("Tous mes decks:");
+        expect(screen.getByText(/Tous mes decks \(0\/5\)/i)).toBeInTheDocument();
       });
     });
 
-    it("display the 'Ajouter un deck' button", async () => {
+    it("display the 'Créer un deck' link", async () => {
       renderMyDecksPage();
       await waitFor(() => {
-        expect(screen.getByRole("button", { name: /Créer un deck/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /Créer un deck/i })).toBeInTheDocument();
       });
     });
   });

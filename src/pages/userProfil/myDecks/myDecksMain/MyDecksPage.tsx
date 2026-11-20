@@ -11,30 +11,47 @@ import MyDecksDivSkeleton from "@/components/skeletons/MyDecksDivSkeleton";
 import { optimizeImageUrl } from "../../../../utils/image/optimizeImageUrl";
 import ProfileSection from "@/components/pages/userProfil/ProfileSection";
 
+const MAX_PLAYER_DECKS = 5;
+
 const MyDecksPage = () => {
   const { t } = useTranslation();
   const [myDecks, setMyDecks] = useState<DeckWithArchetypeDetails[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { id, token } = useSelector((state: RootState) => state.user);
+  const { id, token, isAuthenticated } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    if (token && id) {
+    if (isAuthenticated && id) {
       getMyDecks(token, id, setMyDecks, setIsFetching, setError);
     }
   }, [token, id]);
 
+  const deckCount = myDecks.length;
+  const atDeckLimit = deckCount >= MAX_PLAYER_DECKS;
+
   return (
     <UserProfilLayout>
       <ProfileSection
-        title={t("profile.allMyDecks")}
+        title={t("profile.allMyDecksWithCount", {
+          count: deckCount,
+          max: MAX_PLAYER_DECKS,
+        })}
         action={
-          <Link
-            to={URL_FRONT_MY_DECK_ADD}
-            className="text-xs font-semibold text-white bg-blue-500 hover:bg-blue-600 px-2.5 py-1 rounded"
-          >
-            {t("profile.createDeck")}
-          </Link>
+          atDeckLimit ? (
+            <span
+              className="text-xs font-semibold text-gray-500 bg-gray-200 px-2.5 py-1 rounded cursor-not-allowed"
+              title={t("profile.deckLimitReached", { max: MAX_PLAYER_DECKS })}
+            >
+              {t("profile.createDeck")}
+            </span>
+          ) : (
+            <Link
+              to={URL_FRONT_MY_DECK_ADD}
+              className="text-xs font-semibold text-white bg-blue-500 hover:bg-blue-600 px-2.5 py-1 rounded"
+            >
+              {t("profile.createDeck")}
+            </Link>
+          )
         }
       >
         {error && (

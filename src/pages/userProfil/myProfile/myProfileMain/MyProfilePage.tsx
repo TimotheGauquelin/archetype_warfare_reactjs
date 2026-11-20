@@ -23,7 +23,7 @@ const MyProfile = () => {
   const { isOpen, popupConfig, closePopup, showConfirmDialog } = usePopup();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { id, biography, token } = useSelector((state: RootState) => state.user);
+  const {id, biography, token, isAuthenticated} = useSelector((state: RootState) => state.user);
   const [profileBio, setProfileBio] = useState(biography || "");
   const [myTournaments, setMyTournaments] = useState<Tournament[]>([]);
 
@@ -45,7 +45,7 @@ const MyProfile = () => {
   }, [id, dispatch]);
 
   useEffect(() => {
-    if (!token) return;
+    if (!isAuthenticated) return;
     let cancelled = false;
     getMyTournaments(token)
       .then((list) => {
