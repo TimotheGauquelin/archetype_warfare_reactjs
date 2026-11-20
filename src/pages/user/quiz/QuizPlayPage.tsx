@@ -490,19 +490,27 @@ const QuizPlayPage = () => {
 
             {!isDaily && currentQuestion.userAnswer && (
               <div className="flex items-center justify-between gap-3 pt-2">
-                <p
-                  className={`text-sm font-medium ${
-                    currentQuestion.isCorrect ? "text-green-700" : "text-red-700"
-                  }`}
-                >
-                  {Boolean(currentQuestion.userAnswer?.skipped)
-                    ? t("quiz.skipped")
-                    : Boolean(currentQuestion.userAnswer?.timedOut)
-                      ? t("quiz.timedOut")
-                      : currentQuestion.isCorrect
-                        ? t("quiz.correct")
-                        : t("quiz.incorrect")}
-                </p>
+                {currentQuestion.type !== "name_the_cards" ||
+                Boolean(currentQuestion.userAnswer?.skipped) ||
+                Boolean(currentQuestion.userAnswer?.timedOut) ? (
+                  <p
+                    className={`text-sm font-medium ${
+                      currentQuestion.isCorrect
+                        ? "text-green-700"
+                        : "text-red-700"
+                    }`}
+                  >
+                    {Boolean(currentQuestion.userAnswer?.skipped)
+                      ? t("quiz.skipped")
+                      : Boolean(currentQuestion.userAnswer?.timedOut)
+                        ? t("quiz.timedOut")
+                        : currentQuestion.isCorrect
+                          ? t("quiz.correct")
+                          : t("quiz.incorrect")}
+                  </p>
+                ) : (
+                  <span />
+                )}
                 <button
                   type="button"
                   onClick={() => void goNext()}

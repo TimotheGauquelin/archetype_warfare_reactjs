@@ -33,6 +33,7 @@ import AdminOrderItemsEditor, {
 import AdminNameTheCardsEditor, {
   emptyNameTheCardsAnswers,
   type NameTheCardsAnswerForm,
+  type NameTheCardsScoringMode,
 } from "./AdminNameTheCardsEditor";
 import AdminSummonerEditor, {
   emptySummonerProposition,
@@ -51,8 +52,9 @@ import CheckboxSlider from "../../../generic/CheckboxSlider";
 import { Input } from "../../../generic/form/input/Input";
 import SelectInput from "../../../generic/form/SelectInput";
 import { SwitchInput } from "../../../generic/form/SwitchInput";
+import AdminQuizQuestionPreview from "./AdminQuizQuestionPreview";
 
-type QuestionTab = "informations" | "daily";
+type QuestionTab = "informations" | "daily" | "preview";
 
 const DIFFICULTY_OPTIONS = [
   { id: "easy", label: "Facile" },
@@ -189,6 +191,7 @@ export type QuestionFormState = {
   orderItems: [OrderItemForm, OrderItemForm, OrderItemForm, OrderItemForm];
   correctOrder: [string, string, string, string];
   monsterCount: number;
+  nameTheCardsScoringMode: NameTheCardsScoringMode;
   nameTheCardsAnswers: NameTheCardsAnswerForm[];
   propositionCount: number;
   summonerPropositions: SummonerPropositionForm[];
@@ -226,6 +229,7 @@ export const emptyForm = (themeSlug = ""): QuestionFormState => ({
   orderItems: emptyOrderItems(),
   correctOrder: ["0", "1", "2", "3"],
   monsterCount: 1,
+  nameTheCardsScoringMode: "all_or_nothing",
   nameTheCardsAnswers: emptyNameTheCardsAnswers(1),
   propositionCount: 4,
   summonerPropositions: emptySummonerPropositions(4),
@@ -402,6 +406,8 @@ export const formFromQuestion = (q: AdminQuizQuestion): QuestionFormState => {
     orderItems: orderData.items,
     correctOrder: orderData.correctOrder,
     monsterCount: nameData.count,
+    nameTheCardsScoringMode:
+      q.payload.scoringMode === "per_card" ? "per_card" : "all_or_nothing",
     nameTheCardsAnswers: nameData.answers,
     propositionCount: summonerData.propositionCount,
     summonerPropositions: summonerData.propositions,
@@ -471,6 +477,7 @@ const buildPayload = (
   if (form.type === "name_the_cards") {
     return {
       monsterCount: form.monsterCount,
+      scoringMode: form.nameTheCardsScoringMode,
       answers: form.nameTheCardsAnswers.map((a) => ({
         cardId: a.cardId,
         label: a.name || a.text,
@@ -576,11 +583,6 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
         label: `${season.name} (${season.startDate} → ${season.endDate})`,
       })),
     [seasons]
-  );
-
-  const selectedSeason = useMemo(
-    () => seasons.find((s) => s.id === Number(form.season_id)),
-    [seasons, form.season_id]
   );
 
   const setSeasonForm: Dispatch<SetStateAction<QuestionFormState>> = (
@@ -738,18 +740,6 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
       );
       return;
     }
-    if (form.for_daily) {
-      const hasSeason =
-        form.season_id != null && String(form.season_id) !== "";
-      const hasDate = Boolean(form.scheduled_date);
-      if (hasSeason !== hasDate) {
-        toast.error(
-          "Pour un créneau précis, renseignez saison et date ensemble — sinon laissez les deux vides (pool Daily)"
-        );
-        return;
-      }
-    }
-
     const payload: AdminQuizQuestionInput = {
       themeSlug: isCardGameQuestionType(form.type)
         ? CARD_GAME_THEME_SLUG
@@ -764,7 +754,10 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
       points:
         form.type === "zoom" || form.type === "hint_ladder"
           ? 3
-          : Math.max(1, Number(form.points) || 1),
+          : form.type === "name_the_cards" &&
+              form.nameTheCardsScoringMode === "per_card"
+            ? form.monsterCount
+            : Math.max(1, Number(form.points) || 1),
       is_active: form.is_active,
       for_daily: form.for_daily,
       daily_time_limit_seconds:
@@ -774,12 +767,12 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
             0,
             Math.floor(Number(form.daily_time_limit_seconds) || 0)
           ),
+      // Le jour précis se planifie uniquement dans le planificateur de saison.
       season_id: form.for_daily
         ? form.season_id != null && String(form.season_id) !== ""
           ? Number(form.season_id)
           : null
         : null,
-      scheduled_date: form.for_daily ? form.scheduled_date || null : null,
       difficulty: form.difficulty,
       image_url:
         form.type === "zoom"
@@ -836,7 +829,10 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
   const pointsFormData: QuestionFormState =
     form.type === "zoom" || form.type === "hint_ladder"
       ? { ...form, points: 3 }
-      : form;
+      : form.type === "name_the_cards" &&
+          form.nameTheCardsScoringMode === "per_card"
+        ? { ...form, points: form.monsterCount }
+        : form;
 
   const themeFormData: QuestionFormState = isCardGameQuestionType(form.type)
     ? { ...form, themeSlug: CARD_GAME_THEME_SLUG }
@@ -858,6 +854,13 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
           onClick={() => setActiveTab("daily")}
         >
           Mode Défi du jour
+        </button>
+        <button
+          type="button"
+          className={tabClass("preview")}
+          onClick={() => setActiveTab("preview")}
+        >
+          Prévisualisation
         </button>
       </div>
 
@@ -930,7 +933,10 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                   inputType="number"
                   min={1}
                   disabled={
-                    form.type === "zoom" || form.type === "hint_ladder"
+                    form.type === "zoom" ||
+                    form.type === "hint_ladder" ||
+                    (form.type === "name_the_cards" &&
+                      form.nameTheCardsScoringMode === "per_card")
                   }
                   colSpanWidth="12"
                 />
@@ -944,6 +950,13 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                     Auto : 3 → 2 → 1 → 0 selon l&apos;indice
                   </span>
                 )}
+                {form.type === "name_the_cards" &&
+                  form.nameTheCardsScoringMode === "per_card" && (
+                    <span className="mt-1 text-xs text-gray-600 font-normal">
+                      Auto : 1 pt × {form.monsterCount} carte
+                      {form.monsterCount > 1 ? "s" : ""}
+                    </span>
+                  )}
               </div>
             </div>
 
@@ -1248,6 +1261,7 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
               </p>
               <AdminNameTheCardsEditor
                 monsterCount={form.monsterCount}
+                scoringMode={form.nameTheCardsScoringMode}
                 answers={form.nameTheCardsAnswers}
                 onChangeMonsterCount={(monsterCount) =>
                   setForm((prev) => {
@@ -1264,8 +1278,22 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                       ...prev,
                       monsterCount,
                       nameTheCardsAnswers: answers,
+                      points:
+                        prev.nameTheCardsScoringMode === "per_card"
+                          ? monsterCount
+                          : prev.points,
                     };
                   })
+                }
+                onChangeScoringMode={(nameTheCardsScoringMode) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    nameTheCardsScoringMode,
+                    points:
+                      nameTheCardsScoringMode === "per_card"
+                        ? prev.monsterCount
+                        : 1,
+                  }))
                 }
                 onChangeAnswers={(nameTheCardsAnswers) =>
                   setForm((prev) => ({ ...prev, nameTheCardsAnswers }))
@@ -1449,6 +1477,16 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
           )}
         </div>
 
+        <div className={activeTab === "preview" ? "space-y-4" : "hidden"}>
+          <AdminQuizQuestionPreview
+            form={form}
+            themeLabel={
+              themes.find((t) => t.slug === form.themeSlug)?.label ??
+              form.themeSlug
+            }
+          />
+        </div>
+
         <div className={activeTab === "daily" ? "space-y-4" : "hidden"}>
           <div className="grid grid-cols-12 gap-2 tablet:gap-4 max-w-2xl">
             <div className="col-span-12 tablet:col-span-6">
@@ -1470,18 +1508,91 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                 colSpanWidth="12"
               />
               <span className="mt-1 text-xs text-gray-600 font-normal">
-                « Pour le Daily » : pool, date possible plus tard dans le
-                planificateur. Après passage en Daily → question libre, créneau
-                conservé dans le planificateur.
+                Libre = parties free. Daily = disponible dans le planificateur
+                de saison. Le jour précis se choisit uniquement dans la saison.
               </span>
-              {form.was_daily_question && (
-                <span className="mt-1 block text-xs text-amber-800 font-medium">
-                  Déjà sortie en Daily au moins une fois — vous pouvez la
-                  remettre dans le pool.
-                </span>
-              )}
             </div>
           </div>
+
+          {mode === "edit" && (
+            <div className="max-w-3xl space-y-2">
+              <p className="text-sm font-semibold text-gray-800">
+                Publication de cette question les jours suivants :
+              </p>
+              {(() => {
+                const published = [
+                  ...(initialQuestion?.daily_publication_dates ?? []),
+                ];
+                const scheduled = form.scheduled_date
+                  ? String(form.scheduled_date).slice(0, 10)
+                  : null;
+                const cards: Array<{
+                  date: string;
+                  status: "published" | "planned";
+                }> = published.map((date) => ({
+                  date,
+                  status: "published" as const,
+                }));
+                if (scheduled && !published.includes(scheduled)) {
+                  cards.push({ date: scheduled, status: "planned" });
+                }
+                cards.sort((a, b) => a.date.localeCompare(b.date));
+
+                if (cards.length === 0) {
+                  return (
+                    <div className="rounded-md border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm text-gray-600">
+                      Aucune publication Daily pour le moment.
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-2 tablet:grid-cols-3 sscreen:grid-cols-4 gap-2">
+                    {cards.map(({ date, status }) => {
+                      let label = date;
+                      try {
+                        label = new Date(
+                          `${date}T12:00:00`
+                        ).toLocaleDateString("fr-FR", {
+                          weekday: "short",
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        });
+                      } catch {
+                        /* keep iso */
+                      }
+                      return (
+                        <div
+                          key={`${status}-${date}`}
+                          className={`rounded-md border px-3 py-2 shadow-sm ${
+                            status === "planned"
+                              ? "border-indigo-200 bg-indigo-50"
+                              : "border-slate-200 bg-white"
+                          }`}
+                        >
+                          <p className="text-sm font-semibold text-gray-900">
+                            {label}
+                          </p>
+                          <p
+                            className={`text-[11px] mt-0.5 font-medium ${
+                              status === "planned"
+                                ? "text-indigo-700"
+                                : "text-gray-500"
+                            }`}
+                          >
+                            {status === "planned"
+                              ? "Planifié"
+                              : "Publié en Daily"}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
 
           {form.for_daily && (
             <div className="grid grid-cols-12 gap-2 tablet:gap-4 max-w-2xl">
@@ -1492,31 +1603,24 @@ const AdminQuizQuestionForm: React.FC<AdminQuizQuestionFormProps> = ({
                   data={form}
                   setAction={setSeasonForm}
                   options={seasonOptions}
-                  defaultOptionLabel="Plus tard (pool)"
+                  defaultOptionLabel="Aucune (pool Daily global)"
                   colSpanWidth="12"
                 />
+                <span className="mt-1 text-xs text-gray-600 font-normal">
+                  Associer une saison met la question en avant dans son
+                  planificateur. Le jour se choisit ensuite sur la page saison.
+                </span>
                 {seasons.length === 0 && (
                   <span className="mt-1 text-xs text-red-600 font-normal">
                     Créez d&apos;abord une saison depuis le dashboard Quizz.
                   </span>
                 )}
-              </div>
-              <div className="col-span-12 tablet:col-span-6">
-                <Input
-                  label="Jour du défi (optionnel)"
-                  attribute="scheduled_date"
-                  data={form}
-                  setAction={setForm}
-                  inputType="date"
-                  min={selectedSeason?.startDate}
-                  max={selectedSeason?.endDate}
-                  disabled={!form.season_id}
-                  colSpanWidth="12"
-                />
-                <span className="mt-1 text-xs text-gray-600 font-normal">
-                  Laissez vide pour assigner la date dans le planificateur.
-                  Sinon : 1 question / jour dans la saison.
-                </span>
+                {form.scheduled_date && (
+                  <span className="mt-1 block text-xs text-blue-800 font-medium">
+                    Jour déjà planifié : {form.scheduled_date} (modifiable dans
+                    le planificateur de saison).
+                  </span>
+                )}
               </div>
             </div>
           )}

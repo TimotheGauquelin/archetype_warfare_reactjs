@@ -36,8 +36,10 @@ const NameTheCardsQuestion = ({
 
   const hasAnswered = Boolean(question.userAnswer);
   const answeredCardIds = Array.isArray(question.userAnswer?.cardIds)
-    ? (question.userAnswer?.cardIds as string[]).map(String)
+    ? (question.userAnswer?.cardIds as string[]).map((id) => String(id ?? ""))
     : null;
+  const skipped = Boolean(question.userAnswer?.skipped);
+  const timedOut = Boolean(question.userAnswer?.timedOut);
 
   const [slots, setSlots] = useState<ChoiceCard[]>(() =>
     emptySlots(monsterCount)
@@ -49,19 +51,50 @@ const NameTheCardsQuestion = ({
     ? question.correctPayload.answers
     : [];
 
+  const matchSummary = useMemo(() => {
+    if (!hasAnswered || skipped || timedOut) return null;
+    const total = correctAnswers.length || monsterCount;
+    let correct = 0;
+    for (let i = 0; i < total; i += 1) {
+      const expected = String(correctAnswers[i]?.cardId ?? "");
+      const actual = String(answeredCardIds?.[i] ?? "").trim();
+      if (expected && actual && expected === actual) {
+        correct += 1;
+      }
+    }
+    return { correct, total };
+  }, [
+    hasAnswered,
+    skipped,
+    timedOut,
+    correctAnswers,
+    monsterCount,
+    answeredCardIds,
+  ]);
+
   useEffect(() => {
     if (!hasAnswered) {
-      setSlots(emptySlots(monsterCount));
-      onDraftChange?.(null);
+      const initial = emptySlots(monsterCount);
+      setSlots(initial);
+      onDraftChange?.({
+        cardIds: initial.map((slot) => String(slot.cardId ?? "")),
+      });
       return;
     }
     onDraftChange?.(null);
     if (answeredCardIds && answeredCardIds.length > 0) {
       setSlots((prev) =>
-        answeredCardIds.map((cardId, index) => {
+        Array.from({ length: monsterCount }, (_, index) => {
+          const cardId = String(answeredCardIds[index] ?? "").trim();
           const correct = correctAnswers[index];
           const prevSlot = prev[index];
-          if (prevSlot?.cardId === cardId && (prevSlot.name || prevSlot.artworkUrl)) {
+          if (!cardId) {
+            return emptyChoiceCard();
+          }
+          if (
+            prevSlot?.cardId === cardId &&
+            (prevSlot.name || prevSlot.artworkUrl)
+          ) {
             return prevSlot;
           }
           if (correct && String(correct.cardId) === String(cardId)) {
@@ -101,15 +134,31 @@ const NameTheCardsQuestion = ({
       onDraftChange?.(null);
       return;
     }
-    const filled = nextSlots.every((slot) => Boolean(slot.cardId));
-    if (!filled) {
-      onDraftChange?.(null);
-      return;
-    }
     onDraftChange?.({
       cardIds: nextSlots.map((slot) => String(slot.cardId ?? "")),
     });
   };
+
+  const resultMessage =
+    matchSummary == null
+      ? null
+      : matchSummary.correct === 0
+        ? t("quiz.nameTheCardsResultNone")
+        : matchSummary.correct === matchSummary.total
+          ? t("quiz.nameTheCardsResultAll")
+          : t("quiz.nameTheCardsResultPartial", {
+              correct: matchSummary.correct,
+              total: matchSummary.total,
+            });
+
+  const resultTone =
+    matchSummary == null
+      ? ""
+      : matchSummary.correct === matchSummary.total
+        ? "text-green-700"
+        : matchSummary.correct === 0
+          ? "text-red-700"
+          : "text-amber-800";
 
   return (
     <div className="space-y-3">
@@ -147,20 +196,20 @@ const NameTheCardsQuestion = ({
         ).map((index) => {
           const slot = slots[index] ?? emptyChoiceCard();
           const correct = correctAnswers[index];
-          const userPicked = Boolean(answeredCardIds?.[index]);
+          const userPicked = Boolean(String(answeredCardIds?.[index] ?? "").trim());
           const isCorrectSlot =
             hasAnswered &&
             userPicked &&
             correct &&
             String(correct.cardId) === String(slot.cardId);
-          const showAsCorrectReveal = hasAnswered && (!userPicked || isCorrectSlot);
+          const isMissedOrWrong = hasAnswered && !isCorrectSlot;
 
           return (
             <div
               key={`slot-${index}`}
               className={`rounded-lg bg-white p-3 shadow-md ${
                 hasAnswered
-                  ? showAsCorrectReveal
+                  ? isCorrectSlot
                     ? "ring-2 ring-green-400"
                     : "ring-2 ring-red-300"
                   : ""
@@ -172,6 +221,11 @@ const NameTheCardsQuestion = ({
                 </span>
                 {hasAnswered ? (
                   <div className="flex-1 space-y-2">
+                    {!userPicked && (
+                      <p className="text-sm font-semibold text-red-700">
+                        {t("quiz.nameTheCardsNoneSelected")}
+                      </p>
+                    )}
                     {userPicked && !isCorrectSlot && (
                       <div className="flex flex-wrap items-center gap-3">
                         {slot.artworkUrl && (
@@ -189,7 +243,7 @@ const NameTheCardsQuestion = ({
                     {correct && (
                       <div
                         className={`flex items-center gap-2 text-sm ${
-                          isCorrectSlot || !userPicked
+                          isCorrectSlot
                             ? "text-gray-900 font-semibold"
                             : "text-green-800"
                         }`}
@@ -202,7 +256,7 @@ const NameTheCardsQuestion = ({
                           />
                         )}
                         <span>
-                          {userPicked && !isCorrectSlot
+                          {isMissedOrWrong
                             ? `${t("quiz.nameTheCardsExpected")} `
                             : ""}
                           <strong>{correct.name || correct.label}</strong>
@@ -228,6 +282,10 @@ const NameTheCardsQuestion = ({
           );
         })}
       </div>
+
+      {resultMessage && (
+        <p className={`text-sm font-semibold ${resultTone}`}>{resultMessage}</p>
+      )}
 
       {hasAnswered && (
         <QuizExplanationBlock
